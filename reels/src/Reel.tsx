@@ -28,7 +28,8 @@ export type ReelProps = {
   images: string[]; // file names that live in reels/public/
   beats: Beat[];
   music: string | null; // file name in reels/public/ or null
-  brand: string;
+  brand: string; // fallback text badge
+  logo: string | null; // channel logo file name in reels/public/ or null
 };
 
 export const defaultReelProps: ReelProps = {
@@ -45,6 +46,7 @@ export const defaultReelProps: ReelProps = {
   ],
   music: null,
   brand: "KG",
+  logo: null,
 };
 
 const styleFor = (category: string) => {
@@ -110,39 +112,56 @@ const Scrim: React.FC = () => (
   />
 );
 
-// On-screen logo badge (e.g. "KG"). Kept consistent across categories so it
-// reads as a brand mark, with a vibrant gaming gradient and soft glow.
-const Brand: React.FC<{ brand: string }> = ({ brand }) => {
+// On-screen channel logo. Uses the real logo image when provided, otherwise a
+// styled "KG" text badge. Sits in a rounded card so it reads on any background.
+const Brand: React.FC<{ brand: string; logo: string | null }> = ({
+  brand,
+  logo,
+}) => {
   return (
     <AbsoluteFill
-      style={{ justifyContent: "flex-start", alignItems: "center", paddingTop: 80 }}
+      style={{ justifyContent: "flex-start", alignItems: "center", paddingTop: 72 }}
     >
       <div
         style={{
-          width: 132,
-          height: 132,
-          borderRadius: 30,
-          background: "linear-gradient(145deg, #8b5cf6 0%, #5b3df0 55%, #3b2bd6 100%)",
+          width: 160,
+          height: 160,
+          borderRadius: 34,
+          background: logo
+            ? "#0a0a0f"
+            : "linear-gradient(145deg, #8b5cf6 0%, #5b3df0 55%, #3b2bd6 100%)",
           border: "4px solid rgba(255,255,255,0.92)",
-          boxShadow:
-            "0 14px 50px rgba(91,61,240,0.55), 0 4px 14px rgba(0,0,0,0.45)",
+          boxShadow: "0 14px 50px rgba(0,0,0,0.5), 0 4px 14px rgba(0,0,0,0.45)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            fontFamily: anton.fontFamily,
-            color: "#fff",
-            fontSize: 78,
-            lineHeight: 1,
-            letterSpacing: 2,
-            textShadow: "0 4px 16px rgba(0,0,0,0.5)",
-          }}
-        >
-          {brand}
-        </div>
+        {logo ? (
+          <Img
+            src={staticFile(logo)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transform: "scale(1.35)",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              fontFamily: anton.fontFamily,
+              color: "#fff",
+              fontSize: 78,
+              lineHeight: 1,
+              letterSpacing: 2,
+              textShadow: "0 4px 16px rgba(0,0,0,0.5)",
+            }}
+          >
+            {brand}
+          </div>
+        )}
       </div>
     </AbsoluteFill>
   );
@@ -263,6 +282,7 @@ export const Reel: React.FC<ReelProps> = ({
   beats,
   music,
   brand,
+  logo,
   category,
 }) => {
   const { accent } = styleFor(category);
@@ -270,7 +290,7 @@ export const Reel: React.FC<ReelProps> = ({
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <Background images={images} />
       <Scrim />
-      <Brand brand={brand} />
+      <Brand brand={brand} logo={logo} />
       <Captions beats={beats} category={category} />
       <Progress accent={accent} />
       {music ? <Audio src={staticFile(music)} volume={0.6} /> : null}

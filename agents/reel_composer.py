@@ -73,6 +73,16 @@ def run(
         if music_name:
             copied.append(music_name)
 
+        # Stage the channel logo (if configured) so the reel can show it.
+        logo_name = None
+        logo_cfg = CONFIG.reels.get("brand_logo")
+        if logo_cfg:
+            logo_src = ROOT / logo_cfg
+            if logo_src.exists():
+                logo_name = f"{tag}_logo{logo_src.suffix.lower() or '.png'}"
+                shutil.copyfile(logo_src, PUBLIC_DIR / logo_name)
+                copied.append(logo_name)
+
         # 2) Write the props the Remotion composition reads.
         props = {
             "fps": fps,
@@ -84,6 +94,7 @@ def run(
             "beats": beats,
             "music": music_name,
             "brand": CONFIG.reels.get("brand_badge", "KG"),
+            "logo": logo_name,
         }
         props_path = PUBLIC_DIR / f"{tag}_props.json"
         props_path.write_text(json.dumps(props, ensure_ascii=False), encoding="utf-8")

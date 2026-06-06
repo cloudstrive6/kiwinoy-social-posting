@@ -125,7 +125,8 @@ platforms:
 # storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
   enabled: true
-  brand_badge: "KG"        # the on-screen logo badge (shown top of every reel)
+  brand_badge: "KG"        # fallback text badge if no logo image is set
+  brand_logo: "reels/assets/logo/KG Logo.png"  # on-screen channel logo (every reel)
   duration_seconds: 14
   fps: 30
   width: 1080
