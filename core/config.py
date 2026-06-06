@@ -6,6 +6,16 @@ Loads non-secret settings from config.yaml and secrets from the environment
 """
 from __future__ import annotations
 
+# Make Python's HTTPS use the OS certificate store. This keeps requests/httpx
+# (Post for Me, OpenAI, Anthropic) working behind antivirus or corporate proxy
+# SSL inspection, which is common on Windows. Best-effort: a no-op if missing.
+try:
+    import truststore as _truststore
+
+    _truststore.inject_into_ssl()
+except Exception:
+    pass
+
 import os
 from pathlib import Path
 from typing import Any

@@ -1,116 +1,117 @@
-# ==========================================================================
-#  KiwinoyGamer Social Posting — CONFIG  (no secrets in here; keys live in .env)
-#  Edit anything below to retune the team. The 5 agents read from this file.
-# ==========================================================================
-
 brand:
-  name: "KiwinoyGamer"
-  handle: "@kiwinoygamer"
-  language: "English"
-  # The personality every caption is written in.
-  voice: >
-    High-energy gaming creator who lives and breathes gacha games and sports.
-    Confident, hype, and in-the-know — talks to the audience like a friend with
-    the inside scoop. Emoji-forward but never spammy. Value-first: always helps
-    the viewer win, save, or look smart. Hooks hard in the first line.
+  name: KiwinoyGamer
+  handle: '@kiwinoygamer'
+  language: English
+  voice: 'High-energy gaming creator who lives and breathes gacha games and sports.
+    Confident, hype, and in-the-know — talks to the audience like a friend with the
+    inside scoop. Emoji-forward but never spammy. Value-first: always helps the viewer
+    win, save, or look smart. Hooks hard in the first line.
 
-# Which models each agent uses. Change any of these without touching code.
+    '
 models:
-  # Who writes the captions + Threads posts. Flip writer_provider to "anthropic"
-  # any time to switch to Claude — nothing else needs to change.
-  writer_provider: "openai"            # "openai" | "anthropic"
-  writer_openai: "gpt-4.1"            # used when writer_provider = openai
-  writer_anthropic: "claude-sonnet-4-6"  # used when writer_provider = anthropic
-  research: "gpt-4.1"                 # OpenAI — trend research (web search)
-  image: "gpt-image-1"               # OpenAI — scroll-stopping post images
-  web_search_tool: "web_search"      # OpenAI built-in research tool name
+  writer_provider: openai
+  writer_openai: gpt-4.1
+  writer_anthropic: claude-sonnet-4-6
+  research: gpt-4.1
+  image: gpt-image-1
+  web_search_tool: web_search
   writer_max_tokens: 1024
-
-# 4 posts/day, alternating Gacha -> Sports. Times are in UTC (GitHub Actions
-# cron runs in UTC). Tuned for a global/mixed audience (Asia / EU / US windows).
 schedule:
-  timezone: "UTC"
+  timezone: UTC
   slots:
-    - { id: 1, time: "12:00", category: "gacha"  }  # PH / Asia prime evening
-    - { id: 2, time: "16:00", category: "sports" }  # EU evening + US morning
-    - { id: 3, time: "20:00", category: "gacha"  }  # EU night + US afternoon
-    - { id: 4, time: "00:00", category: "sports" }  # US prime (NBA / NFL)
-
-# The topic universe each research run draws from.
+  - id: 1
+    time: '12:00'
+    category: gacha
+  - id: 2
+    time: '16:00'
+    category: sports
+  - id: 3
+    time: '20:00'
+    category: gacha
+  - id: 4
+    time: 00:00
+    category: sports
 topics:
   gacha:
     games:
-      - "Genshin Impact"
-      - "Honkai: Star Rail"
-      - "NTE Neverness to Everness"
+    - Genshin Impact
+    - 'Honkai: Star Rail'
+    - NTE Neverness to Everness
     angles:
-      - "Tier list / meta analysis — which characters or items are must-haves right now"
-      - "Whale account / maxed-account showcase"
-      - "F2P-friendly resource management & best-value top-up timing (Primogems / Stellar Jades)"
-      - "New banner / character reveal or leak"
-      - "Patch notes & version update breakdown"
+    - Tier list / meta analysis — which characters or items are must-haves right now
+    - Whale account / maxed-account showcase
+    - F2P-friendly resource management & best-value top-up timing (Primogems / Stellar
+      Jades)
+    - New banner / character reveal or leak
+    - Patch notes & version update breakdown
   sports:
     leagues:
-      - "English Premier League football"
-      - "NFL"
-      - "NBA"
-      - "Major tennis (Grand Slams / ATP / WTA)"
+    - English Premier League football
+    - NFL
+    - NBA
+    - Major tennis (Grand Slams / ATP / WTA)
     angles:
-      - "Live match prediction & analysis"
-      - "Fantasy sports insight & picks"
-      - "Player spotlight / form & stats analysis"
-      - "Injury, transfer & lineup news"
-      - "Big rivalry / matchup preview"
-
-# Caption rules. The Content agent writes story-driven captions whose FIRST line
-# (the "See More" hook) must stay under hook_max_chars so Facebook doesn't bury
-# it. Captions stay short by default; long-form is only used when warranted.
+    - Live match prediction & analysis
+    - Fantasy sports insight & picks
+    - Player spotlight / form & stats analysis
+    - Injury, transfer & lineup news
+    - Big rivalry / matchup preview
 caption:
-  hook_max_chars: 140          # Facebook truncates around here -> keep hook shorter
-  short_body_max_lines: 5      # default punchy length (lines after the hook)
-  long_form_only_if: >
-    The topic is highly educational, genuinely entertaining, or gives real
-    community value (a proper guide, a deep meta breakdown, a big story). Never
-    pad. If long, use short line-broken paragraphs, never a dense block.
+  hook_max_chars: 140
+  short_body_max_lines: 5
+  long_form_only_if: 'The topic is highly educational, genuinely entertaining, or
+    gives real community value (a proper guide, a deep meta breakdown, a big story).
+    Never pad. If long, use short line-broken paragraphs, never a dense block.
 
-# Appended (trimmed to fit) to captions. KiwinoyGamer brand tag always included.
+    '
 hashtags:
   gacha:
-    ["#GenshinImpact", "#HonkaiStarRail", "#NTE", "#NevernessToEverness",
-     "#Gacha", "#GachaGames", "#GachaGaming", "#KiwinoyGamer"]
+  - '#GenshinImpact'
+  - '#HonkaiStarRail'
+  - '#NTE'
+  - '#NevernessToEverness'
+  - '#Gacha'
+  - '#GachaGames'
+  - '#GachaGaming'
+  - '#KiwinoyGamer'
   sports:
-    ["#EPL", "#PremierLeague", "#NFL", "#NBA", "#Tennis",
-     "#FantasyFootball", "#SportsPredictions", "#KiwinoyGamer"]
-
-# Image generation rules. The Image agent sends the caption/topic to gpt-image-1
-# and asks it to design a scroll-stopping visual WITH the headline baked in.
+  - '#EPL'
+  - '#PremierLeague'
+  - '#NFL'
+  - '#NBA'
+  - '#Tennis'
+  - '#FantasyFootball'
+  - '#SportsPredictions'
+  - '#KiwinoyGamer'
 image:
-  size: "1024x1024"     # square — safe across FB / IG / Threads feeds
-  quality: "high"       # gpt-image-1: low | medium | high
+  size: 1024x1024
+  quality: high
   styles:
-    sports: >
-      Hyper-realistic editorial sports photography. Looks shot on a professional
+    sports: 'Hyper-realistic editorial sports photography. Looks shot on a professional
       DSLR with a fast telephoto lens: dramatic stadium / arena lighting, shallow
-      depth of field, crisp frozen motion, photojournalistic realism, rich color
-      grade. Absolutely NOT illustrated or cartoon.
-    gacha: >
-      High-quality anime key-visual / gacha splash-art aesthetic. Vibrant, clean
+      depth of field, crisp frozen motion, photojournalistic realism, rich color grade.
+      Absolutely NOT illustrated or cartoon.
+
+      '
+    gacha: 'High-quality anime key-visual / gacha splash-art aesthetic. Vibrant, clean
       cel-shaded characters, cinematic rim lighting and particle effects, detailed
       line work, premium mobile-game promo-art feel.
-  # How the on-image title should be produced.
-  headline: >
-    Design a bold, short, scroll-stopping on-image headline drawn from the topic
-    and caption. Maximum legibility: strong contrast, clear visual hierarchy, no
-    spelling errors. CRITICAL — the typography style and font feel MUST match the
-    overall image style: athletic condensed/bold sans for sports; stylized
-    anime/game-title lettering for gacha. Keep the headline to a few punchy words.
-    Do NOT use em-dashes or en-dashes anywhere in the headline text.
 
-# The 3 platforms we publish to. The account IDs get filled in automatically when
-# you run:  python tools/list_accounts.py   (after adding your Post for Me key).
+      '
+  headline: 'Design a bold, short, scroll-stopping on-image headline drawn from the
+    topic and caption. Maximum legibility: strong contrast, clear visual hierarchy,
+    no spelling errors. CRITICAL — the typography style and font feel MUST match the
+    overall image style: athletic condensed/bold sans for sports; stylized anime/game-title
+    lettering for gacha. Keep the headline to a few punchy words. Do NOT use em-dashes
+    or en-dashes anywhere in the headline text.
+
+    '
 platforms:
-  publish_to: ["facebook", "instagram", "threads"]
+  publish_to:
+  - facebook
+  - instagram
+  - threads
   accounts:
-    facebook: ""
-    instagram: ""
-    threads: ""
+    facebook: spc_pdryrNLUWBjaeRxiO716
+    instagram: spc_W0CkCQOOafk2NVq3tXEN
+    threads: spc_fh6hyxsoUb7D7jqQGFx
