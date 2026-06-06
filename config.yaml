@@ -91,10 +91,15 @@ image:
   size: 1024x1024
   quality: high
   styles:
-    sports: 'Hyper-realistic editorial sports photography. Looks shot on a professional
-      DSLR with a fast telephoto lens: dramatic stadium / arena lighting, shallow
-      depth of field, crisp frozen motion, photojournalistic realism, rich color grade.
-      Absolutely NOT illustrated or cartoon.
+    sports: 'A real-life press photograph of REAL human athletes, indistinguishable
+      from an actual photo on a sports news site. Real people with believable skin,
+      sweat and fabric texture. The players wear the correct team''s real-life kit,
+      colors and sponsors and are in the authentic real venue that matches the story
+      (e.g. the right stadium / arena). Shot on a professional DSLR with a fast
+      telephoto lens: dramatic stadium / arena lighting, shallow depth of field,
+      crisp frozen motion, photojournalistic realism, rich color grade. It MUST look
+      like a genuine real-world photograph. Absolutely NOT illustrated, NOT cartoon,
+      NOT anime, NOT a 3D render, NOT CGI, NOT a video-game screenshot.
 
       '
     gacha: 'High-quality anime key-visual / gacha splash-art aesthetic. Vibrant, clean
