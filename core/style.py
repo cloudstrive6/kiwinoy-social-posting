@@ -20,6 +20,7 @@ HUMAN_VOICE = """WRITE LIKE A REAL PERSON, NOT AI. Non-negotiable rules:
 - Vary sentence length. Use contractions. A short fragment is fine.
 - Don't force rule-of-three lists or perfectly balanced sentences.
 - Emojis only where they feel natural, not in a tidy formula.
+- NEVER use the #KiwinoyGamer hashtag, or any channel-branded #Kiwinoy... hashtag.
 - Sound like a hyped gamer / sports fan typing fast, not a brand bot."""
 
 # Phrases we'll quietly strip if the model slips (kept short to avoid mangling).
@@ -45,6 +46,12 @@ def sanitize(text: str) -> str:
     text = re.sub(r"\s+,", ",", text)         # space before comma
     text = re.sub(r",\s*([.!?])", r"\1", text)  # ", ." -> "."
     text = re.sub(r"[ \t]{2,}", " ", text)     # collapse runs of spaces
+
+    # 2b) Strip any channel-branded hashtag the model may have added on its own
+    #     (e.g. #KiwinoyGamer). We never want these on a post.
+    text = re.sub(r"(?i)#\s*kiwinoy\w*", "", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    text = re.sub(r"[ \t]+\n", "\n", text)
 
     # 3) Drop a couple of formulaic openers if they lead the text.
     low = text.lstrip()
