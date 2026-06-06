@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Generated output (images, run logs, briefs)
+output/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings (machine-specific)
+.claude/
