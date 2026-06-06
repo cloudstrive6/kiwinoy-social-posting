@@ -90,6 +90,11 @@ def upload_image(image_bytes: bytes, content_type: str = "image/png") -> str:
     return media_url
 
 
+def upload_video(video_bytes: bytes, content_type: str = "video/mp4") -> str:
+    """Upload an MP4 reel and return its public media URL (same flow as images)."""
+    return upload_image(video_bytes, content_type=content_type)
+
+
 def create_post(
     caption: str,
     social_accounts: list[str],

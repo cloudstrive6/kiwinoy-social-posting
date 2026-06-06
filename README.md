@@ -3,8 +3,9 @@
 A 5-agent system that researches trending **gacha** (Genshin Impact / Honkai:
 Star Rail / NTE) and **sports** (EPL / NFL / NBA / tennis) topics, writes
 scroll-stopping captions, generates matching images with headlines baked in, and
-auto-publishes to **Facebook + Instagram + Threads**, **6 posts a day**,
-alternating Sports and Gacha through the day.
+auto-publishes to **Facebook + Instagram + Threads**, **6 image posts a day**,
+alternating Sports and Gacha through the day. A separate **Reels track** adds 6
+short vertical videos a day on top (see "Reels track" below).
 
 Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 
@@ -111,6 +112,37 @@ Everything lives in **`config.yaml`** — no code changes needed:
 | 6 | 20:00 | 🎮 Gacha |
 
 ---
+
+## Reels track (short vertical videos)
+
+A **separate** cadence from the image posts: **6 reels/day** at 02:00 / 06:00 /
+10:00 / 14:00 / 18:00 / 22:00 UTC (interleaved between the image posts). Each is
+a **12-15s, 9:16 MP4** with **Ken Burns motion + animated storytelling captions**,
+rendered free with **Remotion** in GitHub Actions, then published to Instagram +
+Facebook **Reels** (and Threads video) via Post for Me.
+
+Pipeline per reel: research -> reel caption + on-screen beats -> background shots
+(`gpt-image-1`, vertical, no baked text) -> Remotion render -> publish.
+
+New pieces:
+- `agents/reel_script.py` - storytelling on-screen beats (hook -> payoff -> CTA)
+- `agents/reel_composer.py` - drives the Remotion render
+- `reels/` - the Remotion project (`src/Reel.tsx` is the composition)
+- `.github/workflows/reels.yml` - the 6x/day reels cron
+
+Tune in `config.yaml -> reels` (duration, fps, shots, beats, schedule, styles).
+
+### Music (optional but recommended)
+Drop **royalty-free** `.mp3`/`.m4a` files in `reels/assets/music/`. The composer
+picks one at random per reel; if the folder is empty, reels render silent. Never
+use licensed songs - they get auto-flagged on IG/FB.
+
+### Run a reel locally
+```powershell
+cd reels; npm install; cd ..        # one-time: install the renderer
+python run.py --reel --slot 1 --dry-run   # render a reel, publish nothing
+```
+The MP4 lands in `output/<timestamp>_reel.../reel.mp4`.
 
 ## CLI reference
 ```

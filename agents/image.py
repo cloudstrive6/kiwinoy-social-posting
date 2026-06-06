@@ -53,3 +53,39 @@ def run(brief: dict[str, Any], caption: str, save_path: Path | None = None) -> b
         save_path.parent.mkdir(parents=True, exist_ok=True)
         save_path.write_bytes(data)
     return data
+
+
+def build_background_prompt(brief: dict[str, Any], shot_index: int, n_shots: int) -> str:
+    """Vertical reel background art, NO baked text (Remotion overlays captions)."""
+    category = brief["category"]
+    style = CONFIG.image["styles"][category]
+    reel = CONFIG.reels
+    variety = (
+        f"This is shot {shot_index + 1} of {n_shots}: vary the angle / framing / "
+        f"moment from the other shots so the reel feels dynamic."
+    )
+    return f"""{reel.get('background_prompt', '')}
+
+TOPIC: {brief.get('title')}
+SUBJECT: {brief.get('subject')}
+
+VISUAL STYLE (follow exactly):
+{style}
+
+{variety}"""
+
+
+def run_background(
+    brief: dict[str, Any],
+    shot_index: int,
+    n_shots: int,
+    save_path: Path | None = None,
+) -> bytes:
+    """Generate one vertical (9:16) background shot for a reel. Returns PNG bytes."""
+    prompt = build_background_prompt(brief, shot_index, n_shots)
+    size = CONFIG.reels.get("background_size", "1024x1536")
+    data = ai.image(prompt, size=size)
+    if save_path is not None:
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        save_path.write_bytes(data)
+    return data

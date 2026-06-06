@@ -12,6 +12,13 @@ env/
 output/
 *.log
 
+# Node / Remotion
+node_modules/
+reels/out/
+# Per-run reel assets copied into public at render time (keep the folder)
+reels/public/*
+!reels/public/.gitkeep
+
 # OS
 .DS_Store
 Thumbs.db

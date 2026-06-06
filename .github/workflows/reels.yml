@@ -1,0 +1,87 @@
+name: KiwinoyGamer Auto-Reels
+
+# Renders + publishes one short reel 6x/day on a cron (UTC), interleaved with
+# the image posts. Each cron maps to a reels slot (alternating Gacha/Sports).
+on:
+  schedule:
+    - cron: "0 2 * * *"    # 02:00 UTC -> reel slot 1 (Gacha)
+    - cron: "0 6 * * *"    # 06:00 UTC -> reel slot 2 (Sports)
+    - cron: "0 10 * * *"   # 10:00 UTC -> reel slot 3 (Gacha)
+    - cron: "0 14 * * *"   # 14:00 UTC -> reel slot 4 (Sports)
+    - cron: "0 18 * * *"   # 18:00 UTC -> reel slot 5 (Gacha)
+    - cron: "0 22 * * *"   # 22:00 UTC -> reel slot 6 (Sports)
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Reel slot id to run (1-6)"
+        required: true
+        default: "1"
+      dry_run:
+        description: "Dry run (render but no publish)? true/false"
+        required: false
+        default: "false"
+
+concurrency:
+  group: kiwinoy-auto-reels
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: reels/package-lock.json
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install reel renderer (Remotion)
+        working-directory: reels
+        run: |
+          npm install
+          npx remotion browser ensure
+
+      - name: Map trigger -> reel slot
+        id: pick
+        run: |
+          case "${{ github.event.schedule }}" in
+            "0 2 * * *")  SLOT=1 ;;
+            "0 6 * * *")  SLOT=2 ;;
+            "0 10 * * *") SLOT=3 ;;
+            "0 14 * * *") SLOT=4 ;;
+            "0 18 * * *") SLOT=5 ;;
+            "0 22 * * *") SLOT=6 ;;
+            *)            SLOT="${{ github.event.inputs.slot }}" ;;
+          esac
+          echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"
+          echo "Selected reel slot: ${SLOT:-1}"
+
+      - name: Render + publish the reel
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY
+
+      - name: Upload run artifacts (brief, caption, beats, mp4)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel-output-slot-${{ steps.pick.outputs.slot }}-${{ github.run_id }}
+          path: output/
+          retention-days: 14
+          if-no-files-found: ignore

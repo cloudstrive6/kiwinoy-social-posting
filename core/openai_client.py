@@ -31,7 +31,9 @@ def client() -> OpenAI:
                 "OPENAI_API_KEY is not set. Add it to .env (local) or to your "
                 "GitHub Actions secrets (cloud)."
             )
-        _client = OpenAI(api_key=key)
+        # Generous retries/backoff so transient upstream blips (429, 5xx,
+        # Cloudflare 520) don't kill an autonomous run.
+        _client = OpenAI(api_key=key, max_retries=5, timeout=120.0)
     return _client
 
 
@@ -66,14 +68,14 @@ def write(prompt: str, system: str = "", model: str | None = None) -> str:
     return (resp.output_text or "").strip()
 
 
-def image(prompt: str) -> bytes:
+def image(prompt: str, size: str | None = None, quality: str | None = None) -> bytes:
     """Generate one image with gpt-image-1. Returns PNG bytes."""
     cfg = CONFIG.image
     resp = client().images.generate(
         model=CONFIG.models["image"],
         prompt=prompt,
-        size=cfg.get("size", "1024x1024"),
-        quality=cfg.get("quality", "high"),
+        size=size or cfg.get("size", "1024x1024"),
+        quality=quality or cfg.get("quality", "high"),
         n=1,
     )
     b64 = resp.data[0].b64_json

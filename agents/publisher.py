@@ -54,3 +54,43 @@ def run(
             platform_configurations=None,
             is_draft=is_draft,
         )
+
+
+def run_reel(
+    caption: str,
+    video_bytes: bytes,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Upload an MP4 reel and publish it to IG/FB Reels (+ Threads video)."""
+    account_ids = CONFIG.account_ids()
+    if not account_ids:
+        raise postforme.PostForMeError(
+            "No connected account IDs in config.yaml. Run "
+            "`python tools/list_accounts.py` after adding your Post for Me key."
+        )
+
+    media_url = postforme.upload_video(video_bytes)
+    # IG/FB get the Reels placement; Threads posts the video to its timeline.
+    placements = {
+        "instagram": {"placement": "reels"},
+        "facebook": {"placement": "reels"},
+    }
+    try:
+        return postforme.create_post(
+            caption=caption,
+            social_accounts=account_ids,
+            media_urls=[media_url],
+            scheduled_at=scheduled_at,
+            platform_configurations=placements,
+            is_draft=is_draft,
+        )
+    except postforme.PostForMeError:
+        return postforme.create_post(
+            caption=caption,
+            social_accounts=account_ids,
+            media_urls=[media_url],
+            scheduled_at=scheduled_at,
+            platform_configurations=None,
+            is_draft=is_draft,
+        )

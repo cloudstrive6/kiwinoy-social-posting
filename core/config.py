@@ -95,11 +95,21 @@ class _Config:
     def platforms(self) -> dict[str, Any]:
         return self._data["platforms"]
 
+    @property
+    def reels(self) -> dict[str, Any]:
+        return self._data.get("reels", {})
+
     def slot(self, slot_id: int) -> dict[str, Any]:
         for s in self.schedule["slots"]:
             if int(s["id"]) == int(slot_id):
                 return s
         raise ValueError(f"No schedule slot with id={slot_id}")
+
+    def reel_slot(self, slot_id: int) -> dict[str, Any]:
+        for s in self.reels.get("schedule", {}).get("slots", []):
+            if int(s["id"]) == int(slot_id):
+                return s
+        raise ValueError(f"No reels slot with id={slot_id}")
 
     def account_ids(self) -> list[str]:
         """Return the connected account IDs we should publish to."""

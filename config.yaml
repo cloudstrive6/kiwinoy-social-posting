@@ -119,3 +119,46 @@ platforms:
     facebook: spc_pdryrNLUWBjaeRxiO716
     instagram: spc_W0CkCQOOafk2NVq3tXEN
     threads: spc_fh6hyxsoUb7D7jqQGFx
+
+# Reels track. A SEPARATE cadence from the image posts: 6 short vertical videos
+# a day, interleaved between the image-post times. Each reel is a 12-15s 9:16 MP4
+# with Ken Burns motion + animated storytelling captions, rendered free with
+# Remotion and published to IG/FB/Threads Reels.
+reels:
+  enabled: true
+  duration_seconds: 14
+  fps: 30
+  width: 1080
+  height: 1920
+  shots: 3                 # background images generated per reel (cycled w/ Ken Burns)
+  beats: 4                 # on-screen caption beats (hook -> build -> payoff -> CTA)
+  music_dir: reels/assets/music   # drop royalty-free .mp3/.m4a here; silent if empty
+  # Vertical background art for reels. NO baked-in text (Remotion adds the captions),
+  # leave clean space. Style still matches the topic.
+  background_size: 1024x1536
+  background_prompt: >
+    Vertical 9:16 background visual for a short social video. Bold single focal
+    subject, cinematic, high contrast, designed to stop the scroll. Leave clean
+    negative space in the lower third for caption text. NO text, NO words, NO
+    letters, NO watermark, NO logos, NO UI anywhere in the image.
+  # Reels post at the gaps between image posts (UTC), alternating gacha/sports.
+  schedule:
+    slots:
+    - id: 1
+      time: '02:00'
+      category: gacha
+    - id: 2
+      time: '06:00'
+      category: sports
+    - id: 3
+      time: '10:00'
+      category: gacha
+    - id: 4
+      time: '14:00'
+      category: sports
+    - id: 5
+      time: '18:00'
+      category: gacha
+    - id: 6
+      time: '22:00'
+      category: sports
