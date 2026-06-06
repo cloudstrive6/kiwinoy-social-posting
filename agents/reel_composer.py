@@ -83,7 +83,7 @@ def run(
             "images": image_names,
             "beats": beats,
             "music": music_name,
-            "brand": CONFIG.brand.get("handle", "@kiwinoygamer"),
+            "brand": CONFIG.reels.get("brand_badge", "KG"),
         }
         props_path = PUBLIC_DIR / f"{tag}_props.json"
         props_path.write_text(json.dumps(props, ensure_ascii=False), encoding="utf-8")

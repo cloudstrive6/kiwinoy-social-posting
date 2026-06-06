@@ -15,6 +15,11 @@ output/
 # Node / Remotion
 node_modules/
 reels/out/
+# Local music library is large — only a curated set is force-added for CI
+reels/assets/music/*.mp3
+reels/assets/music/*.m4a
+reels/assets/music/*.wav
+reels/assets/music/*.ogg
 # Per-run reel assets copied into public at render time (keep the folder)
 reels/public/*
 !reels/public/.gitkeep

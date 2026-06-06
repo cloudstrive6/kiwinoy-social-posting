@@ -1,19 +1,15 @@
 name: KiwinoyGamer Auto-Reels
 
-# Renders + publishes one short reel 6x/day on a cron (UTC), interleaved with
-# the image posts. Each cron maps to a reels slot (alternating Gacha/Sports).
+# Renders + publishes one short reel 2x/day on a cron (UTC): 06:00 sports,
+# 18:00 gacha. Each cron maps to a reels slot.
 on:
   schedule:
-    - cron: "0 2 * * *"    # 02:00 UTC -> reel slot 1 (Gacha)
-    - cron: "0 6 * * *"    # 06:00 UTC -> reel slot 2 (Sports)
-    - cron: "0 10 * * *"   # 10:00 UTC -> reel slot 3 (Gacha)
-    - cron: "0 14 * * *"   # 14:00 UTC -> reel slot 4 (Sports)
-    - cron: "0 18 * * *"   # 18:00 UTC -> reel slot 5 (Gacha)
-    - cron: "0 22 * * *"   # 22:00 UTC -> reel slot 6 (Sports)
+    - cron: "0 6 * * *"    # 06:00 UTC -> reel slot 1 (Sports)
+    - cron: "0 18 * * *"   # 18:00 UTC -> reel slot 2 (Gacha)
   workflow_dispatch:
     inputs:
       slot:
-        description: "Reel slot id to run (1-6)"
+        description: "Reel slot id to run (1-2)"
         required: true
         default: "1"
       dry_run:
@@ -60,12 +56,8 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "0 2 * * *")  SLOT=1 ;;
-            "0 6 * * *")  SLOT=2 ;;
-            "0 10 * * *") SLOT=3 ;;
-            "0 14 * * *") SLOT=4 ;;
-            "0 18 * * *") SLOT=5 ;;
-            "0 22 * * *") SLOT=6 ;;
+            "0 6 * * *")  SLOT=1 ;;
+            "0 18 * * *") SLOT=2 ;;
             *)            SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"

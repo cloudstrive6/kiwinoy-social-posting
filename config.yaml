@@ -120,12 +120,12 @@ platforms:
     instagram: spc_W0CkCQOOafk2NVq3tXEN
     threads: spc_fh6hyxsoUb7D7jqQGFx
 
-# Reels track. A SEPARATE cadence from the image posts: 6 short vertical videos
-# a day, interleaved between the image-post times. Each reel is a 12-15s 9:16 MP4
-# with Ken Burns motion + animated storytelling captions, rendered free with
-# Remotion and published to IG/FB/Threads Reels.
+# Reels track. A SEPARATE cadence from the image posts: 2 short vertical videos
+# a day. Each reel is a 12-15s 9:16 MP4 with Ken Burns motion + animated
+# storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
   enabled: true
+  brand_badge: "KG"        # the on-screen logo badge (shown top of every reel)
   duration_seconds: 14
   fps: 30
   width: 1080
@@ -141,24 +141,12 @@ reels:
     subject, cinematic, high contrast, designed to stop the scroll. Leave clean
     negative space in the lower third for caption text. NO text, NO words, NO
     letters, NO watermark, NO logos, NO UI anywhere in the image.
-  # Reels post at the gaps between image posts (UTC), alternating gacha/sports.
+  # 2 reels/day (UTC): one sports, one gacha.
   schedule:
     slots:
     - id: 1
-      time: '02:00'
-      category: gacha
-    - id: 2
       time: '06:00'
       category: sports
-    - id: 3
-      time: '10:00'
-      category: gacha
-    - id: 4
-      time: '14:00'
-      category: sports
-    - id: 5
+    - id: 2
       time: '18:00'
       category: gacha
-    - id: 6
-      time: '22:00'
-      category: sports

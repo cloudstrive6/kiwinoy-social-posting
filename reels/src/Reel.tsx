@@ -44,7 +44,7 @@ export const defaultReelProps: ReelProps = {
     { kind: "cta", text: "Follow for more" },
   ],
   music: null,
-  brand: "@kiwinoygamer",
+  brand: "KG",
 };
 
 const styleFor = (category: string) => {
@@ -110,26 +110,39 @@ const Scrim: React.FC = () => (
   />
 );
 
-const Brand: React.FC<{ brand: string; category: string }> = ({
-  brand,
-  category,
-}) => {
-  const { fontFamily } = styleFor(category);
+// On-screen logo badge (e.g. "KG"). Kept consistent across categories so it
+// reads as a brand mark, with a vibrant gaming gradient and soft glow.
+const Brand: React.FC<{ brand: string }> = ({ brand }) => {
   return (
     <AbsoluteFill
-      style={{ justifyContent: "flex-start", alignItems: "center", paddingTop: 72 }}
+      style={{ justifyContent: "flex-start", alignItems: "center", paddingTop: 80 }}
     >
       <div
         style={{
-          fontFamily,
-          color: "#fff",
-          fontSize: 42,
-          letterSpacing: 2,
-          opacity: 0.95,
-          textShadow: "0 2px 14px rgba(0,0,0,0.65)",
+          width: 132,
+          height: 132,
+          borderRadius: 30,
+          background: "linear-gradient(145deg, #8b5cf6 0%, #5b3df0 55%, #3b2bd6 100%)",
+          border: "4px solid rgba(255,255,255,0.92)",
+          boxShadow:
+            "0 14px 50px rgba(91,61,240,0.55), 0 4px 14px rgba(0,0,0,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {brand}
+        <div
+          style={{
+            fontFamily: anton.fontFamily,
+            color: "#fff",
+            fontSize: 78,
+            lineHeight: 1,
+            letterSpacing: 2,
+            textShadow: "0 4px 16px rgba(0,0,0,0.5)",
+          }}
+        >
+          {brand}
+        </div>
       </div>
     </AbsoluteFill>
   );
@@ -257,7 +270,7 @@ export const Reel: React.FC<ReelProps> = ({
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <Background images={images} />
       <Scrim />
-      <Brand brand={brand} category={category} />
+      <Brand brand={brand} />
       <Captions beats={beats} category={category} />
       <Progress accent={accent} />
       {music ? <Audio src={staticFile(music)} volume={0.6} /> : null}
