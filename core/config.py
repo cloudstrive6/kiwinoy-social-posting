@@ -40,17 +40,27 @@ class _Config:
         OUTPUT_DIR.mkdir(exist_ok=True)
 
     # ---- secrets -------------------------------------------------------
+    @staticmethod
+    def _key(name: str) -> str:
+        # Strip whitespace AND any stray BOM/zero-width chars. A BOM can sneak
+        # into a secret value (e.g. set via a PowerShell pipe) and would corrupt
+        # the Authorization header, so we remove it defensively.
+        v = os.environ.get(name, "")
+        for _ch in ("\ufeff", "\u200b", "\u200c", "\u200d"):
+            v = v.replace(_ch, "")
+        return v.strip()
+
     @property
     def anthropic_api_key(self) -> str:
-        return os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        return self._key("ANTHROPIC_API_KEY")
 
     @property
     def openai_api_key(self) -> str:
-        return os.environ.get("OPENAI_API_KEY", "").strip()
+        return self._key("OPENAI_API_KEY")
 
     @property
     def postforme_api_key(self) -> str:
-        return os.environ.get("POSTFORME_API_KEY", "").strip()
+        return self._key("POSTFORME_API_KEY")
 
     # ---- convenience accessors ----------------------------------------
     @property
