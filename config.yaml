@@ -20,17 +20,23 @@ schedule:
   timezone: UTC
   slots:
   - id: 1
+    time: '00:00'
+    category: sports
+  - id: 2
+    time: '04:00'
+    category: gacha
+  - id: 3
+    time: '08:00'
+    category: sports
+  - id: 4
     time: '12:00'
     category: gacha
-  - id: 2
+  - id: 5
     time: '16:00'
     category: sports
-  - id: 3
+  - id: 6
     time: '20:00'
     category: gacha
-  - id: 4
-    time: 00:00
-    category: sports
 topics:
   gacha:
     games:

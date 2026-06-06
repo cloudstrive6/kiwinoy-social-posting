@@ -3,8 +3,8 @@
 A 5-agent system that researches trending **gacha** (Genshin Impact / Honkai:
 Star Rail / NTE) and **sports** (EPL / NFL / NBA / tennis) topics, writes
 scroll-stopping captions, generates matching images with headlines baked in, and
-auto-publishes to **Facebook + Instagram + Threads** — **4 posts a day**,
-alternating Gacha → Sports → Gacha → Sports.
+auto-publishes to **Facebook + Instagram + Threads**, **6 posts a day**,
+alternating Sports and Gacha through the day.
 
 Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 
@@ -80,7 +80,7 @@ Check the `output/<timestamp>_slotN_.../` folder — you'll see `brief.json`,
    - `ANTHROPIC_API_KEY`
    - `OPENAI_API_KEY`
    - `POSTFORME_API_KEY`
-3. That's it. The workflow in `.github/workflows/post.yml` fires **4×/day** and
+3. That's it. The workflow in `.github/workflows/post.yml` fires **6×/day** and
    publishes automatically. You can also trigger a manual run from the
    **Actions** tab (with an optional dry-run toggle).
 
@@ -103,10 +103,12 @@ Everything lives in **`config.yaml`** — no code changes needed:
 ### Posting schedule (default, UTC)
 | Slot | UTC | Topic |
 |---|---|---|
-| 1 | 12:00 | 🎮 Gacha |
-| 2 | 16:00 | ⚽ Sports |
-| 3 | 20:00 | 🎮 Gacha |
-| 4 | 00:00 | 🏈 Sports |
+| 1 | 00:00 | ⚽ Sports |
+| 2 | 04:00 | 🎮 Gacha |
+| 3 | 08:00 | ⚽ Sports |
+| 4 | 12:00 | 🎮 Gacha |
+| 5 | 16:00 | ⚽ Sports |
+| 6 | 20:00 | 🎮 Gacha |
 
 ---
 
