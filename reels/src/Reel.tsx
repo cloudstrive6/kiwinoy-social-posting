@@ -112,56 +112,42 @@ const Scrim: React.FC = () => (
   />
 );
 
-// On-screen channel logo. Uses the real logo image when provided, otherwise a
-// styled "KG" text badge. Sits in a rounded card so it reads on any background.
-const Brand: React.FC<{ brand: string; logo: string | null }> = ({
-  brand,
-  logo,
-}) => {
+// On-screen channel logo, small, in the top-left corner. Just the logo image
+// (no text). Renders nothing if no logo is configured.
+const Brand: React.FC<{ logo: string | null }> = ({ logo }) => {
+  if (!logo) return null;
   return (
     <AbsoluteFill
-      style={{ justifyContent: "flex-start", alignItems: "center", paddingTop: 72 }}
+      style={{
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        paddingTop: 50,
+        paddingLeft: 48,
+      }}
     >
       <div
         style={{
-          width: 160,
-          height: 160,
-          borderRadius: 34,
-          background: logo
-            ? "#0a0a0f"
-            : "linear-gradient(145deg, #8b5cf6 0%, #5b3df0 55%, #3b2bd6 100%)",
-          border: "4px solid rgba(255,255,255,0.92)",
-          boxShadow: "0 14px 50px rgba(0,0,0,0.5), 0 4px 14px rgba(0,0,0,0.45)",
+          width: 104,
+          height: 104,
+          borderRadius: 24,
+          background: "#0a0a0f",
+          border: "3px solid rgba(255,255,255,0.9)",
+          boxShadow: "0 8px 28px rgba(0,0,0,0.5)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
         }}
       >
-        {logo ? (
-          <Img
-            src={staticFile(logo)}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transform: "scale(1.35)",
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              fontFamily: anton.fontFamily,
-              color: "#fff",
-              fontSize: 78,
-              lineHeight: 1,
-              letterSpacing: 2,
-              textShadow: "0 4px 16px rgba(0,0,0,0.5)",
-            }}
-          >
-            {brand}
-          </div>
-        )}
+        <Img
+          src={staticFile(logo)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: "scale(1.35)",
+          }}
+        />
       </div>
     </AbsoluteFill>
   );
@@ -281,7 +267,6 @@ export const Reel: React.FC<ReelProps> = ({
   images,
   beats,
   music,
-  brand,
   logo,
   category,
 }) => {
@@ -290,7 +275,7 @@ export const Reel: React.FC<ReelProps> = ({
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <Background images={images} />
       <Scrim />
-      <Brand brand={brand} logo={logo} />
+      <Brand logo={logo} />
       <Captions beats={beats} category={category} />
       <Progress accent={accent} />
       {music ? <Audio src={staticFile(music)} volume={0.6} /> : null}
