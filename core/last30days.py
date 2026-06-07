@@ -110,6 +110,7 @@ def gather(
             "score": round(float(c.get("score", 0)), 1),
             "source": src,
             "url": rep or it.get("url", ""),
+            "published_at": it.get("published_at", ""),
             "snippet": snippet,
         })
         if len(stories) >= limit:
@@ -127,6 +128,7 @@ def gather(
                     "score": round(float(it.get("score", 0) or 0), 1),
                     "source": src,
                     "url": it.get("url", ""),
+                    "published_at": it.get("published_at", ""),
                     "snippet": (it.get("body") or "")[:280],
                 })
                 if len(stories) >= limit:
@@ -140,7 +142,8 @@ def format_stories(stories: list[dict[str, Any]]) -> str:
     """Render stories as a compact text block for an LLM synthesis prompt."""
     lines = []
     for s in stories:
-        head = f"- [{s['source']} | engagement {s['score']}] {s['title']}"
+        when = (s.get("published_at") or "")[:10] or "date unknown"
+        head = f"- [{s['source']} | {when} | engagement {s['score']}] {s['title']}"
         lines.append(head)
         if s.get("snippet"):
             lines.append(f"    {s['snippet']}")

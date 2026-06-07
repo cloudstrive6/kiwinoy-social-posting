@@ -47,8 +47,9 @@ from the last 30 days about "{query}" (real community threads, ranked by engagem
 
 {last30days.format_stories(stories)}
 
-Pick the SINGLE best story to post about right now (freshest + most buzz). Choose
-an angle that fits, from:
+Each story shows its date. STRONGLY prefer the MOST RECENT one (ideally the last
+few days) — freshness matters more than raw engagement. Pick what is breaking or
+newest right now, then choose an angle that fits, from:
 {chr(10).join(f"  - {a}" for a in angles)}
 
 {TOPIC_GUARDRAIL}

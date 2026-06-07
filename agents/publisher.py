@@ -27,11 +27,17 @@ _NO_ACCOUNTS = (
 def run(
     caption: str,
     image_bytes: Optional[bytes],
+    platform_keys: Optional[list[str]] = None,
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Publish (or schedule) an image post to Facebook + Instagram."""
-    account_ids = CONFIG.account_ids(_IMAGE_PLATFORMS)
+    """Publish (or schedule) a feed post.
+
+    platform_keys selects which connected accounts to post to (default FB+IG).
+    If image_bytes is None, it's a text-only post (Facebook supports this;
+    Instagram does not, so text-only posts should target Facebook only).
+    """
+    account_ids = CONFIG.account_ids(platform_keys or _IMAGE_PLATFORMS)
     if not account_ids:
         raise postforme.PostForMeError(_NO_ACCOUNTS)
 

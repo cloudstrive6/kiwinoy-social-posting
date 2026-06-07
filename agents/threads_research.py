@@ -33,8 +33,9 @@ the last 30 days about "{query}" (real community threads, ranked by engagement):
 
 {last30days.format_stories(stories)}
 
-Pick the SINGLE best, freshest story for a Threads post right now. Choose an angle
-that fits:
+Each story shows its date. STRONGLY prefer the MOST RECENT one (ideally the last
+few days) — freshness beats raw engagement. Pick what is breaking or newest right
+now for a Threads post, then choose an angle that fits:
 {chr(10).join(f'- {a}' for a in angles)}
 
 {TOPIC_GUARDRAIL}

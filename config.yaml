@@ -116,10 +116,14 @@ image:
 
     '
 platforms:
-  # Image posts AND reels go to Facebook + Instagram only (NOT Threads).
+  # GACHA feed posts (with anime image) + reels go to Facebook + Instagram.
   image_post_to:
   - facebook
   - instagram
+  # SPORTS feed posts are TEXT-ONLY on Facebook only. No images (AI can't show the
+  # real players) -> so sports does NOT go to Instagram (IG requires media).
+  sports_post_to:
+  - facebook
   # The dedicated Threads text track posts only to Threads.
   threads_post_to:
   - threads
@@ -150,13 +154,11 @@ reels:
     subject, cinematic, high contrast, designed to stop the scroll. Leave clean
     negative space in the lower third for caption text. NO text, NO words, NO
     letters, NO watermark, NO logos, NO UI anywhere in the image.
-  # 2 reels/day (UTC): one sports, one gacha.
+  # 1 reel/day (UTC): GACHA only. (Sports reels stopped: AI can't show the real
+  # players, which drew a complaint.)
   schedule:
     slots:
     - id: 1
-      time: '06:00'
-      category: sports
-    - id: 2
       time: '18:00'
       category: gacha
 

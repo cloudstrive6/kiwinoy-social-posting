@@ -56,23 +56,33 @@ def run_slot(
     )
     log(f"Topic: {brief.get('title')}")
 
-    # 2) Content (FB/IG caption) ----------------------------------------
-    log("Writing FB/IG caption...")
+    # 2) Content caption -------------------------------------------------
+    log("Writing caption...")
     caption = content.run(brief)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
-    # 3) Image -----------------------------------------------------------
-    log("Generating image...")
-    image_path = run_dir / "image.png"
-    image_bytes = image.run(brief, caption, save_path=image_path)
-    log(f"Image saved -> {image_path}")
+    # 3) Image (gacha only) ---------------------------------------------
+    # Sports feed posts are TEXT-ONLY on Facebook (AI can't show real players).
+    # Gacha gets an anime image on Facebook + Instagram.
+    is_sports = category == "sports"
+    image_bytes = None
+    image_path = None
+    if is_sports:
+        targets = CONFIG.platforms.get("sports_post_to", ["facebook"])
+    else:
+        targets = CONFIG.platforms.get("image_post_to", ["facebook", "instagram"])
+        log("Generating image...")
+        image_path = run_dir / "image.png"
+        image_bytes = image.run(brief, caption, save_path=image_path)
+        log(f"Image saved -> {image_path}")
 
     result: dict[str, Any] = {
         "slot_id": slot_id,
         "category": category,
         "brief": brief,
         "caption": caption,
-        "image_path": str(image_path),
+        "image_path": str(image_path) if image_path else None,
+        "targets": targets,
         "dry_run": dry_run,
     }
 
@@ -81,10 +91,12 @@ def run_slot(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        log("Publishing to Facebook + Instagram...")
+        log(f"Publishing ({'text-only' if image_bytes is None else 'image'}) to "
+            f"{', '.join(targets)}...")
         api_result = publisher.run(
             caption=caption,
             image_bytes=image_bytes,
+            platform_keys=targets,
             scheduled_at=scheduled_at,
         )
         result["published"] = True
