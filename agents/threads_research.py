@@ -52,11 +52,13 @@ Return ONLY this JSON (no prose, no code fences):
     return extract_json(raw)
 
 
-def _last30days_research() -> dict[str, Any] | None:
-    targets = CONFIG.research.get("targets", {}).get("sports", [])
-    if not (last30days.available() and targets):
+def _last30days_research(categories: list[str]) -> dict[str, Any] | None:
+    pool: list[dict] = []
+    for cat in categories:
+        pool += CONFIG.research.get("targets", {}).get(cat, [])
+    if not (last30days.available() and pool):
         return None
-    target = random.choice(targets)
+    target = random.choice(pool)
     stories = last30days.gather(target["query"], target.get("subreddits"))
     if not stories:
         return None
@@ -95,10 +97,13 @@ Verify with web search; never invent scores or news. Return ONLY this JSON:
         }
 
 
-def run() -> dict[str, Any]:
+def run(categories: list[str] | None = None) -> dict[str, Any]:
+    """Find a trending brief. categories default to sports; pass
+    ["sports","esports"] for prediction posts to include esports."""
+    categories = categories or ["sports"]
     if CONFIG.research.get("engine", "last30days") == "last30days":
         try:
-            brief = _last30days_research()
+            brief = _last30days_research(categories)
             if brief:
                 return _clean(brief)
         except Exception as e:

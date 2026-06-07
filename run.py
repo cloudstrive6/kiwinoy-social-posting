@@ -56,6 +56,11 @@ def main() -> int:
         help="run the dedicated Threads sports track (no slot needed)",
     )
     p.add_argument("--reel", action="store_true", help="use the reels track")
+    p.add_argument(
+        "--type",
+        choices=["update", "prediction", "poll"],
+        help="Threads post type (with --threads); default = auto by UTC hour",
+    )
     p.add_argument("--dry-run", action="store_true", help="skip publishing")
     p.add_argument(
         "--schedule-at",
@@ -67,7 +72,8 @@ def main() -> int:
     # Threads track has no slots — one independent run per invocation.
     if args.threads:
         try:
-            run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at,
+                        post_type=args.type)
             return 0
         except Exception as e:
             print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)

@@ -172,12 +172,19 @@ Facebook + Instagram only** now — Threads is handled here:
 - Researched + written by **Claude via your subscription**
   (`CLAUDE_CODE_OAUTH_TOKEN`), so the high frequency costs nothing per token
 
-Each run independently web-searches a fresh trending sports story, so there are
-no slots. Tune in `config.yaml -> threads_posts`.
+**Three post types** (the every-2h cron fires the two mandatory ones daily):
+- **update** (default) — fresh trending sports story
+- **prediction** (09:00 UTC) — detailed esports/sports breakdown with bullets
+  (stats, form, % odds)
+- **poll** (15:00 UTC) — risk/probability hot take + a 2-option **reply-to-vote**
+  poll (Post for Me can't post a native Threads poll, so it's a "reply A or B"
+  text poll). Tune the themes/hours in `config.yaml -> threads_posts`.
 
 Run one locally:
 ```powershell
-python run.py --threads --dry-run   # research + write, publish nothing
+python run.py --threads --dry-run                 # auto type (by UTC hour)
+python run.py --threads --type poll --dry-run     # force a poll
+python run.py --threads --type prediction --dry-run
 ```
 
 ## CLI reference

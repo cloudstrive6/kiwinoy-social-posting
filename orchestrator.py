@@ -189,34 +189,62 @@ def run_reel_slot(
     return result
 
 
+def _threads_type_for_now() -> str:
+    """Pick the Threads post type for this run by UTC hour.
+
+    Two hours/day are reserved for the mandatory types (prediction, poll); every
+    other run is a standard sports update.
+    """
+    tp = CONFIG.threads_posts
+    h = datetime.now(timezone.utc).hour
+    if h == int(tp.get("prediction_hour", 9)):
+        return "prediction"
+    if h == int(tp.get("poll_hour", 15)):
+        return "poll"
+    return "update"
+
+
 def run_threads(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
+    post_type: Optional[str] = None,
 ) -> dict[str, Any]:
     """Run the dedicated Threads track: research -> write -> publish (text only).
 
-    Sports only, no media, <=500 chars. Powered by Claude via CLAUDE_CODE_OAUTH_TOKEN.
+    post_type: "update" (sports news), "prediction" (esports/sports breakdown), or
+    "poll" (risk hot-take + reply-to-vote). Defaults to the type for the current
+    UTC hour. Powered by Claude via CLAUDE_CODE_OAUTH_TOKEN.
     """
-    run_dir = OUTPUT_DIR / f"{_stamp()}_threads_sports"
+    post_type = post_type or _threads_type_for_now()
+    run_dir = OUTPUT_DIR / f"{_stamp()}_threads_{post_type}"
     run_dir.mkdir(parents=True, exist_ok=True)
-    log = lambda m: print(f"[threads | sports] {m}", flush=True)
+    log = lambda m: print(f"[threads | {post_type}] {m}", flush=True)
 
-    # 1) Research (Claude + web search) ---------------------------------
-    log("Researching a trending sports topic (Claude + web search)...")
-    brief = threads_research.run()
-    (run_dir / "brief.json").write_text(
-        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    log(f"Topic: {brief.get('title')}")
+    brief: dict[str, Any] = {}
+    if post_type == "poll":
+        # No research needed — a creative risk/probability hot take + poll.
+        log("Writing a risk/probability hot take + poll...")
+        text = threads_writer.run_poll()
+    else:
+        categories = ["sports", "esports"] if post_type == "prediction" else ["sports"]
+        log(f"Researching a trending topic ({'+'.join(categories)})...")
+        brief = threads_research.run(categories)
+        (run_dir / "brief.json").write_text(
+            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        log(f"Topic: {brief.get('title')}")
+        if post_type == "prediction":
+            log("Writing the prediction breakdown...")
+            text = threads_writer.run_prediction(brief)
+        else:
+            log("Writing the Threads post...")
+            text = threads_writer.run(brief)
 
-    # 2) Write the Threads post -----------------------------------------
-    log("Writing the Threads post...")
-    text = threads_writer.run(brief)
     (run_dir / "threads.txt").write_text(text, encoding="utf-8")
     log(f"Post ({len(text)} chars): {text[:90]}")
 
     result: dict[str, Any] = {
-        "category": "sports",
+        "post_type": post_type,
         "brief": brief,
         "text": text,
         "chars": len(text),

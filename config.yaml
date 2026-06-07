@@ -185,6 +185,25 @@ threads_posts:
   - Big upcoming matchup preview
   hashtags: ["#NBA", "#NFL", "#EPL", "#Tennis"]   # at most 1 used per post
 
+  # Post-type rotation. The every-2-hours cron fires at odd UTC hours; these two
+  # hours are reserved for the mandatory daily types, the rest are sports updates.
+  prediction_hour: 9        # detailed esports/sports prediction breakdown (bullets)
+  poll_hour: 15             # risk/probability hot take + reply-to-vote poll
+  # Esports leagues the prediction agent can also cover (besides the sports above).
+  esports:
+  - Valorant (VCT)
+  - Counter-Strike (CS2 / Majors)
+  - League of Legends (LoL Esports)
+  - Dota 2 (The International)
+  # Rotating themes for the daily poll/hot-take (the agent invents its own each
+  # time, guided by but NOT copying these).
+  poll_domains:
+  - "esports betting: back the favorite vs the hot-streak underdog upset"
+  - "gacha / loot-box economy: hoard for the safe pity drop vs blow it on a 1% banner"
+  - "sports betting & point spreads: favorite covers vs take the points"
+  - "general risk vs reward: a guaranteed sum vs a low-odds jackpot"
+  - "bankroll management: cash out the win vs let it ride for a bigger multiple"
+
 # Trending research engine. PRIMARY = the vendored "last30days" skill (real
 # community engagement from free sources). If it returns nothing or errors, the
 # agents fall back to web-search research so posts never stop.
@@ -207,3 +226,8 @@ research:
     - { query: "NFL", subreddits: ["nfl"] }
     - { query: "Premier League", subreddits: ["soccer", "PremierLeague"] }
     - { query: "tennis", subreddits: ["tennis"] }
+    esports:
+    - { query: "Valorant VCT", subreddits: ["ValorantCompetitive"] }
+    - { query: "Counter-Strike CS2", subreddits: ["GlobalOffensive"] }
+    - { query: "League of Legends esports", subreddits: ["leagueoflegends"] }
+    - { query: "Dota 2 International", subreddits: ["DotA2"] }
