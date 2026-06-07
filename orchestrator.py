@@ -21,7 +21,8 @@ from agents import (
     reel_composer,
     reel_script,
     research,
-    threads,
+    threads_research,
+    threads_writer,
 )
 from core.config import CONFIG, OUTPUT_DIR
 
@@ -60,12 +61,7 @@ def run_slot(
     caption = content.run(brief)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
-    # 3) Threads post ----------------------------------------------------
-    log("Writing Threads post...")
-    threads_text = threads.run(brief)
-    (run_dir / "threads.txt").write_text(threads_text, encoding="utf-8")
-
-    # 4) Image -----------------------------------------------------------
+    # 3) Image -----------------------------------------------------------
     log("Generating image...")
     image_path = run_dir / "image.png"
     image_bytes = image.run(brief, caption, save_path=image_path)
@@ -76,20 +72,18 @@ def run_slot(
         "category": category,
         "brief": brief,
         "caption": caption,
-        "threads": threads_text,
         "image_path": str(image_path),
         "dry_run": dry_run,
     }
 
-    # 5) Publish ---------------------------------------------------------
+    # 4) Publish ---------------------------------------------------------
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        log("Publishing to Facebook + Instagram + Threads...")
+        log("Publishing to Facebook + Instagram...")
         api_result = publisher.run(
             caption=caption,
-            threads_text=threads_text,
             image_bytes=image_bytes,
             scheduled_at=scheduled_at,
         )
@@ -168,10 +162,62 @@ def run_reel_slot(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        log("Publishing reel to Instagram + Facebook Reels (+ Threads)...")
+        log("Publishing reel to Instagram + Facebook Reels...")
         api_result = publisher.run_reel(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at
         )
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+
+    (run_dir / "result.json").write_text(
+        json.dumps(result, indent=2, ensure_ascii=False, default=str),
+        encoding="utf-8",
+    )
+    return result
+
+
+def run_threads(
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Run the dedicated Threads track: research -> write -> publish (text only).
+
+    Sports only, no media, <=500 chars. Powered by Claude via CLAUDE_CODE_OAUTH_TOKEN.
+    """
+    run_dir = OUTPUT_DIR / f"{_stamp()}_threads_sports"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[threads | sports] {m}", flush=True)
+
+    # 1) Research (Claude + web search) ---------------------------------
+    log("Researching a trending sports topic (Claude + web search)...")
+    brief = threads_research.run()
+    (run_dir / "brief.json").write_text(
+        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    log(f"Topic: {brief.get('title')}")
+
+    # 2) Write the Threads post -----------------------------------------
+    log("Writing the Threads post...")
+    text = threads_writer.run(brief)
+    (run_dir / "threads.txt").write_text(text, encoding="utf-8")
+    log(f"Post ({len(text)} chars): {text[:90]}")
+
+    result: dict[str, Any] = {
+        "category": "sports",
+        "brief": brief,
+        "text": text,
+        "chars": len(text),
+        "dry_run": dry_run,
+    }
+
+    # 3) Publish ---------------------------------------------------------
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        log("Publishing to Threads...")
+        api_result = publisher.run_threads(text=text, scheduled_at=scheduled_at)
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")

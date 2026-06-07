@@ -21,7 +21,7 @@ import sys
 from datetime import datetime, timezone
 
 from core.config import CONFIG
-from orchestrator import run_reel_slot, run_slot
+from orchestrator import run_reel_slot, run_slot, run_threads
 
 
 def _slots_for(reel: bool) -> list[dict]:
@@ -50,6 +50,11 @@ def main() -> int:
     g.add_argument("--slot", type=int, help="schedule slot id (1-6)")
     g.add_argument("--auto", action="store_true", help="run the slot closest to now")
     g.add_argument("--all", action="store_true", help="run every slot (testing)")
+    g.add_argument(
+        "--threads",
+        action="store_true",
+        help="run the dedicated Threads sports track (no slot needed)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument("--dry-run", action="store_true", help="skip publishing")
     p.add_argument(
@@ -58,6 +63,15 @@ def main() -> int:
         help="ISO time to schedule the post (default: publish now)",
     )
     args = p.parse_args()
+
+    # Threads track has no slots — one independent run per invocation.
+    if args.threads:
+        try:
+            run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
 
     if args.all:
         slot_ids = [int(s["id"]) for s in _slots_for(args.reel)]

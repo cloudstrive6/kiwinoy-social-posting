@@ -1,0 +1,58 @@
+name: KiwinoyGamer Auto-Threads
+
+# Dedicated Threads text track: a sports post every 2 hours (UTC), researched +
+# written by Claude via your subscription (CLAUDE_CODE_OAUTH_TOKEN). Text only,
+# <=500 chars. No images/reels. Each run finds a fresh trending sports topic.
+on:
+  schedule:
+    - cron: "0 1-23/2 * * *"   # 01:00, 03:00, ... 23:00 UTC (every 2 hours)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (write but do not publish)? true/false"
+        required: false
+        default: "false"
+
+concurrency:
+  group: kiwinoy-auto-threads
+  cancel-in-progress: false
+
+jobs:
+  threads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Research + write + publish the Threads post
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python run.py --threads $DRY
+
+      - name: Upload run artifacts (brief, post text)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: threads-output-${{ github.run_id }}
+          path: output/
+          retention-days: 14
+          if-no-files-found: ignore

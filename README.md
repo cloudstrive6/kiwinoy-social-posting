@@ -17,7 +17,7 @@ Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 |---|---|---|
 | 1. Research & Trending | `agents/research.py` | Web-searches live trends, picks the day's topic, writes a brief |
 | 2. Content Creation | `agents/content.py` | Writes the FB + IG caption with **Claude** |
-| 3. Threads Creator | `agents/threads.py` | Writes a punchier native Threads post with **Claude** |
+| 3. Threads track | `agents/threads_research.py` + `threads_writer.py` | Separate sports-only Threads posts (text, <=500 chars) via your Claude subscription |
 | 4. Image Generation | `agents/image.py` | `gpt-image-1` image w/ on-image headline (sports = photoreal, gacha = anime) |
 | 5. Publisher | `agents/publisher.py` | Uploads the image + schedules to FB/IG/Threads via Post for Me |
 
@@ -45,15 +45,19 @@ pip install -r requirements.txt
 ```
 
 ### 2. Add your API keys
-Copy `.env.example` to `.env` and paste your three keys:
+Copy `.env.example` to `.env` and paste your keys:
 ```
-ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
 POSTFORME_API_KEY=...
+CLAUDE_CODE_OAUTH_TOKEN=...
+ANTHROPIC_API_KEY=sk-ant-...   # optional (only if writer_provider: anthropic)
 ```
-- **Anthropic (Claude)** key → https://console.anthropic.com/settings/keys  *(writes captions + Threads)*
 - **OpenAI** key → https://platform.openai.com/api-keys  *(trend research + images)*
 - **Post for Me** key → https://www.postforme.dev (Dashboard → API Keys)  *(publishing)*
+- **Claude Code OAuth token** → run `claude setup-token` (needs a Claude Pro/Max
+  plan)  *(powers the Threads track on your subscription, no per-token billing)*
+- **Anthropic API key** → optional; only needed if you switch the FB/IG caption
+  writer to Claude (`writer_provider: anthropic`)
 
 ### 3. Connect your social accounts
 In the **Post for Me dashboard**, connect KiwinoyGamer's **Facebook Page,
@@ -78,9 +82,10 @@ Check the `output/<timestamp>_slotN_.../` folder — you'll see `brief.json`,
 1. Create a **private GitHub repo** and push this folder to it.
 2. In the repo: **Settings → Secrets and variables → Actions → New repository
    secret**, add:
-   - `ANTHROPIC_API_KEY`
    - `OPENAI_API_KEY`
    - `POSTFORME_API_KEY`
+   - `CLAUDE_CODE_OAUTH_TOKEN`
+   - `ANTHROPIC_API_KEY` *(optional)*
 3. That's it. The workflow in `.github/workflows/post.yml` fires **6×/day** and
    publishes automatically. You can also trigger a manual run from the
    **Actions** tab (with an optional dry-run toggle).
@@ -144,10 +149,30 @@ python run.py --reel --slot 1 --dry-run   # render a reel, publish nothing
 ```
 The MP4 lands in `output/<timestamp>_reel.../reel.mp4`.
 
+## Threads track (text-only, sports)
+
+A **separate** track from the image/reel posts. **Image posts and reels go to
+Facebook + Instagram only** now — Threads is handled here:
+- **Sports only**, **text only** (no images/reels), **<=500 characters**
+- Storytelling with a scroll-stopping first-line "hook"
+- Posts **every 2 hours** (`.github/workflows/threads.yml`)
+- Researched + written by **Claude via your subscription**
+  (`CLAUDE_CODE_OAUTH_TOKEN`), so the high frequency costs nothing per token
+
+Each run independently web-searches a fresh trending sports story, so there are
+no slots. Tune in `config.yaml -> threads_posts`.
+
+Run one locally:
+```powershell
+python run.py --threads --dry-run   # research + write, publish nothing
+```
+
 ## CLI reference
 ```
 python run.py --slot N [--dry-run]   # run a specific slot
-python run.py --auto                 # run the slot closest to now
-python run.py --all --dry-run        # test all 4 slots, no publish
+python run.py --auto                 # run the image slot closest to now
+python run.py --reel --slot N        # render + publish a reel
+python run.py --threads              # research + write + publish a Threads post
+python run.py --all --dry-run        # test all image slots, no publish
 python tools/list_accounts.py --save # discover + save account IDs
 ```

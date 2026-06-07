@@ -116,9 +116,12 @@ image:
 
     '
 platforms:
-  publish_to:
+  # Image posts AND reels go to Facebook + Instagram only (NOT Threads).
+  image_post_to:
   - facebook
   - instagram
+  # The dedicated Threads text track posts only to Threads.
+  threads_post_to:
   - threads
   accounts:
     facebook: spc_pdryrNLUWBjaeRxiO716
@@ -156,3 +159,26 @@ reels:
     - id: 2
       time: '18:00'
       category: gacha
+
+# Dedicated Threads text track. SPORTS ONLY, text posts (no images/reels),
+# 500 chars or less, storytelling + scroll-stopping hooks. Written by Claude via
+# your Claude subscription (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs
+# nothing per token. Posts every 2 hours (cron in .github/workflows/threads.yml);
+# each run independently researches a fresh trending sports topic.
+threads_posts:
+  enabled: true
+  model: "sonnet"          # claude model alias used by the Threads agents
+  max_chars: 500
+  category: sports
+  # The sports universe the research agent digs through each run.
+  leagues:
+  - English Premier League football
+  - NFL
+  - NBA
+  - Major tennis (Grand Slams / ATP / WTA)
+  angles:
+  - Recent result or live match update
+  - Breaking trending news (transfer, injury, record)
+  - Player or team form analysis
+  - Big upcoming matchup preview
+  hashtags: ["#NBA", "#NFL", "#EPL", "#Tennis"]   # at most 1 used per post

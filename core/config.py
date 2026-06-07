@@ -62,6 +62,10 @@ class _Config:
     def postforme_api_key(self) -> str:
         return self._key("POSTFORME_API_KEY")
 
+    @property
+    def claude_code_oauth_token(self) -> str:
+        return self._key("CLAUDE_CODE_OAUTH_TOKEN")
+
     # ---- convenience accessors ----------------------------------------
     @property
     def brand(self) -> dict[str, Any]:
@@ -99,6 +103,10 @@ class _Config:
     def reels(self) -> dict[str, Any]:
         return self._data.get("reels", {})
 
+    @property
+    def threads_posts(self) -> dict[str, Any]:
+        return self._data.get("threads_posts", {})
+
     def slot(self, slot_id: int) -> dict[str, Any]:
         for s in self.schedule["slots"]:
             if int(s["id"]) == int(slot_id):
@@ -111,11 +119,18 @@ class _Config:
                 return s
         raise ValueError(f"No reels slot with id={slot_id}")
 
-    def account_ids(self) -> list[str]:
-        """Return the connected account IDs we should publish to."""
+    def account_ids(self, platform_keys: list[str] | None = None) -> list[str]:
+        """Return connected account IDs for the given platforms.
+
+        Defaults to the image/reel platforms (Facebook + Instagram). Pass an
+        explicit list (e.g. ["threads"]) for the Threads track.
+        """
         accts = self.platforms.get("accounts", {})
-        wanted = self.platforms.get("publish_to", list(accts.keys()))
-        ids = [str(accts.get(p, "")).strip() for p in wanted]
+        if platform_keys is None:
+            platform_keys = self.platforms.get(
+                "image_post_to", list(accts.keys())
+            )
+        ids = [str(accts.get(p, "")).strip() for p in platform_keys]
         return [i for i in ids if i]
 
     def raw(self) -> dict[str, Any]:
