@@ -78,7 +78,8 @@ def _invoke(cmd: list[str], prompt: str, env: dict, timeout: int) -> str:
         try:
             proc = subprocess.run(
                 cmd, cwd=tmp, env=env, input=prompt,
-                capture_output=True, text=True, timeout=timeout,
+                capture_output=True, text=True, encoding="utf-8",
+                errors="replace", timeout=timeout,
             )
         except FileNotFoundError as e:
             raise ClaudeCodeError(

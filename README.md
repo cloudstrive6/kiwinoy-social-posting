@@ -15,7 +15,7 @@ Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 
 | Agent | File | Job |
 |---|---|---|
-| 1. Research & Trending | `agents/research.py` | Web-searches live trends, picks the day's topic, writes a brief |
+| 1. Research & Trending | `agents/research.py` | Pulls real community buzz via the vendored **last30days** engine (Reddit/Polymarket/HN/GitHub), LLM-synthesizes a brief; web-search fallback |
 | 2. Content Creation | `agents/content.py` | Writes the FB + IG caption with **Claude** |
 | 3. Threads track | `agents/threads_research.py` + `threads_writer.py` | Separate sports-only Threads posts (text, <=500 chars) via your Claude subscription |
 | 4. Image Generation | `agents/image.py` | `gpt-image-1` image w/ on-image headline (sports = photoreal, gacha = anime) |
@@ -148,6 +148,17 @@ cd reels; npm install; cd ..        # one-time: install the renderer
 python run.py --reel --slot 1 --dry-run   # render a reel, publish nothing
 ```
 The MP4 lands in `output/<timestamp>_reel.../reel.mp4`.
+
+## Research engine (last30days)
+
+All research (image, reel, and Threads) is powered by the **vendored last30days
+skill** (`vendor/last30days/`, MIT) running in direct-CLI mode: it pulls the
+freshest, highest-engagement community stories from **free sources** (Reddit,
+Hacker News, Polymarket, GitHub) for the chosen game/league, then an LLM
+synthesizes our brief. A **topic guardrail** keeps the hype voice off tragic /
+sensitive / unverified stories. If last30days returns nothing or errors, the
+agents **fall back to web-search research**, so posts never stop. Tune in
+`config.yaml -> research` (engine, sources, targets/subreddits).
 
 ## Threads track (text-only, sports)
 

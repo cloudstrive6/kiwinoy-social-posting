@@ -31,6 +31,18 @@ _BANNED_OPENERS = (
 )
 
 
+# Injected into research-synthesis prompts. Keeps the autonomous hype voice away
+# from tragedy and unverified rumor.
+TOPIC_GUARDRAIL = """TOPIC SAFETY (important): KiwinoyGamer is an upbeat hype gaming
+and sports channel. Do NOT pick somber, tragic, or sensitive stories: deaths,
+serious injuries or illness, tragedies, violence, crime, legal cases, politics, or
+heavy controversy. If the highest-engagement story is sensitive, SKIP it and choose
+a different, upbeat story instead: results, standout performances, big matchups,
+predictions, positive signings/transfers, banners, tier lists, records, hype
+moments. Only use widely-reported, well-established facts. Never present an
+unverified rumor or leak as confirmed fact."""
+
+
 def sanitize(text: str) -> str:
     """Remove the most common AI giveaways, especially em/en dashes."""
     if not text:

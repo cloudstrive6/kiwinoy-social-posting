@@ -107,6 +107,10 @@ class _Config:
     def threads_posts(self) -> dict[str, Any]:
         return self._data.get("threads_posts", {})
 
+    @property
+    def research(self) -> dict[str, Any]:
+        return self._data.get("research", {})
+
     def slot(self, slot_id: int) -> dict[str, Any]:
         for s in self.schedule["slots"]:
             if int(s["id"]) == int(slot_id):
