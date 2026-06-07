@@ -23,6 +23,7 @@ jobs:
     timeout-minutes: 15
     env:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # fallback if token expires
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
     steps:
       - uses: actions/checkout@v4
