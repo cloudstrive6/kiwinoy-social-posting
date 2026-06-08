@@ -152,14 +152,20 @@ python run.py --reel --slot 1 --dry-run   # render a reel, publish nothing
 ```
 The MP4 lands in `output/<timestamp>_reel.../reel.mp4`.
 
-## Research engine (web search)
+## Research engine (web search) + cost model
 
-All research (image, reel, and Threads) is **web-search based** — OpenAI's web
-search for image/reel topics, Claude's web search for Threads. Prompts enforce
-**recency + accuracy** (verify it's current, never post speculation about
-something already decided) and a **topic guardrail** keeps the hype voice off
-tragic / sensitive / unverified stories. *(An earlier "last30days" community-
-scraping engine was removed — it surfaced stale, pre-announcement threads.)*
+All research is **web-search based** with **recency + accuracy** guards (verify
+it's current, never post speculation about something already decided) and a
+**topic guardrail** (no tragic/sensitive/unverified stories).
+
+**Everything LLM runs on your Claude subscription token (free):** research,
+caption/beats writing, the Threads posts, and the fact-check all use
+`CLAUDE_CODE_OAUTH_TOKEN` (with `ANTHROPIC_API_KEY` as fallback). **The only paid
+piece is the image/video generator** (`gpt-image-1` on OpenAI). Flip
+`models.writer_provider` back to `openai` in `config.yaml` if you ever want to.
+
+*(An earlier "last30days" community-scraping engine was removed — it surfaced
+stale, pre-announcement threads.)*
 
 ## Threads track (text-only, sports)
 

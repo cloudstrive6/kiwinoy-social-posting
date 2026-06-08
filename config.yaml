@@ -9,11 +9,14 @@ brand:
 
     '
 models:
-  writer_provider: openai
+  # Caption/beats writer. "claude_code" = your Claude subscription token (FREE),
+  # "openai" = gpt-4.1 (paid), "anthropic" = Anthropic API key (paid).
+  writer_provider: claude_code
   writer_openai: gpt-4.1
   writer_anthropic: claude-sonnet-4-6
-  research: gpt-4.1
-  image: gpt-image-1
+  claude_model: sonnet           # model used for the free Claude Code calls
+  research: gpt-4.1              # (unused now — image/reel research uses Claude)
+  image: gpt-image-1            # IMAGE GENERATOR stays on OpenAI (paid)
   web_search_tool: web_search
   writer_max_tokens: 1024
 schedule:

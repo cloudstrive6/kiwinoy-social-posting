@@ -116,7 +116,11 @@ def run(
     Tries the subscription OAuth token first, then the Anthropic API key as a
     fallback. web=True allowlists WebSearch/WebFetch so Claude can research.
     """
-    model = model or CONFIG.threads_posts.get("model", "sonnet")
+    model = (
+        model
+        or CONFIG.models.get("claude_model")
+        or CONFIG.threads_posts.get("model", "sonnet")
+    )
     cmd = [_exe(), "-p", "--output-format", "json"]
     if model:
         cmd += ["--model", str(model)]

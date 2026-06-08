@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
+      # Research, caption + fact-check run on the Claude subscription token (free);
+      # ANTHROPIC_API_KEY is the fallback; OpenAI is only for the image generator.
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
@@ -43,6 +46,9 @@ jobs:
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
+
+      - name: Install Claude Code CLI (research + caption + fact-check)
+        run: npm install -g @anthropic-ai/claude-code
 
       - name: Install reel renderer (Remotion)
         working-directory: reels

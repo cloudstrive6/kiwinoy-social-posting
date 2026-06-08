@@ -10,8 +10,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from core import openai_client as ai
+from core import claude_code
 from core.config import CONFIG
+from core.openai_client import extract_json
 from core.style import TOPIC_GUARDRAIL, sanitize
 
 _SYSTEM = (
@@ -70,10 +71,10 @@ Output the JSON only. No prose, no code fences."""
 
 
 def run(category: str) -> dict[str, Any]:
-    """Return a creative brief dict for the given category."""
-    raw = ai.research(_prompt(category), system=_SYSTEM)
+    """Return a creative brief dict for the given category (Claude web search)."""
+    raw = claude_code.run(_SYSTEM + "\n\n" + _prompt(category), web=True)
     try:
-        brief = ai.extract_json(raw)
+        brief = extract_json(raw)
     except Exception:
         brief = {
             "category": category,

@@ -84,7 +84,7 @@ def run_slot(
         log("Writing caption...")
         caption = content.run(brief)
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-        if _factcheck_ok(caption, brief, "openai", log):
+        if _factcheck_ok(caption, brief, "claude", log):
             passed = True
             break
 
@@ -165,7 +165,7 @@ def run_reel_slot(
         (run_dir / "beats.json").write_text(
             json.dumps(beats, indent=2, ensure_ascii=False), encoding="utf-8"
         )
-        if _factcheck_ok(caption, brief, "openai", log):
+        if _factcheck_ok(caption, brief, "claude", log):
             passed = True
             break
 
