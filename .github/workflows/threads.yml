@@ -4,9 +4,9 @@ name: KiwinoyGamer Auto-Threads
 # written by Claude via your subscription (CLAUDE_CODE_OAUTH_TOKEN). Text only,
 # <=500 chars. No images/reels. Each run finds a fresh trending sports topic.
 on:
-  schedule:
-    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 1-23/2 * * *"  # 01:25, 03:25, ... 23:25 UTC (every 2 hours)
+  # Triggered by an EXTERNAL scheduler (cron-job.org) hitting the workflow_dispatch
+  # API every 2 hours at :25 UTC — GitHub's own `schedule:` cron dropped/delayed
+  # runs, so it was removed in favour of the reliable external trigger.
   workflow_dispatch:
     inputs:
       dry_run:
