@@ -68,19 +68,28 @@ def review(
     brief: Optional[dict[str, Any]] = None,
     provider: str = "openai",
 ) -> dict[str, Any]:
-    """Return {"verdict": "pass"|"fail"|"error", "issues": [...]}."""
+    """Return {"verdict": "pass"|"fail"|"error", "issues": [...]}.
+
+    The check is attempted twice (a timeout/outage on the first try is retried)
+    before returning "error", so it tries hard to actually run before the
+    orchestrator falls open to publishing.
+    """
     brief = brief or {}
     prompt = _prompt(text, brief)
-    try:
-        if provider == "claude":
-            raw = claude_code.run(prompt, web=True)
-        else:
-            raw = openai_client.research(prompt, system=_SYSTEM)
-        data = openai_client.extract_json(raw)
-        verdict = str(data.get("verdict", "")).lower().strip()
-        issues = data.get("issues", []) or []
-        if verdict not in ("pass", "fail"):
-            verdict = "fail" if issues else "pass"
-        return {"verdict": verdict, "issues": issues}
-    except Exception as e:  # fail-open on checker error, but surface it
-        return {"verdict": "error", "issues": [f"fact-check could not run: {e}"]}
+    last_err: Optional[Exception] = None
+    for _ in range(2):
+        try:
+            if provider == "claude":
+                raw = claude_code.run(prompt, web=True)
+            else:
+                raw = openai_client.research(prompt, system=_SYSTEM)
+            data = openai_client.extract_json(raw)
+            verdict = str(data.get("verdict", "")).lower().strip()
+            issues = data.get("issues", []) or []
+            if verdict not in ("pass", "fail"):
+                verdict = "fail" if issues else "pass"
+            return {"verdict": verdict, "issues": issues}
+        except Exception as e:  # timeout / outage / parse error -> retry once
+            last_err = e
+            continue
+    return {"verdict": "error", "issues": [f"fact-check could not run (after retry): {last_err}"]}
