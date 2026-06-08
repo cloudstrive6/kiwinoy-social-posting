@@ -3,7 +3,8 @@ name: KiwinoyGamer Auto-Reels
 # Renders + publishes one GACHA reel per day at 18:00 UTC. (Sports reels stopped.)
 on:
   schedule:
-    - cron: "0 18 * * *"   # 18:00 UTC -> reel slot 1 (Gacha)
+    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
+    - cron: "25 18 * * *"  # 18:25 UTC -> reel slot 1 (Gacha)
   workflow_dispatch:
     inputs:
       slot:
@@ -60,8 +61,8 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "0 18 * * *") SLOT=1 ;;
-            *)            SLOT="${{ github.event.inputs.slot }}" ;;
+            "25 18 * * *") SLOT=1 ;;
+            *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"
           echo "Selected reel slot: ${SLOT:-1}"

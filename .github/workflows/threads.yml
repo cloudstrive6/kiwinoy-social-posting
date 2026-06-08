@@ -5,7 +5,8 @@ name: KiwinoyGamer Auto-Threads
 # <=500 chars. No images/reels. Each run finds a fresh trending sports topic.
 on:
   schedule:
-    - cron: "0 1-23/2 * * *"   # 01:00, 03:00, ... 23:00 UTC (every 2 hours)
+    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
+    - cron: "25 1-23/2 * * *"  # 01:25, 03:25, ... 23:25 UTC (every 2 hours)
   workflow_dispatch:
     inputs:
       dry_run:

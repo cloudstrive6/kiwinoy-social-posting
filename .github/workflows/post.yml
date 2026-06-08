@@ -4,18 +4,19 @@ name: KiwinoyGamer Auto-Post
 # Alternates Gacha -> Sports -> Gacha -> Sports.
 on:
   schedule:
-    - cron: "0 0 * * *"    # 00:00 UTC -> slot 1 (Sports)
-    - cron: "0 4 * * *"    # 04:00 UTC -> slot 2 (Gacha)
-    - cron: "0 8 * * *"    # 08:00 UTC -> slot 3 (Sports)
-    - cron: "0 12 * * *"   # 12:00 UTC -> slot 4 (Gacha)
-    - cron: "0 16 * * *"   # 16:00 UTC -> slot 5 (Sports)
-    - cron: "0 20 * * *"   # 20:00 UTC -> slot 6 (Gacha)
+    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
+    - cron: "25 0 * * *"   # 00:25 UTC -> slot 1 (Sports)
+    - cron: "25 4 * * *"   # 04:25 UTC -> slot 2 (Gacha)
+    - cron: "25 8 * * *"   # 08:25 UTC -> slot 3 (Sports)
+    - cron: "25 12 * * *"  # 12:25 UTC -> slot 4 (Gacha)
+    - cron: "25 16 * * *"  # 16:25 UTC -> slot 5 (Sports)
+    - cron: "25 20 * * *"  # 20:25 UTC -> slot 6 (Gacha)
   workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
     inputs:
       slot:
-        description: "Slot id to run (1-4)"
-        required: true
-        default: "1"
+        description: "Slot id to run (1-6). Leave blank to auto-pick by time."
+        required: false
+        default: ""
       dry_run:
         description: "Dry run (no publish)? true/false"
         required: false
@@ -58,22 +59,27 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "0 0 * * *")  SLOT=1 ;;
-            "0 4 * * *")  SLOT=2 ;;
-            "0 8 * * *")  SLOT=3 ;;
-            "0 12 * * *") SLOT=4 ;;
-            "0 16 * * *") SLOT=5 ;;
-            "0 20 * * *") SLOT=6 ;;
-            *)            SLOT="${{ github.event.inputs.slot }}" ;;
+            "25 0 * * *")  SLOT=1 ;;
+            "25 4 * * *")  SLOT=2 ;;
+            "25 8 * * *")  SLOT=3 ;;
+            "25 12 * * *") SLOT=4 ;;
+            "25 16 * * *") SLOT=5 ;;
+            "25 20 * * *") SLOT=6 ;;
+            *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
-          echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"
-          echo "Selected slot: ${SLOT:-1}"
+          echo "slot=${SLOT}" >> "$GITHUB_OUTPUT"
+          echo "Selected slot: ${SLOT:-(auto by time)}"
 
       - name: Run the posting team
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          python run.py --slot ${{ steps.pick.outputs.slot }} $DRY
+          # No slot (external trigger / blank manual input) -> auto-pick by time.
+          if [ -n "${{ steps.pick.outputs.slot }}" ]; then
+            python run.py --slot ${{ steps.pick.outputs.slot }} $DRY
+          else
+            python run.py --auto $DRY
+          fi
 
       - name: Upload run artifacts (briefs, captions, images)
         if: always()
