@@ -204,30 +204,6 @@ threads_posts:
   - "general risk vs reward: a guaranteed sum vs a low-odds jackpot"
   - "bankroll management: cash out the win vs let it ride for a bigger multiple"
 
-# Trending research engine. PRIMARY = the vendored "last30days" skill (real
-# community engagement from free sources). If it returns nothing or errors, the
-# agents fall back to web-search research so posts never stop.
-research:
-  engine: "last30days"      # "last30days" | "websearch"
-  # Pure-HTTP free sources (no extra binaries). YouTube/X/TikTok left out: they
-  # need yt-dlp / browser login / paid keys and are flaky unattended.
-  sources: ["reddit", "hackernews", "polymarket", "github"]
-  quick: true
-  timeout_seconds: 150
-  # Each research run picks ONE target and digs its subreddits for the freshest,
-  # highest-engagement story. (X/TikTok/IG excluded: need login / paid key.)
-  targets:
-    gacha:
-    - { query: "Genshin Impact", subreddits: ["Genshin_Impact", "GenshinImpactTips"] }
-    - { query: "Honkai Star Rail", subreddits: ["HonkaiStarRail"] }
-    - { query: "Neverness to Everness", subreddits: ["NevernessToEverness", "gachagaming"] }
-    sports:
-    - { query: "NBA", subreddits: ["nba", "nbadiscussion"] }
-    - { query: "NFL", subreddits: ["nfl"] }
-    - { query: "Premier League", subreddits: ["soccer", "PremierLeague"] }
-    - { query: "tennis", subreddits: ["tennis"] }
-    esports:
-    - { query: "Valorant VCT", subreddits: ["ValorantCompetitive"] }
-    - { query: "Counter-Strike CS2", subreddits: ["GlobalOffensive"] }
-    - { query: "League of Legends esports", subreddits: ["leagueoflegends"] }
-    - { query: "Dota 2 International", subreddits: ["DotA2"] }
+# Research is web-search based: OpenAI web search for image/reel topics, Claude
+# web search for Threads. (The last30days engine was removed — it surfaced stale,
+# pre-announcement threads.)

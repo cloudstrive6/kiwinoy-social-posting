@@ -17,7 +17,7 @@ Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 
 | Agent | File | Job |
 |---|---|---|
-| 1. Research & Trending | `agents/research.py` | Pulls real community buzz via the vendored **last30days** engine (Reddit/Polymarket/HN/GitHub), LLM-synthesizes a brief; web-search fallback |
+| 1. Research & Trending | `agents/research.py` | Web-searches live trends (OpenAI for image/reel, Claude for Threads), verifies recency, writes a brief |
 | 2. Content Creation | `agents/content.py` | Writes the FB + IG caption with **Claude** |
 | 3. Threads track | `agents/threads_research.py` + `threads_writer.py` | Separate sports-only Threads posts (text, <=500 chars) via your Claude subscription |
 | 4. Image Generation | `agents/image.py` | `gpt-image-1` image w/ on-image headline (sports = photoreal, gacha = anime) |
@@ -151,16 +151,14 @@ python run.py --reel --slot 1 --dry-run   # render a reel, publish nothing
 ```
 The MP4 lands in `output/<timestamp>_reel.../reel.mp4`.
 
-## Research engine (last30days)
+## Research engine (web search)
 
-All research (image, reel, and Threads) is powered by the **vendored last30days
-skill** (`vendor/last30days/`, MIT) running in direct-CLI mode: it pulls the
-freshest, highest-engagement community stories from **free sources** (Reddit,
-Hacker News, Polymarket, GitHub) for the chosen game/league, then an LLM
-synthesizes our brief. A **topic guardrail** keeps the hype voice off tragic /
-sensitive / unverified stories. If last30days returns nothing or errors, the
-agents **fall back to web-search research**, so posts never stop. Tune in
-`config.yaml -> research` (engine, sources, targets/subreddits).
+All research (image, reel, and Threads) is **web-search based** — OpenAI's web
+search for image/reel topics, Claude's web search for Threads. Prompts enforce
+**recency + accuracy** (verify it's current, never post speculation about
+something already decided) and a **topic guardrail** keeps the hype voice off
+tragic / sensitive / unverified stories. *(An earlier "last30days" community-
+scraping engine was removed — it surfaced stale, pre-announcement threads.)*
 
 ## Threads track (text-only, sports)
 
