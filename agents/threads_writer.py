@@ -11,7 +11,8 @@ from typing import Any
 
 from core import claude_code
 from core.config import CONFIG
-from core.style import HUMAN_VOICE, sanitize
+from core.style import DATETIME_RULE, HUMAN_VOICE, sanitize
+from core.timeref import now_context
 
 
 def _trim(text: str, limit: int) -> str:
@@ -36,6 +37,9 @@ def run(brief: dict[str, Any]) -> str:
     tag = " ".join(t.get("hashtags", [])[:1])
 
     base = f"""Write ONE Threads post about this sports story.
+
+{now_context()}
+{DATETIME_RULE}
 
 TOPIC: {brief.get('title')}
 SUBJECT: {brief.get('subject')}
@@ -80,6 +84,9 @@ def run_prediction(brief: dict[str, Any]) -> str:
     tag = " ".join(t.get("hashtags", [])[:1])
 
     prompt = f"""Write ONE Threads PREDICTION BREAKDOWN about this matchup / story.
+
+{now_context()}
+{DATETIME_RULE}
 
 TOPIC: {brief.get('title')}
 SUBJECT: {brief.get('subject')}

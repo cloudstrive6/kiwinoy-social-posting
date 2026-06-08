@@ -21,7 +21,8 @@ from typing import Any
 from core import writer as ai
 from core.config import CONFIG
 from core.openai_client import extract_json
-from core.style import HUMAN_VOICE, sanitize
+from core.style import DATETIME_RULE, HUMAN_VOICE, sanitize
+from core.timeref import now_context
 
 
 def _system() -> str:
@@ -38,6 +39,9 @@ def _prompt(brief: dict[str, Any], hook_max: int, retry_note: str = "") -> str:
     facts = "\n".join(f"- {f}" for f in brief.get("key_facts", []))
 
     return f"""Write ONE story-driven caption for Facebook + Instagram about this topic.
+
+{now_context()}
+{DATETIME_RULE}
 
 TOPIC: {brief.get('title')}
 SUBJECT: {brief.get('subject')}

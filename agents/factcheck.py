@@ -16,6 +16,7 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from core import claude_code, openai_client
+from core.timeref import now_context
 
 _SYSTEM = (
     "You are a meticulous, skeptical fact-checker for a social media channel. You "
@@ -30,6 +31,8 @@ def _prompt(text: str, brief: dict[str, Any]) -> str:
 INDEPENDENTLY verify every factual claim in it (names, scores, dates, results,
 events, "X happened", "Y is the Z"). Confirm each is TRUE and CURRENT as of today.
 
+{now_context()}
+
 POST:
 \"\"\"{text}\"\"\"
 
@@ -41,7 +44,20 @@ Rules:
   cannot verify from a credible, current source.
 - Do NOT flag opinions, predictions, hot takes, hype, or subjective phrasing — only
   concrete factual errors.
-- If even ONE material factual claim is wrong or unverifiable, the verdict is "fail".
+
+TIME / DATE checks (using the current date/time above) — BE STRICT:
+- A relative word alone ("today", "tonight", "tomorrow", "this weekend") is NOT a
+  date. If the post states a specific time (e.g. "8:30 ET", "18:00", a kickoff or
+  tip-off time) WITHOUT an explicit calendar date right next to it (a month + day,
+  e.g. "June 9" or "Mon Jun 9"), that is an automatic FAIL — a reader seeing it a
+  day later would not know which day it means.
+- The explicit date, its weekday, and the timezone must all be correct, and any
+  "today"/"tonight"/"tomorrow" wording must match the actual date relative to right
+  now. FAIL on any mismatch (wrong day, wrong weekday, wrong timezone conversion).
+- The event time itself must be accurate.
+
+If even ONE material factual claim (including a time/date problem) is wrong,
+missing, or unverifiable, the verdict is "fail".
 
 Return ONLY this JSON (no prose, no code fences):
 {{"verdict": "pass" or "fail", "issues": ["specific problem", "..."]}}"""

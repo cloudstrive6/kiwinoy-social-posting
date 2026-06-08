@@ -31,6 +31,17 @@ _BANNED_OPENERS = (
 )
 
 
+# Injected into writer prompts (alongside the current date) so any time always
+# carries an explicit date and resolved relative-day wording.
+DATETIME_RULE = (
+    "DATES WITH TIMES: whenever you mention a specific time (kickoff, tip-off, "
+    "event start, banner drop, etc.), ALWAYS put the explicit calendar DATE and the "
+    "timezone right next to it, e.g. 'Mon, Jun 9 at 8:30 PM ET'. Never write a bare "
+    "'tomorrow 8:30 ET' or 'tonight at 8' with no date. Resolve "
+    "'today'/'tonight'/'tomorrow' to the real date using the current date given above."
+)
+
+
 # Injected into research-synthesis prompts. Keeps the autonomous hype voice away
 # from tragedy and unverified rumor.
 TOPIC_GUARDRAIL = """TOPIC SAFETY (important): KiwinoyGamer is an upbeat hype gaming
