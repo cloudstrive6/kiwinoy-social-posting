@@ -1,21 +1,21 @@
-"""Orchestrator — runs the full 5-agent pipeline for one scheduled slot.
+"""Orchestrator — runs the pipeline for one scheduled slot, with a fact-check gate.
 
-Flow for a slot:
-  Research -> Content (FB/IG caption) + Threads (post) -> Image -> Publish
+Each factual post is independently fact-checked before publishing. On a fail it
+regenerates once; if it still fails, the post is skipped (nothing is published)
+and the reason is logged. Polls are not fact-checked (pure opinion).
 
-Everything for a run is also written to output/<timestamp>_<category>/ so you
-have a full audit trail (brief.json, caption.txt, threads.txt, image.png,
-result.json).
+Every run writes an audit trail to output/<timestamp>_.../ (brief.json,
+caption.txt / threads.txt, image.png / reel.mp4, result.json).
 """
 from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any, Optional
 
 from agents import (
     content,
+    factcheck,
     image,
     publisher,
     reel_composer,
@@ -31,62 +31,89 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
 
 
+def _save(run_dir, result: dict[str, Any]) -> None:
+    (run_dir / "result.json").write_text(
+        json.dumps(result, indent=2, ensure_ascii=False, default=str),
+        encoding="utf-8",
+    )
+
+
+def _factcheck_ok(text: str, brief: dict[str, Any], provider: str, log) -> bool:
+    """True if the post passes fact-check (or the checker couldn't run)."""
+    v = factcheck.review(text, brief, provider=provider)
+    verdict = v.get("verdict")
+    issues = "; ".join(v.get("issues", []) or [])
+    if verdict == "pass":
+        log("Fact-check: PASS")
+        return True
+    if verdict == "error":
+        log(f"Fact-check could not run ({issues}); publishing anyway")
+        return True  # fail-open on checker error so infra issues don't halt posting
+    log(f"Fact-check: FAIL -> {issues or 'unspecified'}")
+    return False
+
+
 def run_slot(
     slot_id: int,
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Execute the pipeline for a schedule slot.
+    """Image/sports feed slot: research -> caption -> FACT-CHECK -> image -> publish.
 
-    dry_run=True does research/writing/images but skips publishing.
-    scheduled_at: ISO time to schedule the post; None = publish immediately.
+    Sports = text-only on Facebook; Gacha = anime image on Facebook + Instagram.
     """
     slot = CONFIG.slot(slot_id)
     category = slot["category"]
+    is_sports = category == "sports"
     run_dir = OUTPUT_DIR / f"{_stamp()}_slot{slot_id}_{category}"
     run_dir.mkdir(parents=True, exist_ok=True)
-
     log = lambda m: print(f"[slot {slot_id} | {category}] {m}", flush=True)
 
-    # 1) Research & Trending --------------------------------------------
-    log("Researching trending topic...")
-    brief = research.run(category)
-    (run_dir / "brief.json").write_text(
-        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+    brief: dict[str, Any] = {}
+    caption = ""
+    passed = False
+    for attempt in range(2):
+        if attempt:
+            log("Regenerating after fact-check fail...")
+        log("Researching trending topic...")
+        brief = research.run(category)
+        (run_dir / "brief.json").write_text(
+            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        log(f"Topic: {brief.get('title')}")
+        log("Writing caption...")
+        caption = content.run(brief)
+        (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+        if _factcheck_ok(caption, brief, "openai", log):
+            passed = True
+            break
+
+    targets = (
+        CONFIG.platforms.get("sports_post_to", ["facebook"]) if is_sports
+        else CONFIG.platforms.get("image_post_to", ["facebook", "instagram"])
     )
-    log(f"Topic: {brief.get('title')}")
+    result: dict[str, Any] = {
+        "slot_id": slot_id, "category": category, "brief": brief,
+        "caption": caption, "targets": targets, "dry_run": dry_run,
+    }
 
-    # 2) Content caption -------------------------------------------------
-    log("Writing caption...")
-    caption = content.run(brief)
-    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    if not passed:
+        log("Fact-check failed twice — skipping publish (nothing posted).")
+        result["published"] = False
+        result["skipped"] = "factcheck_failed"
+        _save(run_dir, result)
+        return result
 
-    # 3) Image (gacha only) ---------------------------------------------
-    # Sports feed posts are TEXT-ONLY on Facebook (AI can't show real players).
-    # Gacha gets an anime image on Facebook + Instagram.
-    is_sports = category == "sports"
+    # Image only after the post passes (gacha), to avoid spending on a skipped post.
     image_bytes = None
     image_path = None
-    if is_sports:
-        targets = CONFIG.platforms.get("sports_post_to", ["facebook"])
-    else:
-        targets = CONFIG.platforms.get("image_post_to", ["facebook", "instagram"])
+    if not is_sports:
         log("Generating image...")
         image_path = run_dir / "image.png"
         image_bytes = image.run(brief, caption, save_path=image_path)
         log(f"Image saved -> {image_path}")
+    result["image_path"] = str(image_path) if image_path else None
 
-    result: dict[str, Any] = {
-        "slot_id": slot_id,
-        "category": category,
-        "brief": brief,
-        "caption": caption,
-        "image_path": str(image_path) if image_path else None,
-        "targets": targets,
-        "dry_run": dry_run,
-    }
-
-    # 4) Publish ---------------------------------------------------------
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
@@ -94,19 +121,14 @@ def run_slot(
         log(f"Publishing ({'text-only' if image_bytes is None else 'image'}) to "
             f"{', '.join(targets)}...")
         api_result = publisher.run(
-            caption=caption,
-            image_bytes=image_bytes,
-            platform_keys=targets,
-            scheduled_at=scheduled_at,
+            caption=caption, image_bytes=image_bytes,
+            platform_keys=targets, scheduled_at=scheduled_at,
         )
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
-    (run_dir / "result.json").write_text(
-        json.dumps(result, indent=2, ensure_ascii=False, default=str),
-        encoding="utf-8",
-    )
+    _save(run_dir, result)
     return result
 
 
@@ -115,37 +137,50 @@ def run_reel_slot(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Execute the reel pipeline for a reels schedule slot.
-
-    Research -> reel post caption + on-screen beats -> background shots ->
-    Remotion render -> publish video to IG/FB Reels (+ Threads).
-    """
+    """Reel slot: research -> caption + beats -> FACT-CHECK -> shots -> render -> publish."""
     slot = CONFIG.reel_slot(slot_id)
     category = slot["category"]
     n_shots = int(CONFIG.reels.get("shots", 3))
     run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_{category}"
     run_dir.mkdir(parents=True, exist_ok=True)
-
     log = lambda m: print(f"[reel {slot_id} | {category}] {m}", flush=True)
 
-    # 1) Research --------------------------------------------------------
-    log("Researching trending topic...")
-    brief = research.run(category)
-    (run_dir / "brief.json").write_text(
-        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    log(f"Topic: {brief.get('title')}")
+    brief: dict[str, Any] = {}
+    caption = ""
+    beats: list = []
+    passed = False
+    for attempt in range(2):
+        if attempt:
+            log("Regenerating after fact-check fail...")
+        log("Researching trending topic...")
+        brief = research.run(category)
+        (run_dir / "brief.json").write_text(
+            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        log(f"Topic: {brief.get('title')}")
+        log("Writing reel caption + on-screen beats...")
+        caption = content.run(brief)
+        (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+        beats = reel_script.run(brief)
+        (run_dir / "beats.json").write_text(
+            json.dumps(beats, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        if _factcheck_ok(caption, brief, "openai", log):
+            passed = True
+            break
 
-    # 2) Post caption + on-screen beats ---------------------------------
-    log("Writing reel caption + on-screen beats...")
-    caption = content.run(brief)
-    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-    beats = reel_script.run(brief)
-    (run_dir / "beats.json").write_text(
-        json.dumps(beats, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    result: dict[str, Any] = {
+        "slot_id": slot_id, "category": category, "brief": brief,
+        "caption": caption, "beats": beats, "dry_run": dry_run,
+    }
+    if not passed:
+        log("Fact-check failed twice — skipping reel (nothing rendered/posted).")
+        result["published"] = False
+        result["skipped"] = "factcheck_failed"
+        _save(run_dir, result)
+        return result
 
-    # 3) Background shots -----------------------------------------------
+    # Generate shots + render only after the post passes.
     log(f"Generating {n_shots} background shot(s)...")
     image_paths = []
     for i in range(n_shots):
@@ -153,23 +188,12 @@ def run_reel_slot(
         image.run_background(brief, i, n_shots, save_path=p)
         image_paths.append(p)
 
-    # 4) Render the reel -------------------------------------------------
     log("Rendering reel with Remotion...")
     reel_path = run_dir / "reel.mp4"
     video_bytes = reel_composer.run(brief, beats, image_paths, reel_path)
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
+    result["reel_path"] = str(reel_path)
 
-    result: dict[str, Any] = {
-        "slot_id": slot_id,
-        "category": category,
-        "brief": brief,
-        "caption": caption,
-        "beats": beats,
-        "reel_path": str(reel_path),
-        "dry_run": dry_run,
-    }
-
-    # 5) Publish ---------------------------------------------------------
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
@@ -182,19 +206,12 @@ def run_reel_slot(
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
-    (run_dir / "result.json").write_text(
-        json.dumps(result, indent=2, ensure_ascii=False, default=str),
-        encoding="utf-8",
-    )
+    _save(run_dir, result)
     return result
 
 
 def _threads_type_for_now() -> str:
-    """Pick the Threads post type for this run by UTC hour.
-
-    Two hours/day are reserved for the mandatory types (prediction, poll); every
-    other run is a standard sports update.
-    """
+    """Pick the Threads post type for this run by UTC hour."""
     tp = CONFIG.threads_posts
     h = datetime.now(timezone.utc).hour
     if h == int(tp.get("prediction_hour", 9)):
@@ -209,11 +226,9 @@ def run_threads(
     scheduled_at: Optional[str] = None,
     post_type: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Run the dedicated Threads track: research -> write -> publish (text only).
+    """Threads track: research -> write -> FACT-CHECK -> publish (text only).
 
-    post_type: "update" (sports news), "prediction" (esports/sports breakdown), or
-    "poll" (risk hot-take + reply-to-vote). Defaults to the type for the current
-    UTC hour. Powered by Claude via CLAUDE_CODE_OAUTH_TOKEN.
+    post_type: "update", "prediction", or "poll" (polls skip fact-check).
     """
     post_type = post_type or _threads_type_for_now()
     run_dir = OUTPUT_DIR / f"{_stamp()}_threads_{post_type}"
@@ -221,37 +236,50 @@ def run_threads(
     log = lambda m: print(f"[threads | {post_type}] {m}", flush=True)
 
     brief: dict[str, Any] = {}
+    text = ""
+    passed = False
+
     if post_type == "poll":
-        # No research needed — a creative risk/probability hot take + poll.
+        # Pure opinion — nothing to fact-check.
         log("Writing a risk/probability hot take + poll...")
         text = threads_writer.run_poll()
+        passed = True
     else:
         categories = ["sports", "esports"] if post_type == "prediction" else ["sports"]
-        log(f"Researching a trending topic ({'+'.join(categories)})...")
-        brief = threads_research.run(categories)
-        (run_dir / "brief.json").write_text(
-            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
-        log(f"Topic: {brief.get('title')}")
-        if post_type == "prediction":
-            log("Writing the prediction breakdown...")
-            text = threads_writer.run_prediction(brief)
-        else:
-            log("Writing the Threads post...")
-            text = threads_writer.run(brief)
+        for attempt in range(2):
+            if attempt:
+                log("Regenerating after fact-check fail...")
+            log(f"Researching a trending topic ({'+'.join(categories)})...")
+            brief = threads_research.run(categories)
+            (run_dir / "brief.json").write_text(
+                json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            log(f"Topic: {brief.get('title')}")
+            if post_type == "prediction":
+                log("Writing the prediction breakdown...")
+                text = threads_writer.run_prediction(brief)
+            else:
+                log("Writing the Threads post...")
+                text = threads_writer.run(brief)
+            if _factcheck_ok(text, brief, "claude", log):
+                passed = True
+                break
 
     (run_dir / "threads.txt").write_text(text, encoding="utf-8")
     log(f"Post ({len(text)} chars): {text[:90]}")
 
     result: dict[str, Any] = {
-        "post_type": post_type,
-        "brief": brief,
-        "text": text,
-        "chars": len(text),
-        "dry_run": dry_run,
+        "post_type": post_type, "brief": brief, "text": text,
+        "chars": len(text), "dry_run": dry_run,
     }
 
-    # 3) Publish ---------------------------------------------------------
+    if not passed:
+        log("Fact-check failed twice — skipping publish (nothing posted).")
+        result["published"] = False
+        result["skipped"] = "factcheck_failed"
+        _save(run_dir, result)
+        return result
+
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
@@ -262,8 +290,5 @@ def run_threads(
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
-    (run_dir / "result.json").write_text(
-        json.dumps(result, indent=2, ensure_ascii=False, default=str),
-        encoding="utf-8",
-    )
+    _save(run_dir, result)
     return result

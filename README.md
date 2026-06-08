@@ -21,7 +21,8 @@ Runs fully unattended in the cloud via **GitHub Actions** (no PC needed).
 | 2. Content Creation | `agents/content.py` | Writes the FB + IG caption with **Claude** |
 | 3. Threads track | `agents/threads_research.py` + `threads_writer.py` | Separate sports-only Threads posts (text, <=500 chars) via your Claude subscription |
 | 4. Image Generation | `agents/image.py` | `gpt-image-1` image w/ on-image headline (sports = photoreal, gacha = anime) |
-| 5. Publisher | `agents/publisher.py` | Uploads the image + schedules to FB/IG/Threads via Post for Me |
+| 5. Fact-Check / Review | `agents/factcheck.py` | **Independently web-searches to verify every factual claim before publishing.** Fail → regenerate once → skip if still wrong. Polls skipped (opinion). |
+| 6. Publisher | `agents/publisher.py` | Uploads the image + schedules to FB/IG/Threads via Post for Me |
 
 `orchestrator.py` runs them in order for one slot; `run.py` is the CLI.
 
