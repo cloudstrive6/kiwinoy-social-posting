@@ -10,6 +10,7 @@ from typing import Any
 
 from core import claude_code
 from core.config import CONFIG
+from core.dedup import avoid_block
 from core.openai_client import extract_json
 from core.style import TOPIC_GUARDRAIL, sanitize
 
@@ -51,6 +52,8 @@ Angle options:
 {_RECENCY}
 
 {TOPIC_GUARDRAIL}
+
+{avoid_block()}
 
 Return ONLY this JSON (no prose, no code fences):
 {{

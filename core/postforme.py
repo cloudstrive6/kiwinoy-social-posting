@@ -90,6 +90,32 @@ def upload_image(image_bytes: bytes, content_type: str = "image/png") -> str:
     return media_url
 
 
+def recent_captions(limit: int = 15) -> list[str]:
+    """Best-effort: recent published post captions (newest first), for dedup.
+
+    Never raises — dedup is a nice-to-have and must not block posting.
+    """
+    try:
+        r = requests.get(
+            f"{BASE_URL}/social-posts",
+            headers=_headers(json=False),
+            params={"offset": 0, "limit": limit},
+            timeout=TIMEOUT,
+        )
+        if r.status_code >= 400:
+            return []
+        data = r.json()
+        items = data.get("data", data if isinstance(data, list) else [])
+        out: list[str] = []
+        for it in items:
+            c = (it.get("caption") or "").strip()
+            if c:
+                out.append(c)
+        return out
+    except Exception:
+        return []
+
+
 def upload_video(video_bytes: bytes, content_type: str = "video/mp4") -> str:
     """Upload an MP4 reel and return its public media URL (same flow as images)."""
     return upload_image(video_bytes, content_type=content_type)
