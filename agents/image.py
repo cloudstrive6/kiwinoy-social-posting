@@ -11,14 +11,30 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from core import franchise
 from core import openai_client as ai
 from core.config import CONFIG
 
 
-def build_prompt(brief: dict[str, Any], caption: str) -> str:
+def _style_for(brief: dict[str, Any]) -> tuple[str, str]:
+    """Return (visual style, likeness note) for the brief.
+
+    Sports keeps its photoreal style. Otherwise, if the topic matches an AAA
+    franchise (Final Fantasy / Resident Evil / Halo) use that franchise's real
+    art style + a character-likeness push; else fall back to the anime/gacha style.
+    """
     category = brief["category"]
     img = CONFIG.image
-    style = img["styles"][category]
+    if category != "sports":
+        fr = franchise.match(brief)
+        if fr:
+            return fr["style"], franchise.LIKENESS
+    return img["styles"][category], ""
+
+
+def build_prompt(brief: dict[str, Any], caption: str) -> str:
+    img = CONFIG.image
+    style, likeness = _style_for(brief)
     headline_rules = img["headline"]
     headline_idea = brief.get("headline_idea") or brief.get("title", "")
 
@@ -30,6 +46,7 @@ ANGLE: {brief.get('angle')}
 
 VISUAL STYLE (follow exactly):
 {style}
+{likeness}
 
 ON-IMAGE HEADLINE:
 {headline_rules}
@@ -57,8 +74,7 @@ def run(brief: dict[str, Any], caption: str, save_path: Path | None = None) -> b
 
 def build_background_prompt(brief: dict[str, Any], shot_index: int, n_shots: int) -> str:
     """Vertical reel background art, NO baked text (Remotion overlays captions)."""
-    category = brief["category"]
-    style = CONFIG.image["styles"][category]
+    style, likeness = _style_for(brief)
     reel = CONFIG.reels
     variety = (
         f"This is shot {shot_index + 1} of {n_shots}: vary the angle / framing / "
@@ -71,6 +87,7 @@ SUBJECT: {brief.get('subject')}
 
 VISUAL STYLE (follow exactly):
 {style}
+{likeness}
 
 {variety}"""
 

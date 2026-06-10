@@ -45,7 +45,8 @@ def _prompt(category: str) -> str:
     t = CONFIG.topics[category]
     universe = t["games"] if category == "gacha" else t["leagues"]
     angles = t["angles"]
-    return f"""Today you are sourcing ONE {category.upper()} topic for KiwinoyGamer.
+    label = {"gacha": "GAMING", "sports": "SPORTS"}.get(category, category.upper())
+    return f"""Today you are sourcing ONE {label} topic for KiwinoyGamer.
 
 Search the web for the most trending / newsworthy item RIGHT NOW from:
 {chr(10).join(f"  - {x}" for x in universe)}

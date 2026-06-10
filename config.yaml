@@ -41,11 +41,17 @@ schedule:
     time: '20:00'
     category: gacha
 topics:
+  # "gacha" = the games / Facebook + Instagram IMAGE rotation. Despite the key
+  # name it now covers both gacha titles (anime art) AND major AAA titles (each
+  # rendered in its own real art style via image.franchise_styles below).
   gacha:
     games:
     - Genshin Impact
     - 'Honkai: Star Rail'
     - NTE Neverness to Everness
+    - Final Fantasy VII Revelation
+    - Resident Evil Veronica
+    - 'Halo: Campaign Evolved'
     angles:
     - Tier list / meta analysis — which characters or items are must-haves right now
     - Whale account / maxed-account showcase
@@ -53,6 +59,12 @@ topics:
       Jades)
     - New banner / character reveal or leak
     - Patch notes & version update breakdown
+    # General AAA-game angles (for Final Fantasy / Resident Evil / Halo etc.)
+    - New trailer / gameplay reveal or showcase
+    - Release date / launch window news
+    - Remake / remaster reveal, details & comparison
+    - Character, boss or story reveal
+    - Hot take, hype or community reaction to the latest news
   sports:
     leagues:
     - English Premier League football
@@ -110,6 +122,42 @@ image:
       line work, premium mobile-game promo-art feel.
 
       '
+  # Per-title art direction for the non-anime AAA games in the rotation. The matcher
+  # scans the topic title/subject/angle for any keyword; first match wins. Titles
+  # with no match fall back to the default `gacha` anime style above. Each `style`
+  # also pins the iconic character so gpt-image-1 renders a close likeness.
+  franchise_styles:
+  - match: ['final fantasy', 'ff vii', 'ff7', 'ffvii', 'ff revelation', 'final fantasy revelation',
+      'cloud strife', 'sephiroth', 'tifa lockhart', 'aerith']
+    style: >
+      Cinematic, semi-realistic JRPG key art in the Final Fantasy VII Remake /
+      Rebirth aesthetic: high-detail realistic-stylized characters, dramatic
+      cinematic lighting, lush high-production-value render (NOT flat anime, NOT
+      cartoon). Render the iconic character as recognizably and accurately as
+      possible: Cloud Strife with spiky blond hair, the dark SOLDIER 1st-class
+      outfit and the oversized Buster Sword (or Sephiroth: long silver hair, long
+      black coat, the Masamune katana). True to the official character design.
+    hashtags: ['#FinalFantasy', '#FF7', '#FFVII', '#FinalFantasyVII', '#JRPG', '#Gaming']
+  - match: ['resident evil', 'code veronica', 'veronica', 'biohazard', 'claire redfield',
+      'chris redfield', 'leon kennedy']
+    style: >
+      Photorealistic survival-horror cinematic in the modern Resident Evil (RE
+      Engine) aesthetic: gritty, dark, tense, filmic color grade, realistic skin,
+      materials and atmosphere (NOT anime, NOT cartoon). Render the iconic
+      character recognizably and accurately, true to their canonical look: Claire
+      Redfield (auburn hair) or Chris Redfield, in true-to-game outfit.
+    hashtags: ['#ResidentEvil', '#REVeronica', '#CodeVeronica', '#Biohazard', '#SurvivalHorror',
+      '#Gaming']
+  - match: ['halo', 'master chief', 'campaign evolved', 'spartan', 'cortana', 'covenant',
+      'mjolnir']
+    style: >
+      Epic sci-fi military-shooter key art in the Halo aesthetic: cinematic,
+      photoreal game-render quality (NOT anime, NOT cartoon). Render Master Chief
+      recognizably and accurately: a tall super-soldier in the iconic green Mjolnir
+      powered armor with a smooth gold/amber reflective visor, set against a
+      dramatic alien ringworld or battlefield vista. True-to-canon armor, colors
+      and proportions.
+    hashtags: ['#Halo', '#MasterChief', '#HaloCampaignEvolved', '#Xbox', '#Gaming']
   headline: 'Design a bold, short, scroll-stopping on-image headline drawn from the
     topic and caption. Maximum legibility: strong contrast, clear visual hierarchy,
     no spelling errors. CRITICAL — the typography style and font feel MUST match the

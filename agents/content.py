@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from core import franchise
 from core import writer as ai
 from core.config import CONFIG
 from core.openai_client import extract_json
@@ -88,7 +89,8 @@ def run(brief: dict[str, Any]) -> str:
     """Return a finished FB/IG caption: hook + body + hashtags."""
     category = brief["category"]
     hook_max = int(CONFIG.caption["hook_max_chars"])
-    tags = " ".join(CONFIG.hashtags[category])
+    fr = franchise.match(brief) if category != "sports" else None
+    tags = " ".join((fr.get("hashtags") if fr else None) or CONFIG.hashtags[category])
 
     hook, body = "", ""
     retry_note = ""
