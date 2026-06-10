@@ -137,6 +137,9 @@ image:
       possible: Cloud Strife with spiky blond hair, the dark SOLDIER 1st-class
       outfit and the oversized Buster Sword (or Sephiroth: long silver hair, long
       black coat, the Masamune katana). True to the official character design.
+    headline_style: >
+      Sleek, elegant title lettering with fine serifs and a subtle brushed-metal /
+      silver sheen, refined and cinematic — evoking the Final Fantasy logo treatment.
     hashtags: ['#FinalFantasy', '#FF7', '#FFVII', '#FinalFantasyVII', '#JRPG', '#Gaming']
   - match: ['resident evil', 'code veronica', 'veronica', 'biohazard', 'claire redfield',
       'chris redfield', 'leon kennedy']
@@ -146,6 +149,9 @@ image:
       materials and atmosphere (NOT anime, NOT cartoon). Render the iconic
       character recognizably and accurately, true to their canonical look: Claire
       Redfield (auburn hair) or Chris Redfield, in true-to-game outfit.
+    headline_style: >
+      Grungy, distressed horror lettering — weathered stencil or rough serif caps,
+      cold and grim with a faint blood-tinged edge, like a Resident Evil title card.
     hashtags: ['#ResidentEvil', '#REVeronica', '#CodeVeronica', '#Biohazard', '#SurvivalHorror',
       '#Gaming']
   - match: ['halo', 'master chief', 'campaign evolved', 'spartan', 'cortana', 'covenant',
@@ -157,13 +163,18 @@ image:
       powered armor with a smooth gold/amber reflective visor, set against a
       dramatic alien ringworld or battlefield vista. True-to-canon armor, colors
       and proportions.
+    headline_style: >
+      Angular, engraved military sci-fi caps — clean hard-edged metallic sans with
+      a futuristic UNSC feel, like the Halo logo.
     hashtags: ['#Halo', '#MasterChief', '#HaloCampaignEvolved', '#Xbox', '#Gaming']
   headline: 'Design a bold, short, scroll-stopping on-image headline drawn from the
     topic and caption. Maximum legibility: strong contrast, clear visual hierarchy,
-    no spelling errors. CRITICAL — the typography style and font feel MUST match the
-    overall image style: athletic condensed/bold sans for sports; stylized anime/game-title
-    lettering for gacha. Keep the headline to a few punchy words. Do NOT use em-dashes
-    or en-dashes anywhere in the headline text.
+    no spelling errors. CRITICAL — the lettering MUST look like it belongs in THIS
+    image''s world and art style: the font, weight, texture, color and treatment of
+    the headline have to match the overall aesthetic and (for a specific game) evoke
+    that game''s own title/logo typography. As a baseline: athletic condensed/bold
+    sans for sports; stylized anime/game-title lettering for gacha. Keep the headline
+    to a few punchy words. Do NOT use em-dashes or en-dashes anywhere in the headline text.
 
     '
 platforms:

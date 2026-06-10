@@ -41,15 +41,25 @@ def _clean(brief: dict[str, Any], category: str) -> dict[str, Any]:
     return brief
 
 
-def _prompt(category: str) -> str:
+def _prompt(category: str, focus: str | None = None) -> str:
     t = CONFIG.topics[category]
     universe = t["games"] if category == "gacha" else t["leagues"]
     angles = t["angles"]
     label = {"gacha": "GAMING", "sports": "SPORTS"}.get(category, category.upper())
+    if focus:
+        scope = (
+            f"Focus SPECIFICALLY on: {focus}. Search the web for the most recent, "
+            f"real, newsworthy update about it RIGHT NOW (latest trailer, reveal, "
+            f"release date, gameplay, or announcement)."
+        )
+    else:
+        scope = (
+            "Search the web for the most trending / newsworthy item RIGHT NOW from:\n"
+            + chr(10).join(f"  - {x}" for x in universe)
+        )
     return f"""Today you are sourcing ONE {label} topic for KiwinoyGamer.
 
-Search the web for the most trending / newsworthy item RIGHT NOW from:
-{chr(10).join(f"  - {x}" for x in universe)}
+{scope}
 
 Pick an angle that fits from:
 {chr(10).join(f"  - {a}" for a in angles)}
@@ -74,9 +84,13 @@ Return ONLY a JSON object with these keys:
 Output the JSON only. No prose, no code fences."""
 
 
-def run(category: str) -> dict[str, Any]:
-    """Return a creative brief dict for the given category (Claude web search)."""
-    raw = claude_code.run(_SYSTEM + "\n\n" + _prompt(category), web=True)
+def run(category: str, focus: str | None = None) -> dict[str, Any]:
+    """Return a creative brief dict for the given category (Claude web search).
+
+    Pass `focus` (a specific game/title) to pin the topic instead of letting the
+    agent pick the hottest item across the whole universe.
+    """
+    raw = claude_code.run(_SYSTEM + "\n\n" + _prompt(category, focus), web=True)
     try:
         brief = extract_json(raw)
     except Exception:

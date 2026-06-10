@@ -36,6 +36,12 @@ def build_prompt(brief: dict[str, Any], caption: str) -> str:
     img = CONFIG.image
     style, likeness = _style_for(brief)
     headline_rules = img["headline"]
+    fr = franchise.match(brief) if brief["category"] != "sports" else None
+    if fr and fr.get("headline_style"):
+        headline_rules = (
+            f"{headline_rules}\nFRANCHISE TYPOGRAPHY (match the headline lettering to "
+            f"this): {fr['headline_style']}"
+        )
     headline_idea = brief.get("headline_idea") or brief.get("title", "")
 
     return f"""Create a single scroll-stopping social media image (square) for a
