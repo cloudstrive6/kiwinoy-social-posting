@@ -1,35 +1,32 @@
-name: KiwinoyGamer Auto-Post
+name: KiwinoyGamer Auto-Carousels
 
-# Runs the social posting team 6x/day on a cron (UTC). Each cron maps to a slot.
-# Rotation: Sports -> Gacha -> Esports -> Gacha -> Sports -> Esports.
+# Publishes a 3-5 image carousel to Facebook + Instagram twice a day.
+# 13:25 UTC = 21:25 Philippines prime time -> Esports (MPL audience)
+# 22:25 UTC = 18:25 US Eastern evening    -> Gacha / games
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 0 * * *"   # 00:25 UTC -> slot 1 (Sports)
-    - cron: "25 4 * * *"   # 04:25 UTC -> slot 2 (Gacha)
-    - cron: "25 8 * * *"   # 08:25 UTC -> slot 3 (Esports)
-    - cron: "25 12 * * *"  # 12:25 UTC -> slot 4 (Gacha)
-    - cron: "25 16 * * *"  # 16:25 UTC -> slot 5 (Sports)
-    - cron: "25 20 * * *"  # 20:25 UTC -> slot 6 (Esports)
-  workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
+    - cron: "25 13 * * *"  # 13:25 UTC -> carousel slot 1 (Esports)
+    - cron: "25 22 * * *"  # 22:25 UTC -> carousel slot 2 (Gacha)
+  workflow_dispatch:
     inputs:
       slot:
-        description: "Slot id to run (1-6). Leave blank to auto-pick by time."
+        description: "Carousel slot id (1-2). Leave blank to auto-pick by time."
         required: false
         default: ""
       dry_run:
-        description: "Dry run (no publish)? true/false"
+        description: "Dry run (build slides but no publish)? true/false"
         required: false
         default: "false"
 
 concurrency:
-  group: kiwinoy-auto-post
+  group: kiwinoy-auto-carousels
   cancel-in-progress: false
 
 jobs:
-  post:
+  carousel:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       # Research, caption + fact-check run on the Claude subscription token (free);
       # ANTHROPIC_API_KEY is the fallback; OpenAI is only for the image generator.
@@ -55,37 +52,32 @@ jobs:
       - name: Install Claude Code CLI (research + caption + fact-check)
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Map trigger -> slot
+      - name: Map trigger -> carousel slot
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "25 0 * * *")  SLOT=1 ;;
-            "25 4 * * *")  SLOT=2 ;;
-            "25 8 * * *")  SLOT=3 ;;
-            "25 12 * * *") SLOT=4 ;;
-            "25 16 * * *") SLOT=5 ;;
-            "25 20 * * *") SLOT=6 ;;
+            "25 13 * * *") SLOT=1 ;;
+            "25 22 * * *") SLOT=2 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT}" >> "$GITHUB_OUTPUT"
-          echo "Selected slot: ${SLOT:-(auto by time)}"
+          echo "Selected carousel slot: ${SLOT:-(auto by time)}"
 
-      - name: Run the posting team
+      - name: Build + publish the carousel
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          # No slot (external trigger / blank manual input) -> auto-pick by time.
           if [ -n "${{ steps.pick.outputs.slot }}" ]; then
-            python run.py --slot ${{ steps.pick.outputs.slot }} $DRY
+            python run.py --carousel --slot ${{ steps.pick.outputs.slot }} $DRY
           else
-            python run.py --auto $DRY
+            python run.py --carousel --auto $DRY
           fi
 
-      - name: Upload run artifacts (briefs, captions, images)
+      - name: Upload run artifacts (brief, caption, slides)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: run-output-slot-${{ steps.pick.outputs.slot }}-${{ github.run_id }}
+          name: carousel-output-slot-${{ steps.pick.outputs.slot }}-${{ github.run_id }}
           path: output/
           retention-days: 14
           if-no-files-found: ignore

@@ -11,6 +11,10 @@ Reels (add --reel to use the reels schedule + reel pipeline):
   python run.py --reel --slot 1 --dry-run  # render reel, do NOT publish
   python run.py --reel --all --dry-run     # render all reels without publishing
 
+Carousels (add --carousel for the 3-5 image multi-photo track):
+  python run.py --carousel --slot 1            # build + publish carousel slot 1
+  python run.py --carousel --slot 1 --dry-run  # build slides, do NOT publish
+
 In GitHub Actions the cron passes --slot N (post.yml) or --reel --slot N
 (reels.yml).
 """
@@ -21,21 +25,23 @@ import sys
 from datetime import datetime, timezone
 
 from core.config import CONFIG
-from orchestrator import run_reel_slot, run_slot, run_threads
+from orchestrator import run_carousel_slot, run_reel_slot, run_slot, run_threads
 
 
-def _slots_for(reel: bool) -> list[dict]:
-    if reel:
+def _slots_for(track: str) -> list[dict]:
+    if track == "reel":
         return CONFIG.reels.get("schedule", {}).get("slots", [])
+    if track == "carousel":
+        return CONFIG.carousels.get("schedule", {}).get("slots", [])
     return CONFIG.schedule["slots"]
 
 
-def _closest_slot_now(reel: bool) -> int:
+def _closest_slot_now(track: str) -> int:
     """Return the slot id whose HH:MM is nearest to the current UTC time."""
     now = datetime.now(timezone.utc)
     now_min = now.hour * 60 + now.minute
     best_id, best_d = None, 10**9
-    for s in _slots_for(reel):
+    for s in _slots_for(track):
         hh, mm = (int(x) for x in str(s["time"]).split(":"))
         smin = hh * 60 + mm
         d = min(abs(now_min - smin), 1440 - abs(now_min - smin))
@@ -56,6 +62,10 @@ def main() -> int:
         help="run the dedicated Threads sports track (no slot needed)",
     )
     p.add_argument("--reel", action="store_true", help="use the reels track")
+    p.add_argument(
+        "--carousel", action="store_true",
+        help="use the carousel track (3-5 image multi-photo post)",
+    )
     p.add_argument(
         "--type",
         choices=["update", "prediction", "poll"],
@@ -79,15 +89,16 @@ def main() -> int:
             print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
+    track = "reel" if args.reel else ("carousel" if args.carousel else "post")
     if args.all:
-        slot_ids = [int(s["id"]) for s in _slots_for(args.reel)]
+        slot_ids = [int(s["id"]) for s in _slots_for(track)]
     elif args.auto:
-        slot_ids = [_closest_slot_now(args.reel)]
+        slot_ids = [_closest_slot_now(track)]
     else:
         slot_ids = [args.slot]
 
-    runner = run_reel_slot if args.reel else run_slot
-    label = "reel" if args.reel else "slot"
+    runner = {"reel": run_reel_slot, "carousel": run_carousel_slot}.get(track, run_slot)
+    label = track if track != "post" else "slot"
 
     failures = 0
     for sid in slot_ids:

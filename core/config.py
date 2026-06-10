@@ -104,6 +104,10 @@ class _Config:
         return self._data.get("reels", {})
 
     @property
+    def carousels(self) -> dict[str, Any]:
+        return self._data.get("carousels", {})
+
+    @property
     def threads_posts(self) -> dict[str, Any]:
         return self._data.get("threads_posts", {})
 
@@ -118,6 +122,12 @@ class _Config:
             if int(s["id"]) == int(slot_id):
                 return s
         raise ValueError(f"No reels slot with id={slot_id}")
+
+    def carousel_slot(self, slot_id: int) -> dict[str, Any]:
+        for s in self.carousels.get("schedule", {}).get("slots", []):
+            if int(s["id"]) == int(slot_id):
+                return s
+        raise ValueError(f"No carousel slot with id={slot_id}")
 
     def account_ids(self, platform_keys: list[str] | None = None) -> list[str]:
         """Return connected account IDs for the given platforms.

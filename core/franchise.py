@@ -8,6 +8,7 @@ brief for a configured franchise keyword and returns that franchise's entry
 """
 from __future__ import annotations
 
+import re
 from typing import Any, Optional
 
 from core.config import CONFIG
@@ -21,13 +22,18 @@ LIKENESS = (
 
 
 def match(brief: dict[str, Any]) -> Optional[dict[str, Any]]:
-    """Return the franchise_styles entry whose keyword appears in the brief, else None."""
+    """Return the franchise_styles entry whose keyword appears in the brief, else None.
+
+    Keywords match on word boundaries (not raw substrings) so short ones like
+    'mpl' or 'msi' can't fire inside unrelated words ('example', 'simple').
+    """
     entries = CONFIG.image.get("franchise_styles") or []
     hay = " ".join(
         str(brief.get(k, "")) for k in ("title", "subject", "headline_idea", "angle")
     ).lower()
     for entry in entries:
         for kw in entry.get("match", []):
-            if str(kw).lower() in hay:
+            pat = r"\b" + re.escape(str(kw).lower().strip()) + r"\b"
+            if re.search(pat, hay):
                 return entry
     return None

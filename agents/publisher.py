@@ -54,6 +54,28 @@ def run(
     )
 
 
+def run_carousel(
+    caption: str,
+    images: list[bytes],
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Publish a multi-image carousel post to Facebook + Instagram."""
+    account_ids = CONFIG.account_ids(_IMAGE_PLATFORMS)
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_urls = [
+        postforme.upload_image(img, content_type="image/png") for img in images
+    ]
+    return postforme.create_post(
+        caption=caption,
+        social_accounts=account_ids,
+        media_urls=media_urls,
+        scheduled_at=scheduled_at,
+        is_draft=is_draft,
+    )
+
+
 def run_reel(
     caption: str,
     video_bytes: bytes,

@@ -21,6 +21,9 @@ models:
   writer_max_tokens: 1024
 schedule:
   timezone: UTC
+  # 6 feed posts/day: 2 sports (text, FB) + 2 gacha/games (image, FB+IG) +
+  # 2 esports (image, FB+IG). Sports stays heavily covered by the 16/day
+  # Threads track, so it gave up one feed slot to esports.
   slots:
   - id: 1
     time: '00:00'
@@ -30,7 +33,7 @@ schedule:
     category: gacha
   - id: 3
     time: '08:00'
-    category: sports
+    category: esports
   - id: 4
     time: '12:00'
     category: gacha
@@ -39,7 +42,7 @@ schedule:
     category: sports
   - id: 6
     time: '20:00'
-    category: gacha
+    category: esports
 topics:
   # "gacha" = the games / Facebook + Instagram IMAGE rotation. Despite the key
   # name it now covers both gacha titles (anime art) AND major AAA titles (each
@@ -65,6 +68,23 @@ topics:
     - Remake / remaster reveal, details & comparison
     - Character, boss or story reveal
     - Hot take, hype or community reaction to the latest news
+  # Esports vertical for FB+IG IMAGE posts. Visuals are always IN-GAME heroes/
+  # characters (never real pro players' faces — same rule that killed sports
+  # images). Analytical, betting-adjacent content: brackets, drafts, form, meta.
+  esports:
+    games:
+    - 'Mobile Legends: Bang Bang (MPL Philippines and M-series Worlds)'
+    - Dota 2 (The International tier and major tournaments)
+    - Counter-Strike 2 (tier-1 events, Majors)
+    - League of Legends / Wild Rift (Worlds, MSI, regional leagues)
+    angles:
+    - MPL Philippines bracket reactions, team form and national-pride storylines
+    - Draft / meta breakdowns — which heroes, champions or agents decide the series
+    - '"Who wins this series" head-to-head predictions with reasoning'
+    - Roster moves, transfers and team shake-ups
+    - Tournament previews (International-tier, Majors, Worlds, MSI)
+    - Patch-impact analysis on the competitive meta
+    - Map-by-map analysis and veto predictions (CS2)
   sports:
     leagues:
     - English Premier League football
@@ -94,6 +114,13 @@ hashtags:
   - '#Gacha'
   - '#GachaGames'
   - '#GachaGaming'
+  esports:
+  - '#Esports'
+  - '#MLBB'
+  - '#MPLPhilippines'
+  - '#Dota2'
+  - '#CS2'
+  - '#LeagueOfLegends'
   sports:
   - '#EPL'
   - '#PremierLeague'
@@ -120,6 +147,14 @@ image:
     gacha: 'High-quality anime key-visual / gacha splash-art aesthetic. Vibrant, clean
       cel-shaded characters, cinematic rim lighting and particle effects, detailed
       line work, premium mobile-game promo-art feel.
+
+      '
+    # Fallback when an esports topic doesn't match a franchise entry below.
+    esports: 'Premium esports tournament key art: dramatic arena-stage atmosphere,
+      stylized in-game heroes/characters as the focal subject, trophy-and-spotlight
+      energy, bold broadcast-graphics finish. CRITICAL: NEVER depict real people,
+      real pro players, or real human faces — represent teams and matchups ONLY
+      through in-game characters, heroes, logos-free team colors and game worlds.
 
       '
   # Per-title art direction for the non-anime AAA games in the rotation. The matcher
@@ -167,6 +202,63 @@ image:
       Angular, engraved military sci-fi caps — clean hard-edged metallic sans with
       a futuristic UNSC feel, like the Halo logo.
     hashtags: ['#Halo', '#MasterChief', '#HaloCampaignEvolved', '#Xbox', '#Gaming']
+  - match: ['mobile legends', 'mlbb', 'mpl philippines', 'mpl ph', 'mpl season',
+      'm6 world', 'm7 world', 'moonton', 'bang bang']
+    style: >
+      Official Mobile Legends: Bang Bang splash-art aesthetic: glossy, vibrant,
+      high-detail stylized 3D-painterly MOBA key art exactly like Moonton's hero
+      splash screens — dynamic action pose, glowing skill effects, rich saturated
+      colors, epic battlefield backdrop. Render the named MLBB hero(es) as
+      recognizably and accurately as possible, true to their official in-game
+      design (signature weapon, outfit, colors). NEVER depict real people, real
+      pro players or real human faces — represent teams and matchups ONLY through
+      heroes, team colors and the game world.
+    headline_style: >
+      Bold beveled metallic-gold MOBA lettering with a blue-and-gold energy glow,
+      like the Mobile Legends: Bang Bang logo treatment.
+    hashtags: ['#MLBB', '#MobileLegends', '#MPLPhilippines', '#MPL', '#Esports', '#Gaming']
+  - match: ['dota', 'the international', 'aegis of champions', 'radiant', 'dire ']
+    style: >
+      Dark, painterly epic-fantasy key art in the official Dota 2 / Valve
+      aesthetic: gritty brushwork, moody dramatic lighting, ancient battlefield
+      atmosphere, muted palette with magical accent glows. Render the named Dota 2
+      hero(es) as recognizably and accurately as possible, true to their official
+      in-game design. NEVER depict real people, real pro players or real human
+      faces — represent teams and matchups ONLY through heroes, the Radiant/Dire
+      world and the Aegis.
+    headline_style: >
+      Weathered, chiseled fantasy serif caps in deep red and steel, like the
+      Dota 2 logo and The International broadcast titles.
+    hashtags: ['#Dota2', '#TheInternational', '#DotaEsports', '#Esports', '#Gaming']
+  - match: ['counter-strike', 'counter strike', 'cs2', 'csgo', 'cs:go', 'blast premier',
+      'iem ', 'pgl major', 'esl pro league', 'dust2', 'mirage', 'inferno map']
+    style: >
+      Photoreal tactical-shooter key art in the Counter-Strike 2 aesthetic:
+      cinematic Source 2 render quality, CT and T operators in authentic tactical
+      gear with helmets/balaclavas (faces obscured), iconic map environments
+      (Dust2 sand walls, Mirage, Inferno), volumetric light, smoke grenades and
+      muzzle flash atmosphere. NEVER depict real people, real pro players or real
+      human faces — represent teams ONLY through in-game operators, map settings
+      and team colors.
+    headline_style: >
+      Clean military stencil / hard-edged condensed sans with a tactical HUD feel,
+      like the Counter-Strike 2 logo and Major broadcast graphics.
+    hashtags: ['#CS2', '#CounterStrike', '#CSGO', '#Esports', '#Gaming']
+  - match: ['league of legends', 'wild rift', 'lol worlds', 'league worlds', 'msi',
+      'lck', 'lpl', 'lec', 'lta ', 'riot games', "summoner's rift"]
+    style: >
+      Official League of Legends splash-art aesthetic: painterly, high-detail
+      Riot-style key art with dramatic composition, vivid magical lighting and
+      cinematic depth — exactly like champion splash screens and Worlds promo art.
+      Render the named champion(s) as recognizably and accurately as possible,
+      true to their official splash-art design. NEVER depict real people, real pro
+      players or real human faces — represent teams and matchups ONLY through
+      champions, Summoner's Rift and team colors.
+    headline_style: >
+      Elegant engraved gold serif caps with ornate flared edges on deep navy,
+      like the League of Legends logo and Worlds title treatment.
+    hashtags: ['#LeagueOfLegends', '#LoLEsports', '#Worlds', '#WildRift', '#Esports',
+      '#Gaming']
   headline: 'Design a bold, short, scroll-stopping on-image headline drawn from the
     topic and caption. Maximum legibility: strong contrast, clear visual hierarchy,
     no spelling errors. CRITICAL — the lettering MUST look like it belongs in THIS
@@ -216,12 +308,35 @@ reels:
     subject, cinematic, high contrast, designed to stop the scroll. Leave clean
     negative space in the lower third for caption text. NO text, NO words, NO
     letters, NO watermark, NO logos, NO UI anywhere in the image.
-  # 1 reel/day (UTC): GACHA only. (Sports reels stopped: AI can't show the real
-  # players, which drew a complaint.)
+  # 2 reels/day (UTC): gacha/games + esports. (Sports reels stopped: AI can't
+  # show the real players, which drew a complaint. Esports reels are safe — the
+  # visuals are in-game heroes, never real pro players.)
   schedule:
     slots:
     - id: 1
       time: '18:00'
+      category: gacha
+    - id: 2
+      time: '10:00'   # 18:25 Philippines — esports prime time
+      category: esports
+
+# Carousel track: 2 multi-image posts/day (3-5 slides) to Facebook + Instagram.
+# Slide 1 = scroll-stopping cover; middle slides each carry ONE idea (a rank, a
+# stat, a matchup, a prediction) with short on-image text; last slide = CTA.
+# Times picked for peak engagement: 13:00 UTC = 21:00 Philippines prime time
+# (MPL/esports audience) ; 22:00 UTC = 18:00 US Eastern evening (games/gacha).
+carousels:
+  enabled: true
+  slides_min: 3
+  slides_max: 5
+  size: 1024x1024
+  schedule:
+    slots:
+    - id: 1
+      time: '13:00'
+      category: esports
+    - id: 2
+      time: '22:00'
       category: gacha
 
 # Dedicated Threads text track. SPORTS ONLY, text posts (no images/reels),

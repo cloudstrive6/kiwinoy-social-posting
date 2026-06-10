@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 from agents import (
+    carousel,
     content,
     factcheck,
     image,
@@ -201,6 +202,74 @@ def run_reel_slot(
         log("Publishing reel to Instagram + Facebook Reels...")
         api_result = publisher.run_reel(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at
+        )
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+
+    _save(run_dir, result)
+    return result
+
+
+def run_carousel_slot(
+    slot_id: int,
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Carousel slot: research -> caption -> FACT-CHECK -> 3-5 slides -> publish."""
+    slot = CONFIG.carousel_slot(slot_id)
+    category = slot["category"]
+    run_dir = OUTPUT_DIR / f"{_stamp()}_carousel{slot_id}_{category}"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[carousel {slot_id} | {category}] {m}", flush=True)
+
+    brief: dict[str, Any] = {}
+    caption = ""
+    passed = False
+    for attempt in range(2):
+        if attempt:
+            log("Regenerating after fact-check fail...")
+        log("Researching trending topic...")
+        brief = research.run(category)
+        (run_dir / "brief.json").write_text(
+            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        log(f"Topic: {brief.get('title')}")
+        log("Writing caption...")
+        caption = content.run(brief)
+        (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+        if _factcheck_ok(caption, brief, "claude", log):
+            passed = True
+            break
+
+    result: dict[str, Any] = {
+        "slot_id": slot_id, "category": category, "brief": brief,
+        "caption": caption, "dry_run": dry_run, "kind": "carousel",
+    }
+    if not passed:
+        log("Fact-check failed twice — skipping carousel (nothing posted).")
+        result["published"] = False
+        result["skipped"] = "factcheck_failed"
+        _save(run_dir, result)
+        return result
+
+    # Slides only after the caption passes, to avoid spending on a skipped post.
+    log("Planning + generating slides...")
+    slides, images = carousel.run(brief, caption, save_dir=run_dir)
+    (run_dir / "slides.json").write_text(
+        json.dumps(slides, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    log(f"{len(images)} slides generated -> {run_dir}")
+    result["slides"] = slides
+    result["n_slides"] = len(images)
+
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        log("Publishing carousel to Facebook + Instagram...")
+        api_result = publisher.run_carousel(
+            caption=caption, images=images, scheduled_at=scheduled_at
         )
         result["published"] = True
         result["postforme_result"] = api_result

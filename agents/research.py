@@ -43,9 +43,11 @@ def _clean(brief: dict[str, Any], category: str) -> dict[str, Any]:
 
 def _prompt(category: str, focus: str | None = None) -> str:
     t = CONFIG.topics[category]
-    universe = t["games"] if category == "gacha" else t["leagues"]
+    universe = t.get("games") or t.get("leagues") or []
     angles = t["angles"]
-    label = {"gacha": "GAMING", "sports": "SPORTS"}.get(category, category.upper())
+    label = {"gacha": "GAMING", "sports": "SPORTS", "esports": "ESPORTS"}.get(
+        category, category.upper()
+    )
     if focus:
         scope = (
             f"Focus SPECIFICALLY on: {focus}. Search the web for the most recent, "
