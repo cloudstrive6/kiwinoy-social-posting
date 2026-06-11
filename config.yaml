@@ -21,26 +21,21 @@ models:
   writer_max_tokens: 1024
 schedule:
   timezone: UTC
-  # 6 feed posts/day: 2 sports (text, FB) + 2 gacha/games (image, FB+IG) +
-  # 2 esports (image, FB+IG). Sports stays heavily covered by the 16/day
-  # Threads track, so it gave up one feed slot to esports.
+  # 4 feed image posts/day: 2 gacha/games (FB+IG) + 2 esports (FB+IG).
+  # The two sports TEXT-ONLY Facebook slots (00:00 + 16:00 UTC) were RETIRED
+  # (2026-06-12) and left open to fill with something else later. Sports still
+  # runs on the dedicated Threads track (16/day), which is unaffected.
   slots:
   - id: 1
-    time: '00:00'
-    category: sports
-  - id: 2
     time: '04:00'
     category: gacha
-  - id: 3
+  - id: 2
     time: '08:00'
     category: esports
-  - id: 4
+  - id: 3
     time: '12:00'
     category: gacha
-  - id: 5
-    time: '16:00'
-    category: sports
-  - id: 6
+  - id: 4
     time: '20:00'
     category: esports
 topics:
