@@ -25,6 +25,23 @@ Put each clip in the folder for its game (the reel topic decides which folder):
 **Easiest start:** just dump everything into `general/` and it works. Organize
 into game folders later for tighter topic matching.
 
+## Clips bigger than 100 MB
+
+GitHub rejects repo files over 100 MB, so large/raw clips go on the **`footage`
+GitHub Release** instead (up to 2 GB each, free). Upload them with the helper:
+
+```
+python tools/footage.py upload mlbb "C:/path/to/big clip.mp4"
+python tools/footage.py list
+```
+
+The renderer auto-discovers them by their `<game>__` name prefix and downloads
+what it needs at render time, merged with the local clips in these folders. No
+commit needed for release clips.
+
+Note: the render downloads the whole clip to use ~4s of it, so trimmed clips are
+still faster/lighter — use the Release for when you genuinely want big/raw files.
+
 ## Clip tips
 
 - **Format:** H.264 `.mp4` is safest (also ok: `.mov`, `.webm`, `.m4v`, `.mkv`).

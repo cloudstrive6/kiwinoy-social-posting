@@ -337,6 +337,16 @@ reels:
   footage:
     enabled: true
     dir: reels/assets/footage
+    # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
+    # of in the repo (which caps files at 100MB). Upload them with:
+    #   python tools/footage.py upload <game> <path-to-clip.mp4>
+    # They're auto-discovered by their "<game>__" name prefix, downloaded at
+    # render time into cache_dir, and merged with any local clips. Set
+    # use_releases: false to turn this off.
+    use_releases: true
+    release_repo: cloudstrive6/kiwinoy-social-posting
+    release_tag: footage
+    cache_dir: reels/assets/footage/.cache
     clip_seconds: 4         # each clip is trimmed to ~this many seconds
     min_clips: 3
     max_clips: 4

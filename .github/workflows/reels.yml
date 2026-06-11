@@ -41,6 +41,8 @@ jobs:
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
       # Optional: AI Taglish voiceover. Reels render music-only if this is unset.
       ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      # Lets the renderer pull large clips from the 'footage' GitHub Release.
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
 

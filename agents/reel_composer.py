@@ -15,6 +15,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from core import gh_release
 from core.config import CONFIG, ROOT
 
 REELS_DIR = ROOT / "reels"
@@ -23,44 +24,60 @@ AUDIO_EXTS = {".mp3", ".m4a", ".aac", ".wav", ".ogg"}
 VIDEO_EXTS = {".mp4", ".mov", ".webm", ".m4v", ".mkv"}
 
 
-def _has_clips(d: Path) -> bool:
-    return d.exists() and any(p.suffix.lower() in VIDEO_EXTS for p in d.iterdir())
-
-
-def _footage_dir_for(brief: dict[str, Any]) -> Path | None:
-    """Resolve the footage subfolder for this topic (game-specific, else general)."""
+def _footage_key_for(brief: dict[str, Any]) -> str:
+    """Map this topic to a footage folder/prefix key (game-specific, else general)."""
     fcfg = CONFIG.reels.get("footage", {}) or {}
-    base = ROOT / fcfg.get("dir", "reels/assets/footage")
     hay = " ".join(
         str(brief.get(k, "")) for k in ("title", "subject", "angle")
     ).lower()
     for entry in fcfg.get("map", []) or []:
         for kw in entry.get("match", []):
             if re.search(r"\b" + re.escape(str(kw).lower().strip()) + r"\b", hay):
-                d = base / str(entry.get("dir", ""))
-                if _has_clips(d):
-                    return d
-    gen = base / "general"
-    return gen if _has_clips(gen) else None
+                return str(entry.get("dir", "general"))
+    return "general"
+
+
+def _candidates(key: str) -> list[tuple[str, Any]]:
+    """Combined clip pool for a key: local files + GitHub Release assets."""
+    fcfg = CONFIG.reels.get("footage", {}) or {}
+    base = ROOT / fcfg.get("dir", "reels/assets/footage")
+    pool: list[tuple[str, Any]] = []
+    d = base / key
+    if d.exists():
+        pool += [("local", p) for p in d.iterdir() if p.suffix.lower() in VIDEO_EXTS]
+    pool += [("remote", a) for a in gh_release.list_assets(key)]
+    return pool
 
 
 def resolve_clips(brief: dict[str, Any]) -> list[Path]:
     """Pick gameplay clips for this reel, or [] to fall back to AI stills.
 
-    Looks in the topic's footage folder (e.g. .../mlbb/), else .../general/.
-    Returns up to `max_clips` distinct clips (random order).
+    Pulls from BOTH local clips (reels/assets/footage/<game>/) and large clips
+    stored as GitHub Release assets ("<game>__*.mp4"), merged. Falls back to the
+    'general' pool when the game-specific one is empty. Only the picked clips are
+    downloaded. Returns up to `max_clips` clips as local paths.
     """
     fcfg = CONFIG.reels.get("footage", {}) or {}
     if not fcfg.get("enabled", False):
         return []
-    folder = _footage_dir_for(brief)
-    if folder is None:
-        return []
-    vids = [p for p in folder.iterdir() if p.suffix.lower() in VIDEO_EXTS]
-    if not vids:
+    key = _footage_key_for(brief)
+    pool = _candidates(key)
+    if not pool and key != "general":
+        pool = _candidates("general")
+    if not pool:
         return []
     hi = int(fcfg.get("max_clips", 4))
-    return random.sample(vids, min(hi, len(vids)))
+    picked = random.sample(pool, min(hi, len(pool)))
+    cache = ROOT / fcfg.get("cache_dir", "reels/assets/footage/.cache")
+    out: list[Path] = []
+    for kind, item in picked:
+        if kind == "local":
+            out.append(item)
+        else:
+            p = gh_release.download(item, cache)
+            if p:
+                out.append(p)
+    return out
 
 
 class ReelRenderError(RuntimeError):
