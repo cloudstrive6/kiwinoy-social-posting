@@ -23,6 +23,23 @@ HUMAN_VOICE = """WRITE LIKE A REAL PERSON, NOT AI. Non-negotiable rules:
 - NEVER use the #KiwinoyGamer hashtag, or any channel-branded #Kiwinoy... hashtag.
 - Sound like a hyped gamer / sports fan typing fast, not a brand bot."""
 
+# Injected when a piece targets the young Philippine audience (reels). Aims for
+# natural Manila Gen-Z gaming Taglish, NOT textbook Tagalog or a translated feel.
+TAGLISH_VOICE = """WRITE IN NATURAL TAGLISH (Filipino + English code-switch), the way
+young Pinoy gamers actually talk online, NOT formal/deep Tagalog and NOT a literal
+translation of English.
+- Mix Tagalog and English mid-sentence the natural way (e.g. "Grabe yung comeback,
+  one more round and tapos na sila"). English carries most gaming/esports terms.
+- Casual Manila register: use particles like na, lang, talaga, kasi, yung, pa, eh,
+  diba. Light, hype, conversational. Sound like a barkada groupchat, not a textbook.
+- Common gamer Taglish is welcome when it fits, never forced: solid, sana all, GG,
+  carry, sakto, panalo, laro, push, lakas, walang kalaban-laban. Don't stack slang.
+- AVOID: stiff/deep Tagalog words no one says casually, over-translated English,
+  and anything that reads like a Tagalog phrasebook or news anchor.
+- Keep it readable for a wide PH audience. When unsure, lean to how a 20-year-old
+  Filipino gamer would actually caption it."""
+
+
 # Phrases we'll quietly strip if the model slips (kept short to avoid mangling).
 _BANNED_OPENERS = (
     "let's be real, ",

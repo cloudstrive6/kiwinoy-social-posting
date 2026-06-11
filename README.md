@@ -54,6 +54,7 @@ OPENAI_API_KEY=sk-...
 POSTFORME_API_KEY=...
 CLAUDE_CODE_OAUTH_TOKEN=...
 ANTHROPIC_API_KEY=sk-ant-...   # optional (only if writer_provider: anthropic)
+ELEVENLABS_API_KEY=...         # optional (AI Taglish voiceover on reels)
 ```
 - **OpenAI** key → https://platform.openai.com/api-keys  *(trend research + images)*
 - **Post for Me** key → https://www.postforme.dev (Dashboard → API Keys)  *(publishing)*
@@ -61,6 +62,9 @@ ANTHROPIC_API_KEY=sk-ant-...   # optional (only if writer_provider: anthropic)
   plan)  *(powers the Threads track on your subscription, no per-token billing)*
 - **Anthropic API key** → optional; only needed if you switch the FB/IG caption
   writer to Claude (`writer_provider: anthropic`)
+- **ElevenLabs API key** → optional; adds an AI Taglish voiceover to reels. Get it
+  at https://elevenlabs.io (Profile → API Keys), then set a voice in
+  `config.yaml → reels.narration.voice_id`. Without it, reels render music-only.
 
 ### 3. Connect your social accounts
 In the **Post for Me dashboard**, connect KiwinoyGamer's **Facebook Page,
@@ -89,6 +93,7 @@ Check the `output/<timestamp>_slotN_.../` folder — you'll see `brief.json`,
    - `POSTFORME_API_KEY`
    - `CLAUDE_CODE_OAUTH_TOKEN`
    - `ANTHROPIC_API_KEY` *(optional)*
+   - `ELEVENLABS_API_KEY` *(optional — AI Taglish voiceover on reels)*
 3. That's it. The workflow in `.github/workflows/post.yml` fires **6×/day** and
    publishes automatically. You can also trigger a manual run from the
    **Actions** tab (with an optional dry-run toggle).

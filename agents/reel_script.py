@@ -10,23 +10,43 @@ from typing import Any
 
 from core import writer as ai
 from core.config import CONFIG
-from core.style import HUMAN_VOICE, sanitize
+from core.style import HUMAN_VOICE, TAGLISH_VOICE, sanitize
 
 
-def _system() -> str:
+def _system(taglish: bool = False) -> str:
     b = CONFIG.brand
-    return (
+    lang = "natural Taglish (Filipino + English)" if taglish else b["language"]
+    base = (
         f"You are the short-video script lead for {b['name']} ({b['handle']}). "
-        f"Write in {b['language']}. You write punchy on-screen caption beats for "
+        f"Write in {lang}. You write punchy on-screen caption beats for "
         f"12-15 second vertical reels that hook viewers in the first second and "
         f"keep them watching. Brand voice: {b['voice']}\n\n{HUMAN_VOICE}"
     )
+    return base + ("\n\n" + TAGLISH_VOICE if taglish else "")
 
 
-def run(brief: dict[str, Any], n_beats: int | None = None) -> list[dict[str, str]]:
-    """Return a list of on-screen beats: [{kind, text}], story-ordered."""
+def run(
+    brief: dict[str, Any],
+    n_beats: int | None = None,
+    taglish: bool = False,
+    reel_format: str | None = None,
+) -> list[dict[str, str]]:
+    """Return a list of on-screen beats: [{kind, text}], story-ordered.
+
+    taglish -> write the beats in Manila Gen-Z Taglish (PH-targeted reels).
+    reel_format -> an optional recurring series template to shape the beats
+    (e.g. "Sino panalo prediction", "hero spotlight").
+    """
     n = int(n_beats or CONFIG.reels.get("beats", 4))
     facts = "\n".join(f"- {f}" for f in brief.get("key_facts", []))
+    fmt_line = (
+        f"\nSERIES FORMAT (shape the beats around this recurring template): {reel_format}\n"
+        if reel_format else ""
+    )
+    loop_line = (
+        "- LOOP: make the final beat connect back to the hook so the reel loops "
+        "cleanly (replays boost reach)."
+    )
 
     prompt = f"""Write the on-screen text beats for ONE {brief['category']} reel about:
 
@@ -36,7 +56,7 @@ ANGLE: {brief.get('angle')}
 HOOK IDEA: {brief.get('hook_idea')}
 KEY FACTS (accurate only, never invent more):
 {facts}
-
+{fmt_line}
 Make exactly {n} beats that flow as a mini story and keep viewers hooked:
 - Beat 1 = HOOK: a scroll-stopping line that creates instant curiosity or stakes.
 - Middle beats = the punchiest facts / the payoff, one idea each.
@@ -46,11 +66,12 @@ Rules for EVERY beat:
 - Ultra short: 2 to 6 words, readable in under a second. No full sentences.
 - Punchy, spoken-aloud energy. Title-style, not paragraphs.
 - No hashtags. No emojis inside the beat text. No em-dashes.
+{loop_line}
 
 Return ONLY this JSON (no prose, no code fences):
 {{"beats": [{{"kind": "hook|fact|payoff|cta", "text": "..."}}]}}"""
 
-    raw = ai.write(prompt, system=_system())
+    raw = ai.write(prompt, system=_system(taglish))
     beats: list[dict[str, str]] = []
     try:
         from core.openai_client import extract_json

@@ -120,7 +120,8 @@ hashtags:
   - '#MPLPhilippines'
   - '#Dota2'
   - '#CS2'
-  - '#LeagueOfLegends'
+  - '#PinoyGamer'
+  - '#Philippines'
   sports:
   - '#EPL'
   - '#PremierLeague'
@@ -216,7 +217,8 @@ image:
     headline_style: >
       Bold beveled metallic-gold MOBA lettering with a blue-and-gold energy glow,
       like the Mobile Legends: Bang Bang logo treatment.
-    hashtags: ['#MLBB', '#MobileLegends', '#MPLPhilippines', '#MPL', '#Esports', '#Gaming']
+    hashtags: ['#MLBB', '#MobileLegends', '#MPLPhilippines', '#MPL', '#Pinoy', '#PinoyGamer',
+      '#Philippines']
   - match: ['dota', 'the international', 'aegis of champions', 'radiant', 'dire ']
     style: >
       Dark, painterly epic-fantasy key art in the official Dota 2 / Valve
@@ -308,16 +310,43 @@ reels:
     subject, cinematic, high contrast, designed to stop the scroll. Leave clean
     negative space in the lower third for caption text. NO text, NO words, NO
     letters, NO watermark, NO logos, NO UI anywhere in the image.
-  # 2 reels/day (UTC): gacha/games + esports. (Sports reels stopped: AI can't
-  # show the real players, which drew a complaint. Esports reels are safe — the
-  # visuals are in-game heroes, never real pro players.)
+  # Reels are TAGLISH and aimed at the young Philippine audience.
+  taglish: true
+  # AI voiceover narration (ElevenLabs). Fail-open: if no key / disabled, reels
+  # render music-only exactly as before. voice_id is tunable — pick a young,
+  # energetic, Taglish-capable voice from your ElevenLabs library.
+  narration:
+    enabled: true
+    voice_id: "pNInz6obpgDQGcFmaJgB"   # placeholder premade voice; change to taste
+    model_id: "eleven_multilingual_v2"  # supports Filipino/Tagalog
+    max_words: 34                        # ~12-14s of energetic VO
+  # Recurring reel series formats (the script agent rotates through these by slot
+  # so the feed builds familiar, returning-audience templates).
+  formats:
+  - 'Sino panalo? prediction (call the winner of a series/matchup with quick why)'
+  - 'Hero/champion spotlight (why this pick is breaking the meta right now)'
+  - 'Bracket reaction (react to the latest MPL/tournament result)'
+  - 'Tier list / power ranking (rank the contenders fast)'
+  - 'Meta shift alert (what the new patch changed and who it helps)'
+  # 4 reels/day, all timed to Philippine peak scroll windows (PHT = UTC+8):
+  #   04:25 UTC = 12:25 PM (lunch), 10:25 = 6:25 PM, 13:25 = 9:25 PM (prime),
+  #   15:25 = 11:25 PM (late night). Esports reels are MLBB-led (focus) for the
+  #   two evening-prime slots; one open esports + one gacha for variety.
   schedule:
     slots:
     - id: 1
-      time: '18:00'
+      time: '04:00'   # 12:25 PM PHT (lunch)
       category: gacha
     - id: 2
-      time: '10:00'   # 18:25 Philippines — esports prime time
+      time: '10:00'   # 6:25 PM PHT
+      category: esports
+      focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
+    - id: 3
+      time: '13:00'   # 9:25 PM PHT (evening prime)
+      category: esports
+      focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
+    - id: 4
+      time: '15:00'   # 11:25 PM PHT (late night)
       category: esports
 
 # Carousel track: 2 multi-image posts/day (3-5 slides) to Facebook + Instagram.

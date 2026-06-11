@@ -22,16 +22,18 @@ from core import franchise
 from core import writer as ai
 from core.config import CONFIG
 from core.openai_client import extract_json
-from core.style import DATETIME_RULE, HUMAN_VOICE, sanitize
+from core.style import DATETIME_RULE, HUMAN_VOICE, TAGLISH_VOICE, sanitize
 from core.timeref import now_context
 
 
-def _system() -> str:
+def _system(taglish: bool = False) -> str:
     b = CONFIG.brand
-    return (
+    lang = "natural Taglish (Filipino + English)" if taglish else b["language"]
+    base = (
         f"You are the Content Creation lead for {b['name']} ({b['handle']}). "
-        f"Write in {b['language']}. Brand voice: {b['voice']}\n\n{HUMAN_VOICE}"
+        f"Write in {lang}. Brand voice: {b['voice']}\n\n{HUMAN_VOICE}"
     )
+    return base + ("\n\n" + TAGLISH_VOICE if taglish else "")
 
 
 def _prompt(brief: dict[str, Any], hook_max: int, retry_note: str = "") -> str:
@@ -85,8 +87,12 @@ def _trim_hook(hook: str, limit: int) -> str:
     return cut.rstrip(" ,.;:") + "..."
 
 
-def run(brief: dict[str, Any]) -> str:
-    """Return a finished FB/IG caption: hook + body + hashtags."""
+def run(brief: dict[str, Any], taglish: bool = False) -> str:
+    """Return a finished FB/IG caption: hook + body + hashtags.
+
+    Set taglish=True (reels targeting the young PH audience) to write the caption
+    in natural Manila Gen-Z Taglish instead of English.
+    """
     category = brief["category"]
     hook_max = int(CONFIG.caption["hook_max_chars"])
     fr = franchise.match(brief) if category != "sports" else None
@@ -95,7 +101,7 @@ def run(brief: dict[str, Any]) -> str:
     hook, body = "", ""
     retry_note = ""
     for attempt in range(3):
-        raw = ai.write(_prompt(brief, hook_max, retry_note), system=_system())
+        raw = ai.write(_prompt(brief, hook_max, retry_note), system=_system(taglish))
         try:
             data = extract_json(raw)
             hook = sanitize(str(data.get("hook", "")))

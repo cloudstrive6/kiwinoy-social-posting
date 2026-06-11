@@ -28,6 +28,7 @@ export type ReelProps = {
   images: string[]; // file names that live in reels/public/
   beats: Beat[];
   music: string | null; // file name in reels/public/ or null
+  narration: string | null; // AI voiceover file name in reels/public/ or null
   brand: string; // fallback text badge
   logo: string | null; // channel logo file name in reels/public/ or null
 };
@@ -45,6 +46,7 @@ export const defaultReelProps: ReelProps = {
     { kind: "cta", text: "Follow for more" },
   ],
   music: null,
+  narration: null,
   brand: "KG",
   logo: null,
 };
@@ -267,10 +269,13 @@ export const Reel: React.FC<ReelProps> = ({
   images,
   beats,
   music,
+  narration,
   logo,
   category,
 }) => {
   const { accent } = styleFor(category);
+  // Duck the music well under the voiceover when narration is present.
+  const musicVolume = narration ? 0.16 : 0.6;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <Background images={images} />
@@ -278,7 +283,8 @@ export const Reel: React.FC<ReelProps> = ({
       <Brand logo={logo} />
       <Captions beats={beats} category={category} />
       <Progress accent={accent} />
-      {music ? <Audio src={staticFile(music)} volume={0.6} /> : null}
+      {music ? <Audio src={staticFile(music)} volume={musicVolume} /> : null}
+      {narration ? <Audio src={staticFile(narration)} volume={1} /> : null}
     </AbsoluteFill>
   );
 };

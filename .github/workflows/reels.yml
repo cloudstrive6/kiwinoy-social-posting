@@ -1,16 +1,22 @@
 name: KiwinoyGamer Auto-Reels
 
-# Renders + publishes two reels per day: Gacha at 18:25 UTC and Esports at
-# 10:25 UTC (18:25 Philippines prime time). (Sports reels stopped.)
+# Renders + publishes 4 Taglish reels per day, all timed to Philippine peak
+# scroll windows (PHT = UTC+8):
+#   04:25 UTC = 12:25 PM (lunch)  -> slot 1 (Gacha)
+#   10:25 UTC = 6:25 PM           -> slot 2 (Esports, MLBB-led)
+#   13:25 UTC = 9:25 PM (prime)   -> slot 3 (Esports, MLBB-led)
+#   15:25 UTC = 11:25 PM (late)   -> slot 4 (Esports, open)
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 18 * * *"  # 18:25 UTC -> reel slot 1 (Gacha)
-    - cron: "25 10 * * *"  # 10:25 UTC -> reel slot 2 (Esports)
+    - cron: "25 4 * * *"   # slot 1 (Gacha)
+    - cron: "25 10 * * *"  # slot 2 (Esports, MLBB)
+    - cron: "25 13 * * *"  # slot 3 (Esports, MLBB)
+    - cron: "25 15 * * *"  # slot 4 (Esports)
   workflow_dispatch:
     inputs:
       slot:
-        description: "Reel slot id to run (1-2)"
+        description: "Reel slot id to run (1-4)"
         required: true
         default: "1"
       dry_run:
@@ -33,6 +39,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      # Optional: AI Taglish voiceover. Reels render music-only if this is unset.
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -63,8 +71,10 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "25 18 * * *") SLOT=1 ;;
+            "25 4 * * *")  SLOT=1 ;;
             "25 10 * * *") SLOT=2 ;;
+            "25 13 * * *") SLOT=3 ;;
+            "25 15 * * *") SLOT=4 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"

@@ -51,8 +51,13 @@ def run(
     beats: list[dict[str, str]],
     image_paths: list[Path],
     save_path: Path,
+    narration_path: Path | None = None,
 ) -> bytes:
-    """Render the reel MP4 to save_path and return its bytes."""
+    """Render the reel MP4 to save_path and return its bytes.
+
+    narration_path: optional ElevenLabs VO audio; if given it plays over the
+    reel and the background music is ducked underneath it.
+    """
     reel = CONFIG.reels
     fps = int(reel.get("fps", 30))
     duration_frames = int(round(float(reel.get("duration_seconds", 14)) * fps))
@@ -72,6 +77,13 @@ def run(
         music_name = _pick_music(tag)
         if music_name:
             copied.append(music_name)
+
+        # Stage the AI voiceover (if provided) so Remotion can play it.
+        narration_name = None
+        if narration_path is not None and Path(narration_path).exists():
+            narration_name = f"{tag}_vo{Path(narration_path).suffix.lower() or '.mp3'}"
+            shutil.copyfile(narration_path, PUBLIC_DIR / narration_name)
+            copied.append(narration_name)
 
         # Stage the channel logo (if configured) so the reel can show it.
         logo_name = None
@@ -93,6 +105,7 @@ def run(
             "images": image_names,
             "beats": beats,
             "music": music_name,
+            "narration": narration_name,
             "brand": CONFIG.reels.get("brand_badge", "KG"),
             "logo": logo_name,
         }

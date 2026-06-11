@@ -18,6 +18,7 @@ from agents import (
     content,
     factcheck,
     image,
+    narration,
     publisher,
     reel_composer,
     reel_script,
@@ -25,6 +26,7 @@ from agents import (
     threads_research,
     threads_writer,
 )
+from core import elevenlabs
 from core.config import CONFIG, OUTPUT_DIR
 
 
@@ -141,7 +143,12 @@ def run_reel_slot(
     """Reel slot: research -> caption + beats -> FACT-CHECK -> shots -> render -> publish."""
     slot = CONFIG.reel_slot(slot_id)
     category = slot["category"]
+    focus = slot.get("focus")  # e.g. pin esports reels to MLBB
     n_shots = int(CONFIG.reels.get("shots", 3))
+    taglish = bool(CONFIG.reels.get("taglish", False))
+    # Rotate the recurring series formats by slot id so the feed feels familiar.
+    formats = CONFIG.reels.get("formats", []) or []
+    reel_format = formats[(slot_id - 1) % len(formats)] if formats else None
     run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_{category}"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[reel {slot_id} | {category}] {m}", flush=True)
@@ -153,16 +160,16 @@ def run_reel_slot(
     for attempt in range(2):
         if attempt:
             log("Regenerating after fact-check fail...")
-        log("Researching trending topic...")
-        brief = research.run(category)
+        log(f"Researching trending topic{' (focus: ' + focus + ')' if focus else ''}...")
+        brief = research.run(category, focus=focus)
         (run_dir / "brief.json").write_text(
             json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
         )
         log(f"Topic: {brief.get('title')}")
         log("Writing reel caption + on-screen beats...")
-        caption = content.run(brief)
+        caption = content.run(brief, taglish=taglish)
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-        beats = reel_script.run(brief)
+        beats = reel_script.run(brief, taglish=taglish, reel_format=reel_format)
         (run_dir / "beats.json").write_text(
             json.dumps(beats, indent=2, ensure_ascii=False), encoding="utf-8"
         )
@@ -189,9 +196,26 @@ def run_reel_slot(
         image.run_background(brief, i, n_shots, save_path=p)
         image_paths.append(p)
 
+    # Optional AI Taglish voiceover (fail-open: music-only if unavailable).
+    narration_path = None
+    if (CONFIG.reels.get("narration", {}) or {}).get("enabled", False):
+        log("Writing + synthesizing Taglish voiceover...")
+        vo_script = narration.write_script(brief, caption)
+        (run_dir / "narration.txt").write_text(vo_script, encoding="utf-8")
+        audio = elevenlabs.tts(vo_script)
+        if audio:
+            narration_path = run_dir / "narration.mp3"
+            narration_path.write_bytes(audio)
+            log(f"Voiceover ready ({len(audio)//1024} KB).")
+        else:
+            log("Voiceover unavailable (no key / disabled) — rendering music-only.")
+        result["narration"] = vo_script
+
     log("Rendering reel with Remotion...")
     reel_path = run_dir / "reel.mp4"
-    video_bytes = reel_composer.run(brief, beats, image_paths, reel_path)
+    video_bytes = reel_composer.run(
+        brief, beats, image_paths, reel_path, narration_path=narration_path
+    )
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
     result["reel_path"] = str(reel_path)
 

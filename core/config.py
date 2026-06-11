@@ -66,6 +66,10 @@ class _Config:
     def claude_code_oauth_token(self) -> str:
         return self._key("CLAUDE_CODE_OAUTH_TOKEN")
 
+    @property
+    def elevenlabs_api_key(self) -> str:
+        return self._key("ELEVENLABS_API_KEY")
+
     # ---- convenience accessors ----------------------------------------
     @property
     def brand(self) -> dict[str, Any]:
