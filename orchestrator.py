@@ -188,13 +188,18 @@ def run_reel_slot(
         _save(run_dir, result)
         return result
 
-    # Generate shots + render only after the post passes.
-    log(f"Generating {n_shots} background shot(s)...")
-    image_paths = []
-    for i in range(n_shots):
-        p = run_dir / f"shot{i}.png"
-        image.run_background(brief, i, n_shots, save_path=p)
-        image_paths.append(p)
+    # Prefer the user's own gameplay footage; fall back to AI stills if none.
+    clips = reel_composer.resolve_clips(brief)
+    image_paths: list = []
+    if clips:
+        log(f"Using {len(clips)} of your gameplay clip(s): "
+            f"{', '.join(p.name for p in clips)}")
+    else:
+        log(f"No matching footage — generating {n_shots} AI background shot(s)...")
+        for i in range(n_shots):
+            p = run_dir / f"shot{i}.png"
+            image.run_background(brief, i, n_shots, save_path=p)
+            image_paths.append(p)
 
     # Optional AI Taglish voiceover (fail-open: music-only if unavailable).
     narration_path = None
@@ -214,7 +219,8 @@ def run_reel_slot(
     log("Rendering reel with Remotion...")
     reel_path = run_dir / "reel.mp4"
     video_bytes = reel_composer.run(
-        brief, beats, image_paths, reel_path, narration_path=narration_path
+        brief, beats, image_paths, reel_path,
+        narration_path=narration_path, clips=clips,
     )
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
     result["reel_path"] = str(reel_path)

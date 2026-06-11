@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -19,6 +20,47 @@ from core.config import CONFIG, ROOT
 REELS_DIR = ROOT / "reels"
 PUBLIC_DIR = REELS_DIR / "public"
 AUDIO_EXTS = {".mp3", ".m4a", ".aac", ".wav", ".ogg"}
+VIDEO_EXTS = {".mp4", ".mov", ".webm", ".m4v", ".mkv"}
+
+
+def _has_clips(d: Path) -> bool:
+    return d.exists() and any(p.suffix.lower() in VIDEO_EXTS for p in d.iterdir())
+
+
+def _footage_dir_for(brief: dict[str, Any]) -> Path | None:
+    """Resolve the footage subfolder for this topic (game-specific, else general)."""
+    fcfg = CONFIG.reels.get("footage", {}) or {}
+    base = ROOT / fcfg.get("dir", "reels/assets/footage")
+    hay = " ".join(
+        str(brief.get(k, "")) for k in ("title", "subject", "angle")
+    ).lower()
+    for entry in fcfg.get("map", []) or []:
+        for kw in entry.get("match", []):
+            if re.search(r"\b" + re.escape(str(kw).lower().strip()) + r"\b", hay):
+                d = base / str(entry.get("dir", ""))
+                if _has_clips(d):
+                    return d
+    gen = base / "general"
+    return gen if _has_clips(gen) else None
+
+
+def resolve_clips(brief: dict[str, Any]) -> list[Path]:
+    """Pick gameplay clips for this reel, or [] to fall back to AI stills.
+
+    Looks in the topic's footage folder (e.g. .../mlbb/), else .../general/.
+    Returns up to `max_clips` distinct clips (random order).
+    """
+    fcfg = CONFIG.reels.get("footage", {}) or {}
+    if not fcfg.get("enabled", False):
+        return []
+    folder = _footage_dir_for(brief)
+    if folder is None:
+        return []
+    vids = [p for p in folder.iterdir() if p.suffix.lower() in VIDEO_EXTS]
+    if not vids:
+        return []
+    hi = int(fcfg.get("max_clips", 4))
+    return random.sample(vids, min(hi, len(vids)))
 
 
 class ReelRenderError(RuntimeError):
@@ -52,27 +94,41 @@ def run(
     image_paths: list[Path],
     save_path: Path,
     narration_path: Path | None = None,
+    clips: list[Path] | None = None,
 ) -> bytes:
     """Render the reel MP4 to save_path and return its bytes.
 
+    clips: optional gameplay footage. When given, the reel is built from these
+    clips (spliced + captioned) instead of the AI background stills.
     narration_path: optional ElevenLabs VO audio; if given it plays over the
     reel and the background music is ducked underneath it.
     """
     reel = CONFIG.reels
     fps = int(reel.get("fps", 30))
-    duration_frames = int(round(float(reel.get("duration_seconds", 14)) * fps))
     tag = save_path.stem  # unique-ish per run (e.g. timestamped name)
 
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     copied: list[str] = []
     try:
-        # 1) Stage background shots in public/ under unique names.
+        # 1) Stage either gameplay clips (preferred) or AI background shots.
         image_names: list[str] = []
-        for i, src in enumerate(image_paths):
-            name = f"{tag}_shot{i}{Path(src).suffix.lower() or '.png'}"
-            shutil.copyfile(src, PUBLIC_DIR / name)
-            image_names.append(name)
-            copied.append(name)
+        clip_props: list[dict[str, Any]] = []
+        if clips:
+            clip_secs = float((reel.get("footage", {}) or {}).get("clip_seconds", 4))
+            clip_frames = int(round(clip_secs * fps))
+            for i, src in enumerate(clips):
+                name = f"{tag}_clip{i}{Path(src).suffix.lower() or '.mp4'}"
+                shutil.copyfile(src, PUBLIC_DIR / name)
+                copied.append(name)
+                clip_props.append({"src": name, "durationInFrames": clip_frames})
+            duration_frames = sum(c["durationInFrames"] for c in clip_props)
+        else:
+            duration_frames = int(round(float(reel.get("duration_seconds", 14)) * fps))
+            for i, src in enumerate(image_paths):
+                name = f"{tag}_shot{i}{Path(src).suffix.lower() or '.png'}"
+                shutil.copyfile(src, PUBLIC_DIR / name)
+                image_names.append(name)
+                copied.append(name)
 
         music_name = _pick_music(tag)
         if music_name:
@@ -103,6 +159,7 @@ def run(
             "height": int(reel.get("height", 1920)),
             "category": brief.get("category", "gacha"),
             "images": image_names,
+            "clips": clip_props,
             "beats": beats,
             "music": music_name,
             "narration": narration_name,

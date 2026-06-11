@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Audio,
   Img,
+  OffthreadVideo,
   Sequence,
   interpolate,
   spring,
@@ -18,6 +19,7 @@ const anton = loadAnton();
 const baloo = loadBaloo();
 
 export type Beat = { kind: string; text: string };
+export type Clip = { src: string; durationInFrames: number };
 
 export type ReelProps = {
   fps: number;
@@ -26,6 +28,7 @@ export type ReelProps = {
   height: number;
   category: string;
   images: string[]; // file names that live in reels/public/
+  clips: Clip[]; // gameplay footage clips (preferred over images when present)
   beats: Beat[];
   music: string | null; // file name in reels/public/ or null
   narration: string | null; // AI voiceover file name in reels/public/ or null
@@ -40,6 +43,7 @@ export const defaultReelProps: ReelProps = {
   height: 1920,
   category: "gacha",
   images: [],
+  clips: [],
   beats: [
     { kind: "hook", text: "Big update just dropped" },
     { kind: "fact", text: "Here is why it matters" },
@@ -59,6 +63,53 @@ const styleFor = (category: string) => {
     accent: isSports ? "#39ff14" : "#8a5cff", // sports lime / gacha purple
     transform: isSports ? "uppercase" : ("none" as const),
   };
+};
+
+// Gameplay footage: each clip plays back-to-back, scaled to fit (contain) over a
+// blurred, zoomed copy of itself so landscape gameplay looks clean in 9:16.
+const Clips: React.FC<{ clips: { src: string; durationInFrames: number }[] }> = ({
+  clips,
+}) => {
+  let acc = 0;
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#000" }}>
+      {clips.map((c, i) => {
+        const from = acc;
+        acc += c.durationInFrames;
+        return (
+          <Sequence key={i} from={from} durationInFrames={c.durationInFrames}>
+            <AbsoluteFill>
+              <OffthreadVideo
+                src={staticFile(c.src)}
+                muted
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  filter: "blur(28px) brightness(0.5)",
+                  transform: "scale(1.15)",
+                }}
+              />
+              <AbsoluteFill
+                style={{ justifyContent: "center", alignItems: "center" }}
+              >
+                <OffthreadVideo
+                  src={staticFile(c.src)}
+                  muted
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </AbsoluteFill>
+            </AbsoluteFill>
+          </Sequence>
+        );
+      })}
+    </AbsoluteFill>
+  );
 };
 
 const Background: React.FC<{ images: string[] }> = ({ images }) => {
@@ -267,6 +318,7 @@ const Progress: React.FC<{ accent: string }> = ({ accent }) => {
 
 export const Reel: React.FC<ReelProps> = ({
   images,
+  clips,
   beats,
   music,
   narration,
@@ -278,7 +330,11 @@ export const Reel: React.FC<ReelProps> = ({
   const musicVolume = narration ? 0.16 : 0.6;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Background images={images} />
+      {clips && clips.length > 0 ? (
+        <Clips clips={clips} />
+      ) : (
+        <Background images={images} />
+      )}
       <Scrim />
       <Brand logo={logo} />
       <Captions beats={beats} category={category} />

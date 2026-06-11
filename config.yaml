@@ -317,9 +317,36 @@ reels:
   # energetic, Taglish-capable voice from your ElevenLabs library.
   narration:
     enabled: true
-    voice_id: "pNInz6obpgDQGcFmaJgB"   # placeholder premade voice; change to taste
+    voice_id: "okH1aHncYRU2dc9TP3hV"   # user's chosen Taglish reel voice
     model_id: "eleven_multilingual_v2"  # supports Filipino/Tagalog
     max_words: 34                        # ~12-14s of energetic VO
+  # USE YOUR OWN GAMEPLAY FOOTAGE instead of AI-generated stills. Drop video
+  # clips into reels/assets/footage/<game>/ (folders listed in `map` below). The
+  # composer splices a few short clips (clip_seconds each) into each reel and
+  # overlays the captions + Taglish voiceover + music. Landscape gameplay is
+  # shown centered over a blurred fill so it fits the 9:16 frame. If no matching
+  # footage exists, it falls back to AI background stills (so nothing breaks).
+  # Use H.264 .mp4 clips for best compatibility. Keep the library modest in size
+  # (it ships in the repo so the cloud renderer can use it).
+  footage:
+    enabled: true
+    dir: reels/assets/footage
+    clip_seconds: 4         # each clip is trimmed to ~this many seconds
+    min_clips: 3
+    max_clips: 4
+    mute_clips: true        # mute game audio so the voiceover + music stay clean
+    # topic -> subfolder (first keyword match wins; 'general' is the catch-all)
+    map:
+    - {match: ['mobile legends', 'mlbb', 'mpl'], dir: mlbb}
+    - {match: ['dota'], dir: dota2}
+    - {match: ['counter-strike', 'counter strike', 'cs2', 'csgo'], dir: cs2}
+    - {match: ['league of legends', 'wild rift', 'worlds', 'msi'], dir: lol}
+    - {match: ['genshin'], dir: genshin}
+    - {match: ['honkai', 'star rail'], dir: hsr}
+    - {match: ['neverness', 'nte'], dir: nte}
+    - {match: ['final fantasy', 'ff7', 'ffvii'], dir: ff7}
+    - {match: ['resident evil', 'veronica'], dir: re}
+    - {match: ['halo', 'master chief'], dir: halo}
   # Recurring reel series formats (the script agent rotates through these by slot
   # so the feed builds familiar, returning-audience templates).
   formats:
