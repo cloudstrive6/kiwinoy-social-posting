@@ -23,6 +23,9 @@ reels/assets/music/*.ogg
 # Per-run reel assets copied into public at render time (keep the folder)
 reels/public/*
 !reels/public/.gitkeep
+# Footage clips must stay under GitHub's 100MB/file limit. Trim long recordings
+# before adding. This oversized clip is excluded until trimmed:
+reels/assets/footage/**/Hero Spotlight*Hirara*.mp4
 
 # OS
 .DS_Store
