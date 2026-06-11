@@ -41,6 +41,22 @@ def _clean(brief: dict[str, Any], category: str) -> dict[str, Any]:
     return brief
 
 
+def _esports_priority(category: str) -> str:
+    """PH-growth bias: lean esports coverage toward MLBB / MPL PH + top themes."""
+    if category != "esports":
+        return ""
+    pri = CONFIG.topics.get("esports", {}).get("mlbb_priorities", []) or []
+    lines = "\n".join(f"  - {p}" for p in pri)
+    return (
+        "\nPH GROWTH PRIORITY (important): KiwinoyGamer is racing to grow a young "
+        "Philippine community FAST. Mobile Legends: Bang Bang (MLBB) and MPL "
+        "Philippines are the #1 priority. Strongly PREFER an MLBB / MPL PH story "
+        "unless another esports title has a genuinely massive moment today. When "
+        "the topic is MLBB, favor these highest-reach themes for young Filipinos:\n"
+        f"{lines}\n"
+    )
+
+
 def _prompt(category: str, focus: str | None = None) -> str:
     t = CONFIG.topics[category]
     universe = t.get("games") or t.get("leagues") or []
@@ -62,7 +78,7 @@ def _prompt(category: str, focus: str | None = None) -> str:
     return f"""Today you are sourcing ONE {label} topic for KiwinoyGamer.
 
 {scope}
-
+{_esports_priority(category)}
 Pick an angle that fits from:
 {chr(10).join(f"  - {a}" for a in angles)}
 

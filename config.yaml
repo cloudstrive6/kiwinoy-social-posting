@@ -72,6 +72,17 @@ topics:
     - Dota 2 (The International tier and major tournaments)
     - Counter-Strike 2 (tier-1 events, Majors)
     - League of Legends / Wild Rift (Worlds, MSI, regional leagues)
+    # Highest-reach MLBB themes for the young Philippine audience. The research
+    # agent leans toward MLBB / MPL PH over the other esports titles and, when the
+    # topic is MLBB, favors these themes (fastest path to PH reach + community).
+    mlbb_priorities:
+    - 'National pride: PH teams at the M-series World Championship / MSC / SEA Games, Pinas vs the world'
+    - 'MPL Philippines playoffs, finals, bracket reactions, and who-wins-this-series predictions'
+    - 'New hero release or rework: ability breakdown, is it broken, should you buy'
+    - 'New skins (Collector / Legend / event) and any anime or IP collab skins'
+    - 'Hero tier list, must-ban list, and role power rankings for the current patch'
+    - 'Pro builds, combos, and signature-hero highlight plays'
+    - 'Roster moves and transfers (keep it hype, not drama)'
     angles:
     - MPL Philippines bracket reactions, team form and national-pride storylines
     - Draft / meta breakdowns — which heroes, champions or agents decide the series
