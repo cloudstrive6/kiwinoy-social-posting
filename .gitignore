@@ -23,12 +23,18 @@ reels/assets/music/*.ogg
 # Per-run reel assets copied into public at render time (keep the folder)
 reels/public/*
 !reels/public/.gitkeep
-# Footage clips committed to the repo must stay under GitHub's 100MB/file limit.
-# Bigger clips go on the 'footage' GitHub Release instead (tools/footage.py).
-# Render-time download cache for those release clips:
+# Footage: ignore ALL clips by default so a huge accidental paste (e.g. a 40GB
+# raw recording) can never be staged/committed and break a push. Small clips that
+# SHOULD ship in the repo are force-added with `git add -f <file>`; big clips go
+# on the 'footage' GitHub Release via tools/footage.py. Already-committed small
+# clips stay tracked (gitignore does not untrack).
+reels/assets/footage/*/*.mp4
+reels/assets/footage/*/*.mov
+reels/assets/footage/*/*.webm
+reels/assets/footage/*/*.m4v
+reels/assets/footage/*/*.mkv
+# Render-time download cache for release clips:
 reels/assets/footage/.cache/
-# This oversized local clip is excluded (it's on the Release instead):
-reels/assets/footage/**/Hero Spotlight*Hirara*.mp4
 
 # OS
 .DS_Store

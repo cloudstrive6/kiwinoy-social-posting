@@ -5,9 +5,15 @@ live as Release assets (up to 2GB each, free). The reel renderer auto-discovers
 them by their "<game>__" name prefix and downloads what it needs at render time.
 
 Usage:
+  python tools/footage.py sync                 # auto-upload every >100MB clip
   python tools/footage.py upload <game> <file> [<file> ...]
   python tools/footage.py list
   python tools/footage.py delete <asset-name>
+
+`sync` scans the footage folders and uploads any clip over ~95MB to the release
+(named "<folder>__<file>"), skipping ones already there. Smaller clips are left
+for a normal git commit. Just paste clips into reels/assets/footage/<game>/ and
+run sync (or commit the small ones).
 
 <game> is one of the footage folders: mlbb, dota2, cs2, lol, genshin, hsr, nte,
 ff7, re, halo, general.
@@ -27,9 +33,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import requests  # noqa: E402
 
-from core.config import CONFIG  # noqa: E402
+from core.config import CONFIG, ROOT  # noqa: E402
 
 API = "https://api.github.com"
+VIDEO_EXTS = {".mp4", ".mov", ".webm", ".m4v", ".mkv"}
+SIZE_LIMIT = 95 * 1024 * 1024       # ~just under GitHub's 100MB repo file limit
+RELEASE_MAX = 1990 * 1024 * 1024    # GitHub Release assets cap at 2GB/file
 
 
 def _cfg() -> dict:
@@ -93,6 +102,11 @@ def upload(game: str, files: list[str]) -> None:
         if not p.exists():
             print(f"  SKIP (not found): {f}")
             continue
+        if p.stat().st_size > RELEASE_MAX:
+            gb = p.stat().st_size / 1024 / 1024 / 1024
+            print(f"  SKIP ({gb:.1f} GB, over GitHub's 2GB Release limit): {p.name}")
+            print("       Trim it to a short highlight first (reels use only ~4s).")
+            continue
         name = f"{game}__{p.name}"
         if name in existing:  # replace
             requests.delete(
@@ -108,6 +122,38 @@ def upload(game: str, files: list[str]) -> None:
                 headers={**_h(token), "Content-Type": ct}, data=fh,
             )
         print(f"    {'OK' if r.ok else 'FAILED ' + str(r.status_code) + ': ' + r.text[:200]}")
+
+
+def sync() -> None:
+    """Scan footage folders; upload every clip >100MB to the release."""
+    base = ROOT / (_cfg().get("dir", "reels/assets/footage"))
+    if not base.exists():
+        sys.exit(f"Footage dir not found: {base}")
+    existing = {a["name"] for a in _release(_token()).get("assets", [])}
+    uploaded = skipped = small = 0
+    for sub in sorted(p for p in base.iterdir()
+                      if p.is_dir() and not p.name.startswith(".")):
+        game = sub.name
+        for f in sorted(sub.iterdir()):
+            if f.suffix.lower() not in VIDEO_EXTS:
+                continue
+            sz = f.stat().st_size
+            if sz <= SIZE_LIMIT:
+                small += 1
+                continue
+            if sz > RELEASE_MAX:
+                print(f"  TOO BIG ({sz/1024/1024/1024:.1f} GB > 2GB limit), skipped: "
+                      f"{f.name} -- trim it first.")
+                continue
+            name = f"{game}__{f.name}"
+            if name in existing:
+                print(f"  already on release: {name}")
+                skipped += 1
+                continue
+            upload(game, [str(f)])
+            uploaded += 1
+    print(f"\nsync done: uploaded {uploaded}, already-present {skipped}, "
+          f"small/committable {small}")
 
 
 def list_assets() -> None:
@@ -136,7 +182,9 @@ def delete(name: str) -> None:
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if len(args) >= 3 and args[0] == "upload":
+    if len(args) == 1 and args[0] == "sync":
+        sync()
+    elif len(args) >= 3 and args[0] == "upload":
         upload(args[1], args[2:])
     elif len(args) == 1 and args[0] == "list":
         list_assets()
