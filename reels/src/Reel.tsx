@@ -165,24 +165,24 @@ const Scrim: React.FC = () => (
   />
 );
 
-// On-screen channel logo, small, in the top-left corner. Just the logo image
-// (no text). Renders nothing if no logo is configured.
+// On-screen channel logo, small circular badge, in the top-RIGHT corner. Just
+// the logo image (no text). Renders nothing if no logo is configured.
 const Brand: React.FC<{ logo: string | null }> = ({ logo }) => {
   if (!logo) return null;
   return (
     <AbsoluteFill
       style={{
         justifyContent: "flex-start",
-        alignItems: "flex-start",
+        alignItems: "flex-end",
         paddingTop: 50,
-        paddingLeft: 48,
+        paddingRight: 48,
       }}
     >
       <div
         style={{
           width: 104,
           height: 104,
-          borderRadius: 24,
+          borderRadius: "50%",
           background: "#0a0a0f",
           border: "3px solid rgba(255,255,255,0.9)",
           boxShadow: "0 8px 28px rgba(0,0,0,0.5)",
@@ -194,12 +194,7 @@ const Brand: React.FC<{ logo: string | null }> = ({ logo }) => {
       >
         <Img
           src={staticFile(logo)}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transform: "scale(1.35)",
-          }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </div>
     </AbsoluteFill>

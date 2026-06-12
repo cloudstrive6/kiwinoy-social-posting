@@ -112,17 +112,24 @@ export const Graphic: React.FC<GraphicProps> = ({
 
       {/* Logo + footer. */}
       {logo ? (
-        <Img
-          src={staticFile(logo)}
+        <div
           style={{
             position: "absolute",
-            bottom: 56,
+            bottom: 54,
             left: 64,
             width: 128,
             height: 128,
-            objectFit: "contain",
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: "3px solid rgba(255,255,255,0.92)",
+            backgroundColor: "#0a0a0f",
           }}
-        />
+        >
+          <Img
+            src={staticFile(logo)}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </div>
       ) : (
         <div
           style={{
