@@ -1,0 +1,71 @@
+name: KiwinoyGamer Graphic Preview
+
+# On-demand: render one designed KG-theme graphic PNG and upload it as an
+# artifact. Used to preview the on-image headline design (no publishing).
+on:
+  workflow_dispatch:
+    inputs:
+      headline:
+        description: "Headline text"
+        required: true
+        default: "SCROLL STOPPER"
+      sublabel:
+        description: "Small label above the headline (optional)"
+        required: false
+        default: ""
+      image:
+        description: "Path to a photo in the repo (optional, e.g. assets/images/mlbb/x.jpg)"
+        required: false
+        default: ""
+      accent:
+        description: "Headline hex color (optional, default KG red)"
+        required: false
+        default: ""
+
+concurrency:
+  group: kiwinoy-graphic
+  cancel-in-progress: false
+
+jobs:
+  graphic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: reels/package-lock.json
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Remotion renderer
+        working-directory: reels
+        run: |
+          npm install
+          npx remotion browser ensure
+
+      - name: Render the graphic
+        run: |
+          ARGS="--headline \"${{ github.event.inputs.headline }}\""
+          if [ -n "${{ github.event.inputs.sublabel }}" ]; then ARGS="$ARGS --sublabel \"${{ github.event.inputs.sublabel }}\""; fi
+          if [ -n "${{ github.event.inputs.image }}" ]; then ARGS="$ARGS --image \"${{ github.event.inputs.image }}\""; fi
+          if [ -n "${{ github.event.inputs.accent }}" ]; then ARGS="$ARGS --accent \"${{ github.event.inputs.accent }}\""; fi
+          eval python tools/render_graphic.py $ARGS
+
+      - name: Upload the graphic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: graphic-${{ github.run_id }}
+          path: output/graphic_preview.png
+          retention-days: 14
+          if-no-files-found: ignore
