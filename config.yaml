@@ -302,7 +302,7 @@ reels:
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   duration_seconds: 14
-  fps: 30
+  fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080
   height: 1920
   shots: 3                 # background images generated per reel (cycled w/ Ken Burns)
