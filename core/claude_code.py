@@ -110,11 +110,14 @@ def run(
     web: bool = False,
     model: Optional[str] = None,
     timeout: int = 300,
+    allowed_tools: Optional[str] = None,
 ) -> str:
     """Run a one-shot headless Claude prompt and return the text result.
 
     Tries the subscription OAuth token first, then the Anthropic API key as a
     fallback. web=True allowlists WebSearch/WebFetch so Claude can research.
+    allowed_tools overrides the tool allowlist (e.g. "Read" so Claude can open
+    local images for vision tasks).
     """
     model = (
         model
@@ -124,7 +127,9 @@ def run(
     cmd = [_exe(), "-p", "--output-format", "json"]
     if model:
         cmd += ["--model", str(model)]
-    if web:
+    if allowed_tools:
+        cmd += ["--allowedTools", allowed_tools]
+    elif web:
         cmd += ["--allowedTools", "WebSearch,WebFetch"]
 
     # Build the auth attempts in priority order.

@@ -1,0 +1,74 @@
+name: KiwinoyGamer Frame Grab Demo
+
+# On-demand: pull a clean player/hero still from a gameplay clip, enhance it, and
+# design the KG headline over it. Uploads each stage as artifacts (no publishing).
+on:
+  workflow_dispatch:
+    inputs:
+      headline:
+        description: "Headline text"
+        required: false
+        default: "TEAMFIGHT DIFF"
+      sublabel:
+        description: "Small label above the headline"
+        required: false
+        default: "MPL PHILIPPINES"
+      video:
+        description: "Clip path in the repo (optional; default = a committed MLBB clip)"
+        required: false
+        default: ""
+
+concurrency:
+  group: kiwinoy-frame-demo
+  cancel-in-progress: false
+
+jobs:
+  frame:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: reels/package-lock.json
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Claude Code CLI (free vision frame-pick)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Install Remotion renderer
+        working-directory: reels
+        run: |
+          npm install
+          npx remotion browser ensure
+
+      - name: Grab + enhance + design
+        run: |
+          ARGS="--headline \"${{ github.event.inputs.headline }}\" --sublabel \"${{ github.event.inputs.sublabel }}\""
+          if [ -n "${{ github.event.inputs.video }}" ]; then ARGS="$ARGS --video \"${{ github.event.inputs.video }}\""; fi
+          eval python tools/frame_demo.py $ARGS
+
+      - name: Upload the stages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-demo-${{ github.run_id }}
+          path: |
+            output/frame_raw.png
+            output/frame_enhanced.png
+            output/frame_graphic.png
+          retention-days: 14
+          if-no-files-found: ignore
