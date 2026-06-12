@@ -421,6 +421,13 @@ threads_posts:
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 500
   category: sports
+  # TRENDING-SPORT FOCUS: instead of rotating across all sports, each update post
+  # rides the single hottest sport/competition of the moment (e.g. NBA Finals,
+  # a Grand Slam, a World Cup) and varies the angle WITHIN it. This builds topical
+  # authority + a shared-interest community. Auto-detected each run via web search,
+  # so it naturally stays on a marquee event for its whole run, then rolls to the
+  # next big thing. (The daily prediction post still covers esports.)
+  trending_focus: true
   # The sports universe the research agent digs through each run.
   leagues:
   - English Premier League football
