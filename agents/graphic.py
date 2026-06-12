@@ -42,6 +42,9 @@ def render(
     """Render a designed graphic PNG to save_path and return its bytes."""
     g = CONFIG.graphics if hasattr(CONFIG, "graphics") else {}
     w, h = (int(x) for x in size.lower().split("x"))
+    # Remotion runs with cwd=reels/, so the output path must be ABSOLUTE or it
+    # would be written under reels/ and our existence check would miss it.
+    save_path = Path(save_path).resolve()
     tag = save_path.stem
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     copied: list[str] = []
