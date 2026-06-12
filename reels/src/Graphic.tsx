@@ -98,18 +98,6 @@ export const Graphic: React.FC<GraphicProps> = ({
         {headline}
       </div>
 
-      {/* Brand accent bar. */}
-      <div
-        style={{
-          position: "absolute",
-          left: 78,
-          bottom: 172,
-          width: 130,
-          height: 12,
-          backgroundColor: acc,
-        }}
-      />
-
       {/* Logo + footer. */}
       {logo ? (
         <div
