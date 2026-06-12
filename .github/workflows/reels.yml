@@ -99,6 +99,19 @@ jobs:
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY
 
+      - name: Poster frames (dry-run layout preview)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        continue-on-error: true
+        run: |
+          f=$(ls -t output/*/reel.mp4 2>/dev/null | head -1)
+          if [ -n "$f" ]; then
+            d=$(dirname "$f")
+            for t in 2 8 20 45; do
+              ffmpeg -y -ss "$t" -i "$f" -frames:v 1 "$d/preview_${t}s.png" 2>/dev/null || true
+            done
+            echo "Poster frames written next to $f"
+          fi
+
       - name: Upload run artifacts (brief, caption, beats, mp4)
         if: always()
         uses: actions/upload-artifact@v4
