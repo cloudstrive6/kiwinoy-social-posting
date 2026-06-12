@@ -2,14 +2,14 @@
 setlocal enabledelayedexpansion
 
 rem ============================================================================
-rem  KiwinoyGamer - compress gameplay videos with NVIDIA NVENC (GPU, fast)
+rem  KiwinoyGamer - compress gameplay videos (NVIDIA NVENC, with CPU fallback)
 rem ----------------------------------------------------------------------------
 rem  Drag one or more video files (or a folder) onto this .bat, or run:
 rem    compress_videos.bat "C:\clips\game.mp4" [more...]
 rem  Output goes to a "compressed" subfolder next to each source video.
 rem  QUALITY: lower = better+bigger, higher = smaller (18-28 ok). MAXH = max height.
-rem  FPS:     leave blank to KEEP the source frame rate (60fps stays 60fps).
-rem           Set to a number (e.g. 60 or 30) only if you want to force it.
+rem  FPS:     blank = keep source frame rate (60fps stays 60fps). Set to force it.
+rem  Tries the GPU encoder first; if the GPU is busy/unavailable it uses the CPU.
 rem ============================================================================
 
 set "QUALITY=24"
@@ -50,10 +50,25 @@ goto :argloop
 set "OUTDIR=%~dp1compressed"
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 set "OUT=%OUTDIR%\%~n1.mp4"
+del "%OUT%" >nul 2>nul
 echo.
 echo Compressing "%~nx1" ...
-"%FFMPEG%" -hide_banner -loglevel error -y -i "%~1" -vf "scale=-2:min(%MAXH%\,ih)" %FPSARG% -c:v h264_nvenc -preset p5 -rc vbr -cq %QUALITY% -b:v 0 -c:a aac -b:a 128k -movflags +faststart "%OUT%"
-if errorlevel 1 (echo   [!] FAILED ^(see message above^)) else (echo   done -^> "%OUT%")
+rem --- try the GPU encoder (NVENC) first; hide its errors since we fall back ---
+"%FFMPEG%" -hide_banner -loglevel error -y -i "%~1" -vf "scale=-2:min(%MAXH%\,ih)" %FPSARG% -c:v h264_nvenc -preset p5 -rc vbr -cq %QUALITY% -b:v 0 -c:a aac -b:a 128k -movflags +faststart "%OUT%" 2>nul
+call :ok "%OUT%" && (
+  echo   done ^(GPU^) -^> "%OUT%"
+  exit /b 0
+)
+rem --- GPU failed: use the CPU encoder (libx264) ---
+del "%OUT%" >nul 2>nul
+echo   GPU encoder unavailable - using CPU ^(libx264, slower but reliable^)...
+"%FFMPEG%" -hide_banner -loglevel error -y -i "%~1" -vf "scale=-2:min(%MAXH%\,ih)" %FPSARG% -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart "%OUT%"
+call :ok "%OUT%" && (echo   done ^(CPU^) -^> "%OUT%") || (echo   [!] FAILED - see messages above)
+exit /b 0
+
+:ok
+if not exist "%~1" exit /b 1
+for %%A in ("%~1") do if %%~zA LSS 100000 exit /b 1
 exit /b 0
 
 :end
