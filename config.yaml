@@ -379,7 +379,8 @@ reels:
     slots:
     - id: 1
       time: '04:00'   # 12:25 PM PHT (lunch)
-      category: gacha
+      category: esports
+      focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
     - id: 2
       time: '10:00'   # 6:25 PM PHT
       category: esports
@@ -391,6 +392,7 @@ reels:
     - id: 4
       time: '15:00'   # 11:25 PM PHT (late night)
       category: esports
+      focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
 
 # Image-set posts: a daily post built from a large CURATED image set stored on a
 # GitHub Release (e.g. your Final Fantasy VII Rebirth screenshots). Each run

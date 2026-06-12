@@ -9,7 +9,7 @@ name: KiwinoyGamer Auto-Reels
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 4 * * *"   # slot 1 (Gacha)
+    - cron: "25 4 * * *"   # slot 1 (Esports, MLBB)
     - cron: "25 10 * * *"  # slot 2 (Esports, MLBB)
     - cron: "25 13 * * *"  # slot 3 (Esports, MLBB)
     - cron: "25 15 * * *"  # slot 4 (Esports)
