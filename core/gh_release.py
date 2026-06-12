@@ -59,6 +59,28 @@ def list_assets(gamekey: str) -> list[dict[str, str]]:
     return [a for a in out if a["url"]]
 
 
+def list_release_assets(tag: str) -> list[dict[str, str]]:
+    """Return [{name, url}] for ALL assets on the given release tag (any type)."""
+    cfg = _cfg()
+    repo = cfg.get("release_repo")
+    if not repo or not tag:
+        return []
+    try:
+        r = requests.get(
+            f"https://api.github.com/repos/{repo}/releases/tags/{tag}",
+            headers=_headers(), timeout=30,
+        )
+        if r.status_code != 200:
+            return []
+        assets = r.json().get("assets", []) or []
+    except Exception:
+        return []
+    return [
+        {"name": a.get("name", ""), "url": a.get("browser_download_url", "")}
+        for a in assets if a.get("browser_download_url")
+    ]
+
+
 def download(asset: dict[str, str], cache_dir: Path) -> Optional[Path]:
     """Download an asset into cache_dir (cached by name). Returns Path or None."""
     cache = Path(cache_dir)

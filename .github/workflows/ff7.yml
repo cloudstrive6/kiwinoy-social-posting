@@ -1,0 +1,59 @@
+name: KiwinoyGamer FF7 Daily Post
+
+# 1 Final Fantasy VII post/day (carousel or static) built from your FF7 image set
+# on the 'ff7-images' Release. 14:25 UTC.
+on:
+  schedule:
+    - cron: "25 14 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (build but no publish)? true/false"
+        required: false
+        default: "false"
+
+concurrency:
+  group: kiwinoy-ff7
+  cancel-in-progress: false
+
+jobs:
+  ff7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Claude Code CLI (free vision + caption)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Build + publish the FF7 post
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python run.py --photopost ff7 $DRY
+
+      - name: Upload run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ff7-${{ github.run_id }}
+          path: output/
+          retention-days: 14
+          if-no-files-found: ignore

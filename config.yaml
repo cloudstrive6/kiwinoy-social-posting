@@ -392,6 +392,21 @@ reels:
       time: '15:00'   # 11:25 PM PHT (late night)
       category: esports
 
+# Image-set posts: a daily post built from a large CURATED image set stored on a
+# GitHub Release (e.g. your Final Fantasy VII Rebirth screenshots). Each run
+# samples some images, the free vision picks a theme + 3-5 distinct images +
+# a short caption, then they're enhanced and branded (KG logo top-right) and
+# posted as a carousel/static to Facebook + Instagram. Upload a set with:
+#   python tools/upload_images.py <bucket>   (creates release '<bucket>-images')
+photoposts:
+  enabled: true
+  buckets:
+  - ff7            # 1 Final Fantasy VII post/day
+  sample_size: 24  # images sampled per run for the vision to choose from
+  slides_min: 3
+  slides_max: 5
+  time: '14:00'    # UTC (one post/day)
+
 # Carousel track: 2 multi-image posts/day (3-5 slides) to Facebook + Instagram.
 # Slide 1 = scroll-stopping cover; middle slides each carry ONE idea (a rank, a
 # stat, a matchup, a prediction) with short on-image text; last slide = CTA.

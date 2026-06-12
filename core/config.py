@@ -112,6 +112,10 @@ class _Config:
         return self._data.get("carousels", {})
 
     @property
+    def photoposts(self) -> dict[str, Any]:
+        return self._data.get("photoposts", {})
+
+    @property
     def threads_posts(self) -> dict[str, Any]:
         return self._data.get("threads_posts", {})
 

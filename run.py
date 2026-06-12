@@ -73,6 +73,11 @@ def main() -> int:
         action="store_true",
         help="run a Threads IMAGE post (designed photo + headline)",
     )
+    g.add_argument(
+        "--photopost",
+        metavar="BUCKET",
+        help="run an image-set post for a bucket (e.g. ff7)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -107,6 +112,16 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[threads-image] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    if args.photopost:
+        from agents import photopost
+        try:
+            photopost.run(bucket=args.photopost, dry_run=args.dry_run,
+                          scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[photopost] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     track = "reel" if args.reel else ("carousel" if args.carousel else "post")
