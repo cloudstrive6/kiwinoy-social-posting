@@ -69,10 +69,24 @@ def brand_image(in_path: Path, out_path: Path, w: int = 1080, h: int = 1350) -> 
     return out_path
 
 
+def _all_release_assets(bucket: str) -> list[dict]:
+    """Aggregate assets across all of a bucket's releases (handles the GitHub
+    1000-assets/release cap: <bucket>-images, <bucket>-images-2, ...)."""
+    out: list[dict] = []
+    n = 1
+    while n <= 20:
+        tag = f"{bucket}-images" if n == 1 else f"{bucket}-images-{n}"
+        assets = gh_release.list_release_assets(tag)
+        if not assets and n > 1:
+            break
+        out += assets
+        n += 1
+    return out
+
+
 def _sample(bucket: str, work_dir: Path, k: int) -> list[Path]:
-    """Download a random sample of k images from the Release (or local folder)."""
-    tag = f"{bucket}-images"
-    assets = gh_release.list_release_assets(tag)
+    """Download a random sample of k images from the Release(s) (or local folder)."""
+    assets = _all_release_assets(bucket)
     if assets:
         chosen = random.sample(assets, min(k, len(assets)))
         cache = work_dir / "dl"
