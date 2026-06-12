@@ -52,11 +52,13 @@ export const Graphic: React.FC<GraphicProps> = ({
         />
       ) : null}
 
-      {/* Darken top + bottom so the text always pops. */}
+      {/* Guarantee a DARK zone behind the headline (top) and the logo/handle
+          (bottom) so the red + white text stay high-contrast on ANY photo,
+          bright or dark. The middle stays clear so the subject shows. */}
       <AbsoluteFill
         style={{
           background:
-            "linear-gradient(to bottom, rgba(11,11,14,0.88) 0%, rgba(11,11,14,0.25) 30%, rgba(11,11,14,0.20) 60%, rgba(11,11,14,0.92) 100%)",
+            "linear-gradient(to bottom, rgba(11,11,14,0.94) 0%, rgba(11,11,14,0.84) 20%, rgba(11,11,14,0.42) 38%, rgba(11,11,14,0.12) 55%, rgba(11,11,14,0.52) 80%, rgba(11,11,14,0.95) 100%)",
         }}
       />
 
@@ -92,7 +94,8 @@ export const Graphic: React.FC<GraphicProps> = ({
           lineHeight: 0.9,
           color: acc,
           textTransform: "uppercase",
-          textShadow: "0 8px 34px rgba(0,0,0,0.55)",
+          textShadow:
+            "0 2px 6px rgba(0,0,0,0.9), 0 8px 34px rgba(0,0,0,0.55)",
         }}
       >
         {headline}
