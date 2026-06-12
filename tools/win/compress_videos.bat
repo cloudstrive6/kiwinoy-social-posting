@@ -8,10 +8,16 @@ rem  Drag one or more video files (or a folder) onto this .bat, or run:
 rem    compress_videos.bat "C:\clips\game.mp4" [more...]
 rem  Output goes to a "compressed" subfolder next to each source video.
 rem  QUALITY: lower = better+bigger, higher = smaller (18-28 ok). MAXH = max height.
+rem  FPS:     leave blank to KEEP the source frame rate (60fps stays 60fps).
+rem           Set to a number (e.g. 60 or 30) only if you want to force it.
 rem ============================================================================
 
 set "QUALITY=24"
 set "MAXH=1080"
+set "FPS="
+
+set "FPSARG="
+if defined FPS set "FPSARG=-r %FPS%"
 
 rem --- find ffmpeg: PATH, then the winget install location, then C:\ffmpeg ---
 set "FFMPEG="
@@ -46,7 +52,7 @@ if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 set "OUT=%OUTDIR%\%~n1.mp4"
 echo.
 echo Compressing "%~nx1" ...
-"%FFMPEG%" -hide_banner -loglevel error -y -i "%~1" -vf "scale=-2:min(%MAXH%\,ih)" -c:v h264_nvenc -preset p5 -rc vbr -cq %QUALITY% -b:v 0 -c:a aac -b:a 128k -movflags +faststart "%OUT%"
+"%FFMPEG%" -hide_banner -loglevel error -y -i "%~1" -vf "scale=-2:min(%MAXH%\,ih)" %FPSARG% -c:v h264_nvenc -preset p5 -rc vbr -cq %QUALITY% -b:v 0 -c:a aac -b:a 128k -movflags +faststart "%OUT%"
 if errorlevel 1 (echo   [!] FAILED ^(see message above^)) else (echo   done -^> "%OUT%")
 exit /b 0
 
