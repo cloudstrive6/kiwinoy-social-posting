@@ -1,17 +1,16 @@
 name: KiwinoyGamer Auto-Carousels
 
-# Publishes a 3-5 image carousel to Facebook + Instagram twice a day.
+# Publishes a 3-5 image carousel to Facebook + Instagram once a day.
+# Gacha carousel paused; the remaining slot is Esports (MLBB), curated/footage-only.
 # 13:25 UTC = 21:25 Philippines prime time -> Esports (MPL audience)
-# 22:25 UTC = 18:25 US Eastern evening    -> Gacha / games
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 13 * * *"  # 13:25 UTC -> carousel slot 1 (Esports)
-    - cron: "25 22 * * *"  # 22:25 UTC -> carousel slot 2 (Gacha)
+    - cron: "25 13 * * *"  # 13:25 UTC = 9:25 PM PHT -> carousel slot 1 (Esports, MLBB)
   workflow_dispatch:
     inputs:
       slot:
-        description: "Carousel slot id (1-2). Leave blank to auto-pick by time."
+        description: "Carousel slot id (1). Leave blank to auto-pick by time."
         required: false
         default: ""
       dry_run:
@@ -72,7 +71,6 @@ jobs:
         run: |
           case "${{ github.event.schedule }}" in
             "25 13 * * *") SLOT=1 ;;
-            "25 22 * * *") SLOT=2 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT}" >> "$GITHUB_OUTPUT"

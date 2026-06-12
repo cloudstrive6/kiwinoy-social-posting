@@ -1,19 +1,17 @@
 name: KiwinoyGamer Auto-Post
 
-# Runs the social posting team 4x/day on a cron (UTC). Each cron maps to a slot.
-# Rotation: Gacha -> Esports -> Gacha -> Esports. (Sports text posts retired;
-# sports still runs on the separate Threads track.)
+# Runs the social posting team 2x/day on a cron (UTC). Each cron maps to a slot.
+# Gacha feed posts are paused; both slots are Esports (MLBB), curated/footage-only.
+# (Sports text posts retired; sports still runs on the separate Threads track.)
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 4 * * *"   # 04:25 UTC -> slot 1 (Gacha)
-    - cron: "25 8 * * *"   # 08:25 UTC -> slot 2 (Esports)
-    - cron: "25 12 * * *"  # 12:25 UTC -> slot 3 (Gacha)
-    - cron: "25 20 * * *"  # 20:25 UTC -> slot 4 (Esports)
+    - cron: "25 8 * * *"   # 08:25 UTC = 4:25 PM PHT -> slot 1 (Esports, MLBB)
+    - cron: "25 20 * * *"  # 20:25 UTC = 4:25 AM PHT -> slot 2 (Esports, MLBB)
   workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
     inputs:
       slot:
-        description: "Slot id to run (1-4). Leave blank to auto-pick by time."
+        description: "Slot id to run (1-2). Leave blank to auto-pick by time."
         required: false
         default: ""
       dry_run:
@@ -74,10 +72,8 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "25 4 * * *")  SLOT=1 ;;
-            "25 8 * * *")  SLOT=2 ;;
-            "25 12 * * *") SLOT=3 ;;
-            "25 20 * * *") SLOT=4 ;;
+            "25 8 * * *")  SLOT=1 ;;
+            "25 20 * * *") SLOT=2 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT}" >> "$GITHUB_OUTPUT"

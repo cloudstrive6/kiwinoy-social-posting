@@ -80,7 +80,7 @@ def run_slot(
         if attempt:
             log("Regenerating after fact-check fail...")
         log("Researching trending topic...")
-        brief = research.run(category)
+        brief = research.run(category, focus=slot.get("focus"))
         (run_dir / "brief.json").write_text(
             json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
         )
@@ -119,9 +119,15 @@ def run_slot(
         image_bytes = media.design(brief, image_path, work_dir=run_dir)
         if image_bytes:
             log(f"Designed from your media -> {image_path}")
-        else:
+        elif CONFIG.image.get("ai_fallback", True):
             log("No curated photo/footage for this topic; generating AI image...")
             image_bytes = image.run(brief, caption, save_path=image_path)
+        else:
+            log("No curated photo/footage and AI fallback is off — skipping post.")
+            result["published"] = False
+            result["skipped"] = "no_media"
+            _save(run_dir, result)
+            return result
         log(f"Image saved -> {image_path}")
     result["image_path"] = str(image_path) if image_path else None
 
@@ -202,12 +208,18 @@ def run_reel_slot(
     if clips:
         log(f"Using {len(clips)} of your gameplay clip(s): "
             f"{', '.join(p.name for p in clips)}")
-    else:
+    elif CONFIG.image.get("ai_fallback", True):
         log(f"No matching footage — generating {n_shots} AI background shot(s)...")
         for i in range(n_shots):
             p = run_dir / f"shot{i}.png"
             image.run_background(brief, i, n_shots, save_path=p)
             image_paths.append(p)
+    else:
+        log("No matching footage and AI fallback is off — skipping reel.")
+        result["published"] = False
+        result["skipped"] = "no_media"
+        _save(run_dir, result)
+        return result
 
     # Optional AI Taglish voiceover (fail-open: music-only if unavailable).
     narration_path = None
@@ -268,7 +280,7 @@ def run_carousel_slot(
         if attempt:
             log("Regenerating after fact-check fail...")
         log("Researching trending topic...")
-        brief = research.run(category)
+        brief = research.run(category, focus=slot.get("focus"))
         (run_dir / "brief.json").write_text(
             json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
         )
@@ -294,6 +306,12 @@ def run_carousel_slot(
     # Slides only after the caption passes, to avoid spending on a skipped post.
     log("Planning + generating slides...")
     slides, images = carousel.run(brief, caption, save_dir=run_dir)
+    if not images:
+        log("No curated photo/footage and AI fallback is off — skipping carousel.")
+        result["published"] = False
+        result["skipped"] = "no_media"
+        _save(run_dir, result)
+        return result
     (run_dir / "slides.json").write_text(
         json.dumps(slides, indent=2, ensure_ascii=False), encoding="utf-8"
     )

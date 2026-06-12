@@ -2,10 +2,10 @@ name: KiwinoyGamer Auto-Reels
 
 # Renders + publishes 4 Taglish reels per day, all timed to Philippine peak
 # scroll windows (PHT = UTC+8):
-#   04:25 UTC = 12:25 PM (lunch)  -> slot 1 (Gacha)
-#   10:25 UTC = 6:25 PM           -> slot 2 (Esports, MLBB-led)
-#   13:25 UTC = 9:25 PM (prime)   -> slot 3 (Esports, MLBB-led)
-#   15:25 UTC = 11:25 PM (late)   -> slot 4 (Esports, open)
+#   04:25 UTC = 12:25 PM (lunch)  -> slot 1 (Esports, MLBB)
+#   10:25 UTC = 6:25 PM           -> slot 2 (Esports, MLBB)
+#   13:25 UTC = 9:25 PM (prime)   -> slot 3 (Esports, MLBB)
+#   15:25 UTC = 11:25 PM (late)   -> slot 4 (Esports, MLBB)
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.

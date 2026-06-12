@@ -27,17 +27,13 @@ schedule:
   # runs on the dedicated Threads track (16/day), which is unaffected.
   slots:
   - id: 1
-    time: '04:00'
-    category: gacha
-  - id: 2
     time: '08:00'
     category: esports
-  - id: 3
-    time: '12:00'
-    category: gacha
-  - id: 4
+    focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
+  - id: 2
     time: '20:00'
     category: esports
+    focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
 topics:
   # "gacha" = the games / Facebook + Instagram IMAGE rotation. Despite the key
   # name it now covers both gacha titles (anime art) AND major AAA titles (each
@@ -139,6 +135,10 @@ hashtags:
 image:
   size: 1024x1024
   quality: high
+  # Curated/footage-only: when a post has no matching photo or footage frame, SKIP
+  # it instead of generating an AI image. Keeps the system off gpt-image-1 (no
+  # OpenAI dependency / billing limits). Set true to re-enable the AI fallback.
+  ai_fallback: false
   styles:
     sports: 'A real-life press photograph of REAL human athletes, indistinguishable
       from an actual photo on a sports news site. Real people with believable skin,
@@ -424,9 +424,7 @@ carousels:
     - id: 1
       time: '13:00'
       category: esports
-    - id: 2
-      time: '22:00'
-      category: gacha
+      focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
 
 # Dedicated Threads text track. SPORTS ONLY, text posts (no images/reels),
 # 500 chars or less, storytelling + scroll-stopping hooks. Written by Claude via

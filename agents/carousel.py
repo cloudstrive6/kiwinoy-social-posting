@@ -166,6 +166,11 @@ def run(
             images.append(out.read_bytes())
         return slides, images
 
+    if not CONFIG.image.get("ai_fallback", True):
+        # Curated/footage-only mode: no media for this topic -> no slides.
+        # The caller (run_carousel_slot) skips the post when images is empty.
+        return slides, []
+
     size = CONFIG.carousels.get("size", "1024x1024")
     for i, slide in enumerate(slides):
         data = ai.image(_slide_prompt(brief, slide, i, n), size=size)
