@@ -36,6 +36,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      # Lets designed posts pull footage clips from the 'footage' GitHub Release.
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
 
@@ -47,12 +49,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: "npm"
+          cache-dependency-path: reels/package-lock.json
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Install Claude Code CLI (research + caption + fact-check)
         run: npm install -g @anthropic-ai/claude-code
+
+      - name: Ensure ffmpeg (frame grabbing)
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Install Remotion (designed image rendering)
+        working-directory: reels
+        run: |
+          npm install
+          npx remotion browser ensure
 
       - name: Map trigger -> slot
         id: pick

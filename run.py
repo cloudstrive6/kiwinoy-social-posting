@@ -25,7 +25,13 @@ import sys
 from datetime import datetime, timezone
 
 from core.config import CONFIG
-from orchestrator import run_carousel_slot, run_reel_slot, run_slot, run_threads
+from orchestrator import (
+    run_carousel_slot,
+    run_reel_slot,
+    run_slot,
+    run_threads,
+    run_threads_image,
+)
 
 
 def _slots_for(track: str) -> list[dict]:
@@ -61,6 +67,12 @@ def main() -> int:
         action="store_true",
         help="run the dedicated Threads sports track (no slot needed)",
     )
+    g.add_argument(
+        "--threads-image",
+        dest="threads_image",
+        action="store_true",
+        help="run a Threads IMAGE post (designed photo + headline)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -87,6 +99,14 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    if args.threads_image:
+        try:
+            run_threads_image(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[threads-image] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     track = "reel" if args.reel else ("carousel" if args.carousel else "post")

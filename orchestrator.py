@@ -18,6 +18,7 @@ from agents import (
     content,
     factcheck,
     image,
+    media,
     narration,
     publisher,
     reel_composer,
@@ -107,13 +108,20 @@ def run_slot(
         _save(run_dir, result)
         return result
 
-    # Image only after the post passes (gacha), to avoid spending on a skipped post.
+    # Image only after the post passes, to avoid spending on a skipped post.
+    # Prefer YOUR media (curated photo / footage frame, designed with the KG
+    # headline); fall back to a generated AI image only if you have none.
     image_bytes = None
     image_path = None
     if not is_sports:
-        log("Generating image...")
         image_path = run_dir / "image.png"
-        image_bytes = image.run(brief, caption, save_path=image_path)
+        log("Designing image from your photos/footage...")
+        image_bytes = media.design(brief, image_path, work_dir=run_dir)
+        if image_bytes:
+            log(f"Designed from your media -> {image_path}")
+        else:
+            log("No curated photo/footage for this topic; generating AI image...")
+            image_bytes = image.run(brief, caption, save_path=image_path)
         log(f"Image saved -> {image_path}")
     result["image_path"] = str(image_path) if image_path else None
 
@@ -385,6 +393,71 @@ def run_threads(
     else:
         log("Publishing to Threads...")
         api_result = publisher.run_threads(text=text, scheduled_at=scheduled_at)
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+
+    _save(run_dir, result)
+    return result
+
+
+def run_threads_image(
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Threads IMAGE post: research the hottest sport -> design a KG graphic on
+    YOUR sports photo/footage -> publish to Threads (image + caption). Skips if
+    you have no sports media for the topic (the text track still covers it)."""
+    run_dir = OUTPUT_DIR / f"{_stamp()}_threadsimg"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[threads-image] {m}", flush=True)
+
+    brief: dict[str, Any] = {}
+    text = ""
+    passed = False
+    for attempt in range(2):
+        if attempt:
+            log("Regenerating after fact-check fail...")
+        log("Researching the hottest sport...")
+        brief = threads_research.run(["sports"])
+        (run_dir / "brief.json").write_text(
+            json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        log(f"Topic: {brief.get('title')}")
+        text = threads_writer.run(brief)
+        (run_dir / "threads.txt").write_text(text, encoding="utf-8")
+        if _factcheck_ok(text, brief, "claude", log):
+            passed = True
+            break
+
+    result: dict[str, Any] = {
+        "post_type": "threads_image", "brief": brief, "text": text, "dry_run": dry_run,
+    }
+    if not passed:
+        log("Fact-check failed twice — skipping.")
+        result["published"] = False
+        result["skipped"] = "factcheck_failed"
+        _save(run_dir, result)
+        return result
+
+    log("Designing image from your sports media...")
+    img = media.design(brief, run_dir / "image.png", work_dir=run_dir)
+    if not img:
+        log("No sports photo/footage for this topic — skipping (text track covers it).")
+        result["published"] = False
+        result["skipped"] = "no_media"
+        _save(run_dir, result)
+        return result
+
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        log("Publishing image post to Threads...")
+        api_result = publisher.run(
+            caption=text, image_bytes=img,
+            platform_keys=["threads"], scheduled_at=scheduled_at,
+        )
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")

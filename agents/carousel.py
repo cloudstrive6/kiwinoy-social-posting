@@ -137,14 +137,39 @@ def run(
     caption: str,
     save_dir: Path | None = None,
 ) -> tuple[list[dict[str, str]], list[bytes]]:
-    """Plan + generate the carousel. Returns (slide_plan, [png_bytes...])."""
+    """Plan + generate the carousel. Returns (slide_plan, [png_bytes...]).
+
+    Prefers YOUR media: if curated photos / footage exist for the topic, each
+    slide is a designed KG graphic over your image. Otherwise it falls back to
+    generated gpt-image-1 slides.
+    """
+    from agents import graphic, media  # local import to avoid import cycles
+
     slides = plan_slides(brief, caption)
-    size = CONFIG.carousels.get("size", "1024x1024")
+    n = len(slides)
     images: list[bytes] = []
+
+    bases: list[Path] = []
+    if save_dir is not None:
+        save_dir.mkdir(parents=True, exist_ok=True)
+        bases = media.resolve_base_images(brief, n, save_dir / "bases")
+
+    if bases:  # designed slides over your photos/frames (portrait 4:5)
+        sub = media._sublabel(brief)
+        for i, slide in enumerate(slides):
+            base = bases[i % len(bases)]
+            out = (save_dir / f"slide{i + 1}.png") if save_dir else Path(f"slide{i + 1}.png")
+            graphic.render(
+                base, slide.get("headline", ""), out,
+                sublabel=(slide.get("support") or sub)[:26], size="1080x1350",
+            )
+            images.append(out.read_bytes())
+        return slides, images
+
+    size = CONFIG.carousels.get("size", "1024x1024")
     for i, slide in enumerate(slides):
-        data = ai.image(_slide_prompt(brief, slide, i, len(slides)), size=size)
+        data = ai.image(_slide_prompt(brief, slide, i, n), size=size)
         images.append(data)
         if save_dir is not None:
-            save_dir.mkdir(parents=True, exist_ok=True)
             (save_dir / f"slide{i + 1}.png").write_bytes(data)
     return slides, images

@@ -184,3 +184,23 @@ def grab(video: Path, brief: dict[str, Any], out_path: Path, n: int = 12) -> Opt
         compose_portrait(best, composed, head_frac=head)
         enhance(composed, out_path)
     return out_path
+
+
+def grab_n(video: Path, brief: dict[str, Any], n: int, out_dir: Path) -> list[Path]:
+    """Grab the n sharpest distinct frames (for carousel slides). No per-frame
+    vision (sharpness-ranked to stay cheap); each is composed + enhanced."""
+    out: list[Path] = []
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        cands = extract_candidates(Path(video), Path(tmp), n=max(12, n * 3))
+        if not cands:
+            return []
+        ranked = sorted(cands, key=sharpness, reverse=True)[:n]
+        for i, fr in enumerate(ranked):
+            composed = Path(tmp) / f"c{i}.png"
+            compose_portrait(fr, composed, head_frac=0.2)
+            o = out_dir / f"frame{i}.png"
+            enhance(composed, o)
+            out.append(o)
+    return out
