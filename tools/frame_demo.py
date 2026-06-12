@@ -49,12 +49,14 @@ brief = {"title": a.headline, "subject": "Mobile Legends MPL Philippines", "angl
 with tempfile.TemporaryDirectory() as tmp:
     cands = frames.extract_candidates(video, Path(tmp), n=12)
     print(f"candidate frames: {len(cands)}", flush=True)
-    best = frames.pick_best(brief, cands)
+    best, head = frames.pick_best(brief, cands)
     if not best:
         sys.exit("Could not extract/pick a frame (ffmpeg present?).")
-    print(f"picked sharpness score: {round(frames.sharpness(best), 1)}", flush=True)
+    print(f"picked sharpness {round(frames.sharpness(best), 1)}, head@{head:.2f}", flush=True)
     shutil.copyfile(best, out / "frame_raw.png")
-    frames.enhance(best, out / "frame_enhanced.png")
+    composed = Path(tmp) / "composed.png"
+    frames.compose_portrait(best, composed, head_frac=head)
+    frames.enhance(composed, out / "frame_enhanced.png")
 
 graphic.render(out / "frame_enhanced.png", a.headline,
                out / "frame_graphic.png", sublabel=a.sublabel)

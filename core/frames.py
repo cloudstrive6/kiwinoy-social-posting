@@ -104,43 +104,83 @@ def enhance(in_path: Path, out_path: Path, target_min: int = 1280) -> Path:
     return out_path
 
 
-def pick_best(brief: dict[str, Any], paths: list[Path]) -> Optional[Path]:
-    """Pick the best frame: sharpest few -> free-vision chooses by composition."""
+def pick_best(brief: dict[str, Any], paths: list[Path]) -> tuple[Optional[Path], float]:
+    """Pick the best frame + the subject's head position (0=top..1=bottom).
+
+    Sharpest few are pre-filtered, then the free Claude vision chooses the best
+    by composition and reports where the main subject's head/face sits so we can
+    frame around it. Falls back to (sharpest, 0.18) if vision is unavailable.
+    """
     if not paths:
-        return None
+        return None, 0.18
     top = sorted(paths, key=sharpness, reverse=True)[:4]
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(top))
     prompt = (
         "Use the Read tool to open EACH of these image files, then choose the "
         "single best one to use as the background of a social media post about: "
         f"{brief.get('title', '')} ({brief.get('subject', '')}).\n"
-        "Prefer: the player or game character clearly and prominently visible, "
-        "sharp focus, strong composition, minimal motion blur, and NOT a blank, "
-        "transition, or heavily UI-cluttered frame.\n\n"
+        "Prefer: the player or game character clearly and prominently visible "
+        "WITH THE FACE/HEAD SHOWING, sharp focus, strong composition, minimal "
+        "motion blur, and NOT a blank, transition, or heavily UI-cluttered frame.\n\n"
         f"Images:\n{listing}\n\n"
-        f"Reply with ONLY the number (1-{len(top)}) of the best image."
+        "Reply with ONLY a JSON object, no prose:\n"
+        '{"best": <image number 1-' + str(len(top)) + '>, '
+        '"head": <vertical position of the main subject\'s head as a decimal, '
+        '0.0 = very top of the image, 1.0 = bottom>}'
     )
     try:
         ans = claude_code.run(prompt, allowed_tools="Read", timeout=180).strip()
-        m = re.search(r"[1-9]\d*", ans)
-        if m:
-            idx = int(m.group()) - 1
-            if 0 <= idx < len(top):
-                return top[idx]
+        best_m = re.search(r'"best"\s*:\s*([0-9]+)', ans)
+        head_m = re.search(r'"head"\s*:\s*([0-9]*\.?[0-9]+)', ans)
+        idx = (int(best_m.group(1)) - 1) if best_m else 0
+        idx = idx if 0 <= idx < len(top) else 0
+        head = float(head_m.group(1)) if head_m else 0.18
+        head = min(max(head, 0.0), 0.9)
+        return top[idx], head
     except Exception as e:
         print(f"[frames] vision pick failed ({e!r}); using sharpest frame.", flush=True)
-    return top[0]
+    return top[0], 0.18
 
 
-def grab(video: Path, brief: dict[str, Any], out_path: Path, n: int = 10) -> Optional[Path]:
-    """Full pipeline: clip -> best enhanced still at out_path (or None)."""
+def compose_portrait(
+    src: Path, out_path: Path, head_frac: float = 0.18,
+    w: int = 1080, h: int = 1350, head_target: float = 0.40, zoom: float = 1.12,
+) -> Path:
+    """Crop/zoom to the subject's UPPER BODY with the head in the clear zone.
+
+    Scales to cover w x h (times zoom so the subject is a little larger / legs
+    cropped), then positions the crop so the subject's head lands at head_target
+    of the height (below the top headline). Returns out_path (raw copy on error).
+    """
+    try:
+        from PIL import Image
+        im = Image.open(src).convert("RGB")
+        sw, sh = im.size
+        scale = max(w / sw, h / sh) * max(1.0, zoom)
+        nw, nh = round(sw * scale), round(sh * scale)
+        im = im.resize((nw, nh), Image.LANCZOS)
+        top = round(head_frac * nh - head_target * h)
+        top = max(0, min(top, nh - h))
+        left = max(0, (nw - w) // 2)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        im.crop((left, top, left + w, top + h)).save(out_path)
+    except Exception as e:
+        print(f"[frames] compose failed ({e!r}); using raw frame.", flush=True)
+        shutil.copyfile(src, out_path)
+    return out_path
+
+
+def grab(video: Path, brief: dict[str, Any], out_path: Path, n: int = 12) -> Optional[Path]:
+    """Full pipeline: clip -> pick frame -> upper-body compose -> enhance."""
     with tempfile.TemporaryDirectory() as tmp:
         cands = extract_candidates(Path(video), Path(tmp), n=n)
         if not cands:
             print("[frames] no candidates (ffmpeg missing or unreadable clip).", flush=True)
             return None
-        best = pick_best(brief, cands)
+        best, head = pick_best(brief, cands)
         if best is None:
             return None
-        enhance(best, out_path)
+        composed = Path(tmp) / "composed.png"
+        compose_portrait(best, composed, head_frac=head)
+        enhance(composed, out_path)
     return out_path
