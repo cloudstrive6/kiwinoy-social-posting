@@ -363,6 +363,51 @@ reels:
     - {match: ['final fantasy', 'ff7', 'ffvii'], dir: ff7}
     - {match: ['resident evil', 'veronica'], dir: re}
     - {match: ['halo', 'master chief'], dir: halo}
+    - {match: ['last of us', 'tlou', 'ellie', 'abby', 'naughty dog'], dir: thelastofus2}
+  # Pretty display names for footage folder keys (used in titles + voiceovers).
+  game_names:
+    mlbb: 'Mobile Legends: Bang Bang'
+    dota2: 'Dota 2'
+    cs2: 'Counter-Strike 2'
+    lol: 'League of Legends'
+    genshin: 'Genshin Impact'
+    hsr: 'Honkai: Star Rail'
+    nte: 'Neverness to Everness'
+    ff7: 'Final Fantasy VII'
+    re: 'Resident Evil'
+    halo: 'Halo'
+    thelastofus2: 'The Last of Us Part II'
+    general: 'this game'
+  # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
+  # style): a bold hook bar up top + synced white subtitles at the bottom.
+  caption:
+    font: 'DejaVu Sans'   # installed on the CI runner; libass resolves by name
+    hook_size: 64
+    sub_size: 52
+    music_duck: 0.14      # background music volume under the voiceover
+  # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
+  # on top, the game's own audio kept, NO voiceover. Short Reel.
+  gameplay:
+    enabled: true
+    target_seconds: 75    # trim the clip to at most this (Reel-friendly)
+    fps: 60               # keep gameplay smooth
+  # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
+  # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
+  commentary:
+    enabled: true
+    short_seconds: 70
+    long_seconds: 360     # ~6 min default; raise toward 900 (15 min) as desired
+    fps: 30               # talking-over-broll; 30fps keeps render fast
+    long_min_clips: 12    # a game needs >= this many clips to carry a long reel
+    broll_seconds: 8      # max b-roll window taken from each clip (keeps it varied)
+    max_clips: 30         # cap clips downloaded/used per reel (controls bandwidth)
+    formats:
+    - 'Top N ranking (rank moments / heroes / bosses, count down to #1)'
+    - 'X Things You Must Do (practical tips a new player needs)'
+    - 'Why this game / character hits different (a heartfelt or hyped take)'
+    - 'Underrated moments most players miss'
+    - 'Beginner mistakes to avoid'
+    - 'A spoiler-free retrospective / love letter to the game'
   # Recurring reel series formats (the script agent rotates through these by slot
   # so the feed builds familiar, returning-audience templates).
   formats:
@@ -377,22 +422,43 @@ reels:
   #   two evening-prime slots; one open esports + one gacha for variety.
   schedule:
     slots:
+    # --- Hype reels (animated Remotion, MLBB news-driven) ---
     - id: 1
       time: '04:00'   # 12:25 PM PHT (lunch)
+      kind: hype
       category: esports
       focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
     - id: 2
       time: '10:00'   # 6:25 PM PHT
+      kind: hype
       category: esports
       focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
     - id: 3
       time: '13:00'   # 9:25 PM PHT (evening prime)
+      kind: hype
       category: esports
       focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
     - id: 4
       time: '15:00'   # 11:25 PM PHT (late night)
+      kind: hype
       category: esports
       focus: 'Mobile Legends: Bang Bang (MPL Philippines)'
+    # --- Gameplay-only reels (static hook + standalone gameplay, no VO) ---
+    - id: 5
+      time: '06:00'   # 2:25 PM PHT
+      kind: gameplay
+    - id: 6
+      time: '16:00'   # 12:25 AM PHT
+      kind: gameplay
+    # --- Commentary reels (Taglish VO + b-roll + subtitles) ---
+    - id: 7
+      time: '11:00'   # 7:25 PM PHT (prime)
+      kind: commentary
+      length: short
+    - id: 8
+      time: '02:00'   # 10:25 AM PHT
+      kind: commentary
+      length: long
 
 # Image-set posts: a daily post built from a large CURATED image set stored on a
 # GitHub Release (e.g. your Final Fantasy VII Rebirth screenshots). Each run

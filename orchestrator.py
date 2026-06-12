@@ -22,13 +22,36 @@ from agents import (
     narration,
     publisher,
     reel_composer,
+    reel_ffmpeg,
     reel_script,
+    reel_topics,
     research,
     threads_research,
     threads_writer,
 )
 from core import elevenlabs
-from core.config import CONFIG, OUTPUT_DIR
+from core.config import CONFIG, OUTPUT_DIR, ROOT
+
+
+def _reel_logo() -> Optional[Any]:
+    """Resolve the channel logo file path for ffmpeg overlays (or None)."""
+    cfg = CONFIG.reels.get("brand_logo")
+    if not cfg:
+        return None
+    p = ROOT / cfg
+    return p if p.exists() else None
+
+
+def _reel_music() -> Optional[Any]:
+    """Pick a random royalty-free music track path (or None)."""
+    import random
+    from pathlib import Path
+    mdir = ROOT / CONFIG.reels.get("music_dir", "reels/assets/music")
+    if not mdir.exists():
+        return None
+    tracks = [p for p in mdir.iterdir()
+              if p.suffix.lower() in {".mp3", ".m4a", ".aac", ".wav", ".ogg"}]
+    return random.choice(tracks) if tracks else None
 
 
 def _stamp() -> str:
@@ -154,7 +177,27 @@ def run_reel_slot(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Reel slot: research -> caption + beats -> FACT-CHECK -> shots -> render -> publish."""
+    """Dispatch a reel slot by its `kind`.
+
+    hype (default) -> animated Remotion hype reel (news-driven, MLBB).
+    gameplay       -> standalone gameplay clip + a static hook caption (ffmpeg).
+    commentary     -> Taglish voiceover over gameplay b-roll w/ subtitles (ffmpeg).
+    """
+    slot = CONFIG.reel_slot(slot_id)
+    kind = str(slot.get("kind", "hype")).lower()
+    if kind == "gameplay":
+        return run_gameplay_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
+    if kind == "commentary":
+        return run_commentary_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
+    return _run_hype_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
+
+
+def _run_hype_reel(
+    slot_id: int,
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Hype reel: research -> caption + beats -> FACT-CHECK -> shots -> render -> publish."""
     slot = CONFIG.reel_slot(slot_id)
     category = slot["category"]
     focus = slot.get("focus")  # e.g. pin esports reels to MLBB
@@ -257,6 +300,159 @@ def run_reel_slot(
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
+    _save(run_dir, result)
+    return result
+
+
+def run_gameplay_reel(
+    slot_id: int,
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Gameplay-only reel: one standalone clip + a static hook caption (no VO)."""
+    taglish = bool(CONFIG.reels.get("taglish", True))
+    gcfg = CONFIG.reels.get("gameplay", {}) or {}
+    run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_gameplay"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[reel {slot_id} | gameplay] {m}", flush=True)
+
+    games = reel_composer.list_games()
+    if not games:
+        log("No gameplay footage available — skipping.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
+    log(f"Footage available: {games}")
+    brief = reel_topics.run("gameplay", games, taglish=taglish)
+    (run_dir / "brief.json").write_text(
+        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Game: {brief.get('subject')} | Hook: {brief.get('hook')}")
+
+    clips = reel_composer.clips_for_game(brief["game"], n=1)
+    if not clips:
+        log("Could not resolve a clip — skipping.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+
+    caption = content.run(brief, taglish=taglish)
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+
+    log("Rendering gameplay reel with ffmpeg...")
+    reel_path = run_dir / "reel.mp4"
+    video_bytes = reel_ffmpeg.build_gameplay(
+        clips[0], reel_path, hook=brief["hook"], logo=_reel_logo(),
+        fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
+        target_seconds=float(gcfg.get("target_seconds", 75)),
+        music=_reel_music(),
+    )
+    log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
+
+    result: dict[str, Any] = {
+        "slot_id": slot_id, "kind": "gameplay", "brief": brief,
+        "caption": caption, "reel_path": str(reel_path), "dry_run": dry_run,
+    }
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        log("Publishing gameplay reel to Instagram + Facebook Reels...")
+        api_result = publisher.run_reel(
+            caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+    _save(run_dir, result)
+    return result
+
+
+def run_commentary_reel(
+    slot_id: int,
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Commentary reel: Taglish voiceover over gameplay b-roll, synced subtitles.
+
+    length 'short' -> a Reel; 'long' -> a video feed post (over Reel limits).
+    """
+    from core import ffmpeg as ff
+
+    slot = CONFIG.reel_slot(slot_id)
+    length = str(slot.get("length", "short")).lower()
+    taglish = bool(CONFIG.reels.get("taglish", True))
+    ccfg = CONFIG.reels.get("commentary", {}) or {}
+    target = float(ccfg.get("long_seconds", 360) if length == "long"
+                   else ccfg.get("short_seconds", 70))
+    run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_commentary_{length}"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[reel {slot_id} | commentary/{length}] {m}", flush=True)
+
+    games = reel_composer.list_games()
+    if not games:
+        log("No gameplay footage available — skipping.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary"}, "no_media")
+    log(f"Footage available: {games}")
+    brief = reel_topics.run("commentary", games, length=length, taglish=taglish)
+    (run_dir / "brief.json").write_text(
+        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Topic: {brief.get('title')} ({brief.get('subject')})")
+
+    # Voiceover script -> fact-check -> timestamped TTS (subtitles).
+    vo_text = reel_script.run_commentary(brief, target_seconds=target, taglish=taglish)
+    (run_dir / "narration.txt").write_text(vo_text, encoding="utf-8")
+    if not _factcheck_ok(vo_text, brief, "claude", log):
+        log("Fact-check failed — skipping commentary reel.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary", "brief": brief}, "factcheck_failed")
+
+    log("Synthesizing Taglish voiceover + subtitles...")
+    vo_path, subtitles = elevenlabs.tts_timed(vo_text, run_dir / "vo.mp3")
+    if not vo_path:
+        log("Voiceover unavailable (no key / TTS error) — skipping (commentary needs VO).")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary", "brief": brief}, "no_voiceover")
+    vo_seconds = ff.duration(vo_path) or target
+    log(f"Voiceover ready ({vo_seconds:.0f}s, {len(subtitles)} subtitle lines).")
+
+    clips = reel_composer.clips_for_game(brief["game"], n=int(ccfg.get("max_clips", 30)))
+    if not clips:
+        log("Could not resolve clips — skipping.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary", "brief": brief}, "no_media")
+
+    caption = content.run(brief, taglish=taglish)
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+
+    log(f"Rendering commentary reel with ffmpeg ({len(clips)} clips, ~{vo_seconds:.0f}s)...")
+    reel_path = run_dir / "reel.mp4"
+    video_bytes = reel_ffmpeg.build_commentary(
+        clips, reel_path, vo_path=vo_path, total_seconds=vo_seconds,
+        subtitles=subtitles, title=brief.get("title"), logo=_reel_logo(),
+        fps=int(ccfg.get("fps", 30)), music=_reel_music(),
+        per_clip_seconds=float(ccfg.get("broll_seconds", 8)),
+    )
+    log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
+
+    result: dict[str, Any] = {
+        "slot_id": slot_id, "kind": "commentary", "length": length, "brief": brief,
+        "caption": caption, "narration": vo_text, "reel_path": str(reel_path),
+        "vo_seconds": vo_seconds, "dry_run": dry_run,
+    }
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        if length == "long":
+            log("Publishing long commentary as a video post (IG Reel + FB video)...")
+            api_result = publisher.run_video_post(
+                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+        else:
+            log("Publishing commentary reel to Instagram + Facebook Reels...")
+            api_result = publisher.run_reel(
+                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+    _save(run_dir, result)
+    return result
+
+
+def _skip(run_dir, result: dict[str, Any], reason: str) -> dict[str, Any]:
+    result["published"] = False
+    result["skipped"] = reason
     _save(run_dir, result)
     return result
 

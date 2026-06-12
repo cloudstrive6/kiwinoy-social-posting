@@ -1,0 +1,284 @@
+"""ffmpeg reel composer — gameplay-only + commentary reels (Gameranx-style).
+
+Layout (9:16, black canvas):
+  - gameplay footage letterboxed in the middle (scaled to fit, black bars),
+  - a bold HOOK / TITLE caption in a black bar near the top,
+  - (commentary only) time-synced SUBTITLE captions along the bottom,
+  - the KG channel logo in the top-right corner.
+
+Two builders:
+  build_gameplay()  -> one standalone clip + static hook, KEEPS the game audio,
+                       no voiceover. Short Reel (<=90s).
+  build_commentary()-> several clips as b-roll under a Taglish voiceover with
+                       burned subtitles. Game audio dropped; VO + ducked music.
+                       Short Reel OR long video post (up to ~15 min).
+
+Renders are ffmpeg-only (no headless Chrome) so they are fast at any length and
+safe for CI. Fails by raising ReelFfmpegError; the orchestrator logs + skips.
+"""
+from __future__ import annotations
+
+import random
+import tempfile
+from pathlib import Path
+from typing import Any, Optional
+
+from core import ffmpeg
+from core.config import CONFIG, ROOT
+
+
+class ReelFfmpegError(RuntimeError):
+    pass
+
+
+# ---------------------------------------------------------------- ASS captions
+
+def _caption_cfg() -> dict[str, Any]:
+    return (CONFIG.reels.get("caption", {}) or {})
+
+
+def _ass_header(w: int, h: int) -> str:
+    cap = _caption_cfg()
+    font = str(cap.get("font", "DejaVu Sans"))
+    hook_size = int(cap.get("hook_size", 64))
+    sub_size = int(cap.get("sub_size", 52))
+    # ASS colours are &HAABBGGRR. White text, black box/outline.
+    return (
+        "[Script Info]\n"
+        "ScriptType: v4.00+\n"
+        "WrapStyle: 0\n"
+        f"PlayResX: {w}\n"
+        f"PlayResY: {h}\n"
+        "ScaledBorderAndShadow: yes\n\n"
+        "[V4+ Styles]\n"
+        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, "
+        "OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, "
+        "ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, "
+        "MarginL, MarginR, MarginV, Encoding\n"
+        # Hook: top-centre, opaque black box behind white caps text.
+        f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H73000000,"
+        f"&H73000000,-1,0,0,0,100,100,0,0,3,18,0,8,90,90,150,1\n"
+        # Sub: bottom-centre, white text with a thick black outline (Gameranx).
+        f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
+        f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,300,1\n\n"
+        "[Events]\n"
+        "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, "
+        "Effect, Text\n"
+    )
+
+
+def build_ass(
+    out_path: Path,
+    w: int,
+    h: int,
+    hook: Optional[str] = None,
+    hook_end: float = 0.0,
+    subtitles: Optional[list[dict[str, Any]]] = None,
+) -> Path:
+    """Write an ASS subtitle file: a persistent hook + timed subtitle events.
+
+    hook        -> top caption text (shown 0 .. hook_end seconds).
+    subtitles   -> [{start, end, text}, ...] bottom captions (seconds).
+    """
+    lines = [_ass_header(w, h)]
+    if hook:
+        lines.append(
+            f"Dialogue: 0,{ffmpeg.ass_time(0)},{ffmpeg.ass_time(max(1.0, hook_end))},"
+            f"Hook,,0,0,0,,{ffmpeg.ass_escape(hook.upper())}\n"
+        )
+    for s in subtitles or []:
+        lines.append(
+            f"Dialogue: 0,{ffmpeg.ass_time(s['start'])},{ffmpeg.ass_time(s['end'])},"
+            f"Sub,,0,0,0,,{ffmpeg.ass_escape(str(s['text']))}\n"
+        )
+    out_path.write_text("".join(lines), encoding="utf-8")
+    return out_path
+
+
+def _ass_path_for_filter(p: Path) -> str:
+    """Escape an ASS file path for use inside an ffmpeg filtergraph."""
+    s = str(p).replace("\\", "/")
+    # Escape the Windows drive colon for the filter parser (Linux paths unaffected).
+    s = s.replace(":", "\\:")
+    return s
+
+
+# ------------------------------------------------------------------- builders
+
+def _norm_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
+    """Per-clip: scale to fit, letterbox-pad to WxH, square pixels, fixed fps."""
+    return (
+        f"[{idx}:v]scale={w}:{h}:force_original_aspect_ratio=decrease,"
+        f"pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps={fps}[{label}]"
+    )
+
+
+def build_gameplay(
+    clip: Path,
+    out_path: Path,
+    hook: str,
+    logo: Optional[Path] = None,
+    fps: int = 60,
+    w: int = 1080,
+    h: int = 1920,
+    target_seconds: float = 75.0,
+    music: Optional[Path] = None,
+) -> bytes:
+    """Single standalone gameplay clip + a persistent top hook. Keeps game audio.
+
+    Trims to target_seconds. If the clip has no audio, falls back to `music`
+    (looped) or silence. Returns the rendered MP4 bytes.
+    """
+    clip = Path(clip)
+    if not clip.exists():
+        raise ReelFfmpegError(f"gameplay clip missing: {clip}")
+    dur = ffmpeg.duration(clip) or target_seconds
+    show = min(float(target_seconds), dur) if dur else float(target_seconds)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
+
+        inputs: list[str] = ["-i", str(clip)]
+        next_idx = 1
+        logo_idx = None
+        if logo and Path(logo).exists():
+            inputs += ["-i", str(logo)]
+            logo_idx = next_idx
+            next_idx += 1
+
+        keep_audio = ffmpeg.has_audio(clip)
+        music_idx = None
+        if not keep_audio and music and Path(music).exists():
+            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            music_idx = next_idx
+            next_idx += 1
+
+        fc = [_norm_chain(0, w, h, fps, "base")]
+        vlabel = "base"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]scale=140:-1[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ov]")
+            vlabel = "ov"
+        fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
+
+        args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                         "-map", "[v]"]
+        if keep_audio:
+            args += ["-map", "0:a"]
+        elif music_idx is not None:
+            args += ["-map", f"{music_idx}:a"]
+        args += _v_encode() + _a_encode(bool(keep_audio or music_idx is not None))
+        args += ["-shortest", str(out_path)]
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=1800)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
+def build_commentary(
+    clips: list[Path],
+    out_path: Path,
+    vo_path: Path,
+    total_seconds: float,
+    subtitles: Optional[list[dict[str, Any]]] = None,
+    title: Optional[str] = None,
+    title_seconds: float = 4.5,
+    logo: Optional[Path] = None,
+    fps: int = 30,
+    w: int = 1080,
+    h: int = 1920,
+    music: Optional[Path] = None,
+    per_clip_seconds: float = 8.0,
+) -> bytes:
+    """Multi-clip b-roll under a voiceover, with burned subtitles. Two passes:
+    (A) video-only letterboxed concat + ASS overlays + logo, trimmed to the VO
+    length; (B) mux VO + ducked music. Returns the rendered MP4 bytes.
+    """
+    clips = [Path(c) for c in clips if Path(c).exists()]
+    if not clips:
+        raise ReelFfmpegError("commentary: no usable clips")
+    vo_path = Path(vo_path)
+    if not vo_path.exists():
+        raise ReelFfmpegError(f"commentary: voiceover missing: {vo_path}")
+
+    # Lay clips end-to-end (looping the pool) until they cover the VO length.
+    # Each clip contributes at most `per_clip_seconds` of b-roll, so one long /
+    # heavy source clip can never dominate (or blow up) the render.
+    per = max(2.0, float(per_clip_seconds))
+    order: list[Path] = []
+    covered = 0.0
+    durs = {c: min(per, (ffmpeg.duration(c) or per)) for c in clips}
+    pool = clips[:]
+    random.shuffle(pool)
+    i = 0
+    guard = 0
+    while covered < total_seconds and guard < 4000:
+        c = pool[i % len(pool)]
+        order.append(c)
+        covered += durs[c]
+        i += 1
+        guard += 1
+
+    with tempfile.TemporaryDirectory() as tmp:
+        ass = build_ass(
+            Path(tmp) / "cap.ass", w, h,
+            hook=title, hook_end=title_seconds, subtitles=subtitles,
+        )
+        # ---- Pass A: video only -------------------------------------------
+        # `-t per` before each input caps how much of each clip is decoded/used.
+        inputs: list[str] = []
+        for c in order:
+            inputs += ["-t", f"{per:.2f}", "-i", str(c)]
+        logo_idx = None
+        if logo and Path(logo).exists():
+            inputs += ["-i", str(logo)]
+            logo_idx = len(order)
+
+        fc = [_norm_chain(k, w, h, fps, f"v{k}") for k in range(len(order))]
+        cat_in = "".join(f"[v{k}]" for k in range(len(order)))
+        fc.append(f"{cat_in}concat=n={len(order)}:v=1:a=0[cat]")
+        vlabel = "cat"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]scale=140:-1[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ov]")
+            vlabel = "ov"
+        fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
+
+        video_only = Path(tmp) / "video.mp4"
+        args_a = inputs + ["-t", f"{total_seconds:.2f}",
+                           "-filter_complex", ";".join(fc), "-map", "[v]", "-an"]
+        args_a += _v_encode() + [str(video_only)]
+        rc, err = ffmpeg.run(args_a, timeout=3600)
+        if rc != 0 or not video_only.exists():
+            raise ReelFfmpegError(f"commentary pass A failed (rc={rc}):\n{err}")
+
+        # ---- Pass B: mux VO (+ ducked, looped music) ----------------------
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        args_b = ["-i", str(video_only), "-i", str(vo_path)]
+        if music and Path(music).exists():
+            duck = float(_caption_cfg().get("music_duck", 0.14))
+            args_b += ["-stream_loop", "-1", "-i", str(music),
+                       "-filter_complex",
+                       f"[2:a]volume={duck}[m];[1:a]volume=1[vo];"
+                       f"[vo][m]amix=inputs=2:duration=first:dropout_transition=0[a]",
+                       "-map", "0:v", "-map", "[a]"]
+        else:
+            args_b += ["-map", "0:v", "-map", "1:a"]
+        args_b += ["-c:v", "copy"] + _a_encode(True) + ["-shortest", str(out_path)]
+        rc, err = ffmpeg.run(args_b, timeout=600)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"commentary pass B failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
+def _v_encode() -> list[str]:
+    return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+            "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
+
+
+def _a_encode(has: bool) -> list[str]:
+    if not has:
+        return ["-an"]
+    return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]

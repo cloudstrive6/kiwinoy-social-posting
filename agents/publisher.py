@@ -112,6 +112,43 @@ def run_reel(
         )
 
 
+def run_video_post(
+    caption: str,
+    video_bytes: bytes,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Publish a LONG video (commentary, > Reel length limits).
+
+    Instagram publishes any API video as a Reel (max ~15 min), so IG keeps the
+    reels placement. Facebook Reels cap at ~90s, so on Facebook a long video goes
+    out as a normal video feed post (no reels placement).
+    """
+    account_ids = CONFIG.account_ids(_IMAGE_PLATFORMS)
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_url = postforme.upload_video(video_bytes)
+    placements = {"instagram": {"placement": "reels"}}  # FB omitted = feed video
+    try:
+        return postforme.create_post(
+            caption=caption,
+            social_accounts=account_ids,
+            media_urls=[media_url],
+            scheduled_at=scheduled_at,
+            platform_configurations=placements,
+            is_draft=is_draft,
+        )
+    except postforme.PostForMeError:
+        return postforme.create_post(
+            caption=caption,
+            social_accounts=account_ids,
+            media_urls=[media_url],
+            scheduled_at=scheduled_at,
+            platform_configurations=None,
+            is_draft=is_draft,
+        )
+
+
 def run_threads(
     text: str,
     scheduled_at: Optional[str] = None,

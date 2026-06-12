@@ -36,6 +36,10 @@ reels/assets/footage/*/*.mkv
 # Render-time download cache for release clips:
 reels/assets/footage/.cache/
 
+# Reference-only sample reels the user drops in to show a target format (big,
+# never committed — they're inspiration, not pipeline assets).
+reels/assets/sample-reels-format-games/
+
 # OS
 .DS_Store
 Thumbs.db

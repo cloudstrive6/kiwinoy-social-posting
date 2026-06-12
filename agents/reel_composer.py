@@ -13,7 +13,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from core import gh_release
 from core.config import CONFIG, ROOT
@@ -71,6 +71,51 @@ def resolve_clips(brief: dict[str, Any]) -> list[Path]:
     cache = ROOT / fcfg.get("cache_dir", "reels/assets/footage/.cache")
     out: list[Path] = []
     for kind, item in picked:
+        if kind == "local":
+            out.append(item)
+        else:
+            p = gh_release.download(item, cache)
+            if p:
+                out.append(p)
+    return out
+
+
+def list_games() -> dict[str, int]:
+    """Return {game_key: clip_count} for every game that has usable footage.
+
+    Counts both local clips (reels/assets/footage/<game>/) and GitHub Release
+    assets ("<game>__*.mp4"). Used by the topic agent so commentary / gameplay
+    reels are only proposed for games we can actually show footage from.
+    """
+    fcfg = CONFIG.reels.get("footage", {}) or {}
+    base = ROOT / fcfg.get("dir", "reels/assets/footage")
+    keys: set[str] = set()
+    if base.exists():
+        keys |= {d.name for d in base.iterdir() if d.is_dir() and not d.name.startswith(".")}
+    for entry in fcfg.get("map", []) or []:
+        keys.add(str(entry.get("dir", "")))
+    out: dict[str, int] = {}
+    for k in sorted(k for k in keys if k):
+        n = len(_candidates(k))
+        if n:
+            out[k] = n
+    return out
+
+
+def clips_for_game(key: str, n: Optional[int] = None) -> list[Path]:
+    """Resolve up to n clip paths for a specific game key (downloads picked
+    remotes). If n is None, returns the whole resolved pool. Shuffled."""
+    pool = _candidates(key)
+    if not pool:
+        return []
+    random.shuffle(pool)
+    if n is not None:
+        pool = pool[: max(1, n)]
+    cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
+        "cache_dir", "reels/assets/footage/.cache"
+    )
+    out: list[Path] = []
+    for kind, item in pool:
         if kind == "local":
             out.append(item)
         else:

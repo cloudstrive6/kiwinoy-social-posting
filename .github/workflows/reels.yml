@@ -9,14 +9,18 @@ name: KiwinoyGamer Auto-Reels
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 4 * * *"   # slot 1 (Esports, MLBB)
-    - cron: "25 10 * * *"  # slot 2 (Esports, MLBB)
-    - cron: "25 13 * * *"  # slot 3 (Esports, MLBB)
-    - cron: "25 15 * * *"  # slot 4 (Esports)
+    - cron: "25 4 * * *"   # slot 1 (Hype, MLBB)
+    - cron: "25 10 * * *"  # slot 2 (Hype, MLBB)
+    - cron: "25 13 * * *"  # slot 3 (Hype, MLBB)
+    - cron: "25 15 * * *"  # slot 4 (Hype, MLBB)
+    - cron: "25 6 * * *"   # slot 5 (Gameplay-only)
+    - cron: "25 16 * * *"  # slot 6 (Gameplay-only)
+    - cron: "25 11 * * *"  # slot 7 (Commentary, short)
+    - cron: "25 2 * * *"   # slot 8 (Commentary, long)
   workflow_dispatch:
     inputs:
       slot:
-        description: "Reel slot id to run (1-4)"
+        description: "Reel slot id to run (1-8)"
         required: true
         default: "1"
       dry_run:
@@ -31,7 +35,7 @@ concurrency:
 jobs:
   reel:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     env:
       # Research, caption + fact-check run on the Claude subscription token (free);
       # ANTHROPIC_API_KEY is the fallback; OpenAI is only for the image generator.
@@ -60,6 +64,9 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
+      - name: Install ffmpeg + fonts (gameplay / commentary reels)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+
       - name: Install Claude Code CLI (research + caption + fact-check)
         run: npm install -g @anthropic-ai/claude-code
 
@@ -77,6 +84,10 @@ jobs:
             "25 10 * * *") SLOT=2 ;;
             "25 13 * * *") SLOT=3 ;;
             "25 15 * * *") SLOT=4 ;;
+            "25 6 * * *")  SLOT=5 ;;
+            "25 16 * * *") SLOT=6 ;;
+            "25 11 * * *") SLOT=7 ;;
+            "25 2 * * *")  SLOT=8 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"

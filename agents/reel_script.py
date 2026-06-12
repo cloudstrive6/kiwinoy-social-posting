@@ -99,3 +99,52 @@ Return ONLY this JSON (no prose, no code fences):
             {"kind": "cta", "text": "Follow for more"},
         ]
     return beats
+
+
+# Spoken Taglish words per second (commentary VO pacing). Used to size scripts.
+_WORDS_PER_SEC = 2.2
+
+
+def run_commentary(
+    brief: dict[str, Any],
+    target_seconds: float,
+    taglish: bool = True,
+) -> str:
+    """Write the full spoken Taglish VOICEOVER for a commentary reel.
+
+    Sized to ~target_seconds of speech and structured as a hook intro -> the
+    talking points -> a follow CTA. Returns one plain-text script (no labels);
+    subtitle timing is derived later from the TTS timestamps.
+    """
+    target_words = int(max(60, min(target_seconds * _WORDS_PER_SEC, 2400)))
+    points = "\n".join(f"- {p}" for p in brief.get("key_facts", []))
+    fmt = brief.get("format", "")
+
+    prompt = f"""Write the SPOKEN voiceover script for ONE commentary reel about:
+
+TITLE: {brief.get('title')}
+GAME: {brief.get('subject')}
+PROMISE: {brief.get('angle')}
+FORMAT: {fmt}
+TALKING POINTS (cover these, in a punchy order; stay accurate, never invent
+spoilers or fake facts):
+{points}
+
+This is read aloud by a hype young Filipino narrator over gameplay b-roll.
+- Natural Taglish, conversational, like talking to your barkada. NOT formal.
+- Open with a 1-2 sentence HOOK that makes them stay, then deliver each point
+  with energy, then end on a quick "follow for more" style CTA.
+- Aim for about {target_words} words total (this fills ~{int(target_seconds)}s).
+- Plain spoken sentences only. No hashtags, no emojis, no section labels, no
+  stage directions, no quotation marks. Just the words to be read aloud.
+
+Return ONLY the spoken script as plain text."""
+
+    raw = ai.write(prompt, system=_system(taglish))
+    text = sanitize(raw).strip().strip('"').strip()
+    # Safety cap so a runaway generation never balloons TTS cost.
+    words = text.split()
+    hard_cap = int(target_words * 1.5)
+    if len(words) > hard_cap:
+        text = " ".join(words[:hard_cap]).rstrip(",.;: ") + "."
+    return text
