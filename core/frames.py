@@ -48,18 +48,23 @@ def extract_candidates(video: Path, out_dir: Path, n: int = 10) -> list[Path]:
     """Extract ~n frames spread across the clip. Returns saved frame paths."""
     ff = _ffmpeg()
     if not ff:
+        print("[frames] ffmpeg not found on PATH.", flush=True)
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
     dur = _duration(video)
     vf = f"fps={max(0.1, n / dur):.4f}" if dur > 0 else "fps=1/2"
     pattern = str(out_dir / "cand_%03d.png")
     try:
-        subprocess.run(
+        proc = subprocess.run(
             [ff, "-hide_banner", "-loglevel", "error", "-i", str(video),
              "-vf", vf, "-frames:v", str(n * 2), "-q:v", "2", pattern],
             capture_output=True, text=True, timeout=300,
         )
-    except Exception:
+        if proc.returncode != 0:
+            print(f"[frames] ffmpeg exit {proc.returncode} (dur={dur}, vf={vf}): "
+                  f"{(proc.stderr or '')[-400:]}", flush=True)
+    except Exception as e:
+        print(f"[frames] ffmpeg error: {e!r}", flush=True)
         return []
     return sorted(out_dir.glob("cand_*.png"))
 
