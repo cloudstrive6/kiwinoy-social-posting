@@ -16,6 +16,7 @@ export type GraphicProps = {
   image: string | null; // file name in reels/public/
   headline: string;
   sublabel: string; // small label above the headline (e.g. NBA FINALS)
+  subheadline: string; // white supporting line in the lower half (optional)
   footer: string; // small line bottom-right (e.g. @kiwinoygamer)
   accent: string; // headline color (defaults to KG red)
   logo: string | null;
@@ -27,6 +28,7 @@ export const defaultGraphicProps: GraphicProps = {
   image: null,
   headline: "SCROLL STOPPER",
   sublabel: "",
+  subheadline: "",
   footer: "@kiwinoygamer",
   accent: KG.red,
   logo: null,
@@ -38,6 +40,7 @@ export const Graphic: React.FC<GraphicProps> = ({
   image,
   headline,
   sublabel,
+  subheadline,
   footer,
   accent,
   logo,
@@ -100,6 +103,28 @@ export const Graphic: React.FC<GraphicProps> = ({
       >
         {headline}
       </div>
+
+      {/* White supporting sub-headline in the lower half (over the dark base of
+          the gradient so it stays readable on any photo). */}
+      {subheadline ? (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 232,
+            left: 70,
+            right: 70,
+            fontFamily: anton.fontFamily,
+            fontSize: 58,
+            lineHeight: 1.02,
+            color: KG.white,
+            textTransform: "uppercase",
+            textShadow:
+              "0 2px 6px rgba(0,0,0,0.95), 0 8px 30px rgba(0,0,0,0.6)",
+          }}
+        >
+          {subheadline}
+        </div>
+      ) : null}
 
       {/* Logo + footer. */}
       {logo ? (

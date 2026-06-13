@@ -14,6 +14,18 @@ subfolder. Edit the top of the file to change:
 A multi-GB recording typically drops to a few hundred MB with no visible quality
 loss for social.
 
+## Prep a whole folder for the cloud (recommended) — `prep_footage.bat`
+This is the **one-drag** way to get raw recordings into the system. Drag a game
+folder (e.g. `reels\assets\footage\spider-man1`) onto `prep_footage.bat`. Every
+video inside is **compressed to 1080p AND split into ~25-second clips**, written
+to a `_ready` subfolder. A 3-minute recording becomes ~7 small clips (~10-20 MB
+each) — exactly the b-roll size the reels use. Then tell Claude "prep is done"
+and it uploads the `_ready` clips to the footage Release (cloud).
+
+Edit the top of the file to change `SEG` (seconds per clip), `MAXH` (height), or
+`QUALITY`. Use this for bulk b-roll; use `compress_videos.bat` (below) when you
+just want to shrink a file without splitting it.
+
 ## Splice / trim (cut out the good moments)
 The script above only compresses. To grab short clips, two options:
 

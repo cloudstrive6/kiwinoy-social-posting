@@ -36,6 +36,7 @@ def render(
     headline: str,
     save_path: Path,
     sublabel: str = "",
+    subheadline: str = "",
     accent: str | None = None,
     size: str = "1080x1350",
 ) -> bytes:
@@ -66,6 +67,7 @@ def render(
             "image": image_name,
             "headline": headline,
             "sublabel": sublabel,
+            "subheadline": subheadline,
             "footer": CONFIG.brand.get("handle", "@kiwinoygamer"),
             "accent": accent or (g.get("accent") if g else None) or "#E5322C",
             "logo": logo_name,

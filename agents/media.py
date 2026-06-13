@@ -57,6 +57,21 @@ def _headline(brief: dict[str, Any]) -> str:
     return (brief.get("headline_idea") or brief.get("title", "") or "").strip()
 
 
+def _subheadline(brief: dict[str, Any]) -> str:
+    """A short white supporting line for the lower half of a designed image.
+
+    Prefers an explicit subhead, else the editorial angle, else the topic title;
+    trimmed to ~2 lines so it never crowds the logo/handle.
+    """
+    s = (brief.get("subhead") or brief.get("angle") or brief.get("title", "")).strip()
+    # Don't echo the headline back as the subheadline.
+    if s and s.lower() == _headline(brief).lower():
+        s = (brief.get("title", "") or "").strip()
+    if len(s) > 96:
+        s = s[:96].rsplit(" ", 1)[0].rstrip(",.;:") + "..."
+    return s
+
+
 def resolve_base_image(brief: dict[str, Any], work_dir: Path) -> Optional[Path]:
     """Resolve ONE base photo: curated (vision-picked + face-framed) else a frame."""
     work_dir = Path(work_dir)
@@ -94,8 +109,8 @@ def resolve_base_images(brief: dict[str, Any], n: int, work_dir: Path) -> list[P
 
 def design(
     brief: dict[str, Any], save_path: Path, headline: str | None = None,
-    sublabel: str | None = None, size: str = "1080x1350",
-    work_dir: Path | None = None,
+    sublabel: str | None = None, subheadline: str | None = None,
+    size: str = "1080x1350", work_dir: Path | None = None,
 ) -> Optional[bytes]:
     """Design a finished post image (your media + KG headline). None if no media."""
     save_path = Path(save_path)
@@ -107,6 +122,7 @@ def design(
         headline if headline is not None else _headline(brief),
         save_path,
         sublabel=sublabel if sublabel is not None else _sublabel(brief),
+        subheadline=subheadline if subheadline is not None else _subheadline(brief),
         size=size,
     )
     return save_path.read_bytes()
