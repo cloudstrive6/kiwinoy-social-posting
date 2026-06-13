@@ -408,7 +408,11 @@ def run_commentary_reel(
     vo_seconds = ff.duration(vo_path) or target
     log(f"Voiceover ready ({vo_seconds:.0f}s, {len(subtitles)} subtitle lines).")
 
-    clips = reel_composer.clips_for_game(brief["game"], n=int(ccfg.get("max_clips", 30)))
+    # Only resolve as many clips as the runtime needs (so we don't download a
+    # whole big-clip library for a short reel), capped by max_clips.
+    broll = float(ccfg.get("broll_seconds", 8)) or 8.0
+    needed = min(int(ccfg.get("max_clips", 30)), int(vo_seconds // broll) + 4)
+    clips = reel_composer.clips_for_game(brief["game"], n=max(3, needed))
     if not clips:
         log("Could not resolve clips — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary", "brief": brief}, "no_media")

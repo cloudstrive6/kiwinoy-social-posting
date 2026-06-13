@@ -364,6 +364,7 @@ reels:
     - {match: ['resident evil', 'veronica'], dir: re}
     - {match: ['halo', 'master chief'], dir: halo}
     - {match: ['last of us', 'tlou', 'ellie', 'abby', 'naughty dog'], dir: thelastofus2}
+    - {match: ['spider-man', 'spiderman', 'spider man', 'peter parker', 'insomniac'], dir: spider-man1}
   # Pretty display names for footage folder keys (used in titles + voiceovers).
   game_names:
     mlbb: 'Mobile Legends: Bang Bang'
@@ -377,6 +378,7 @@ reels:
     re: 'Resident Evil'
     halo: 'Halo'
     thelastofus2: 'The Last of Us Part II'
+    spider-man1: "Marvel's Spider-Man"
     general: 'this game'
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
