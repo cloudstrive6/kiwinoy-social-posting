@@ -402,6 +402,7 @@ reels:
     fps: 30               # talking-over-broll; 30fps keeps render fast
     long_min_clips: 12    # a game needs >= this many clips to carry a long reel
     broll_seconds: 8      # max b-roll window taken from each clip (keeps it varied)
+    broll_start_min: 3    # seek >= this many secs into each clip (skip menu/intro)
     max_clips: 30         # cap clips downloaded/used per reel (controls bandwidth)
     formats:
     - 'Top N ranking (rank moments / heroes / bosses, count down to #1)'

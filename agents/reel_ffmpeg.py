@@ -194,10 +194,15 @@ def build_commentary(
     h: int = 1920,
     music: Optional[Path] = None,
     per_clip_seconds: float = 8.0,
+    start_skip: float = 3.0,
 ) -> bytes:
     """Multi-clip b-roll under a voiceover, with burned subtitles. Two passes:
     (A) video-only letterboxed concat + ASS overlays + logo, trimmed to the VO
     length; (B) mux VO + ducked music. Returns the rendered MP4 bytes.
+
+    start_skip -> seek at least this many seconds into each clip so the b-roll
+    skips menu / loading / intro frames and lands on action; when a clip is long
+    enough the in-point is randomised so repeats show different moments.
     """
     clips = [Path(c) for c in clips if Path(c).exists()]
     if not clips:
@@ -208,19 +213,30 @@ def build_commentary(
 
     # Lay clips end-to-end (looping the pool) until they cover the VO length.
     # Each clip contributes at most `per_clip_seconds` of b-roll, so one long /
-    # heavy source clip can never dominate (or blow up) the render.
+    # heavy source clip can never dominate (or blow up) the render. Each entry
+    # also gets an in-point so we skip dead intro frames + vary repeated clips.
     per = max(2.0, float(per_clip_seconds))
-    order: list[Path] = []
+    skip = max(0.0, float(start_skip))
+    real = {c: (ffmpeg.duration(c) or per) for c in clips}
+
+    def _in_point(c: Path) -> float:
+        d = real[c]
+        if d <= per:
+            return 0.0                      # short clip: use the whole thing
+        if d > per + skip:
+            return random.uniform(skip, d - per)  # room to skip + randomise
+        return max(0.0, d - per)            # just enough: take the tail (skip intro)
+
+    order: list[tuple[Path, float]] = []
     covered = 0.0
-    durs = {c: min(per, (ffmpeg.duration(c) or per)) for c in clips}
     pool = clips[:]
     random.shuffle(pool)
     i = 0
     guard = 0
     while covered < total_seconds and guard < 4000:
         c = pool[i % len(pool)]
-        order.append(c)
-        covered += durs[c]
+        order.append((c, _in_point(c)))
+        covered += min(per, real[c])
         i += 1
         guard += 1
 
@@ -230,10 +246,11 @@ def build_commentary(
             hook=title, hook_end=title_seconds, subtitles=subtitles,
         )
         # ---- Pass A: video only -------------------------------------------
-        # `-t per` before each input caps how much of each clip is decoded/used.
+        # `-ss in_point -t per` before each input seeks past dead frames, then
+        # caps how much of each clip is decoded/used.
         inputs: list[str] = []
-        for c in order:
-            inputs += ["-t", f"{per:.2f}", "-i", str(c)]
+        for c, start in order:
+            inputs += ["-ss", f"{start:.2f}", "-t", f"{per:.2f}", "-i", str(c)]
         logo_idx = None
         if logo and Path(logo).exists():
             inputs += ["-i", str(logo)]

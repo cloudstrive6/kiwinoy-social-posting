@@ -423,6 +423,7 @@ def run_commentary_reel(
         subtitles=subtitles, title=brief.get("title"), logo=_reel_logo(),
         fps=int(ccfg.get("fps", 30)), music=_reel_music(),
         per_clip_seconds=float(ccfg.get("broll_seconds", 8)),
+        start_skip=float(ccfg.get("broll_start_min", 3)),
     )
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
 
