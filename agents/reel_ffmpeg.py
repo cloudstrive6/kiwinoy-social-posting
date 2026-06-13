@@ -42,6 +42,9 @@ def _ass_header(w: int, h: int) -> str:
     font = str(cap.get("font", "DejaVu Sans"))
     hook_size = int(cap.get("hook_size", 64))
     sub_size = int(cap.get("sub_size", 52))
+    # Distance of the top hook bar from the top edge. ~250 sits a 2-line caption
+    # centred in the top third of the 1920px frame.
+    hook_mv = int(cap.get("hook_margin_v", 250))
     # ASS colours are &HAABBGGRR. White text, black box/outline.
     return (
         "[Script Info]\n"
@@ -57,7 +60,7 @@ def _ass_header(w: int, h: int) -> str:
         "MarginL, MarginR, MarginV, Encoding\n"
         # Hook: top-centre, opaque black box behind white caps text.
         f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H73000000,"
-        f"&H73000000,-1,0,0,0,100,100,0,0,3,18,0,8,90,90,150,1\n"
+        f"&H73000000,-1,0,0,0,100,100,0,0,3,18,0,8,90,90,{hook_mv},1\n"
         # Sub: bottom-centre, white text with a thick black outline (Gameranx).
         f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
         f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,300,1\n\n"

@@ -384,6 +384,8 @@ reels:
     font: 'DejaVu Sans'   # installed on the CI runner; libass resolves by name
     hook_size: 64
     sub_size: 52
+    hook_margin_v: 250    # top hook bar offset from the top edge (centres it in
+                          # the top third of the frame; raise to push it lower)
     music_duck: 0.14      # background music volume under the voiceover
   # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
   # on top, the game's own audio kept, NO voiceover. Short Reel.
