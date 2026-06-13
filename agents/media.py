@@ -60,13 +60,15 @@ def _headline(brief: dict[str, Any]) -> str:
 def _subheadline(brief: dict[str, Any]) -> str:
     """A short white supporting line for the lower half of a designed image.
 
-    Prefers an explicit subhead, else the editorial angle, else the topic title;
-    trimmed to ~2 lines so it never crowds the logo/handle.
+    Prefers an explicit subhead, else the audience-facing topic title, else the
+    editorial angle; trimmed to ~2 lines so it never crowds the logo/handle. The
+    `title` reads to the viewer ("PH Sends Two Squads to MSC 2026 Paris"), whereas
+    `angle` is internal editorial meta, so title wins.
     """
-    s = (brief.get("subhead") or brief.get("angle") or brief.get("title", "")).strip()
+    s = (brief.get("subhead") or brief.get("title") or brief.get("angle", "")).strip()
     # Don't echo the headline back as the subheadline.
     if s and s.lower() == _headline(brief).lower():
-        s = (brief.get("title", "") or "").strip()
+        s = (brief.get("angle", "") or "").strip()
     if len(s) > 96:
         s = s[:96].rsplit(" ", 1)[0].rstrip(",.;:") + "..."
     return s
