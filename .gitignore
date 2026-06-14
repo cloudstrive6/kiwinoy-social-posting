@@ -36,6 +36,17 @@ reels/assets/footage/*/*.mkv
 # Render-time download cache for release clips:
 reels/assets/footage/.cache/
 
+# Your finished reels drop-folder: big files, queued to the 'ready-reels' Release
+# by tools/ready_reels.py (never committed to the repo).
+reels/assets/ready/
+
+# Animated / video logo assets (e.g. the YouTube lower-third .mov) are large and
+# baked into your edits in Premiere, not committed. Small PNG logos stay tracked.
+reels/assets/logo/*.mov
+reels/assets/logo/*.mp4
+reels/assets/logo/*.mkv
+reels/assets/logo/*.webm
+
 # Reference-only sample reels the user drops in to show a target format (big,
 # never committed — they're inspiration, not pipeline assets).
 reels/assets/sample-reels-format-games/

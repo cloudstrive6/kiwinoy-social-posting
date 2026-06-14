@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 
 from core.config import CONFIG
 from orchestrator import (
+    run_ready_reel,
     run_carousel_slot,
     run_reel_slot,
     run_slot,
@@ -78,6 +79,12 @@ def main() -> int:
         metavar="BUCKET",
         help="run an image-set post for a bucket (e.g. ff7)",
     )
+    g.add_argument(
+        "--ready-reel",
+        dest="ready_reel",
+        action="store_true",
+        help="post the next of YOUR queued finished reels (ready-reels Release)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -112,6 +119,14 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[threads-image] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    if args.ready_reel:
+        try:
+            run_ready_reel(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[ready-reel] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     if args.photopost:

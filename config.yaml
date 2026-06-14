@@ -442,6 +442,21 @@ reels:
     - 'Underrated moments most players miss'
     - 'Beginner mistakes to avoid'
     - 'A spoiler-free retrospective / love letter to the game'
+  # READY REELS (2026-06-14, user): your OWN finished vertical reels (edited in
+  # Premiere, Auto Reframed, branded). Drop them into reels/assets/ready/<game>/
+  # named with the caption (e.g. "Fisk is caught.mp4"). `tools/ready_reels.py`
+  # re-encodes them to 1080x1920 CFR 60 at a sane bitrate (solves the big-file
+  # problem) and uploads them to the 'ready-reels' Release as a queue. The
+  # ready-reels.yml workflow then posts the oldest one to FB/IG/Threads/YouTube
+  # (short caption from the filename + 2-3 game hashtags) and removes it from the
+  # queue. Captions/hashtags are NOT regenerated - they're your finished reels.
+  ready_reels:
+    enabled: true
+    dir: reels/assets/ready
+    release_tag: ready-reels
+    size: 1080x1920
+    fps: 60
+    bitrate: "12M"      # re-encode target (your Premiere export is ~40 Mbps)
   # Recurring reel series formats (the script agent rotates through these by slot
   # so the feed builds familiar, returning-audience templates).
   formats:

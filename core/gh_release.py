@@ -76,9 +76,25 @@ def list_release_assets(tag: str) -> list[dict[str, str]]:
     except Exception:
         return []
     return [
-        {"name": a.get("name", ""), "url": a.get("browser_download_url", "")}
+        {"name": a.get("name", ""), "url": a.get("browser_download_url", ""),
+         "id": a.get("id"), "created_at": a.get("created_at", "")}
         for a in assets if a.get("browser_download_url")
     ]
+
+
+def delete_asset(asset_id: Any, repo: Optional[str] = None) -> bool:
+    """Delete a release asset by id (used to advance the ready-reels queue)."""
+    repo = repo or _cfg().get("release_repo")
+    if not repo or asset_id is None:
+        return False
+    try:
+        r = requests.delete(
+            f"https://api.github.com/repos/{repo}/releases/assets/{asset_id}",
+            headers=_headers(), timeout=30,
+        )
+        return r.status_code in (204, 200)
+    except Exception:
+        return False
 
 
 def download(asset: dict[str, str], cache_dir: Path) -> Optional[Path]:

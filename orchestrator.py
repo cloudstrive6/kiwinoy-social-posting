@@ -462,6 +462,70 @@ def _skip(run_dir, result: dict[str, Any], reason: str) -> dict[str, Any]:
     return result
 
 
+def run_ready_reel(
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Post the oldest of YOUR OWN finished reels from the 'ready-reels' Release
+    queue to FB/IG/Threads/YouTube, then remove it from the queue. Caption +
+    hashtags come from the filename you queued it with (not regenerated)."""
+    from core import ffmpeg as ff
+    from core import gh_release
+    from agents import content
+
+    rcfg = CONFIG.reels.get("ready_reels", {}) or {}
+    tag = rcfg.get("release_tag", "ready-reels")
+    run_dir = OUTPUT_DIR / f"{_stamp()}_readyreel"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[ready-reel] {m}", flush=True)
+
+    if not rcfg.get("enabled", True):
+        return _skip(run_dir, {"kind": "ready_reel"}, "disabled")
+    assets = gh_release.list_release_assets(tag)
+    if not assets:
+        log("Queue empty — drop reels in reels/assets/ready/ + run tools/ready_reels.py.")
+        return _skip(run_dir, {"kind": "ready_reel"}, "queue_empty")
+    assets.sort(key=lambda a: a.get("created_at", ""))  # oldest first (FIFO)
+    asset = assets[0]
+    log(f"Next of {len(assets)} queued: {asset['name']}")
+
+    path = gh_release.download(asset, run_dir)
+    if not path:
+        return _skip(run_dir, {"kind": "ready_reel", "asset": asset["name"]}, "download_failed")
+
+    # Decode "<game>__<caption>.mp4" -> your caption + game hashtags.
+    game, _, cap = Path(asset["name"]).stem.partition("__")
+    line = (cap or game).replace("_", " ").strip()
+    tags = content._reel_hashtags({"game": game, "subject": line})
+    caption = f"{line}\n\n{' '.join(tags)}".strip()
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    secs = ff.duration(path)
+
+    result: dict[str, Any] = {
+        "kind": "ready_reel", "asset": asset["name"], "caption": caption,
+        "seconds": secs, "dry_run": dry_run,
+    }
+    if dry_run:
+        log(f"DRY RUN — would post '{line}' ({secs:.0f}s) to "
+            f"{CONFIG.platforms.get('video_post_to')}.")
+        result["published"] = False
+        _save(run_dir, result)
+        return result
+
+    # Long videos (> ~3 min) go out as feed video; short ones as Reels/Shorts.
+    short = not (secs and secs > 185)
+    log(f"Publishing to {', '.join(CONFIG.platforms.get('video_post_to', []))}...")
+    api_result = publisher.publish_video(
+        caption, path.read_bytes(), title=line, short=short, scheduled_at=scheduled_at)
+    result["published"] = True
+    result["postforme_result"] = api_result
+    log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+    if gh_release.delete_asset(asset.get("id")):
+        log("Removed from the queue.")
+    _save(run_dir, result)
+    return result
+
+
 def run_carousel_slot(
     slot_id: int,
     dry_run: bool = False,
