@@ -10,6 +10,7 @@ caption.txt / threads.txt, image.png / reel.mp4, result.json).
 from __future__ import annotations
 
 import json
+import random
 from datetime import datetime, timezone
 from typing import Any, Optional
 
@@ -29,7 +30,7 @@ from agents import (
     threads_research,
     threads_writer,
 )
-from core import elevenlabs
+from core import elevenlabs, ffmpeg
 from core.config import CONFIG, OUTPUT_DIR, ROOT
 
 
@@ -352,7 +353,10 @@ def run_gameplay_reel(
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     log(f"Game: {brief.get('subject')} | Hook: {hook}")
 
-    log("Rendering gameplay reel with ffmpeg...")
+    # Vary the reel length: pick one of the configured targets at random.
+    choices = [float(x) for x in (gcfg.get("target_seconds_choices") or [])]
+    target = random.choice(choices) if choices else float(gcfg.get("target_seconds", 75))
+    log(f"Rendering gameplay reel with ffmpeg (target <={int(target)}s)...")
     reel_path = run_dir / "reel.mp4"
     video_bytes = reel_ffmpeg.build_gameplay(
         clip_path, reel_path, hook=hook, logo=_reel_logo(),
@@ -360,21 +364,27 @@ def run_gameplay_reel(
         w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
         foot_h=int(gcfg.get("footage_height", 1320)),
         top_band=int(gcfg.get("top_band", 360)),
-        target_seconds=float(gcfg.get("target_seconds", 75)),
+        target_seconds=target,
         music=_reel_music(), anim_logo=_anim_logo(),
     )
-    log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
+    # Actual length = min(target, clip length). FB Reels caps ~90s, so anything
+    # longer publishes as a Reel on IG + Short on YouTube but a feed video on FB.
+    actual = ffmpeg.duration(reel_path) or target
+    is_short = actual <= 90.0
+    log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB, "
+        f"{actual:.0f}s, {'Reel/Short' if is_short else 'long video on FB'})")
 
     result: dict[str, Any] = {
         "slot_id": slot_id, "kind": "gameplay", "brief": brief, "clip_id": clip_id,
+        "target_seconds": target, "actual_seconds": round(actual, 1),
         "caption": caption, "reel_path": str(reel_path), "dry_run": dry_run,
     }
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        log("Publishing gameplay reel to Instagram + Facebook Reels...")
-        api_result = publisher.run_reel(
+        log("Publishing gameplay reel to FB/IG/YouTube/Threads...")
+        api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
         result["published"] = True
         result["postforme_result"] = api_result

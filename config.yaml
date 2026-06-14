@@ -424,7 +424,12 @@ reels:
   # on top, the game's own audio kept, NO voiceover. Short Reel.
   gameplay:
     enabled: true
-    target_seconds: 75    # trim the clip to at most this (Reel-friendly)
+    # Each reel randomly picks ONE of these as its max length, for variety. The
+    # actual length = min(picked value, the clip's own length). <=90s publishes
+    # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook
+    # (FB Reels caps ~90s) while staying a Reel on IG + a Short on YouTube.
+    target_seconds_choices: [60, 90, 120, 170]
+    target_seconds: 75    # fallback if target_seconds_choices is empty/unset
     fps: 60               # keep gameplay smooth
     # 9:16 frame (1080x1920) with the footage CROP-FILLED into a band, placed
     # top_band px from the top. The TALLER top band holds the hook BELOW the
