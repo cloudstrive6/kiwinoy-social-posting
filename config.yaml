@@ -402,7 +402,7 @@ reels:
   # 2-3 super-relevant hashtags per game for SHORT reel/video captions (content
   # .run_short). Keep it tight - never a wall of tags.
   game_hashtags:
-    spider-man1: ["#MarvelsSpiderMan", "#SpiderMan", "#PS5"]
+    spider-man1: ["#MarvelsSpiderManRemastered", "#spiderman"]
     spider-man-miles: ["#MilesMorales", "#SpiderMan", "#PS5"]
     spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#PS5"]
     ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth"]

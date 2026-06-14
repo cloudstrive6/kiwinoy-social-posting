@@ -331,7 +331,8 @@ def run_gameplay_reel(
         log("Could not resolve a clip — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
-    caption = content.run_short(brief, taglish=taglish)
+    log("Reviewing the clip to write a caption...")
+    caption = content.caption_from_video(clips[0], brief.get("game", ""), taglish=taglish)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
     log("Rendering gameplay reel with ffmpeg...")
@@ -493,11 +494,18 @@ def run_ready_reel(
     if not path:
         return _skip(run_dir, {"kind": "ready_reel", "asset": asset["name"]}, "download_failed")
 
-    # Decode "<game>__<caption>.mp4" -> your caption + game hashtags.
+    # Decode "<game>__<caption>.mp4". Use a descriptive filename as the caption;
+    # otherwise REVIEW the video and write one (the agent captions it).
     game, _, cap = Path(asset["name"]).stem.partition("__")
-    line = (cap or game).replace("_", " ").strip()
-    tags = content._reel_hashtags({"game": game, "subject": line})
-    caption = f"{line}\n\n{' '.join(tags)}".strip()
+    line = cap.replace("_", " ").strip()
+    generic = {"", "reel", "clip", "video", game.replace("-", " ").strip().lower()}
+    if len(line.split()) < 2 or line.lower() in generic:
+        log("Reviewing the reel to write a caption...")
+        caption = content.caption_from_video(
+            path, game, taglish=bool(CONFIG.reels.get("taglish", True)))
+    else:
+        tags = content._reel_hashtags({"game": game, "subject": line})
+        caption = f"{line}\n\n{' '.join(tags)}".strip()
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     secs = ff.duration(path)
 

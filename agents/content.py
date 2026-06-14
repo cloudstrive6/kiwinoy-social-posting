@@ -179,3 +179,40 @@ Return ONLY the line."""
         line = sanitize(brief.get("hook") or brief.get("title", "")).strip()[:90]
     tags = _reel_hashtags(brief)
     return f"{line}\n\n{' '.join(tags)}".strip()
+
+
+def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str:
+    """REVIEW a gameplay clip (a few frames) and write the caption — the agent
+    looks at what's happening and describes the moment in a few words, like the
+    "Fisk is caught" sample. Returns one short line + 2-3 game hashtags."""
+    import tempfile
+    from pathlib import Path
+
+    from core import claude_code, frames
+
+    line = ""
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            if cands:
+                listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
+                gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
+                prompt = (
+                    f"Use the Read tool to open these {len(cands)} frames (in order) "
+                    f"from ONE short {gname} gameplay reel.\n"
+                    f"Write ONE short caption (3 to 8 words) describing what HAPPENS to "
+                    f"the character(s) or what they DO - like a clip title. Examples: "
+                    f"\"Fisk is caught\", \"Best web-swing in the game\", \"This boss "
+                    f"almost had me\".\n"
+                    + ("Natural Taglish is welcome. " if taglish else "")
+                    + "No hashtags, no emojis, no quotes, no preamble - just the line.\n\n"
+                    f"Frames:\n{listing}"
+                )
+                raw = claude_code.run(prompt, allowed_tools="Read", timeout=180)
+                line = sanitize(raw).strip().splitlines()[0].strip().strip('"')[:90]
+    except Exception as e:
+        print(f"[content] vision caption failed ({e!r}); using a generic line.", flush=True)
+    if not line:
+        line = "Watch this clip"
+    tags = _reel_hashtags({"game": game})
+    return f"{line}\n\n{' '.join(tags)}".strip()
