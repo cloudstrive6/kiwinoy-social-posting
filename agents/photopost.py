@@ -49,11 +49,18 @@ def _circular_logo(size: int):
     return logo
 
 
-def brand_image(in_path: Path, out_path: Path, w: int = 1080, h: int = 1350) -> Path:
-    """Crop to 4:5, enhance, and stamp the circular KG logo top-right."""
+def brand_image(in_path: Path, out_path: Path, w: int = 1080, h: int = 1350,
+                centering: tuple[float, float] = (0.5, 0.42)) -> Path:
+    """Crop to 4:5 (toward the subject), enhance, stamp the circular KG logo.
+
+    centering = the subject's (cx, cy) as fractions, so an off-centre character
+    is kept in frame instead of cropped out by a dead-centre crop.
+    """
     from PIL import Image, ImageEnhance, ImageOps
     im = Image.open(in_path).convert("RGB")
-    im = ImageOps.fit(im, (w, h), Image.LANCZOS)
+    cx = min(1.0, max(0.0, centering[0]))
+    cy = min(1.0, max(0.0, centering[1]))
+    im = ImageOps.fit(im, (w, h), Image.LANCZOS, centering=(cx, cy))
     im = ImageEnhance.Brightness(im).enhance(1.03)
     im = ImageEnhance.Contrast(im).enhance(1.07)
     im = ImageEnhance.Color(im).enhance(1.10)
@@ -101,42 +108,73 @@ def _sample(bucket: str, work_dir: Path, k: int) -> list[Path]:
 
 
 def _plan(bucket: str, paths: list[Path], n_min: int, n_max: int) -> dict[str, Any]:
-    """Vision: theme + 3-5 distinct non-duplicate images + a short caption."""
+    """Vision (acting as a photo editor): theme + well-composed subject-focused
+    picks (each with the subject's center for cropping) + a short caption."""
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(paths))
     label = {"ff7": "Final Fantasy VII Rebirth"}.get(bucket, bucket.upper())
     prompt = (
-        f"Use the Read tool to open EACH of these {label} screenshots.\n"
-        "Then design one short social post:\n"
-        f"1. Group any near-DUPLICATE images (same moment/angle).\n"
-        f"2. Pick ONE coherent theme several of them share - a location (e.g. "
-        f"Junon, Midgar, Costa del Sol), a character, or a battle/moment.\n"
-        f"3. Choose {n_min} to {n_max} DISTINCT (non-duplicate) images that best "
-        f"fit that theme.\n"
-        f"4. Write a SHORT caption, no more than 3 lines, hype but natural, no "
-        f"em-dashes, no hashtags.\n\n"
+        f"You are a PROFESSIONAL PHOTO EDITOR for a gaming page. Use the Read tool "
+        f"to open EACH of these {label} screenshots, then design ONE short post.\n\n"
+        f"STEP 1 - THEME: group near-DUPLICATES (same moment/angle); pick ONE "
+        f"coherent theme several share - usually a CHARACTER, or a location/battle.\n"
+        f"STEP 2 - PICK {n_min} to {n_max} DISTINCT images with real photographic "
+        f"judgment. The SUBJECT of the theme (usually a character) MUST be the clear "
+        f"focus of each pick:\n"
+        f"  - STRONGLY PREFER frames where the subject is LARGE, sharp, well-framed "
+        f"and visible (hero shots, close/medium shots, expressive or action moments).\n"
+        f"  - REJECT frames where the subject is tiny, cut off at an edge, turned "
+        f"away, or swallowed by background/scenery/architecture (a building, an empty "
+        f"room, a wide landscape) UNLESS the theme is explicitly that location.\n"
+        f"  - Good composition: the subject occupies a meaningful part of the frame, "
+        f"not lost in a corner.\n"
+        f"STEP 3 - For EACH pick, give the SUBJECT'S CENTER as fractions cx,cy "
+        f"(0,0 = top-left .. 1,1 = bottom-right) so we crop around the subject, not "
+        f"the scenery.\n"
+        f"STEP 4 - Write a SHORT caption (<=3 lines), hype but natural, no em-dashes, "
+        f"no hashtags.\n\n"
         f"{HUMAN_VOICE}\n\n"
         f"Images:\n{listing}\n\n"
         "Reply with ONLY this JSON, no prose:\n"
-        '{"theme": "...", "images": [<image numbers>], "caption": "...(<=3 lines)"}'
+        '{"theme": "...", "picks": [{"n": <image number>, "cx": <0..1>, '
+        '"cy": <0..1>}], "caption": "...(<=3 lines)"}'
     )
     raw = claude_code.run(prompt, allowed_tools="Read", timeout=240)
     data = extract_json(raw)
-    nums = data.get("images") or []
+    # Accept the new shape (picks with subject centers) or the old one (images).
+    rows = data.get("picks")
+    if not rows:
+        rows = [{"n": n, "cx": 0.5, "cy": 0.42} for n in (data.get("images") or [])]
     picks: list[Path] = []
-    for x in nums:
+    centers: list[tuple[float, float]] = []
+    seen: set[Path] = set()
+    for row in rows:
         try:
-            i = int(x) - 1
-            if 0 <= i < len(paths) and paths[i] not in picks:
-                picks.append(paths[i])
+            i = int(row.get("n")) - 1
         except Exception:
             continue
+        if not (0 <= i < len(paths)) or paths[i] in seen:
+            continue
+        cx = _frac(row.get("cx"), 0.5)
+        cy = _frac(row.get("cy"), 0.42)
+        picks.append(paths[i])
+        centers.append((cx, cy))
+        seen.add(paths[i])
     if not picks:
         picks = paths[:n_min]
+        centers = [(0.5, 0.42)] * len(picks)
     return {
         "theme": str(data.get("theme", "")).strip(),
         "caption": sanitize(str(data.get("caption", "")).strip()),
         "images": picks[:n_max],
+        "centers": centers[:n_max],
     }
+
+
+def _frac(v: Any, default: float) -> float:
+    try:
+        return min(1.0, max(0.0, float(v)))
+    except Exception:
+        return default
 
 
 def run(bucket: str = "ff7", dry_run: bool = False,
@@ -166,10 +204,11 @@ def run(bucket: str = "ff7", dry_run: bool = False,
         plan = _plan(bucket, sample, n_min, n_max)
         log(f"Theme: {plan['theme']} | {len(plan['images'])} images")
 
+        centers = plan.get("centers") or [(0.5, 0.42)] * len(plan["images"])
         branded: list[bytes] = []
         for i, p in enumerate(plan["images"]):
             o = run_dir / f"slide{i + 1}.png"
-            brand_image(p, o)
+            brand_image(p, o, centering=centers[i] if i < len(centers) else (0.5, 0.42))
             branded.append(o.read_bytes())
 
     caption = plan["caption"]
