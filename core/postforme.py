@@ -155,4 +155,21 @@ def create_post(
     )
     if r.status_code >= 400:
         raise PostForMeError(f"create_post failed [{r.status_code}]: {r.text}")
-    return r.json()
+    return _scrub(r.json())
+
+
+# Post for Me echoes the connected accounts' live OAuth tokens in the create_post
+# response. We persist the response to result.json (uploaded as a public-repo
+# Actions artifact), so strip every credential field before returning it.
+_SENSITIVE = {
+    "access_token", "refresh_token",
+    "access_token_expires_at", "refresh_token_expires_at",
+}
+
+
+def _scrub(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: ("***" if k in _SENSITIVE else _scrub(v)) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_scrub(x) for x in obj]
+    return obj
