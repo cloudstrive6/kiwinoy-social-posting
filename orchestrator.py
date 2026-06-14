@@ -330,7 +330,8 @@ def run_gameplay_reel(
         log("No gameplay footage available — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
     log(f"Footage available: {games}")
-    brief = reel_topics.run("gameplay", games, taglish=taglish)
+    # On-screen hook is ENGLISH (per user); the post caption (vision) may be Taglish.
+    brief = reel_topics.run("gameplay", games, taglish=False)
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Game: {brief.get('subject')} | Hook: {brief.get('hook')}")

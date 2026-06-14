@@ -25,6 +25,7 @@ Examples:
 from __future__ import annotations
 
 import mimetypes
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -91,23 +92,32 @@ def _release(token: str) -> dict:
     return r.json()
 
 
-def upload(game: str, files: list[str]) -> None:
+def _gh_name(game: str, filename: str) -> str:
+    """The asset name GitHub will store (non [A-Za-z0-9._-] become '.')."""
+    return re.sub(r"[^A-Za-z0-9._-]", ".", f"{game}__{filename}")
+
+
+def upload(game: str, files: list[str]) -> bool:
+    """Upload clips to the footage Release. Returns True if all succeeded."""
     token = _token()
     rel = _release(token)
     repo = _repo()
     existing = {a["name"]: a["id"] for a in rel.get("assets", [])}
     upload_url = rel["upload_url"].split("{")[0]
+    ok_all = True
     for f in files:
         p = Path(f)
         if not p.exists():
             print(f"  SKIP (not found): {f}")
+            ok_all = False
             continue
         if p.stat().st_size > RELEASE_MAX:
             gb = p.stat().st_size / 1024 / 1024 / 1024
             print(f"  SKIP ({gb:.1f} GB, over GitHub's 2GB Release limit): {p.name}")
             print("       Trim it to a short highlight first (reels use only ~4s).")
+            ok_all = False
             continue
-        name = f"{game}__{p.name}"
+        name = _gh_name(game, p.name)
         if name in existing:  # replace
             requests.delete(
                 f"{API}/repos/{repo}/releases/assets/{existing[name]}",
@@ -122,38 +132,56 @@ def upload(game: str, files: list[str]) -> None:
                 headers={**_h(token), "Content-Type": ct}, data=fh,
             )
         print(f"    {'OK' if r.ok else 'FAILED ' + str(r.status_code) + ': ' + r.text[:200]}")
+        ok_all = ok_all and r.ok
+    return ok_all
 
 
-def sync() -> None:
-    """Scan footage folders; upload every clip >100MB to the release."""
+def sync(delete_local: bool = True, only_game: str | None = None) -> None:
+    """Proactively scan footage folders and push UNUSED clips to the cloud.
+
+    Any clip not already on the 'footage' Release is uploaded; once a clip is
+    confirmed on the cloud, the LOCAL file is deleted (per the user's rule) to
+    free disk. Pass only_game to limit to one game, delete_local=False to keep.
+    """
     base = ROOT / (_cfg().get("dir", "reels/assets/footage"))
     if not base.exists():
         sys.exit(f"Footage dir not found: {base}")
     existing = {a["name"] for a in _release(_token()).get("assets", [])}
-    uploaded = skipped = small = 0
+    uploaded = already = deleted = failed = toobig = 0
     for sub in sorted(p for p in base.iterdir()
                       if p.is_dir() and not p.name.startswith(".")):
         game = sub.name
+        if only_game and game != only_game:
+            continue
         for f in sorted(sub.iterdir()):
-            if f.suffix.lower() not in VIDEO_EXTS:
+            if not f.is_file() or f.suffix.lower() not in VIDEO_EXTS:
                 continue
-            sz = f.stat().st_size
-            if sz <= SIZE_LIMIT:
-                small += 1
-                continue
-            if sz > RELEASE_MAX:
-                print(f"  TOO BIG ({sz/1024/1024/1024:.1f} GB > 2GB limit), skipped: "
+            if f.stat().st_size > RELEASE_MAX:
+                print(f"  TOO BIG ({f.stat().st_size/1024**3:.1f} GB > 2GB), skipped: "
                       f"{f.name} -- trim it first.")
+                toobig += 1
                 continue
-            name = f"{game}__{f.name}"
-            if name in existing:
-                print(f"  already on release: {name}")
-                skipped += 1
-                continue
-            upload(game, [str(f)])
-            uploaded += 1
-    print(f"\nsync done: uploaded {uploaded}, already-present {skipped}, "
-          f"small/committable {small}")
+            on_cloud = _gh_name(game, f.name) in existing
+            if not on_cloud:
+                print(f"[{game}] {f.name}")
+                if upload(game, [str(f)]):
+                    uploaded += 1
+                    on_cloud = True
+                else:
+                    print("    upload failed -- keeping local.")
+                    failed += 1
+            else:
+                print(f"[{game}] already on cloud: {f.name}")
+                already += 1
+            if on_cloud and delete_local:
+                try:
+                    f.unlink()
+                    deleted += 1
+                    print("    deleted local copy.")
+                except Exception as e:
+                    print(f"    could not delete local ({e!r}).")
+    print(f"\nsync done: uploaded {uploaded}, already-present {already}, "
+          f"local-deleted {deleted}, failed {failed}, too-big {toobig}")
 
 
 def list_assets() -> None:
@@ -182,8 +210,9 @@ def delete(name: str) -> None:
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if len(args) == 1 and args[0] == "sync":
-        sync()
+    if args and args[0] == "sync":
+        game = next((a for a in args[1:] if not a.startswith("-")), None)
+        sync(delete_local="--keep-local" not in args, only_game=game)
     elif len(args) >= 3 and args[0] == "upload":
         upload(args[1], args[2:])
     elif len(args) == 1 and args[0] == "list":
