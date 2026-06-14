@@ -501,15 +501,15 @@ carousels:
       time: '13:00'
       category: gacha
 
-# Dedicated Threads text track. SPORTS ONLY, text posts (no images/reels),
-# 500 chars or less, storytelling + scroll-stopping hooks. Written by Claude via
-# your Claude subscription (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs
-# nothing per token. Posts every 2 hours (cron in .github/workflows/threads.yml);
-# each run independently researches a fresh trending GAMES topic.
+# Dedicated text track posting to Threads + X/Twitter. GAMES ONLY, text posts (no
+# images/reels), <=280 chars (fits X's free limit AND Threads), storytelling +
+# scroll-stopping hooks. Written by Claude via your Claude subscription
+# (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs nothing per token. Posts
+# every 2 hours (cron in threads.yml); each run researches a fresh GAMES topic.
 threads_posts:
   enabled: true
   model: "sonnet"          # claude model alias used by the Threads agents
-  max_chars: 500
+  max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
   # TRENDING-GAME FOCUS: instead of hopping between random games, each update post
   # rides the single hottest game / gaming moment of the period (a big new release,
