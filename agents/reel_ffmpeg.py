@@ -37,6 +37,32 @@ def _caption_cfg() -> dict[str, Any]:
     return (CONFIG.reels.get("caption", {}) or {})
 
 
+def _grade_filter() -> str:
+    """A tasteful colour/clarity grade for the gameplay footage so it looks its
+    crisp best (subtle contrast + saturation + sharpening). Config-driven via
+    reels.grade; returns a comma-terminated filter snippet, or '' when disabled.
+    """
+    g = CONFIG.reels.get("grade", {}) or {}
+    if not g.get("enabled", True):
+        return ""
+    contrast = float(g.get("contrast", 1.06))
+    brightness = float(g.get("brightness", 0.0))
+    saturation = float(g.get("saturation", 1.12))
+    gamma = float(g.get("gamma", 1.0))
+    sharpen = float(g.get("sharpen", 0.8))
+    parts = [
+        f"eq=contrast={contrast}:brightness={brightness}:"
+        f"saturation={saturation}:gamma={gamma}"
+    ]
+    if sharpen > 0:
+        # luma-only unsharp: crisp edges without amplifying chroma noise.
+        parts.append(f"unsharp=5:5:{sharpen}:5:5:0.0")
+    if float(g.get("denoise", 0)) > 0:
+        d = float(g.get("denoise"))
+        parts.insert(0, f"hqdn3d={d}:{d}:6:6")
+    return ",".join(parts) + ","
+
+
 def _ass_header(w: int, h: int) -> str:
     cap = _caption_cfg()
     font = str(cap.get("font", "DejaVu Sans"))
@@ -217,9 +243,10 @@ def build_gameplay(
         foot_h = min(int(foot_h or h), h)
         pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
         pad_y = max(0, min(pad_y, h - foot_h))
+        grade = _grade_filter()  # subtle contrast/saturation/sharpen on the footage
         fc = [
             f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
-            f"crop={w}:{foot_h},pad={w}:{h}:0:{pad_y}:color=black,"
+            f"crop={w}:{foot_h},{grade}pad={w}:{h}:0:{pad_y}:color=black,"
             f"setsar=1,fps={fps}[base]"
         ]
         vlabel = "base"

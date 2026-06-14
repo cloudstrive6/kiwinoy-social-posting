@@ -434,6 +434,17 @@ reels:
     height: 1920
     top_band: 320         # black band above the footage (hook lives here)
     footage_height: 1440  # 3:4 gameplay region (bottom band = 1920-320-1440 = 160)
+  # Visual enhancement applied to the gameplay footage (not the black bands) so
+  # clips look their crisp, vivid best. Subtle on purpose — over-grading looks
+  # fake. Tune any value; set enabled:false to ship the raw look.
+  grade:
+    enabled: true
+    contrast: 1.06      # >1 deepens blacks / pops the image
+    brightness: 0.0     # -1..1; keep ~0 so highlights don't blow out
+    saturation: 1.12    # >1 richer colour (Spidey reds/blues pop)
+    gamma: 1.0          # <1 darkens mids, >1 lifts shadows
+    sharpen: 0.8        # luma unsharp amount (0 = off); crisper edges
+    denoise: 0          # >0 (e.g. 2-4) cleans compression noise but softens
   # Animated KiwinoyGaming lower-third logo (bottom-centre) for agent-made reels.
   # Source .mov is huge + VP9/VP8 alpha was unreliable in this ffmpeg, so it's two
   # small H.264 streams (RGB + alpha matte) recombined with alphamerge at render.

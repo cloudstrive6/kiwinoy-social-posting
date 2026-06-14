@@ -237,6 +237,91 @@ def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -
     return sanitize(claude_code.run(prompt, timeout=120)).strip()
 
 
+def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) -> tuple[str, str]:
+    """From the observer's read + the game lore, write BOTH the scroll-stopping
+    on-screen HOOK (master-of-viewer-psychology) and the post caption, grounded
+    in what THIS clip actually shows. Returns (hook, caption)."""
+    from core import claude_code, lore
+
+    brief = lore.lore_for(game)
+    lore_block = (
+        f"GAME STORY / CHARACTERS / PLACES (use this to identify the moment "
+        f"correctly):\n{brief}\n\n" if brief else ""
+    )
+    cap_lang = "Natural Taglish is welcome." if taglish else "Write it in ENGLISH."
+    prompt = (
+        f"You are writing text for a {gname} gameplay reel. You are a MASTER of "
+        "short-video viewer psychology and retention — your job is to stop the "
+        "scroll in the first second.\n\n"
+        f"WHAT'S ON SCREEN (an observer's factual description of THIS clip):\n"
+        f"{observation}\n\n"
+        f"{lore_block}"
+        "STEP 1 — silently identify the exact character / location / moment by "
+        "matching the description to the story above (respect any 'DON'T CONFUSE' "
+        "notes). STEP 2 — write two things:\n\n"
+        "ON-SCREEN HOOK (sits in a bar at the TOP, the viewer reads it before the "
+        "clip plays — it ALONE must make them stay):\n"
+        "- Use a real psychological hook: a curiosity gap, a pattern interrupt, a "
+        "bold claim, rising stakes, or a relatable gamer emotion tied to THIS exact "
+        "moment. Make them NEED to see what happens.\n"
+        "- Be specific to what's actually on screen — never a vague, generic line, "
+        "and don't keep leaning on the same idea every time (e.g. not always about "
+        "'physics' or 'graphics').\n"
+        "- 4 to 9 words. ENGLISH. No hashtags, no emojis, no quotes. Title-worthy, "
+        "not a full sentence with punctuation.\n"
+        "- Examples of the ENERGY (don't copy): \"Watch what he does at the end\", "
+        "\"This is why Otto can't be trusted\", \"Nobody talks about this combo\".\n\n"
+        "CAPTION (sits BELOW the video as the post caption):\n"
+        "- ONE short clip-title line, 3 to 8 words, accurate to the moment.\n"
+        f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
+        'Return ONLY this JSON: {"hook": "the on-screen hook", "caption": "the caption"}'
+    )
+    raw = claude_code.run(prompt, timeout=150)
+    hook, caption = "", ""
+    try:
+        d = extract_json(raw)
+        hook = sanitize(str(d.get("hook", ""))).strip().strip('"')
+        caption = sanitize(str(d.get("caption", ""))).strip().strip('"')
+    except Exception:
+        # Fallback: first non-empty line is the hook.
+        for ln in sanitize(raw).splitlines():
+            if ln.strip():
+                hook = ln.strip().strip('"')
+                break
+    return hook[:90], caption[:90]
+
+
+def hook_and_caption_from_video(
+    video_path, game: str = "", taglish: bool = False
+) -> tuple[str, str]:
+    """REVIEW a gameplay clip and write BOTH the on-screen hook and the caption,
+    grounded in what the clip shows + the game's lore. One OBSERVER call shared
+    by both, then one psychology-driven WRITER call. Returns (hook, caption);
+    each falls back to a safe line. Caption already includes its hashtags."""
+    import tempfile
+    from pathlib import Path
+
+    from core import frames
+
+    hook, line = "", ""
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            if cands:
+                gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
+                observation = _observe_clip(cands, gname)
+                if observation:
+                    hook, line = _hook_and_caption(observation, game, gname, taglish)
+    except Exception as e:
+        print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
+    if not hook:
+        hook = "Wait for it"
+    if not line:
+        line = "Watch this clip"
+    tags = _reel_hashtags({"game": game})
+    return hook, f"{line}\n\n{' '.join(tags)}".strip()
+
+
 def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str:
     """REVIEW a gameplay clip and write an accurate clip-title caption.
 

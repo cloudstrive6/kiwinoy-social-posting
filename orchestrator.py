@@ -330,27 +330,29 @@ def run_gameplay_reel(
         log("No gameplay footage available — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
     log(f"Footage available: {games}")
-    # On-screen hook is ENGLISH (per user); the post caption (vision) may be Taglish.
+    # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
+    # itself is written from the actual clip + lore below, so it fits the footage.
     brief = reel_topics.run("gameplay", games, taglish=False)
-    (run_dir / "brief.json").write_text(
-        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"Game: {brief.get('subject')} | Hook: {brief.get('hook')}")
-
     clips = reel_composer.clips_for_game(brief["game"], n=1)
     if not clips:
         log("Could not resolve a clip — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
-    log("Reviewing the clip to write a caption...")
-    # Captions are ENGLISH for all gameplay reels (per user); the on-screen hook
-    # is English too. Only reel narration/threads can be Taglish.
-    caption = content.caption_from_video(clips[0], brief.get("game", ""), taglish=False)
+    log("Reviewing the clip to write the on-screen hook + caption...")
+    # The hook (top of frame) and caption are BOTH grounded in what this clip
+    # shows + the game lore, by a viewer-psychology writer. ENGLISH per user.
+    hook, caption = content.hook_and_caption_from_video(
+        clips[0], brief.get("game", ""), taglish=False)
+    brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
+    (run_dir / "brief.json").write_text(
+        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    log(f"Game: {brief.get('subject')} | Hook: {hook}")
 
     log("Rendering gameplay reel with ffmpeg...")
     reel_path = run_dir / "reel.mp4"
     video_bytes = reel_ffmpeg.build_gameplay(
-        clips[0], reel_path, hook=brief["hook"], logo=_reel_logo(),
+        clips[0], reel_path, hook=hook, logo=_reel_logo(),
         fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
         w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
         foot_h=int(gcfg.get("footage_height", 1320)),
