@@ -526,7 +526,7 @@ threads_posts:
   - "Final Fantasy VII ONLY (FF7 OG 1997, FF7 Remake, FF7 INTERmission, FF7 Rebirth, FF7 Revelation, FF7 Dirge of Cerberus, FF7 Advent Children) - NOT any other Final Fantasy"
   - "Kingdom Hearts: the games (KH 1, 2, 3, 4) AND any upcoming Kingdom Hearts games"
   - "Halo: all Halo games (the game series only)"
-  - "The Last of Us: the games (Part I and Part II)"
+  - "The Last of Us: the games (Part I, Part II, and any The Last of Us Part III / Part 3 game news) AND the HBO show (especially The Last of Us Season 2 updates and news)"
   angles:
   - New release / launch hype or first impressions
   - Update / patch / new content drop
@@ -545,7 +545,7 @@ threads_posts:
   - "Final Fantasy VII compilation only (OG, Remake, INTERmission, Rebirth, Revelation, Dirge of Cerberus, Advent Children)"
   - "Kingdom Hearts games (1, 2, 3, 4 + upcoming)"
   - "Halo (all Halo games)"
-  - "The Last of Us (Part I and Part II)"
+  - "The Last of Us (Part I, Part II, Part III game news, + the HBO show / Season 2)"
   # Rotating themes for the daily poll/hot-take (the agent invents its own each
   # time, guided by but NOT copying these).
   poll_domains:

@@ -71,8 +71,9 @@ current, REAL gaming story to post on Threads right now.
 
 AAA ONLY: cover only big-budget AAA titles (console/PC). Do NOT cover mobile,
 gacha, or live-service games. Stay STRICTLY within this universe and follow each
-bullet's EXACT scope - cover any entry it lists (games, plus the noted movies),
-but nothing outside it. Note: "Final Fantasy VII" means ONLY the FF7 compilation
+bullet's EXACT scope - cover any entry it lists (games, plus the noted movies and
+TV shows, e.g. The Last of Us Season 2 and The Last of Us Part III news), but
+nothing outside it. Note: "Final Fantasy VII" means ONLY the FF7 compilation
 listed, NOT any other Final Fantasy game.
 {chr(10).join(f'- {x}' for x in universe)}
 
