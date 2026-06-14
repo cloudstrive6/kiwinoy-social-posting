@@ -101,7 +101,7 @@ on screen, like:
 
 Rules:
 - ONE line, 4 to 9 words. Punchy. No hashtags, no emojis, no quotes.
-- Taglish is welcome (natural Manila gamer talk), or punchy English.
+- {('Natural Taglish (Manila gamer talk) or punchy English.' if taglish else 'Write it in ENGLISH only.')}
 - It must make sense over generic {name} gameplay (do not name a specific
   scripted moment we may not have footage of).
 
@@ -115,7 +115,7 @@ Return ONLY this JSON:
         except Exception:
             hook = ""
         if not hook:
-            hook = f"Tignan mo 'tong clip na 'to"
+            hook = "Wait for it" if not taglish else "Tignan mo 'tong clip na 'to"
         return {
             "kind": "gameplay", "category": category, "game": game_key,
             "title": f"{name} gameplay", "hook": hook, "subject": name,

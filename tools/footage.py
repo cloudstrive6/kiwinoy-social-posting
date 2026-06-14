@@ -93,8 +93,10 @@ def _release(token: str) -> dict:
 
 
 def _gh_name(game: str, filename: str) -> str:
-    """The asset name GitHub will store (non [A-Za-z0-9._-] become '.')."""
-    return re.sub(r"[^A-Za-z0-9._-]", ".", f"{game}__{filename}")
+    """The asset name GitHub will store: each RUN of non [A-Za-z0-9._-] chars
+    becomes a single '.', and consecutive dots collapse (matches GitHub)."""
+    s = re.sub(r"[^A-Za-z0-9._-]+", ".", f"{game}__{filename}")
+    return re.sub(r"\.+", ".", s)
 
 
 def upload(game: str, files: list[str]) -> bool:
