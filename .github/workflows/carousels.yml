@@ -1,12 +1,12 @@
 name: KiwinoyGamer Auto-Carousels
 
-# Publishes a 3-5 image carousel to Facebook + Instagram once a day.
-# GAMES-ONLY: one games carousel/day (curated/footage-only). Esports moved to a
-# separate channel. 13:25 UTC = 21:25 Philippines prime time.
+# Image carousel to Facebook + Instagram. DISABLED (2026-06-14, user): the
+# games-only pivot focuses on gameplay reels + the Threads text track. The
+# 'gacha' topic list is off-strategy, so the daily schedule is paused. Re-enable
+# by uncommenting the schedule; still runnable by hand via workflow_dispatch.
 on:
-  schedule:
-    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 13 * * *"  # 13:25 UTC = 9:25 PM PHT -> carousel slot 1 (Esports, MLBB)
+  # schedule:
+  #   - cron: "25 13 * * *"  # 13:25 UTC = 9:25 PM PHT -> carousel slot 1
   workflow_dispatch:
     inputs:
       slot:

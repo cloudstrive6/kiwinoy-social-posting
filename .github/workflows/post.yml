@@ -1,13 +1,13 @@
 name: KiwinoyGamer Auto-Post
 
-# Runs the social posting team 2x/day on a cron (UTC). Each cron maps to a slot.
-# GAMES-ONLY: both feed slots are the games rotation (curated/footage-only).
-# Esports + sports moved to a separate channel. These SKIP when no game media.
+# Image-feed posts. DISABLED (2026-06-14, user): the games-only pivot focuses on
+# gameplay reels + the Threads text track. The 'gacha' topic list (Genshin, HSR,
+# FF7, etc.) is off-strategy, so the daily schedule is paused. Re-enable by
+# uncommenting the schedule below; still runnable by hand via workflow_dispatch.
 on:
-  schedule:
-    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 8 * * *"   # 08:25 UTC = 4:25 PM PHT -> slot 1 (Games)
-    - cron: "25 20 * * *"  # 20:25 UTC = 4:25 AM PHT -> slot 2 (Games)
+  # schedule:
+  #   - cron: "25 8 * * *"   # 08:25 UTC = 4:25 PM PHT -> slot 1 (Games)
+  #   - cron: "25 20 * * *"  # 20:25 UTC = 4:25 AM PHT -> slot 2 (Games)
   workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
     inputs:
       slot:
