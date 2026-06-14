@@ -71,6 +71,11 @@ def run(
     """
     if not games:
         return {}
+    # Double down on preferred games (e.g. Spider-Man) when they have footage.
+    prefer = [str(g) for g in (CONFIG.reels.get("footage", {}).get("prefer", []) or [])]
+    preferred = {k: v for k, v in games.items() if k in prefer}
+    if preferred:
+        games = preferred
     # Long-form needs enough distinct clips to fill the runtime; bias the choice.
     min_clips = int(CONFIG.reels.get("commentary", {}).get("long_min_clips", 12))
     eligible = games

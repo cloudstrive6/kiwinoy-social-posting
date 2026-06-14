@@ -16,6 +16,7 @@ trim at a word boundary as a last resort, so the rule never slips.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from core import franchise
@@ -128,3 +129,53 @@ def run(brief: dict[str, Any], taglish: bool = False) -> str:
         caption += "\n\n" + body
     caption += "\n\n" + tags
     return sanitize(caption)
+
+
+def _reel_hashtags(brief: dict[str, Any], max_tags: int = 3) -> list[str]:
+    """2-3 super-relevant hashtags for a reel: per-game config, else franchise,
+    else a name-derived tag. Always game-specific, never a wall of tags."""
+    game = brief.get("game", "")
+    per_game = (CONFIG.reels.get("game_hashtags", {}) or {})
+    tags = list(per_game.get(game, []))
+    if not tags:
+        fr = franchise.match(brief)
+        tags = list((fr.get("hashtags") if fr else None) or [])
+    if not tags:
+        nm = re.sub(r"[^A-Za-z0-9]", "", brief.get("subject", "") or "")
+        tags = [f"#{nm}"] if nm else ["#Gaming"]
+    # de-dupe, keep order, cap.
+    seen, out = set(), []
+    for t in tags:
+        t = t if t.startswith("#") else f"#{t}"
+        if t.lower() not in seen:
+            seen.add(t.lower())
+            out.append(t)
+    return out[:max_tags]
+
+
+def run_short(brief: dict[str, Any], taglish: bool = False) -> str:
+    """Short caption for a gameplay reel / video: ONE punchy line + 2-3 hashtags.
+
+    Matches the user's sample style ("Fisk is caught #MarvelsSpiderManRemastered
+    #spiderman"): a tiny moment caption, not a story. Hashtags are super-relevant
+    and capped at 3.
+    """
+    prompt = f"""Write ONE very short caption for a gameplay reel/video about:
+
+TOPIC: {brief.get('title')}
+SUBJECT: {brief.get('subject')}
+MOMENT / HOOK: {brief.get('hook') or brief.get('hook_idea') or brief.get('angle')}
+
+Rules:
+- ONE short line, about 3 to 10 words. Punchy, like a caption to a clip moment
+  (e.g. "Fisk is caught", "Best swing in the game", "This boss almost had me").
+- It can be natural Taglish if it fits.
+- No hashtags, no emojis, no quotes, no preamble. Just the line.
+
+Return ONLY the line."""
+    raw = ai.write(prompt, system=_system(taglish))
+    line = sanitize(raw).strip().splitlines()[0].strip().strip('"')[:90]
+    if not line:
+        line = sanitize(brief.get("hook") or brief.get("title", "")).strip()[:90]
+    tags = _reel_hashtags(brief)
+    return f"{line}\n\n{' '.join(tags)}".strip()

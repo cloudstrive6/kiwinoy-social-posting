@@ -1,10 +1,12 @@
 name: KiwinoyGamer FF7 Daily Post
 
-# 1 Final Fantasy VII post/day (carousel or static) built from your FF7 image set
-# on the 'ff7-images' Release. 14:25 UTC.
+# PAUSED (2026-06-14, user): FF7 daily post is on hold while we double down on
+# Marvel's Spider-Man (1 / Miles Morales / 2). Left manual-only (workflow_dispatch)
+# so it can be re-enabled or pointed at a Spider-Man image set later.
+# (Was: 1 FF7 post/day from the 'ff7-images' Release at 14:25 UTC.)
 on:
-  schedule:
-    - cron: "25 14 * * *"
+  # schedule:
+  #   - cron: "25 14 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

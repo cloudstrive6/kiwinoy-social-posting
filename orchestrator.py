@@ -331,7 +331,7 @@ def run_gameplay_reel(
         log("Could not resolve a clip — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
-    caption = content.run(brief, taglish=taglish)
+    caption = content.run_short(brief, taglish=taglish)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
     log("Rendering gameplay reel with ffmpeg...")
@@ -417,7 +417,7 @@ def run_commentary_reel(
         log("Could not resolve clips — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "commentary", "brief": brief}, "no_media")
 
-    caption = content.run(brief, taglish=taglish)
+    caption = content.run_short(brief, taglish=taglish)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
     log(f"Rendering commentary reel with ffmpeg ({len(clips)} clips, ~{vo_seconds:.0f}s)...")

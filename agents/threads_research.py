@@ -69,9 +69,11 @@ def run(categories: list[str] | None = None) -> dict[str, Any]:
 for young Filipino players. Use web search to find the SINGLE most engaging,
 current, REAL gaming story to post on Threads right now.
 
-{focus}Source from these (genres + the channel's home titles), but surface
-whatever is genuinely hottest now:
+AAA ONLY: cover only big-budget AAA titles (console/PC). Do NOT cover mobile,
+gacha, or live-service games. Stay within this universe:
 {chr(10).join(f'- {x}' for x in universe)}
+
+{focus}Surface whatever AAA story is genuinely hottest now within that universe.
 
 Angle options:
 {chr(10).join(f'- {a}' for a in angles)}

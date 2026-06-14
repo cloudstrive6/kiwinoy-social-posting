@@ -111,7 +111,8 @@ def _plan(bucket: str, paths: list[Path], n_min: int, n_max: int) -> dict[str, A
     """Vision (acting as a photo editor): theme + well-composed subject-focused
     picks (each with the subject's center for cropping) + a short caption."""
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(paths))
-    label = {"ff7": "Final Fantasy VII Rebirth"}.get(bucket, bucket.upper())
+    names = CONFIG.reels.get("game_names", {}) or {}
+    label = names.get(bucket, bucket.replace("-", " ").title())
     prompt = (
         f"You are a PROFESSIONAL PHOTO EDITOR for a gaming page. Use the Read tool "
         f"to open EACH of these {label} screenshots, then design ONE short post.\n\n"
