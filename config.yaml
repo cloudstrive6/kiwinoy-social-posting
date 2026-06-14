@@ -424,6 +424,17 @@ reels:
     enabled: true
     target_seconds: 75    # trim the clip to at most this (Reel-friendly)
     fps: 60               # keep gameplay smooth
+    # Convert landscape -> vertical by CROP-FILL (no black bars). Action-tracking
+    # (Auto Reframe) isn't automatable, so we use 3:4 (1080x1440) which crops the
+    # sides less aggressively than 9:16 and keeps more of the action in frame.
+    width: 1080
+    height: 1440
+  # Animated KiwinoyGaming lower-third logo (bottom-centre) for agent-made reels.
+  # Source .mov is huge + VP9/VP8 alpha was unreliable in this ffmpeg, so it's two
+  # small H.264 streams (RGB + alpha matte) recombined with alphamerge at render.
+  logo_animated:
+    rgb: reels/assets/logo/kiwinoy_logo_rgb.mp4
+    alpha: reels/assets/logo/kiwinoy_logo_alpha.mp4
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:

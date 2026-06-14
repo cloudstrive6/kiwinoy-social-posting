@@ -40,10 +40,9 @@ reels/assets/footage/.cache/
 # by tools/ready_reels.py (never committed to the repo).
 reels/assets/ready/
 
-# Animated / video logo assets (e.g. the YouTube lower-third .mov) are large and
-# baked into your edits in Premiere, not committed. Small PNG logos stay tracked.
+# The big source animated logo (.mov, ~1GB ProRes) is not committed - it's split
+# into the small kiwinoy_logo_rgb.mp4 + kiwinoy_logo_alpha.mp4 matte (tracked).
 reels/assets/logo/*.mov
-reels/assets/logo/*.mp4
 reels/assets/logo/*.mkv
 reels/assets/logo/*.webm
 

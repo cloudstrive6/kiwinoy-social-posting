@@ -116,6 +116,14 @@ def _norm_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
     )
 
 
+def _crop_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
+    """Per-clip: scale to COVER WxH then centre-crop to fill (no black bars)."""
+    return (
+        f"[{idx}:v]scale={w}:{h}:force_original_aspect_ratio=increase,"
+        f"crop={w}:{h},setsar=1,fps={fps}[{label}]"
+    )
+
+
 def build_gameplay(
     clip: Path,
     out_path: Path,
@@ -123,14 +131,18 @@ def build_gameplay(
     logo: Optional[Path] = None,
     fps: int = 60,
     w: int = 1080,
-    h: int = 1920,
+    h: int = 1440,
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
+    anim_logo: Optional[tuple] = None,
+    fill: bool = True,
 ) -> bytes:
     """Single standalone gameplay clip + a persistent top hook. Keeps game audio.
 
-    Trims to target_seconds. If the clip has no audio, falls back to `music`
-    (looped) or silence. Returns the rendered MP4 bytes.
+    fill=True crops landscape -> vertical (no black bars); False letterboxes.
+    anim_logo=(rgb_mp4, alpha_mp4) overlays the animated KiwinoyGaming lower-third
+    (bottom-centre) via alphamerge; the circular KG logo goes top-right. Trims to
+    target_seconds. Returns the rendered MP4 bytes.
     """
     clip = Path(clip)
     if not clip.exists():
@@ -149,6 +161,13 @@ def build_gameplay(
             logo_idx = next_idx
             next_idx += 1
 
+        anim_rgb_idx = None
+        if anim_logo and all(p and Path(p).exists() for p in anim_logo):
+            inputs += ["-stream_loop", "-1", "-i", str(anim_logo[0]),
+                       "-stream_loop", "-1", "-i", str(anim_logo[1])]
+            anim_rgb_idx, anim_alpha_idx = next_idx, next_idx + 1
+            next_idx += 2
+
         keep_audio = ffmpeg.has_audio(clip)
         music_idx = None
         if not keep_audio and music and Path(music).exists():
@@ -156,12 +175,17 @@ def build_gameplay(
             music_idx = next_idx
             next_idx += 1
 
-        fc = [_norm_chain(0, w, h, fps, "base")]
+        fc = [(_crop_chain if fill else _norm_chain)(0, w, h, fps, "base")]
         vlabel = "base"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]scale=140:-1[lg]")
-            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ov]")
-            vlabel = "ov"
+            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ovk]")
+            vlabel = "ovk"
+        if anim_rgb_idx is not None:
+            fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
+                      f"scale={w}:-1[anim]")
+            fc.append(f"[{vlabel}][anim]overlay=0:H-h:shortest=1[ova]")
+            vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),

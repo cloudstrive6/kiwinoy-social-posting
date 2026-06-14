@@ -42,6 +42,15 @@ def _reel_logo() -> Optional[Any]:
     return p if p.exists() else None
 
 
+def _anim_logo() -> Optional[tuple]:
+    """(rgb_mp4, alpha_mp4) paths for the animated lower-third logo, or None."""
+    a = CONFIG.reels.get("logo_animated", {}) or {}
+    rgb, alpha = a.get("rgb"), a.get("alpha")
+    if rgb and alpha and (ROOT / rgb).exists() and (ROOT / alpha).exists():
+        return (ROOT / rgb, ROOT / alpha)
+    return None
+
+
 def _reel_music() -> Optional[Any]:
     """Pick a random royalty-free music track path (or None)."""
     import random
@@ -340,8 +349,9 @@ def run_gameplay_reel(
     video_bytes = reel_ffmpeg.build_gameplay(
         clips[0], reel_path, hook=brief["hook"], logo=_reel_logo(),
         fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
+        w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1440)),
         target_seconds=float(gcfg.get("target_seconds", 75)),
-        music=_reel_music(),
+        music=_reel_music(), anim_logo=_anim_logo(),
     )
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
 
