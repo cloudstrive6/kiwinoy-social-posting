@@ -342,7 +342,9 @@ def run_gameplay_reel(
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
     log("Reviewing the clip to write a caption...")
-    caption = content.caption_from_video(clips[0], brief.get("game", ""), taglish=taglish)
+    # Captions are ENGLISH for all gameplay reels (per user); the on-screen hook
+    # is English too. Only reel narration/threads can be Taglish.
+    caption = content.caption_from_video(clips[0], brief.get("game", ""), taglish=False)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
     log("Rendering gameplay reel with ffmpeg...")
@@ -351,7 +353,8 @@ def run_gameplay_reel(
         clips[0], reel_path, hook=brief["hook"], logo=_reel_logo(),
         fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
         w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
-        foot_h=int(gcfg.get("footage_height", 1440)),
+        foot_h=int(gcfg.get("footage_height", 1320)),
+        top_band=int(gcfg.get("top_band", 360)),
         target_seconds=float(gcfg.get("target_seconds", 75)),
         music=_reel_music(), anim_logo=_anim_logo(),
     )
@@ -513,8 +516,7 @@ def run_ready_reel(
     generic = {"", "reel", "clip", "video", game.replace("-", " ").strip().lower()}
     if len(line.split()) < 2 or line.lower() in generic:
         log("Reviewing the reel to write a caption...")
-        caption = content.caption_from_video(
-            path, game, taglish=bool(CONFIG.reels.get("taglish", True)))
+        caption = content.caption_from_video(path, game, taglish=False)
     else:
         tags = content._reel_hashtags({"game": game, "subject": line})
         caption = f"{line}\n\n{' '.join(tags)}".strip()

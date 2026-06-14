@@ -162,7 +162,8 @@ def build_gameplay(
     fps: int = 60,
     w: int = 1080,
     h: int = 1920,
-    foot_h: int = 1440,
+    foot_h: int = 1320,
+    top_band: Optional[int] = None,
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
@@ -211,7 +212,8 @@ def build_gameplay(
         # Crop-fill the footage to w x foot_h, then centre it in the w x h frame
         # (black band above for the hook, band below for the logo).
         foot_h = min(int(foot_h or h), h)
-        pad_y = (h - foot_h) // 2
+        pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
+        pad_y = max(0, min(pad_y, h - foot_h))
         fc = [
             f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
             f"crop={w}:{foot_h},pad={w}:{h}:0:{pad_y}:color=black,"

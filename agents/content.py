@@ -200,11 +200,16 @@ def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str
                 prompt = (
                     f"Use the Read tool to open these {len(cands)} frames (in order) "
                     f"from ONE short {gname} gameplay reel.\n"
-                    f"Write ONE short caption (3 to 8 words) describing what HAPPENS to "
-                    f"the character(s) or what they DO - like a clip title. Examples: "
-                    f"\"Fisk is caught\", \"Best web-swing in the game\", \"This boss "
-                    f"almost had me\".\n"
-                    + ("Natural Taglish is welcome. " if taglish else "")
+                    f"Write ONE short caption (3 to 8 words) describing what HAPPENS "
+                    f"on screen or what the character DOES - like a clip title. "
+                    f"Examples: \"Fisk is caught\", \"Best web-swing in the game\", "
+                    f"\"This boss almost had me\".\n"
+                    "ACCURACY: Do NOT guess or invent character names. If you are not "
+                    "certain who a character is, just say \"Spider-Man\" or describe the "
+                    "action - NEVER name a specific character (Miles Morales, Venom, "
+                    "etc.) unless you clearly recognise them. Read any on-screen "
+                    "subtitles / UI text to get it right.\n"
+                    + ("Natural Taglish is welcome. " if taglish else "Write it in ENGLISH. ")
                     + "No hashtags, no emojis, no quotes, no preamble - just the line.\n\n"
                     f"Frames:\n{listing}"
                 )
