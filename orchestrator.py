@@ -350,7 +350,8 @@ def run_gameplay_reel(
     video_bytes = reel_ffmpeg.build_gameplay(
         clips[0], reel_path, hook=brief["hook"], logo=_reel_logo(),
         fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
-        w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1440)),
+        w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
+        foot_h=int(gcfg.get("footage_height", 1440)),
         target_seconds=float(gcfg.get("target_seconds", 75)),
         music=_reel_music(), anim_logo=_anim_logo(),
     )

@@ -161,17 +161,19 @@ def build_gameplay(
     logo: Optional[Path] = None,
     fps: int = 60,
     w: int = 1080,
-    h: int = 1440,
+    h: int = 1920,
+    foot_h: int = 1440,
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
     fill: bool = True,
 ) -> bytes:
-    """Single standalone gameplay clip + a persistent top hook. Keeps game audio.
+    """Single standalone gameplay clip in a w x h frame, with the footage
+    crop-filled to a w x foot_h region CENTRED in it (black band above for the
+    hook so it never covers the gameplay, band below for the animated logo).
 
-    fill=True crops landscape -> vertical (no black bars); False letterboxes.
     anim_logo=(rgb_mp4, alpha_mp4) overlays the animated KiwinoyGaming lower-third
-    (bottom-centre) via alphamerge; the circular KG logo goes top-right. Trims to
+    (bottom band) via alphamerge; the circular KG logo goes top-right. Trims to
     target_seconds. Returns the rendered MP4 bytes.
     """
     clip = Path(clip)
@@ -206,7 +208,15 @@ def build_gameplay(
             music_idx = next_idx
             next_idx += 1
 
-        fc = [(_crop_chain if fill else _norm_chain)(0, w, h, fps, "base")]
+        # Crop-fill the footage to w x foot_h, then centre it in the w x h frame
+        # (black band above for the hook, band below for the logo).
+        foot_h = min(int(foot_h or h), h)
+        pad_y = (h - foot_h) // 2
+        fc = [
+            f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
+            f"crop={w}:{foot_h},pad={w}:{h}:0:{pad_y}:color=black,"
+            f"setsar=1,fps={fps}[base]"
+        ]
         vlabel = "base"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")  # pre-sized circular logo
