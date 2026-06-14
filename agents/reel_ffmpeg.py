@@ -124,6 +124,36 @@ def _crop_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
     )
 
 
+def _brand_logo(src: Optional[Path], out: Path) -> Optional[Path]:
+    """Crop the brand logo to a CIRCLE + apply opacity (top-right overlay).
+
+    Done in Pillow (robust) rather than an ffmpeg circle-mask. Returns the
+    circular PNG path, or the raw src on failure, or None if no logo.
+    """
+    if not src or not Path(src).exists():
+        return None
+    try:
+        from PIL import Image, ImageChops, ImageDraw
+        size = int(CONFIG.reels.get("brand_logo_size", 140))
+        opacity = max(0.0, min(1.0, float(CONFIG.reels.get("brand_logo_opacity", 0.6))))
+        im = Image.open(src).convert("RGBA")
+        w, h = im.size
+        s = min(w, h)  # centre-crop to a square first (no distortion)
+        im = im.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s))
+        im = im.resize((size, size), Image.LANCZOS)
+        mask = Image.new("L", (size, size), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, size - 1, size - 1), fill=255)
+        a = ImageChops.multiply(im.getchannel("A"), mask)
+        a = a.point(lambda v: int(v * opacity))
+        im.putalpha(a)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        im.save(out)
+        return out
+    except Exception as e:
+        print(f"[reel_ffmpeg] circular logo failed ({e!r}); using raw logo.", flush=True)
+        return Path(src)
+
+
 def build_gameplay(
     clip: Path,
     out_path: Path,
@@ -152,6 +182,7 @@ def build_gameplay(
 
     with tempfile.TemporaryDirectory() as tmp:
         ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")  # circular + opacity
 
         inputs: list[str] = ["-i", str(clip)]
         next_idx = 1
@@ -178,7 +209,7 @@ def build_gameplay(
         fc = [(_crop_chain if fill else _norm_chain)(0, w, h, fps, "base")]
         vlabel = "base"
         if logo_idx is not None:
-            fc.append(f"[{logo_idx}:v]scale=140:-1[lg]")
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")  # pre-sized circular logo
             fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ovk]")
             vlabel = "ovk"
         if anim_rgb_idx is not None:
@@ -272,6 +303,7 @@ def build_commentary(
         # ---- Pass A: video only -------------------------------------------
         # `-ss in_point -t per` before each input seeks past dead frames, then
         # caps how much of each clip is decoded/used.
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")  # circular + opacity
         inputs: list[str] = []
         for c, start in order:
             inputs += ["-ss", f"{start:.2f}", "-t", f"{per:.2f}", "-i", str(c)]
@@ -285,7 +317,7 @@ def build_commentary(
         fc.append(f"{cat_in}concat=n={len(order)}:v=1:a=0[cat]")
         vlabel = "cat"
         if logo_idx is not None:
-            fc.append(f"[{logo_idx}:v]scale=140:-1[lg]")
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
             fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ov]")
             vlabel = "ov"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
