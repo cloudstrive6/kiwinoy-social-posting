@@ -417,8 +417,8 @@ reels:
     font: 'DejaVu Sans'   # installed on the CI runner; libass resolves by name
     hook_size: 64
     sub_size: 52
-    hook_margin_v: 190    # hook offset from the top: sits LOW enough in the top
-                          # band to clear the phone's status bar / app UI overlay
+    hook_margin_v: 200    # hook offset from top: clears the phone UI, sits low in
+                          # the band (a touch into the footage top edge is fine)
     music_duck: 0.14      # background music volume under the voiceover
   # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
   # on top, the game's own audio kept, NO voiceover. Short Reel.
@@ -432,8 +432,8 @@ reels:
     # gets clipped; the remaining bottom band holds the animated logo.
     width: 1080
     height: 1920
-    top_band: 360         # black band above the footage (hook lives here)
-    footage_height: 1320  # gameplay region (bottom band = 1920-360-1320 = 240)
+    top_band: 320         # black band above the footage (hook lives here)
+    footage_height: 1440  # 3:4 gameplay region (bottom band = 1920-320-1440 = 160)
   # Animated KiwinoyGaming lower-third logo (bottom-centre) for agent-made reels.
   # Source .mov is huge + VP9/VP8 alpha was unreliable in this ffmpeg, so it's two
   # small H.264 streams (RGB + alpha matte) recombined with alphamerge at render.
