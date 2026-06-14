@@ -76,40 +76,69 @@ def run_carousel(
     )
 
 
+def _video_targets() -> list[str]:
+    """Platforms for video posts: config video_post_to, else FB+IG. Never X."""
+    targets = CONFIG.platforms.get("video_post_to", _IMAGE_PLATFORMS)
+    return [t for t in targets if t != "x"]
+
+
+def _video_placements(targets: list[str], title: str, short: bool) -> dict[str, Any]:
+    """Per-platform config for a video post across FB/IG/Threads/YouTube.
+
+    short=True -> Reels/Shorts placement; short=False (long video) -> FB feed
+    video (no reels placement, which caps ~90s). Threads needs no special config.
+    YouTube requires a title.
+    """
+    cfg: dict[str, Any] = {}
+    if "instagram" in targets:
+        cfg["instagram"] = {"placement": "reels"}
+    if "facebook" in targets and short:
+        cfg["facebook"] = {"placement": "reels"}  # long video -> omit = FB feed
+    if "youtube" in targets:
+        cfg["youtube"] = {"title": (title or "KiwinoyGamer").strip()[:95]}
+    return cfg
+
+
+def publish_video(
+    caption: str,
+    video_bytes: bytes,
+    title: Optional[str] = None,
+    short: bool = True,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Upload + publish a video to every video platform (FB/IG/Threads/YouTube,
+    NOT X). short=True for Reels/Shorts; False for a long video. Falls back to a
+    no-placement post if the placement config is rejected, so one platform's
+    quirk can't sink the whole post."""
+    targets = _video_targets()
+    account_ids = CONFIG.account_ids(targets)
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_url = postforme.upload_video(video_bytes)
+    placements = _video_placements(targets, title or caption.splitlines()[0] if caption else "", short)
+    try:
+        return postforme.create_post(
+            caption=caption, social_accounts=account_ids, media_urls=[media_url],
+            scheduled_at=scheduled_at, platform_configurations=placements or None,
+            is_draft=is_draft,
+        )
+    except postforme.PostForMeError:
+        return postforme.create_post(
+            caption=caption, social_accounts=account_ids, media_urls=[media_url],
+            scheduled_at=scheduled_at, platform_configurations=None, is_draft=is_draft,
+        )
+
+
 def run_reel(
     caption: str,
     video_bytes: bytes,
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Upload an MP4 reel and publish it to Facebook + Instagram Reels."""
-    account_ids = CONFIG.account_ids(_IMAGE_PLATFORMS)
-    if not account_ids:
-        raise postforme.PostForMeError(_NO_ACCOUNTS)
-
-    media_url = postforme.upload_video(video_bytes)
-    placements = {
-        "instagram": {"placement": "reels"},
-        "facebook": {"placement": "reels"},
-    }
-    try:
-        return postforme.create_post(
-            caption=caption,
-            social_accounts=account_ids,
-            media_urls=[media_url],
-            scheduled_at=scheduled_at,
-            platform_configurations=placements,
-            is_draft=is_draft,
-        )
-    except postforme.PostForMeError:
-        return postforme.create_post(
-            caption=caption,
-            social_accounts=account_ids,
-            media_urls=[media_url],
-            scheduled_at=scheduled_at,
-            platform_configurations=None,
-            is_draft=is_draft,
-        )
+    """Publish a short reel to FB/IG/Threads/YouTube (Reels/Shorts)."""
+    return publish_video(caption, video_bytes, short=True,
+                         scheduled_at=scheduled_at, is_draft=is_draft)
 
 
 def run_video_post(
@@ -118,35 +147,9 @@ def run_video_post(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Publish a LONG video (commentary, > Reel length limits).
-
-    Instagram publishes any API video as a Reel (max ~15 min), so IG keeps the
-    reels placement. Facebook Reels cap at ~90s, so on Facebook a long video goes
-    out as a normal video feed post (no reels placement).
-    """
-    account_ids = CONFIG.account_ids(_IMAGE_PLATFORMS)
-    if not account_ids:
-        raise postforme.PostForMeError(_NO_ACCOUNTS)
-    media_url = postforme.upload_video(video_bytes)
-    placements = {"instagram": {"placement": "reels"}}  # FB omitted = feed video
-    try:
-        return postforme.create_post(
-            caption=caption,
-            social_accounts=account_ids,
-            media_urls=[media_url],
-            scheduled_at=scheduled_at,
-            platform_configurations=placements,
-            is_draft=is_draft,
-        )
-    except postforme.PostForMeError:
-        return postforme.create_post(
-            caption=caption,
-            social_accounts=account_ids,
-            media_urls=[media_url],
-            scheduled_at=scheduled_at,
-            platform_configurations=None,
-            is_draft=is_draft,
-        )
+    """Publish a LONG video (commentary) to FB/IG/Threads/YouTube (feed video on FB)."""
+    return publish_video(caption, video_bytes, short=False,
+                         scheduled_at=scheduled_at, is_draft=is_draft)
 
 
 def run_threads(
