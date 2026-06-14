@@ -181,40 +181,85 @@ Return ONLY the line."""
     return f"{line}\n\n{' '.join(tags)}".strip()
 
 
+def _observe_clip(cands: list, gname: str) -> str:
+    """Stage 1 (vision OBSERVER): describe ONLY what's literally on screen across
+    the frames — setting, characters' appearance (no name-guessing), action and
+    any on-screen text. This factual read is then handed to the captioner so it
+    knows what's going on before it writes the line."""
+    from core import claude_code
+
+    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
+    prompt = (
+        f"Use the Read tool to open these {len(cands)} frames (in order) from ONE "
+        f"short {gname} gameplay clip.\n"
+        "Describe ONLY what you can literally SEE — do not guess names or backstory. "
+        "Cover, in 3-5 plain sentences:\n"
+        "- SETTING/location (indoor lab, rooftop, street, snow, etc.)\n"
+        "- CHARACTERS visible, by APPEARANCE only (e.g. 'man in a lab coat', 'figure "
+        "in a red-and-blue spider suit', 'teen in a hoodie') — never assume who they "
+        "are.\n"
+        "- The ACTION / what is happening or being done.\n"
+        "- Any on-screen TEXT, subtitles, objective markers or UI you can read.\n\n"
+        f"Frames:\n{listing}"
+    )
+    return sanitize(claude_code.run(prompt, allowed_tools="Read", timeout=180)).strip()
+
+
+def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -> str:
+    """Stage 2 (lore-grounded CAPTIONER): map the observer's factual read onto the
+    game's story/characters/locations, work out which moment it is, then write the
+    short clip-title caption — accurately."""
+    from core import claude_code, lore
+
+    brief = lore.lore_for(game)
+    lore_block = (
+        f"GAME STORY / CHARACTERS / PLACES (use this to identify the scene "
+        f"correctly):\n{brief}\n\n" if brief else ""
+    )
+    prompt = (
+        f"You are writing a caption for a {gname} gameplay clip.\n\n"
+        f"WHAT'S ON SCREEN (an observer's factual description):\n{observation}\n\n"
+        f"{lore_block}"
+        "First, silently work out WHICH character / location / story moment this is "
+        "by matching the description against the game's story above. Respect the "
+        "'DON'T CONFUSE' notes. Then write ONE short caption (3 to 8 words), like a "
+        "clip title. Examples: \"Fisk is caught\", \"Best web-swing in the game\", "
+        "\"This boss almost had me\".\n"
+        "ACCURACY RULES:\n"
+        "- Name a character ONLY if the story above makes it clear who it is; "
+        "otherwise say \"Spider-Man\" or just describe the action.\n"
+        "- Never mislabel a location or a relationship (e.g. don't call a mentor's "
+        "lab a 'villain's lab', or an ally an 'enemy').\n"
+        "- If you're unsure, caption the ACTION rather than guessing identities.\n"
+        + ("Natural Taglish is welcome. " if taglish else "Write it in ENGLISH. ")
+        + "No hashtags, no emojis, no quotes, no preamble — just the line."
+    )
+    return sanitize(claude_code.run(prompt, timeout=120)).strip()
+
+
 def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str:
-    """REVIEW a gameplay clip (a few frames) and write the caption — the agent
-    looks at what's happening and describes the moment in a few words, like the
-    "Fisk is caught" sample. Returns one short line + 2-3 game hashtags."""
+    """REVIEW a gameplay clip and write an accurate clip-title caption.
+
+    Two agents: an OBSERVER reports what's literally on screen, then a
+    lore-grounded CAPTIONER maps that onto the game's story/characters to write
+    the line — so it stops guessing wrong (e.g. Otto's lab, not a "villain's
+    lab"). Returns one short line + 2-3 game hashtags.
+    """
     import tempfile
     from pathlib import Path
 
-    from core import claude_code, frames
+    from core import frames
 
     line = ""
     try:
         with tempfile.TemporaryDirectory() as tmp:
             cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
             if cands:
-                listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
-                prompt = (
-                    f"Use the Read tool to open these {len(cands)} frames (in order) "
-                    f"from ONE short {gname} gameplay reel.\n"
-                    f"Write ONE short caption (3 to 8 words) describing what HAPPENS "
-                    f"on screen or what the character DOES - like a clip title. "
-                    f"Examples: \"Fisk is caught\", \"Best web-swing in the game\", "
-                    f"\"This boss almost had me\".\n"
-                    "ACCURACY: Do NOT guess or invent character names. If you are not "
-                    "certain who a character is, just say \"Spider-Man\" or describe the "
-                    "action - NEVER name a specific character (Miles Morales, Venom, "
-                    "etc.) unless you clearly recognise them. Read any on-screen "
-                    "subtitles / UI text to get it right.\n"
-                    + ("Natural Taglish is welcome. " if taglish else "Write it in ENGLISH. ")
-                    + "No hashtags, no emojis, no quotes, no preamble - just the line.\n\n"
-                    f"Frames:\n{listing}"
-                )
-                raw = claude_code.run(prompt, allowed_tools="Read", timeout=180)
-                line = sanitize(raw).strip().splitlines()[0].strip().strip('"')[:90]
+                observation = _observe_clip(cands, gname)
+                if observation:
+                    raw = _caption_with_lore(observation, game, gname, taglish)
+                    line = raw.splitlines()[0].strip().strip('"')[:90] if raw else ""
     except Exception as e:
         print(f"[content] vision caption failed ({e!r}); using a generic line.", flush=True)
     if not line:

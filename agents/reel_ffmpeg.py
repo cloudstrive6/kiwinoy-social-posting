@@ -58,9 +58,12 @@ def _ass_header(w: int, h: int) -> str:
         "OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, "
         "ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, "
         "MarginL, MarginR, MarginV, Encoding\n"
-        # Hook: top-centre, opaque black box behind white caps text.
-        f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H73000000,"
-        f"&H73000000,-1,0,0,0,100,100,0,0,3,18,0,8,90,90,{hook_mv},1\n"
+        # Hook: top-centre white caps. Outline + drop-shadow (BorderStyle 1), NOT a
+        # filled box — the black top band is already the backdrop, and a box would
+        # bleed its shadow onto the footage below. Outline keeps it readable on the
+        # rare line that dips a touch past the band onto the gameplay.
+        f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
+        f"&H00000000,-1,0,0,0,100,100,0,0,1,7,4,8,90,90,{hook_mv},1\n"
         # Sub: bottom-centre, white text with a thick black outline (Gameranx).
         f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
         f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,300,1\n\n"
