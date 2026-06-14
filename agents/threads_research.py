@@ -70,7 +70,10 @@ for young Filipino players. Use web search to find the SINGLE most engaging,
 current, REAL gaming story to post on Threads right now.
 
 AAA ONLY: cover only big-budget AAA titles (console/PC). Do NOT cover mobile,
-gacha, or live-service games. Stay within this universe:
+gacha, or live-service games. Stay within this universe - and treat EACH entry as
+its WHOLE SERIES/FRANCHISE: any game in it (originals, sequels, remakes/remasters,
+DLC, ports) and its news, reveals, and show adaptations all count (e.g. "The Last
+of Us" = Part I AND Part II; "Halo" = the entire Halo series):
 {chr(10).join(f'- {x}' for x in universe)}
 
 {focus}Surface whatever AAA story is genuinely hottest now within that universe.

@@ -516,16 +516,19 @@ threads_posts:
   # each run via web search, so it stays on a marquee game for its run, then rolls
   # to the next big thing.
   trending_focus: true
-  # AAA-ONLY (2026-06-14, user): the games universe is big-budget AAA titles only
-  # (no gacha / live-service). The agent surfaces whatever AAA thing is hottest now.
+  # AAA-ONLY (2026-06-14, user): big-budget AAA titles only (no gacha/live-service).
+  # Each entry below means the WHOLE SERIES/FRANCHISE - every game in it (originals,
+  # sequels, remakes/remasters, DLC, ports) plus its news, reveals, and adaptations.
+  # e.g. "The Last of Us" = Part I AND Part II (and the show); "Halo" = the whole
+  # Halo series. The agent surfaces whatever in these series is hottest now.
   leagues:
-  - Insomniac Games titles (Marvel's Spider-Man 1 / Miles Morales / 2, Marvel's Wolverine)
-  - Final Fantasy (VII Remake / Rebirth and the wider series)
-  - Kingdom Hearts (including Kingdom Hearts IV)
-  - Halo
-  - The Last of Us
-  - Other big-budget AAA single-player releases, updates, reveals, and showcases
-    (State of Play, Xbox/Summer showcases, The Game Awards)
+  - Marvel's Spider-Man series (Spider-Man 1, Miles Morales, Spider-Man 2) + Marvel's Wolverine (Insomniac)
+  - Final Fantasy series (incl. the VII Remake / Rebirth trilogy)
+  - Kingdom Hearts series (incl. Kingdom Hearts IV)
+  - Halo series
+  - The Last of Us series (Part I and Part II)
+  - Other big-budget AAA single-player series, plus releases, updates, reveals, and
+    showcases (State of Play, Xbox/Summer showcases, The Game Awards)
   angles:
   - New release / launch hype or first impressions
   - Update / patch / new content drop
