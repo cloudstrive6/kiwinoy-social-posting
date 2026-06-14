@@ -516,19 +516,17 @@ threads_posts:
   # each run via web search, so it stays on a marquee game for its run, then rolls
   # to the next big thing.
   trending_focus: true
-  # AAA-ONLY (2026-06-14, user): big-budget AAA titles only (no gacha/live-service).
-  # Each entry below means the WHOLE SERIES/FRANCHISE - every game in it (originals,
-  # sequels, remakes/remasters, DLC, ports) plus its news, reveals, and adaptations.
-  # e.g. "The Last of Us" = Part I AND Part II (and the show); "Halo" = the whole
-  # Halo series. The agent surfaces whatever in these series is hottest now.
+  # AAA-ONLY, EXACT SCOPE (2026-06-14, user). Big-budget AAA only (no gacha / live-
+  # service). Cover every entry WITHIN each franchise AS LISTED below - the bullets
+  # define the exact scope (e.g. FF7 means ONLY the FF7 compilation, NOT other Final
+  # Fantasy games). The agent surfaces whatever in this universe is hottest now.
   leagues:
-  - Marvel's Spider-Man series (Spider-Man 1, Miles Morales, Spider-Man 2) + Marvel's Wolverine (Insomniac)
-  - Final Fantasy series (incl. the VII Remake / Rebirth trilogy)
-  - Kingdom Hearts series (incl. Kingdom Hearts IV)
-  - Halo series
-  - The Last of Us series (Part I and Part II)
-  - Other big-budget AAA single-player series, plus releases, updates, reveals, and
-    showcases (State of Play, Xbox/Summer showcases, The Game Awards)
+  - "Marvel's Spider-Man: the games (Spider-Man 1, Miles Morales, Spider-Man 2) AND any upcoming Spider-Man movies"
+  - "Marvel's Wolverine (Insomniac)"
+  - "Final Fantasy VII ONLY (FF7 OG 1997, FF7 Remake, FF7 INTERmission, FF7 Rebirth, FF7 Revelation, FF7 Dirge of Cerberus, FF7 Advent Children) - NOT any other Final Fantasy"
+  - "Kingdom Hearts: the games (KH 1, 2, 3, 4) AND any upcoming Kingdom Hearts games"
+  - "Halo: all Halo games (the game series only)"
+  - "The Last of Us: the games (Part I and Part II)"
   angles:
   - New release / launch hype or first impressions
   - Update / patch / new content drop
@@ -541,14 +539,13 @@ threads_posts:
   # hours are reserved for the mandatory daily types, the rest are games updates.
   prediction_hour: 9        # a "verdict" breakdown (is it worth it? hype vs reality)
   poll_hour: 15             # a gamer hot take + reply-to-vote poll
-  # Extra AAA franchises the verdict/breakdown post can dig into (besides above).
+  # Same exact AAA scope, for the verdict/breakdown post (kept in sync with above).
   esports:
-  - Marvel's Wolverine (Insomniac)
-  - Marvel's Spider-Man (1 / Miles Morales / 2)
-  - Final Fantasy VII Remake / Rebirth
-  - Kingdom Hearts IV
-  - The Last of Us
-  - Halo
+  - "Marvel's Spider-Man games (1 / Miles Morales / 2) + Marvel's Wolverine"
+  - "Final Fantasy VII compilation only (OG, Remake, INTERmission, Rebirth, Revelation, Dirge of Cerberus, Advent Children)"
+  - "Kingdom Hearts games (1, 2, 3, 4 + upcoming)"
+  - "Halo (all Halo games)"
+  - "The Last of Us (Part I and Part II)"
   # Rotating themes for the daily poll/hot-take (the agent invents its own each
   # time, guided by but NOT copying these).
   poll_domains:
