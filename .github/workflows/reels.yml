@@ -32,6 +32,11 @@ concurrency:
   group: kiwinoy-auto-reels
   cancel-in-progress: false
 
+# The renderer records which footage clip it used (a tiny JSON asset on the
+# 'footage' release) so the next reel picks fresh footage — needs write access.
+permissions:
+  contents: write
+
 jobs:
   reel:
     runs-on: ubuntu-latest

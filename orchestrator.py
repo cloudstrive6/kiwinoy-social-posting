@@ -333,16 +333,19 @@ def run_gameplay_reel(
     # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
     # itself is written from the actual clip + lore below, so it fits the footage.
     brief = reel_topics.run("gameplay", games, taglish=False)
-    clips = reel_composer.clips_for_game(brief["game"], n=1)
-    if not clips:
+    # Prefer footage we HAVEN'T used for a gameplay reel yet (tracked on the
+    # footage release); clips are kept for future commentary reels, not deleted.
+    clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+    if not clip_path:
         log("Could not resolve a clip — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+    log(f"Clip (fresh-first): {clip_id}")
 
     log("Reviewing the clip to write the on-screen hook + caption...")
     # The hook (top of frame) and caption are BOTH grounded in what this clip
     # shows + the game lore, by a viewer-psychology writer. ENGLISH per user.
     hook, caption = content.hook_and_caption_from_video(
-        clips[0], brief.get("game", ""), taglish=False)
+        clip_path, brief.get("game", ""), taglish=False)
     brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -352,7 +355,7 @@ def run_gameplay_reel(
     log("Rendering gameplay reel with ffmpeg...")
     reel_path = run_dir / "reel.mp4"
     video_bytes = reel_ffmpeg.build_gameplay(
-        clips[0], reel_path, hook=hook, logo=_reel_logo(),
+        clip_path, reel_path, hook=hook, logo=_reel_logo(),
         fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
         w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
         foot_h=int(gcfg.get("footage_height", 1320)),
@@ -363,7 +366,7 @@ def run_gameplay_reel(
     log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB)")
 
     result: dict[str, Any] = {
-        "slot_id": slot_id, "kind": "gameplay", "brief": brief,
+        "slot_id": slot_id, "kind": "gameplay", "brief": brief, "clip_id": clip_id,
         "caption": caption, "reel_path": str(reel_path), "dry_run": dry_run,
     }
     if dry_run:
@@ -376,6 +379,10 @@ def run_gameplay_reel(
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+        # Remember this clip so the next gameplay reel uses fresh footage. The
+        # clip itself stays on the release for future commentary reels.
+        if reel_composer.mark_clip_used(clip_id):
+            log(f"Marked clip used: {clip_id}")
     _save(run_dir, result)
     return result
 

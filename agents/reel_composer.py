@@ -126,6 +126,47 @@ def clips_for_game(key: str, n: Optional[int] = None) -> list[Path]:
     return out
 
 
+def _clip_id(kind: str, item: Any, key: str) -> str:
+    """Stable id for a clip used by the gameplay 'already used' ledger. Remote
+    assets are already '<game>__...'; give local files the same prefix so ids
+    are globally unique and resettable per game."""
+    if kind == "remote":
+        return str(item.get("name", ""))
+    return f"{key}__{Path(item).name}"
+
+
+def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
+    """Pick ONE gameplay clip for `key`, preferring clips NOT yet used for a
+    gameplay reel (tracked in the footage release ledger). Returns
+    (path, clip_id) or (None, None).
+
+    Clips are never deleted — they stay available for commentary reels. When
+    every clip for a game has already been used, the ledger for that game resets
+    and the cycle restarts (so we still post, just begin reusing the oldest).
+    """
+    pool = _candidates(key)
+    if not pool:
+        return None, None
+    used = gh_release.used_clips()
+    fresh = [(k, i) for (k, i) in pool if _clip_id(k, i, key) not in used]
+    if not fresh:
+        gh_release.reset_used(key)   # all shown once -> restart this game's cycle
+        fresh = pool
+    kind, item = random.choice(fresh)
+    cid = _clip_id(kind, item, key)
+    if kind == "local":
+        return Path(item), cid
+    cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
+        "cache_dir", "reels/assets/footage/.cache")
+    p = gh_release.download(item, cache)
+    return (p, cid) if p else (None, None)
+
+
+def mark_clip_used(clip_id: str) -> bool:
+    """Record a clip as used for a gameplay reel (call after a successful post)."""
+    return gh_release.add_used_clip(clip_id)
+
+
 class ReelRenderError(RuntimeError):
     pass
 
