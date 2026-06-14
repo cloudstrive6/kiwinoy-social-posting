@@ -285,13 +285,15 @@ platforms:
   # real players) -> so sports does NOT go to Instagram (IG requires media).
   sports_post_to:
   - facebook
-  # The dedicated Threads text track posts only to Threads.
+  # The dedicated Threads text track posts to Threads AND X/Twitter (2026-06-14).
   threads_post_to:
   - threads
+  - x
   accounts:
     facebook: spc_pdryrNLUWBjaeRxiO716
     instagram: spc_W0CkCQOOafk2NVq3tXEN
     threads: spc_fh6hyxsoUb7D7jqQGFx
+    x: spc_lka8e4mbEwgNwSrpmhfpF
 
 # Reels track. A SEPARATE cadence from the image posts: 2 short vertical videos
 # a day. Each reel is a 12-15s 9:16 MP4 with Ken Burns motion + animated

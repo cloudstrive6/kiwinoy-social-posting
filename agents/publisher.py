@@ -154,11 +154,12 @@ def run_threads(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Publish a text-only post to Threads (no image/video)."""
-    account_ids = CONFIG.account_ids(_THREADS_PLATFORMS)
+    """Publish a text-only post to the Threads track's platforms (Threads + X)."""
+    targets = CONFIG.platforms.get("threads_post_to", _THREADS_PLATFORMS)
+    account_ids = CONFIG.account_ids(targets)
     if not account_ids:
         raise postforme.PostForMeError(
-            "No Threads account ID in config.yaml. Connect Threads in Post for "
+            "No Threads/X account IDs in config.yaml. Connect them in Post for "
             "Me and run `python tools/list_accounts.py --save`."
         )
     return postforme.create_post(
