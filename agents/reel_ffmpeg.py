@@ -197,8 +197,8 @@ def build_gameplay(
 
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
-            inputs += ["-stream_loop", "-1", "-i", str(anim_logo[0]),
-                       "-stream_loop", "-1", "-i", str(anim_logo[1])]
+            # NOT looped: the lower-third plays ONCE at the start, then disappears.
+            inputs += ["-i", str(anim_logo[0]), "-i", str(anim_logo[1])]
             anim_rgb_idx, anim_alpha_idx = next_idx, next_idx + 1
             next_idx += 2
 
@@ -228,7 +228,9 @@ def build_gameplay(
         if anim_rgb_idx is not None:
             fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
                       f"scale={w}:-1[anim]")
-            fc.append(f"[{vlabel}][anim]overlay=0:H-h:shortest=1[ova]")
+            # eof_action=pass -> after the logo finishes (once), the footage shows
+            # clean (no freeze-frame, no loop).
+            fc.append(f"[{vlabel}][anim]overlay=0:H-h:eof_action=pass[ova]")
             vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
