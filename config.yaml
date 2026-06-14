@@ -311,7 +311,7 @@ reels:
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
-  brand_logo_size: 140     # top-right logo diameter (px)
+  brand_logo_size: 116     # top-right logo diameter (px)
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

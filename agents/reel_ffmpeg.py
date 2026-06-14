@@ -220,7 +220,8 @@ def build_gameplay(
         vlabel = "base"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")  # pre-sized circular logo
-            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ovk]")
+            # top-right of the FOOTAGE (just below the hook band), not the frame.
+            fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
         if anim_rgb_idx is not None:
             fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
