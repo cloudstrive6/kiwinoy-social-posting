@@ -567,11 +567,11 @@ def run_threads(
 
     if post_type == "poll":
         # Pure opinion — nothing to fact-check.
-        log("Writing a risk/probability hot take + poll...")
+        log("Writing a gamer hot take + poll...")
         text = threads_writer.run_poll()
         passed = True
     else:
-        categories = ["sports", "esports"] if post_type == "prediction" else ["sports"]
+        categories = ["games", "verdict"] if post_type == "prediction" else ["games"]
         for attempt in range(2):
             if attempt:
                 log("Regenerating after fact-check fail...")
@@ -582,7 +582,7 @@ def run_threads(
             )
             log(f"Topic: {brief.get('title')}")
             if post_type == "prediction":
-                log("Writing the prediction breakdown...")
+                log("Writing the game verdict/breakdown...")
                 text = threads_writer.run_prediction(brief)
             else:
                 log("Writing the Threads post...")

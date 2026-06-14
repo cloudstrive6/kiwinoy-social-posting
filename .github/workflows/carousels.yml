@@ -1,8 +1,8 @@
 name: KiwinoyGamer Auto-Carousels
 
 # Publishes a 3-5 image carousel to Facebook + Instagram once a day.
-# Gacha carousel paused; the remaining slot is Esports (MLBB), curated/footage-only.
-# 13:25 UTC = 21:25 Philippines prime time -> Esports (MPL audience)
+# GAMES-ONLY: one games carousel/day (curated/footage-only). Esports moved to a
+# separate channel. 13:25 UTC = 21:25 Philippines prime time.
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.

@@ -1,26 +1,24 @@
 name: KiwinoyGamer Auto-Reels
 
-# Renders + publishes 4 Taglish reels per day, all timed to Philippine peak
-# scroll windows (PHT = UTC+8):
-#   04:25 UTC = 12:25 PM (lunch)  -> slot 1 (Esports, MLBB)
-#   10:25 UTC = 6:25 PM           -> slot 2 (Esports, MLBB)
-#   13:25 UTC = 9:25 PM (prime)   -> slot 3 (Esports, MLBB)
-#   15:25 UTC = 11:25 PM (late)   -> slot 4 (Esports, MLBB)
+# Renders + publishes 4 Taglish GAME reels per day (gameplay-only + commentary),
+# all timed to Philippine peak scroll windows (PHT = UTC+8). MLBB/esports hype
+# reels were retired (moved to a separate channel). These are footage-driven and
+# SKIP until you've uploaded game footage.
+#   06:25 UTC = 2:25 PM   -> slot 1 (Gameplay-only)
+#   16:25 UTC = 12:25 AM  -> slot 2 (Gameplay-only)
+#   11:25 UTC = 7:25 PM   -> slot 3 (Commentary, short)
+#   02:25 UTC = 10:25 AM  -> slot 4 (Commentary, long)
 on:
   schedule:
     # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 4 * * *"   # slot 1 (Hype, MLBB)
-    - cron: "25 10 * * *"  # slot 2 (Hype, MLBB)
-    - cron: "25 13 * * *"  # slot 3 (Hype, MLBB)
-    - cron: "25 15 * * *"  # slot 4 (Hype, MLBB)
-    - cron: "25 6 * * *"   # slot 5 (Gameplay-only)
-    - cron: "25 16 * * *"  # slot 6 (Gameplay-only)
-    - cron: "25 11 * * *"  # slot 7 (Commentary, short)
-    - cron: "25 2 * * *"   # slot 8 (Commentary, long)
+    - cron: "25 6 * * *"   # slot 1 (Gameplay-only)
+    - cron: "25 16 * * *"  # slot 2 (Gameplay-only)
+    - cron: "25 11 * * *"  # slot 3 (Commentary, short)
+    - cron: "25 2 * * *"   # slot 4 (Commentary, long)
   workflow_dispatch:
     inputs:
       slot:
-        description: "Reel slot id to run (1-8)"
+        description: "Reel slot id to run (1-4)"
         required: true
         default: "1"
       dry_run:
@@ -80,14 +78,10 @@ jobs:
         id: pick
         run: |
           case "${{ github.event.schedule }}" in
-            "25 4 * * *")  SLOT=1 ;;
-            "25 10 * * *") SLOT=2 ;;
-            "25 13 * * *") SLOT=3 ;;
-            "25 15 * * *") SLOT=4 ;;
-            "25 6 * * *")  SLOT=5 ;;
-            "25 16 * * *") SLOT=6 ;;
-            "25 11 * * *") SLOT=7 ;;
-            "25 2 * * *")  SLOT=8 ;;
+            "25 6 * * *")  SLOT=1 ;;
+            "25 16 * * *") SLOT=2 ;;
+            "25 11 * * *") SLOT=3 ;;
+            "25 2 * * *")  SLOT=4 ;;
             *)             SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"

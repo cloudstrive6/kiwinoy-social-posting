@@ -1,8 +1,8 @@
 name: KiwinoyGamer Auto-Threads
 
-# Dedicated Threads text track: a sports post every 2 hours (UTC), researched +
+# Dedicated Threads text track: a GAMES post every 2 hours (UTC), researched +
 # written by Claude via your subscription (CLAUDE_CODE_OAUTH_TOKEN). Text only,
-# <=500 chars. No images/reels. Each run finds a fresh trending sports topic.
+# <=500 chars. No images/reels. Each run finds a fresh trending games topic.
 on:
   # Triggered by an EXTERNAL scheduler (cron-job.org) hitting the workflow_dispatch
   # API every 2 hours at :25 UTC — GitHub's own `schedule:` cron dropped/delayed

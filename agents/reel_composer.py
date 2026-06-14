@@ -89,13 +89,14 @@ def list_games() -> dict[str, int]:
     """
     fcfg = CONFIG.reels.get("footage", {}) or {}
     base = ROOT / fcfg.get("dir", "reels/assets/footage")
+    excluded = {str(x).lower() for x in (fcfg.get("exclude", []) or [])}
     keys: set[str] = set()
     if base.exists():
         keys |= {d.name for d in base.iterdir() if d.is_dir() and not d.name.startswith(".")}
     for entry in fcfg.get("map", []) or []:
         keys.add(str(entry.get("dir", "")))
     out: dict[str, int] = {}
-    for k in sorted(k for k in keys if k):
+    for k in sorted(k for k in keys if k and k.lower() not in excluded):
         n = len(_candidates(k))
         if n:
             out[k] = n

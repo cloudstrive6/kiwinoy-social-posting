@@ -36,7 +36,7 @@ def run(brief: dict[str, Any]) -> str:
     facts = "\n".join(f"- {f}" for f in brief.get("key_facts", []))
     tag = " ".join(t.get("hashtags", [])[:1])
 
-    base = f"""Write ONE Threads post about this sports story.
+    base = f"""Write ONE Threads post about this gaming story.
 
 {now_context()}
 {DATETIME_RULE}
@@ -49,10 +49,10 @@ KEY FACTS (use accurately, never invent more):
 {facts}
 
 Rules:
-- The FIRST line must be a scroll-stopping hook (a bold take, a wild stat, or a
+- The FIRST line must be a scroll-stopping hook (a bold take, a wild detail, or a
   sharp question) that makes people stop and read.
 - Then a tight mini story: the hook, the point/insight, and a question that
-  invites replies. A couple of short lines, conversational hype sports-fan voice.
+  invites replies. A couple of short lines, conversational hype gamer voice.
 - HARD LIMIT: {limit} characters or less for the ENTIRE post. Count carefully.
 - At most one hashtag, only if it feels natural: {tag}
 - Output ONLY the post text. No preamble, no surrounding quotes, no labels.
@@ -77,13 +77,13 @@ def _generate(prompt: str, limit: int) -> str:
 
 
 def run_prediction(brief: dict[str, Any]) -> str:
-    """Detailed esports/sports prediction breakdown (bullets: stats, form, % odds)."""
+    """Daily VERDICT / breakdown post about a game (is it worth it? hype vs reality)."""
     t = CONFIG.threads_posts
     limit = int(t.get("max_chars", 500))
     facts = "\n".join(f"- {f}" for f in brief.get("key_facts", []))
     tag = " ".join(t.get("hashtags", [])[:1])
 
-    prompt = f"""Write ONE Threads PREDICTION BREAKDOWN about this matchup / story.
+    prompt = f"""Write ONE Threads VERDICT / BREAKDOWN about this game.
 
 {now_context()}
 {DATETIME_RULE}
@@ -93,13 +93,13 @@ SUBJECT: {brief.get('subject')}
 KEY FACTS (use accurately, never invent more):
 {facts}
 
-Write like a sharp analyst breaking down an upcoming match or tournament:
-- Line 1: a confident hook / your headline call.
-- Then 2 to 4 tight BULLET lines (start each with "- ") with the sharpest evidence:
-  key player stats, form / win streak, head-to-head, and a percentage win-odds call.
-- End with a quick reply-bait question ("who you got?").
-- Be specific and analytical, not vague. Only use the facts above; never invent a
-  stat or number that isn't given.
+Write like a sharp gamer giving the real verdict (worth it? hype vs reality?):
+- Line 1: a confident hook / your headline call (e.g. "worth every peso" or "wait
+  for the patch").
+- Then 2 to 4 tight BULLET lines (start each with "- ") with the sharpest points:
+  what's great, what's weak, who it's for, price/value, performance.
+- End with a quick reply-bait question ("bibilhin niyo ba?").
+- Be specific, not vague. Only use the facts above; never invent a number/date.
 - HARD LIMIT: {limit} characters or less for the ENTIRE post. At most one hashtag
   if natural: {tag}
 - Output ONLY the post text. No preamble, no labels.
@@ -115,25 +115,26 @@ def run_poll() -> str:
     domains = t.get("poll_domains", [])
     domain = random.choice(domains) if domains else "risk vs reward"
 
-    samples = """STYLE GUIDE (do NOT copy these, invent a fresh take + your own numbers):
-- Hot take: calculated risks build empires; most people play too safe and miss the
-  expected value. Poll: guaranteed $10,000 now, or a 10% shot at $250,000?
-- Hot take: betting the Grand Final favorite is a trap, give me the underdog with
-  the big payout. Poll: favorite wins easy, or the underdog pulls the upset?
-- Hot take: hoarding currency for the safe pity drop is boring, blow it on the 1%
+    samples = """STYLE GUIDE (do NOT copy these, invent a fresh take + your own angle):
+- Hot take: preordering is a trap, wait a week for reviews and a day-one patch.
+  Poll: preorder for the hype, or wait for the reviews?
+- Hot take: remakes that change the story are braver than 1:1 nostalgia copies.
+  Poll: faithful remake, or bold reimagining?
+- Hot take: hoarding gacha currency for the safe pity is boring, blow it on the 1%
   banner. Poll: hoard for the guaranteed drop, or gamble it all on 1%?"""
 
-    prompt = f"""Write ONE Threads "reply-to-vote" POLL post on this theme: {domain}.
+    prompt = f"""Write ONE Threads "reply-to-vote" POLL post for GAMERS on this theme: {domain}.
 
 Structure:
-- Open with a punchy HOT TAKE (1 to 2 lines): a strong, debatable opinion about
-  risk, odds, probability, or expected value. Make people want to argue.
+- Open with a punchy HOT TAKE (1 to 2 lines): a strong, debatable gaming opinion
+  (buying, value, remakes vs originals, single-player vs live-service, gacha luck).
+  Make people want to argue.
 - Then a blank line, a one-line poll question, then exactly TWO options on their
   own lines, labelled like:
     A) <the safe / certain choice>
     B) <the risky / high-upside choice>
 - End with: Reply A or B 👇
-- Be CREATIVE and original. Vary the scenario, the numbers, and the domain feel.
+- Be CREATIVE and original. Vary the scenario and the domain feel.
 - HARD LIMIT: {limit} characters or less. No hashtags.
 - Output ONLY the post text.
 

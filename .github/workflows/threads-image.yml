@@ -1,13 +1,12 @@
 name: KiwinoyGamer Threads Image Posts
 
-# 2 designed Threads IMAGE posts/day at US prime time (sports photo/footage +
-# KG headline). Times target the US audience (EDT = UTC-4):
-#   16:25 UTC = 12:25 PM ET (midday)
-#   00:25 UTC =  8:25 PM ET (evening prime)
+# PAUSED (2026-06-14): this was the SPORTS Threads image track. Sports moved to a
+# separate channel, so the daily schedule is disabled. Left as manual-only
+# (workflow_dispatch) in case it's repurposed for game images later.
 on:
-  schedule:
-    - cron: "25 16 * * *"
-    - cron: "25 0 * * *"
+  # schedule:                # sports image posts retired
+  #   - cron: "25 16 * * *"
+  #   - cron: "25 0 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

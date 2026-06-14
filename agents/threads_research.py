@@ -1,7 +1,7 @@
-"""Threads Research agent — digs up a fresh, real, trending SPORTS/ESPORTS story.
+"""Threads Research agent — digs up a fresh, real, trending GAMES story.
 
 Uses Claude (your subscription / CLAUDE_CODE_OAUTH_TOKEN) with web search, so it
-pulls genuinely current results, news, and player/team analysis. Returns a brief
+pulls genuinely current game news, releases, updates, and reveals. Returns a brief
 for the Threads writer.
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ _RECENCY = (
 
 
 def _clean(brief: dict[str, Any]) -> dict[str, Any]:
-    brief["category"] = "sports"
+    brief["category"] = "games"
     brief.setdefault("key_facts", [])
     for k in ("title", "hook_idea", "angle"):
         if isinstance(brief.get(k), str):
@@ -31,43 +31,46 @@ def _clean(brief: dict[str, Any]) -> dict[str, Any]:
     return brief
 
 
-_FOCUS = """TRENDING-SPORT FOCUS (important): KiwinoyGamer grows reach by RIDING the
-single hottest sport, not hopping between sports.
-Step 1 - Use web search to identify THE single hottest sport/competition happening
-RIGHT NOW: the marquee event drawing the most attention this period (a Finals, a
-Grand Slam, a World Cup or major international tournament, a marquee rivalry
-weekend). COMMIT to it. Do NOT flip between sports day to day. If nothing is
-clearly marquee, pick the sport with the most momentum now, or the one building
-toward the next big event.
-Step 2 - Within THAT sport, find the most engaging, current, REAL story, using a
+_FOCUS = """TRENDING-GAME FOCUS (important): KiwinoyGamer grows reach by RIDING the
+single hottest game / gaming moment, not hopping between random games.
+Step 1 - Use web search to identify THE single hottest game or gaming moment
+RIGHT NOW: the marquee thing drawing the most attention this period (a big new
+release, a major update/patch/DLC, a viral gaming moment, a showcase like a State
+of Play or the Game Awards, a record-breaking launch). COMMIT to it. Do NOT flip
+between games day to day. If nothing is clearly marquee, pick the game with the
+most momentum now, or the one building toward the next big drop.
+Step 2 - Within THAT game, find the most engaging, current, REAL story, using a
 DIFFERENT angle than the recent posts listed below. The goal is many fresh angles
-on the SAME hot sport (different game, player, stat, storyline, prediction).
+on the SAME hot game (a feature, a boss, a build, a stat, a reveal, a comparison).
 The avoid-list below exists to stop you repeating the SAME angle. Do NOT switch
-sports to satisfy it - stay on the hottest sport and find a fresh angle within it."""
+games to satisfy it - stay on the hottest game and find a fresh angle within it."""
 
 
 def run(categories: list[str] | None = None) -> dict[str, Any]:
-    """Find a trending brief. categories default to sports; pass
-    ["sports","esports"] for prediction posts to include esports."""
-    categories = categories or ["sports"]
+    """Find a trending GAMES brief. categories default to ["games"]; pass
+    ["games","verdict"] for the daily verdict/breakdown post to widen the scope
+    with the extra game franchises in config."""
+    categories = categories or ["games"]
     t = CONFIG.threads_posts
     universe: list[str] = list(t.get("leagues", []))
-    is_prediction = "esports" in categories
-    if is_prediction:
-        universe += list(t.get("esports", []))
+    is_verdict = "verdict" in categories or "esports" in categories
+    if is_verdict:
+        universe += list(t.get("esports", []))  # extra game franchises
     angles = t.get("angles", [])
-    # Trending-sport focus applies to the regular sports update posts. The daily
-    # prediction post keeps the broader sports+esports scope unchanged.
+    # Trending-game focus applies to the regular update posts. The daily
+    # verdict/breakdown post keeps the broader scope unchanged.
     focus = (
         _FOCUS + "\n\n"
-        if (t.get("trending_focus", False) and not is_prediction)
+        if (t.get("trending_focus", False) and not is_verdict)
         else ""
     )
 
-    prompt = f"""You are the sports research lead for KiwinoyGamer. Use web search to
-find the SINGLE most engaging, current, REAL story to post on Threads right now.
+    prompt = f"""You are the games research lead for KiwinoyGamer, a gaming channel
+for young Filipino players. Use web search to find the SINGLE most engaging,
+current, REAL gaming story to post on Threads right now.
 
-{focus}Source from these competitions:
+{focus}Source from these (genres + the channel's home titles), but surface
+whatever is genuinely hottest now:
 {chr(10).join(f'- {x}' for x in universe)}
 
 Angle options:
@@ -82,10 +85,10 @@ Angle options:
 Return ONLY this JSON (no prose, no code fences):
 {{
   "title": "short human title",
-  "subject": "league / teams / players involved",
-  "focus_sport": "the hot sport you are riding (or this story's sport)",
+  "subject": "the game / studio / characters involved",
+  "focus_game": "the hot game you are riding (or this story's game)",
   "angle": "which angle and why it is hot right now",
-  "key_facts": ["3-5 concrete, accurate, current facts/stats/scores/dates"],
+  "key_facts": ["3-5 concrete, accurate, current facts (dates, prices, patch notes)"],
   "hook_idea": "a one-line scroll-stopping hook angle"
 }}"""
 
@@ -94,7 +97,7 @@ Return ONLY this JSON (no prose, no code fences):
         brief = extract_json(raw)
     except Exception:
         brief = {
-            "title": "Trending in sports", "subject": "sports", "angle": "",
+            "title": "Trending in games", "subject": "games", "angle": "",
             "key_facts": [raw[:400]], "hook_idea": "",
         }
     return _clean(brief)
