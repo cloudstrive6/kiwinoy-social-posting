@@ -9,14 +9,20 @@ name: KiwinoyGamer Auto-Reels
 #   16:25 UTC = 12:25 AM  -> slot 5
 #   20:25 UTC = 4:25 AM   -> slot 6
 on:
-  schedule:
-    # :25 past, not :00 — GitHub heavily delays/drops top-of-hour schedules.
-    - cron: "25 0 * * *"   # slot 1
-    - cron: "25 4 * * *"   # slot 2
-    - cron: "25 8 * * *"   # slot 3
-    - cron: "25 12 * * *"  # slot 4
-    - cron: "25 16 * * *"  # slot 5
-    - cron: "25 20 * * *"  # slot 6
+  # NOTE: GitHub's native `schedule:` cron silently DROPS/DELAYS runs (we saw 8h
+  # and 13h gaps), so the reels are now triggered by an EXTERNAL scheduler
+  # (cron-job.org job "KiwinoyGamer Reels (6/day, every 4h)") that POSTs to this
+  # workflow's dispatch API every 4h at :25 UTC with {"inputs":{"slot":"1"}} —
+  # the same reliable approach as the Threads track. Schedule left here, disabled,
+  # for reference / quick rollback. Do NOT re-enable it alongside cron-job.org or
+  # reels will double-post.
+  # schedule:
+  #   - cron: "25 0 * * *"   # slot 1
+  #   - cron: "25 4 * * *"   # slot 2
+  #   - cron: "25 8 * * *"   # slot 3
+  #   - cron: "25 12 * * *"  # slot 4
+  #   - cron: "25 16 * * *"  # slot 5
+  #   - cron: "25 20 * * *"  # slot 6
   workflow_dispatch:
     inputs:
       slot:
