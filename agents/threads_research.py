@@ -30,8 +30,11 @@ _NO_FABRICATION = (
     "Be a true lore EXPERT on whatever game you pick: any reference to its story "
     "must match that game's canon exactly (e.g. in OG FF7, the WEAPONS are the "
     "Planet's defense that attack Shinra/Midgar as a threat to the Planet — they "
-    "are not generic city-destroying villains). Note: there is NO game called "
-    "'Final Fantasy VII Revelation' — it does not exist; never pick or mention it."
+    "are not generic city-destroying villains). Note: 'Final Fantasy VII Revelation' "
+    "IS real — the FF7 Remake Part 3 (the trilogy finale), due Spring 2027 on PS5/"
+    "Xbox Series/Switch 2/PC — but it is UNRELEASED, so cover only OFFICIALLY "
+    "confirmed news (title, window, platforms, trailers) and NEVER invent its plot, "
+    "bosses, or in-game events."
 )
 
 
