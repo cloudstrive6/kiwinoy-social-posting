@@ -97,6 +97,61 @@ GAME_LORE: dict[str, str] = {
 }
 
 
+GAME_LORE["ff7"] = (
+    "FINAL FANTASY VII — the compilation. Be accurate to canon; the threads track "
+    "tends to fabricate FF7 lore, so ground every claim here.\n"
+    "REAL TITLES ONLY: OG FF7 (1997), Crisis Core (2007; Reunion remaster 2022), "
+    "Dirge of Cerberus (2006), Advent Children (2005 film), FF7 Remake (2020), "
+    "INTERmission/Yuffie DLC (2021), FF7 Rebirth (2024), and an UNTITLED Remake "
+    "Part 3 (announced, NO release date, NO confirmed story details yet).\n"
+    "THERE IS NO GAME CALLED 'FF7 Revelation' (or 'Final Fantasy VII Revelation') — "
+    "it does not exist. Never post about it or invent its contents.\n"
+    "OG FF7 (1997) STORY ESSENTIALS:\n"
+    "- Cloud Strife: ex-SOLDIER merc, the protagonist. Tifa Lockhart, Barret "
+    "Wallace (leads AVALANCHE, an eco-group fighting Shinra), Aerith/Aeris "
+    "Gainsborough (last Cetra/Ancient; killed by Sephiroth), Red XIII, Cait Sith, "
+    "Cid, Yuffie, Vincent.\n"
+    "- Shinra Electric Power Company: the megacorp draining the Planet's lifeblood "
+    "(Mako/the Lifestream) via reactors. Midgar is Shinra's city.\n"
+    "- Sephiroth: the antagonist. He summons METEOR (black magic) to gravely wound "
+    "the Planet, so he can absorb the Lifestream's healing energy and become a god. "
+    "HOLY (summoned via the White Materia, Aerith's role) is the counter-spell.\n"
+    "- THE WEAPONS (Diamond, Ultima, Ruby, Emerald, etc.): colossal monsters the "
+    "PLANET itself created/awakened as a DEFENSE MECHANISM to purge threats to the "
+    "Planet. They are the Planet's protectors, not villains.\n"
+    "- DIAMOND WEAPON marches on and attacks MIDGAR because it targets SHINRA — "
+    "Shinra's Mako drain and its Sister Ray (giant Mako cannon) are the threat to "
+    "the Planet. Shinra's Sister Ray then destroys Diamond Weapon (the blast "
+    "continues toward Sephiroth at the Northern Crater). So Diamond Weapon attacking "
+    "Midgar = the Planet's defense striking Shinra, NOT a 'boss threatening the "
+    "city' in a villain sense.\n"
+    "COMMON ERRORS TO AVOID: don't call a Weapon a generic 'boss menacing the city'; "
+    "it's the Planet's immune response to Shinra. Don't invent plot for the untitled "
+    "Part 3. Don't reference 'FF7 Revelation'. Meteor is Sephiroth's spell, not a "
+    "creature; the Weapons fight the THREAT to the Planet, not 'for humanity'."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
+
+
+# Keyword -> lore key, for tracks (like Threads) that don't know the game up
+# front. First match wins; order from most specific to least.
+_LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("spider-man2", ("spider-man 2", "spiderman 2", "marvel's spider-man 2")),
+    ("spider-man-miles", ("miles morales",)),
+    ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
+    ("ff7", ("final fantasy vii", "final fantasy 7", "ff7", "ffvii", "ff vii",
+             "rebirth", "crisis core", "sephiroth", "cloud strife")),
+]
+
+
+def lore_key_for_text(*texts: str) -> str:
+    """Best-guess lore key from free text (subject/title/focus_game). '' if none."""
+    hay = " ".join(t for t in texts if t).lower()
+    for key, kws in _LORE_KEYWORDS:
+        if any(kw in hay for kw in kws):
+            return key
+    return ""

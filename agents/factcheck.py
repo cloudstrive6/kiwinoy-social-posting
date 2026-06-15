@@ -45,6 +45,15 @@ Rules:
 - Do NOT flag opinions, predictions, hot takes, hype, or subjective phrasing — only
   concrete factual errors.
 
+GAME / LORE checks (these ARE factual, not opinion — verify them):
+- The GAME or title referenced must actually EXIST. If the post names a game you
+  cannot confirm is real and released/announced (e.g. an invented title), FAIL.
+- Any claim about a game's STORY, characters, or in-game events must match that
+  game's actual canon. A wrong lore claim (e.g. misdescribing what a character or
+  faction does, or inventing a plot event) is a factual error — FAIL it.
+- For an unannounced/untitled game, FAIL invented story or feature details (only
+  officially confirmed info is acceptable).
+
 TIME / DATE checks (using the current date/time above) — BE STRICT:
 - A relative word alone ("today", "tonight", "tomorrow", "this weekend") is NOT a
   date. If the post states a specific time (e.g. "8:30 ET", "18:00", a kickoff or

@@ -9,10 +9,31 @@ from __future__ import annotations
 import random
 from typing import Any
 
-from core import claude_code
+from core import claude_code, lore
 from core.config import CONFIG
 from core.style import DATETIME_RULE, HUMAN_VOICE, sanitize
 from core.timeref import now_context
+
+
+def _lore_block(brief: dict[str, Any]) -> str:
+    """A lore-accuracy section: the canonical story bible for the brief's game (if
+    we have one) plus a hard rule against inventing games/events. Keeps the writer
+    honest about a game's actual story instead of guessing (e.g. FF7's Weapons)."""
+    key = lore.lore_key_for_text(
+        str(brief.get("subject", "")), str(brief.get("focus_game", "")),
+        str(brief.get("title", "")),
+    )
+    brief_lore = lore.lore_for(key)
+    rule = (
+        "LORE ACCURACY (critical): be an EXPERT on this game's real story and stay "
+        "true to its canon. Never invent in-game events, characters, plot, or game "
+        "TITLES. Only reference games that actually exist; if a game is unannounced "
+        "or untitled, do not invent its contents. If you are not certain a lore "
+        "detail is canon, leave it out."
+    )
+    if brief_lore:
+        return f"{rule}\n\nGAME LORE (canon — match this exactly):\n{brief_lore}\n"
+    return rule + "\n"
 
 
 def _trim(text: str, limit: int) -> str:
@@ -48,6 +69,7 @@ HOOK IDEA: {brief.get('hook_idea')}
 KEY FACTS (use accurately, never invent more):
 {facts}
 
+{_lore_block(brief)}
 Rules:
 - The FIRST line must be a scroll-stopping hook (a bold take, a wild detail, or a
   sharp question) that makes people stop and read.
@@ -93,6 +115,7 @@ SUBJECT: {brief.get('subject')}
 KEY FACTS (use accurately, never invent more):
 {facts}
 
+{_lore_block(brief)}
 Write like a sharp gamer giving the real verdict (worth it? hype vs reality?):
 - Line 1: a confident hook / your headline call (e.g. "worth every peso" or "wait
   for the patch").

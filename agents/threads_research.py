@@ -21,6 +21,19 @@ _RECENCY = (
     "that has already been settled. Verify scores, names, and dates."
 )
 
+_NO_FABRICATION = (
+    "NO FABRICATION (critical): only choose a story about a game that ACTUALLY "
+    "EXISTS and an event/detail that ACTUALLY happened — verify with web search. "
+    "Do NOT invent game titles, releases, characters, or plot. If a game is "
+    "unannounced or untitled (e.g. the untitled FF7 Remake Part 3), only surface "
+    "CONFIRMED news or clearly-labelled official rumors — never invent its contents. "
+    "Be a true lore EXPERT on whatever game you pick: any reference to its story "
+    "must match that game's canon exactly (e.g. in OG FF7, the WEAPONS are the "
+    "Planet's defense that attack Shinra/Midgar as a threat to the Planet — they "
+    "are not generic city-destroying villains). Note: there is NO game called "
+    "'Final Fantasy VII Revelation' — it does not exist; never pick or mention it."
+)
+
 
 def _clean(brief: dict[str, Any]) -> dict[str, Any]:
     brief["category"] = "games"
@@ -83,6 +96,8 @@ Angle options:
 {chr(10).join(f'- {a}' for a in angles)}
 
 {_RECENCY}
+
+{_NO_FABRICATION}
 
 {TOPIC_GUARDRAIL}
 
