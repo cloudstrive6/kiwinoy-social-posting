@@ -48,8 +48,8 @@ A new PC (or no PC) does NOT interrupt posting. The only thing needing a PC is
 - **Threads** — cron-job.org job *"KiwinoyGamer Threads (16/day, ~90min)"* → the
   `threads.yml` dispatch API.
 - **Commentary** — cron-job.org job *"KiwinoyGamer Commentary (4/day, PH prime)"* →
-  the `commentary.yml` dispatch API, 4×/day at PH prime (00:00, 04:00, 11:00,
-  13:30 UTC = 8 AM, 12 PM, 7 PM, 9:30 PM PHT). FB only.
+  the `commentary.yml` dispatch API, crontab `25 0,4,11,13 * * *` (8:25 AM, 12:25 PM,
+  7:25 PM, 9:25 PM PHT). Body `{"ref":"main"}`. FB only.
 - GitHub's native `schedule:` cron is **disabled** for reels (it silently
   dropped/delayed runs — 8h+ gaps). Do NOT re-enable it alongside cron-job.org or
   posts double up.
