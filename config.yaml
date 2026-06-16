@@ -431,6 +431,8 @@ reels:
     sub_size: 52
     hook_margin_v: 200    # hook offset from top: clears the phone UI, sits low in
                           # the band (a touch into the footage top edge is fine)
+    sub_margin_v: 430     # commentary subtitle offset from BOTTOM: lower-third but
+                          # above the animated logo so they never overlap
     music_duck: 0.14      # background music volume under the voiceover
   # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
   # on top, the game's own audio kept, NO voiceover. Short Reel.
@@ -473,7 +475,11 @@ reels:
   commentary:
     enabled: true
     short_seconds: 70
+    medium_seconds: 150   # ~2.5 min
     long_seconds: 360     # ~6 min default; raise toward 900 (15 min) as desired
+    # "Vary it" (per user): each scheduled run randomly picks one of these lengths.
+    length_choices: [short, medium]
+    post_to: [facebook]   # FB ONLY for now (separate from the gameplay reels' targets)
     fps: 30               # talking-over-broll; 30fps keeps render fast
     long_min_clips: 12    # a game needs >= this many clips to carry a long reel
     broll_seconds: 8      # max b-roll window taken from each clip (keeps it varied)

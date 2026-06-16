@@ -1,0 +1,62 @@
+name: KiwinoyGamer Auto-Commentary
+
+# Game COMMENTARY reels: a Taglish voiceover (ElevenLabs) over gameplay b-roll,
+# with burned Taglish subtitles, the same 3:4 band layout + circular/animated
+# logos as the gameplay reels, and a Taglish on-screen hook. Posts to FACEBOOK
+# ONLY (reels.commentary.post_to). Length auto-varies (short/medium) per run.
+#
+# Triggered by an EXTERNAL scheduler (cron-job.org job "KiwinoyGamer Commentary")
+# 4x/day at Philippine prime times, same reliable approach as the reels/threads
+# tracks (GitHub's native schedule: cron drops/delays runs).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (render but do not publish)? true/false"
+        required: false
+        default: "false"
+
+concurrency:
+  group: kiwinoy-auto-commentary
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # commentary reuses gameplay footage; reads the used-clip ledger
+
+jobs:
+  commentary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}   # REQUIRED: Taglish voiceover
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install ffmpeg + fonts (hook + Taglish subtitles)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Install Claude Code CLI (research + fact-check)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Render + publish the commentary reel
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python run.py --commentary $DRY

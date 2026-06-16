@@ -106,12 +106,14 @@ def publish_video(
     short: bool = True,
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
+    targets: Optional[list[str]] = None,
 ) -> dict[str, Any]:
-    """Upload + publish a video to every video platform (FB/IG/Threads/YouTube,
-    NOT X). short=True for Reels/Shorts; False for a long video. Falls back to a
-    no-placement post if the placement config is rejected, so one platform's
-    quirk can't sink the whole post."""
-    targets = _video_targets()
+    """Upload + publish a video. Defaults to every video platform (FB/IG/Threads/
+    YouTube); pass `targets` to restrict (e.g. ["facebook"] for commentary). X is
+    always excluded. short=True for Reels/Shorts; False for a long video. Falls
+    back to a no-placement post if the placement config is rejected, so one
+    platform's quirk can't sink the whole post."""
+    targets = [t for t in (targets if targets is not None else _video_targets()) if t != "x"]
     account_ids = CONFIG.account_ids(targets)
     if not account_ids:
         raise postforme.PostForMeError(_NO_ACCOUNTS)

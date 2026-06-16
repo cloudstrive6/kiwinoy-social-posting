@@ -398,22 +398,33 @@ def run_gameplay_reel(
 
 
 def run_commentary_reel(
-    slot_id: int,
+    slot_id: int = 0,
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
+    length: Optional[str] = None,
 ) -> dict[str, Any]:
     """Commentary reel: Taglish voiceover over gameplay b-roll, synced subtitles.
+    Same visual treatment as the gameplay reels (3:4 band, circular + animated
+    logos, Taglish on-screen hook). Posts to Facebook only (reels.commentary.post_to).
 
-    length 'short' -> a Reel; 'long' -> a video feed post (over Reel limits).
+    length 'short'/'medium'/'long'. If not passed, taken from the reel slot, else
+    a random choice from reels.commentary.length_choices ("vary it").
     """
     from core import ffmpeg as ff
 
-    slot = CONFIG.reel_slot(slot_id)
-    length = str(slot.get("length", "short")).lower()
-    taglish = bool(CONFIG.reels.get("taglish", True))
     ccfg = CONFIG.reels.get("commentary", {}) or {}
-    target = float(ccfg.get("long_seconds", 360) if length == "long"
-                   else ccfg.get("short_seconds", 70))
+    if length is None:
+        try:
+            length = str(CONFIG.reel_slot(slot_id).get("length", "")).lower() or None
+        except Exception:
+            length = None
+    if length is None:
+        length = random.choice([str(x) for x in (ccfg.get("length_choices") or ["short"])])
+    length = str(length).lower()
+    taglish = bool(CONFIG.reels.get("taglish", True))
+    target = float({"long": ccfg.get("long_seconds", 360),
+                    "medium": ccfg.get("medium_seconds", 150)}.get(
+                       length, ccfg.get("short_seconds", 70)))
     run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_commentary_{length}"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[reel {slot_id} | commentary/{length}] {m}", flush=True)
@@ -457,10 +468,14 @@ def run_commentary_reel(
 
     log(f"Rendering commentary reel with ffmpeg ({len(clips)} clips, ~{vo_seconds:.0f}s)...")
     reel_path = run_dir / "reel.mp4"
+    gcfg = CONFIG.reels.get("gameplay", {}) or {}  # reuse the gameplay frame layout
     video_bytes = reel_ffmpeg.build_commentary(
         clips, reel_path, vo_path=vo_path, total_seconds=vo_seconds,
         subtitles=subtitles, title=brief.get("title"), logo=_reel_logo(),
         fps=int(ccfg.get("fps", 30)), music=_reel_music(),
+        w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
+        foot_h=int(gcfg.get("footage_height", 1440)),
+        top_band=int(gcfg.get("top_band", 320)), anim_logo=_anim_logo(),
         per_clip_seconds=float(ccfg.get("broll_seconds", 8)),
         start_skip=float(ccfg.get("broll_start_min", 3)),
     )
@@ -475,14 +490,13 @@ def run_commentary_reel(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        if length == "long":
-            log("Publishing long commentary as a video post (IG Reel + FB video)...")
-            api_result = publisher.run_video_post(
-                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
-        else:
-            log("Publishing commentary reel to Instagram + Facebook Reels...")
-            api_result = publisher.run_reel(
-                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+        targets = list(ccfg.get("post_to", ["facebook"]))  # FB only (for now)
+        is_short = length == "short"  # FB Reels for short, FB feed video for longer
+        log(f"Publishing commentary ({length}) to {targets} "
+            f"as {'Reel' if is_short else 'feed video'}...")
+        api_result = publisher.publish_video(
+            caption=caption, video_bytes=video_bytes, title=brief.get("title"),
+            short=is_short, scheduled_at=scheduled_at, targets=targets)
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")

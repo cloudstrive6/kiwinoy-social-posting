@@ -71,6 +71,9 @@ def _ass_header(w: int, h: int) -> str:
     # Distance of the top hook bar from the top edge. ~250 sits a 2-line caption
     # centred in the top third of the 1920px frame.
     hook_mv = int(cap.get("hook_margin_v", 250))
+    # Commentary subtitles sit in the footage lower-third but ABOVE the animated
+    # logo lower-third (which plays at the bottom early on), so they never collide.
+    sub_mv = int(cap.get("sub_margin_v", 430))
     # ASS colours are &HAABBGGRR. White text, black box/outline.
     return (
         "[Script Info]\n"
@@ -92,7 +95,7 @@ def _ass_header(w: int, h: int) -> str:
         f"&H00000000,-1,0,0,0,100,100,0,0,1,7,4,8,90,90,{hook_mv},1\n"
         # Sub: bottom-centre, white text with a thick black outline (Gameranx).
         f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
-        f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,300,1\n\n"
+        f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,{sub_mv},1\n\n"
         "[Events]\n"
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, "
         "Effect, Text\n"
@@ -292,6 +295,9 @@ def build_commentary(
     fps: int = 30,
     w: int = 1080,
     h: int = 1920,
+    foot_h: int = 1440,
+    top_band: Optional[int] = None,
+    anim_logo: Optional[tuple] = None,
     music: Optional[Path] = None,
     per_clip_seconds: float = 8.0,
     start_skip: float = 3.0,
@@ -346,25 +352,49 @@ def build_commentary(
             hook=title, hook_end=title_seconds, subtitles=subtitles,
         )
         # ---- Pass A: video only -------------------------------------------
-        # `-ss in_point -t per` before each input seeks past dead frames, then
-        # caps how much of each clip is decoded/used.
+        # Same frame treatment as the gameplay reels: each b-roll clip is CROP-
+        # FILLED into a w x foot_h band centred in the w x h frame (black top band
+        # for the hook, bottom band for the animated logo), graded, with the
+        # circular KG logo top-right and the animated lower-third (once).
+        # `-ss in_point -t per` before each input seeks past dead frames + caps use.
         logo = _brand_logo(logo, Path(tmp) / "kglogo.png")  # circular + opacity
         inputs: list[str] = []
         for c, start in order:
             inputs += ["-ss", f"{start:.2f}", "-t", f"{per:.2f}", "-i", str(c)]
+        next_idx = len(order)
         logo_idx = None
         if logo and Path(logo).exists():
             inputs += ["-i", str(logo)]
-            logo_idx = len(order)
+            logo_idx = next_idx
+            next_idx += 1
+        anim_rgb_idx = None
+        if anim_logo and all(p and Path(p).exists() for p in anim_logo):
+            inputs += ["-i", str(anim_logo[0]), "-i", str(anim_logo[1])]  # NOT looped
+            anim_rgb_idx, anim_alpha_idx = next_idx, next_idx + 1
+            next_idx += 2
 
-        fc = [_norm_chain(k, w, h, fps, f"v{k}") for k in range(len(order))]
+        foot_h = min(int(foot_h or h), h)
+        pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
+        pad_y = max(0, min(pad_y, h - foot_h))
+        grade = _grade_filter()
+        fc = [
+            f"[{k}:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
+            f"crop={w}:{foot_h},{grade}setsar=1,fps={fps}[v{k}]"
+            for k in range(len(order))
+        ]
         cat_in = "".join(f"[v{k}]" for k in range(len(order)))
         fc.append(f"{cat_in}concat=n={len(order)}:v=1:a=0[cat]")
-        vlabel = "cat"
+        fc.append(f"[cat]pad={w}:{h}:0:{pad_y}:color=black[base]")
+        vlabel = "base"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")
-            fc.append(f"[{vlabel}][lg]overlay=W-w-40:40[ov]")
-            vlabel = "ov"
+            fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
+            vlabel = "ovk"
+        if anim_rgb_idx is not None:
+            fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
+                      f"scale={w}:-1[anim]")
+            fc.append(f"[{vlabel}][anim]overlay=0:H-h:eof_action=pass[ova]")
+            vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
         video_only = Path(tmp) / "video.mp4"

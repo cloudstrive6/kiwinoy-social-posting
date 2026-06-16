@@ -15,6 +15,12 @@ are active:
    **Facebook, Instagram, Threads, YouTube** (never X).
 2. **Threads/X text track** — ~16/day. AAA-game text posts (≤280 chars), lore-
    accurate, hype/positive tone. Posts to **Threads + X**.
+3. **Game commentary reels** — 4/day, **Facebook ONLY**. A Taglish voiceover
+   (ElevenLabs) over gameplay b-roll with burned Taglish subtitles, the SAME 3:4
+   band layout + circular/animated logos + Taglish on-screen hook as the gameplay
+   reels. Length auto-varies short/medium per run (`reels.commentary.length_choices`).
+   Funny/relatable barkada tone, lore-accurate (fact-checked). Run:
+   `python run.py --commentary`. Workflow `commentary.yml`.
 
 Everything else (image feed `post.yml`, carousel `carousels.yml`, FF7 photopost
 `ff7.yml`, sports `threads-image.yml`) is **disabled** (schedules commented out;
@@ -41,6 +47,9 @@ A new PC (or no PC) does NOT interrupt posting. The only thing needing a PC is
   `{"ref":"main","inputs":{"slot":"1","dry_run":"false"}}`.
 - **Threads** — cron-job.org job *"KiwinoyGamer Threads (16/day, ~90min)"* → the
   `threads.yml` dispatch API.
+- **Commentary** — cron-job.org job *"KiwinoyGamer Commentary (4/day, PH prime)"* →
+  the `commentary.yml` dispatch API, 4×/day at PH prime (00:00, 04:00, 11:00,
+  13:30 UTC = 8 AM, 12 PM, 7 PM, 9:30 PM PHT). FB only.
 - GitHub's native `schedule:` cron is **disabled** for reels (it silently
   dropped/delayed runs — 8h+ gaps). Do NOT re-enable it alongside cron-job.org or
   posts double up.

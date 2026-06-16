@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 
 from core.config import CONFIG
 from orchestrator import (
+    run_commentary_reel,
     run_ready_reel,
     run_carousel_slot,
     run_reel_slot,
@@ -85,6 +86,11 @@ def main() -> int:
         action="store_true",
         help="post the next of YOUR queued finished reels (ready-reels Release)",
     )
+    g.add_argument(
+        "--commentary",
+        action="store_true",
+        help="render + publish a game commentary reel (Taglish VO over b-roll, FB only)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -127,6 +133,15 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[ready-reel] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    # Commentary track: no slot — one run, length auto-varied per config.
+    if args.commentary:
+        try:
+            run_commentary_reel(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[commentary] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     if args.photopost:

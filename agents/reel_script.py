@@ -132,8 +132,15 @@ spoilers or fake facts):
 
 This is read aloud by a hype young Filipino narrator over gameplay b-roll.
 - Natural Taglish, conversational, like talking to your barkada. NOT formal.
+- FUNNY + ENTERTAINING + RELATABLE: this is the whole point. Land real jokes,
+  playful exaggeration, and relatable Pinoy-gamer moments (the rage quits, the
+  "load muna", the flex sa barkada, "grabe ang ganda", "di ko ma-gets noon").
+  Make them laugh or go "totoo 'yan" while they watch. Light kausap-barkada
+  banter, not a dry tutorial.
 - Open with a 1-2 sentence HOOK that makes them stay, then deliver each point
-  with energy, then end on a quick "follow for more" style CTA.
+  with energy + a little humor, then end on a quick "follow for more" style CTA.
+- Keep it positive and hype - tease/joke with affection, never bash or complain
+  about the game.
 - Aim for about {target_words} words total (this fills ~{int(target_seconds)}s).
 - Plain spoken sentences only. No hashtags, no emojis, no section labels, no
   stage directions, no quotation marks. Just the words to be read aloud.
