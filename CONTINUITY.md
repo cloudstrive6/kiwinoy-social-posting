@@ -108,17 +108,20 @@ python tools/list_accounts.py        # show connected Post for Me accounts + IDs
 
 **Whenever the user reconnects an account in Post for Me, two things can break:**
 
-1. **Account IDs rotate.** Posts fail with `400: invalid social accounts, not
-   owned by user`. Fix: run `python tools/list_accounts.py`, compare to the
-   `accounts:` block in `config.yaml` (lines ~300-304), update the changed
-   `spc_…` IDs, commit + push (the cloud needs the new IDs too).
+1. **Account IDs rotate — NOW AUTO-HANDLED.** `account_ids()` resolves each
+   platform to its live id via the STABLE external id (`platforms.external_ids`,
+   e.g. `kg-facebook`), so a reconnect no longer needs any config edit. Only
+   requirement: each account's **External ID** in Post for Me must match
+   `platforms.external_ids` (`kg-facebook`, `kg-instagram`, `kg-threads`,
+   `kg-xtwitter`, `kg-youtube`). The `accounts:` spc_ block is just an offline
+   fallback now.
 2. **Stored token gets invalidated** (esp. Facebook). FB/IG posts fail at publish
    with `OAuthException code 190, subcode 460` — *"session invalidated because the
    user changed their password / FB security."* **Instagram fails with it too**,
    because Post for Me publishes IG through the Facebook Graph session. Threads &
    YouTube use separate auth and are unaffected. Fix (user-only): **reconnect
    Facebook + Instagram in the Post for Me dashboard** to mint a fresh token, and
-   don't change the FB password afterward. Then re-sync IDs per #1.
+   don't change the FB password afterward. (No ID re-sync needed — see #1.)
 
 Other gotchas: the GitHub `releases/tags` asset list is CDN-cached (use the
 per-release `/releases/{id}/assets` endpoint); read Release JSON assets by asset

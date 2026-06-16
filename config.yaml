@@ -296,6 +296,18 @@ platforms:
   - instagram
   - threads
   - youtube
+  # STABLE references — these never change when you disconnect/reconnect an
+  # account in Post for Me. account_ids() resolves them to the live spc_ id at
+  # runtime, so a reconnect NEVER needs a config edit. (Set each account's
+  # "External ID" to these values in the Post for Me dashboard.)
+  external_ids:
+    facebook: kg-facebook
+    instagram: kg-instagram
+    threads: kg-threads
+    x: kg-xtwitter
+    youtube: kg-youtube
+  # Cached live IDs — only an OFFLINE fallback if Post for Me can't be reached at
+  # run time. Normally ignored now (external_ids above are resolved live).
   accounts:
     facebook: spc_Jn3pb3dgrSYjYWuQGFlPy
     instagram: spc_0NB5IGe1TDn4uoZ2ICkbk

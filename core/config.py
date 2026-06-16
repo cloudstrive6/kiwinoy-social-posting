@@ -137,19 +137,53 @@ class _Config:
                 return s
         raise ValueError(f"No carousel slot with id={slot_id}")
 
-    def account_ids(self, platform_keys: list[str] | None = None) -> list[str]:
-        """Return connected account IDs for the given platforms.
+    def _live_accounts(self) -> list[dict[str, Any]]:
+        """Connected Post for Me accounts, fetched once per process and cached.
 
-        Defaults to the image/reel platforms (Facebook + Instagram). Pass an
-        explicit list (e.g. ["threads"]) for the Threads track.
+        Lazy import avoids a circular import (postforme imports CONFIG). Fail-open
+        to [] so an API hiccup just falls back to the cached IDs in config.
         """
-        accts = self.platforms.get("accounts", {})
+        if getattr(self, "_acct_cache", None) is not None:
+            return self._acct_cache
+        accounts: list[dict[str, Any]] = []
+        try:
+            from core import postforme
+            accounts = postforme.list_accounts() or []
+        except Exception:
+            accounts = []
+        self._acct_cache = accounts
+        return accounts
+
+    def account_ids(self, platform_keys: list[str] | None = None) -> list[str]:
+        """Return the CURRENT connected account IDs for the given platforms.
+
+        Resolves each platform to its live Post for Me id via the STABLE external
+        id (e.g. "kg-facebook" in platforms.external_ids), so reconnecting an
+        account — which rotates its spc_ id — never needs a config edit. Falls
+        back to a live platform match, then to the cached `accounts:` id in config
+        if Post for Me is unreachable.
+
+        Defaults to the image/reel platforms. Pass an explicit list (e.g.
+        ["threads"]) for the Threads track.
+        """
+        accts = self.platforms.get("accounts", {})          # cached spc_ ids (offline fallback)
+        ext = self.platforms.get("external_ids", {})         # platform -> stable external id
         if platform_keys is None:
-            platform_keys = self.platforms.get(
-                "image_post_to", list(accts.keys())
-            )
-        ids = [str(accts.get(p, "")).strip() for p in platform_keys]
-        return [i for i in ids if i]
+            platform_keys = self.platforms.get("image_post_to", list(accts.keys()))
+        live = self._live_accounts()
+        by_ext = {a.get("external_id"): a.get("id")
+                  for a in live if a.get("external_id") and a.get("id")}
+        by_plat = {a.get("platform"): a.get("id")
+                   for a in live if a.get("platform") and a.get("id")}
+        out: list[str] = []
+        for p in platform_keys:
+            eid = str(ext.get(p, "")).strip()
+            rid = ((by_ext.get(eid) if eid else None)        # 1) stable external id (preferred)
+                   or by_plat.get(p)                         # 2) live platform match
+                   or str(accts.get(p, "")).strip())         # 3) cached config id (offline)
+            if rid:
+                out.append(str(rid).strip())
+        return out
 
     def raw(self) -> dict[str, Any]:
         return self._data
