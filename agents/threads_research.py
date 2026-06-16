@@ -12,7 +12,7 @@ from core import claude_code
 from core.config import CONFIG
 from core.dedup import avoid_block
 from core.openai_client import extract_json
-from core.style import TOPIC_GUARDRAIL, sanitize
+from core.style import POSITIVE_TONE, TOPIC_GUARDRAIL, sanitize
 
 _RECENCY = (
     "RECENCY + ACCURACY (critical): confirm via web search that the news is CURRENT "
@@ -101,6 +101,10 @@ Angle options:
 {_RECENCY}
 
 {_NO_FABRICATION}
+
+{POSITIVE_TONE}
+Pick an angle that celebrates, hypes, or genuinely explores the game - not a
+complaint, controversy, or "they ruined it" grievance.
 
 {TOPIC_GUARDRAIL}
 

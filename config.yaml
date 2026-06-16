@@ -591,7 +591,7 @@ threads_posts:
   - Update / patch / new content drop
   - Trailer, reveal, or showcase reaction
   - Tips, builds, or hidden mechanics players miss
-  - Spicy hot take or ranking
+  - Spicy but POSITIVE hot take or ranking (a fun, confident opinion - never a complaint)
   hashtags: ["#Gaming", "#PS5", "#PCGaming", "#PinoyGamer"]   # at most 1 used per post
 
   # Post-type rotation. The every-2-hours cron fires at odd UTC hours; these two

@@ -11,7 +11,7 @@ from typing import Any
 
 from core import claude_code, lore
 from core.config import CONFIG
-from core.style import DATETIME_RULE, HUMAN_VOICE, sanitize
+from core.style import DATETIME_RULE, HUMAN_VOICE, POSITIVE_TONE, sanitize
 from core.timeref import now_context
 
 
@@ -79,6 +79,8 @@ Rules:
 - At most one hashtag, only if it feels natural: {tag}
 - Output ONLY the post text. No preamble, no surrounding quotes, no labels.
 
+{POSITIVE_TONE}
+
 {HUMAN_VOICE}"""
 
     return _generate(base, limit)
@@ -127,6 +129,8 @@ Write like a sharp gamer giving the real verdict (worth it? hype vs reality?):
   if natural: {tag}
 - Output ONLY the post text. No preamble, no labels.
 
+{POSITIVE_TONE}
+
 {HUMAN_VOICE}"""
     return _generate(prompt, limit)
 
@@ -162,6 +166,8 @@ Structure:
 - Output ONLY the post text.
 
 {samples}
+
+{POSITIVE_TONE}
 
 {HUMAN_VOICE}"""
     return _generate(prompt, limit)

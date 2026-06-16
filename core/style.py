@@ -71,6 +71,17 @@ moments. Only use widely-reported, well-established facts. Never present an
 unverified rumor or leak as confirmed fact."""
 
 
+POSITIVE_TONE = """TONE - HYPE/CURIOUS, NOT COMPLAINTS (important): KiwinoyGamer is an
+upbeat fan channel. Do NOT write complaint or outrage-bait posts about a game. No
+whiny "what did they do to this game / to this character", no "they ruined X", no
+"this is a disaster", no manufactured controversy or dunking on the developers'
+choices. A spicy take is fine ONLY when it is a confident, FUN opinion or a genuine
+fan debate - never a negative grievance. Frame a new feature, change, or design
+choice with excitement or honest curiosity (or balanced analysis), celebrating the
+game, not mocking it. When in doubt, hype it up or ask a fun question - don't
+complain."""
+
+
 def sanitize(text: str) -> str:
     """Remove the most common AI giveaways, especially em/en dashes."""
     if not text:
