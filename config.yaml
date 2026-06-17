@@ -433,7 +433,11 @@ reels:
                           # the band (a touch into the footage top edge is fine)
     sub_margin_v: 430     # commentary subtitle offset from BOTTOM: lower-third but
                           # above the animated logo so they never overlap
-    music_duck: 0.14      # background music volume under the voiceover
+    music_duck: 0.08      # base music bed level under the voiceover (lowered:
+                          # music was competing with the narrator). It is ALSO
+                          # sidechain-ducked by the voice, so it dips further
+                          # whenever the narrator speaks and returns in the gaps.
+    vo_gain: 1.0          # narrator volume (kept full; raise slightly if needed)
   # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
   # on top, the game's own audio kept, NO voiceover. Short Reel.
   gameplay:

@@ -409,11 +409,22 @@ def build_commentary(
         out_path.parent.mkdir(parents=True, exist_ok=True)
         args_b = ["-i", str(video_only), "-i", str(vo_path)]
         if music and Path(music).exists():
-            duck = float(_caption_cfg().get("music_duck", 0.14))
+            cap = _caption_cfg()
+            music_vol = float(cap.get("music_duck", 0.08))  # base bed level under VO
+            vo_gain = float(cap.get("vo_gain", 1.0))         # narrator at full
+            # SIDECHAIN DUCKING: the music is compressed by the VOICE itself, so it
+            # drops whenever the narrator speaks and comes back in the gaps — the
+            # music never competes with the narration. normalize=0 keeps the voice
+            # at full level (amix's default 1/n would otherwise halve it); alimiter
+            # guards against clipping.
             args_b += ["-stream_loop", "-1", "-i", str(music),
                        "-filter_complex",
-                       f"[2:a]volume={duck}[m];[1:a]volume=1[vo];"
-                       f"[vo][m]amix=inputs=2:duration=first:dropout_transition=0[a]",
+                       f"[1:a]volume={vo_gain},asplit=2[vo][sc];"
+                       f"[2:a]volume={music_vol}[m0];"
+                       f"[m0][sc]sidechaincompress=threshold=0.02:ratio=12:"
+                       f"attack=15:release=320[mduck];"
+                       f"[vo][mduck]amix=inputs=2:duration=first:dropout_transition=0:"
+                       f"normalize=0,alimiter=limit=0.95[a]",
                        "-map", "0:v", "-map", "[a]"]
         else:
             args_b += ["-map", "0:v", "-map", "1:a"]
