@@ -92,6 +92,38 @@ def _release(token: str) -> dict:
     return r.json()
 
 
+def _all_releases(token: str) -> list[dict]:
+    """Every release on the repo (paginated)."""
+    repo = _repo()
+    out: list[dict] = []
+    for page in range(1, 50):
+        r = requests.get(f"{API}/repos/{repo}/releases?per_page=100&page={page}",
+                         headers=_h(token))
+        if r.status_code != 200:
+            break
+        chunk = r.json() or []
+        out += chunk
+        if len(chunk) < 100:
+            break
+    return out
+
+
+def _get_or_create_release(token: str, tag: str, name: str, body: str) -> dict:
+    """Fetch the release for `tag`, creating it (as a prerelease, not 'latest')
+    if it doesn't exist. Used for the qimg-NN quote-image overflow shards."""
+    repo = _repo()
+    r = requests.get(f"{API}/repos/{repo}/releases/tags/{tag}", headers=_h(token))
+    if r.status_code == 200:
+        return r.json()
+    print(f"Creating overflow release '{tag}' on {repo}...", flush=True)
+    r = requests.post(
+        f"{API}/repos/{repo}/releases", headers=_h(token),
+        json={"tag_name": tag, "name": name, "body": body,
+              "prerelease": True, "make_latest": "false"})
+    r.raise_for_status()
+    return r.json()
+
+
 def _gh_name(game: str, filename: str) -> str:
     """The asset name GitHub will store: each RUN of non [A-Za-z0-9._-] chars
     becomes a single '.', and consecutive dots collapse (matches GitHub)."""

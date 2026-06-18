@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -74,33 +75,104 @@ def _jpeg_bytes(path: Path) -> bytes | None:
 
 
 def _upload_bytes(up_url, token, name, data, ct) -> bool:
+    return _upload_to(up_url, token, name, data, ct) == "ok"
+
+
+def _upload_to(up_url, token, name, data, ct) -> str:
+    """Upload one asset. Returns 'ok', 'full' (release hit GitHub's 1000-asset
+    cap -> caller should roll to the next shard), or 'fail'."""
     for attempt in range(4):
         try:
             r = requests.post(f"{up_url}?name={name}",
                               headers={**_api_headers(token), "Content-Type": ct},
                               data=data, timeout=300)
             if r.ok:
-                return True
+                return "ok"
             if r.status_code in (403, 422) and "already_exists" in r.text:
-                return True
+                return "ok"
+            if r.status_code == 422 and "file_count" in r.text:
+                return "full"
             if r.status_code in (403, 429):  # rate/secondary limit -> back off
                 time.sleep(20 * (attempt + 1))
                 continue
             print(f"  upload {name} -> {r.status_code} {r.text[:120]}", flush=True)
-            return False
+            return "fail"
         except Exception as e:
             print(f"  upload {name} err: {e!r}", flush=True)
             time.sleep(5)
-    return False
+    return "fail"
+
+
+QIMG_CAP = 995  # leave headroom under GitHub's hard 1000-assets-per-release limit
+
+
+def _asset_count(token, rid) -> int:
+    """Total assets on a release (paginated)."""
+    repo = footage._repo()
+    n = 0
+    for page in range(1, 400):
+        r = requests.get(
+            f"{footage.API}/repos/{repo}/releases/{rid}/assets?per_page=100&page={page}",
+            headers=_api_headers(token), timeout=30)
+        if r.status_code != 200:
+            break
+        chunk = r.json() or []
+        n += len(chunk)
+        if len(chunk) < 100:
+            break
+    return n
+
+
+def _image_release_shards(token) -> list[dict]:
+    """[{tag, id, up}] holding quote images: footage release first, then qimg-NN
+    overflow shards ascending. Creates none here."""
+    base = footage._tag()
+    res = []
+    for rel in footage._all_releases(token):
+        t = str(rel.get("tag_name", ""))
+        if t == base or re.match(r"^qimg-\d+$", t):
+            res.append({"tag": t, "id": rel["id"],
+                        "up": rel["upload_url"].split("{")[0]})
+    res.sort(key=lambda r: (0 if r["tag"] == base else 1, r["tag"]))
+    return res
+
+
+def _next_qimg_tag(shards) -> str:
+    nums = [int(s["tag"].split("-")[1]) for s in shards if s["tag"].startswith("qimg-")]
+    return f"qimg-{(max(nums) + 1) if nums else 1:02d}"
 
 
 def sync_images() -> None:
     token = footage._token()
-    rel = footage._release(token)
-    up = rel["upload_url"].split("{")[0]
-    done = _existing_asset_names(token, rel["id"], "qimg__")  # resume: skip uploaded
+    shards = _image_release_shards(token)
+    if not shards:  # first ever run: fall back to creating/loading the footage release
+        rel = footage._release(token)
+        shards = [{"tag": footage._tag(), "id": rel["id"],
+                   "up": rel["upload_url"].split("{")[0]}]
+    # resume: every qimg name already uploaded across ALL shards
+    done = set()
+    for s in shards:
+        done |= _existing_asset_names(token, s["id"], "qimg__")
+    counts = {s["tag"]: _asset_count(token, s["id"]) for s in shards}
+
+    def current_target():
+        """The shard we're currently filling (first with room), creating a new
+        qimg-NN overflow release when every existing shard is full."""
+        for s in shards:
+            if counts[s["tag"]] < QIMG_CAP:
+                return s
+        tag = _next_qimg_tag(shards)
+        rel = footage._get_or_create_release(
+            token, tag, f"Quote backdrops {tag}",
+            "Overflow quote-card backdrops (GitHub caps releases at 1000 assets).")
+        s = {"tag": tag, "id": rel["id"], "up": rel["upload_url"].split("{")[0]}
+        shards.append(s)
+        counts[tag] = _asset_count(token, rel["id"])
+        return s
+
     base = ROOT / (CONFIG.raw().get("quotes", {}) or {}).get("image_dir", "assets/images")
     up_n = del_n = fail = 0
+    tgt = shards[0]
     for gd in sorted(p for p in base.iterdir() if p.is_dir()):
         game = gd.name
         for img in sorted(gd.iterdir()):
@@ -114,7 +186,22 @@ def sync_images() -> None:
                     pass
                 continue
             data = _jpeg_bytes(img)
-            if data and _upload_bytes(up, token, name, data, "image/jpeg"):
+            if not data:
+                fail += 1
+                continue
+            ok = False
+            for _ in range(len(shards) + 3):  # roll forward across shards as needed
+                tgt = current_target()
+                res = _upload_to(tgt["up"], token, name, data, "image/jpeg")
+                if res == "ok":
+                    counts[tgt["tag"]] += 1
+                    ok = True
+                    break
+                if res == "full":
+                    counts[tgt["tag"]] = QIMG_CAP + 1  # mark full -> pick/create next
+                    continue
+                break  # genuine failure
+            if ok:
                 done.add(name); up_n += 1
                 try:
                     img.unlink(); del_n += 1
@@ -123,8 +210,10 @@ def sync_images() -> None:
             else:
                 fail += 1
             if up_n and up_n % 100 == 0:
-                print(f"... uploaded {up_n}, local-deleted {del_n}, failed {fail}", flush=True)
-    print(f"DONE images: uploaded {up_n}, local-deleted {del_n}, failed {fail}")
+                print(f"... uploaded {up_n} (on {tgt['tag']}), "
+                      f"local-deleted {del_n}, failed {fail}", flush=True)
+    print(f"DONE images: uploaded {up_n}, local-deleted {del_n}, failed {fail}; "
+          f"shards: {[s['tag'] for s in shards]}")
 
 
 def sync_music() -> None:

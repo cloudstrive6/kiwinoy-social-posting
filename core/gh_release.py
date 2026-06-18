@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any, Optional
@@ -179,6 +180,75 @@ def _fresh_assets(repo: str, release_id: Any) -> list[dict[str, Any]]:
 
 def _invalidate_assets_cache() -> None:
     _ASSETS_CACHE.clear()
+    global _IMG_RELEASES, _QIMG_INDEX
+    _IMG_RELEASES = None
+    _QIMG_INDEX = None
+
+
+# ---- quote-image releases (GitHub caps each release at 1000 assets, so the
+#      7k+ quote backdrops are sharded across the footage release + overflow
+#      releases tagged qimg-01, qimg-02, ...). Reads aggregate across all of them.
+
+_IMG_RELEASES: Optional[list[dict[str, Any]]] = None
+_QIMG_INDEX: Optional[dict[str, str]] = None
+
+
+def _list_all_releases(repo: str) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    try:
+        for page in range(1, 50):
+            r = requests.get(
+                f"https://api.github.com/repos/{repo}/releases?per_page=100&page={page}",
+                headers=_headers(), timeout=30)
+            if r.status_code != 200:
+                break
+            chunk = r.json() or []
+            out += chunk
+            if len(chunk) < 100:
+                break
+    except Exception:
+        pass
+    return out
+
+
+def _image_releases() -> list[dict[str, Any]]:
+    """[{tag, id}] of releases that hold quote images: the footage release first,
+    then overflow releases tagged qimg-NN (ascending). Cached per process."""
+    global _IMG_RELEASES
+    if _IMG_RELEASES is not None:
+        return _IMG_RELEASES
+    repo = _cfg().get("release_repo")
+    base = _cfg().get("release_tag", "footage")
+    res: list[dict[str, Any]] = []
+    if repo:
+        for rel in _list_all_releases(repo):
+            t = str(rel.get("tag_name", ""))
+            if t == base or re.match(r"^qimg-\d+$", t):
+                res.append({"tag": t, "id": rel.get("id")})
+        res.sort(key=lambda r: (0 if r["tag"] == base else 1, r["tag"]))
+    if not res:  # fail-open to just the footage release
+        rel = _release()
+        if rel:
+            res = [{"tag": base, "id": rel.get("id")}]
+    _IMG_RELEASES = res
+    return res
+
+
+def _quote_image_index() -> dict[str, str]:
+    """{asset_name: release_tag} for every qimg__ asset across all image releases.
+    Lets the pool list backdrops and build the right download URL per shard."""
+    global _QIMG_INDEX
+    if _QIMG_INDEX is not None:
+        return _QIMG_INDEX
+    repo = _cfg().get("release_repo")
+    idx: dict[str, str] = {}
+    for rel in _image_releases():
+        for a in _fresh_assets(repo, rel.get("id")):
+            n = str(a.get("name", ""))
+            if n.startswith("qimg__"):
+                idx[n] = rel["tag"]
+    _QIMG_INDEX = idx
+    return idx
 
 
 def used_clips() -> set[str]:
@@ -241,11 +311,17 @@ QIMAGE_USED = "_quote_images_used.json"
 
 
 def asset_download_url(name: str) -> str:
-    """Public download URL for a release asset, by name (no listing needed)."""
+    """Public download URL for a release asset, by name. Quote backdrops can live
+    on an overflow release (qimg-NN), so resolve those to the shard that holds
+    them; everything else lives on the footage release."""
     cfg = _cfg()
     repo = cfg.get("release_repo")
+    if not repo:
+        return ""
     tag = cfg.get("release_tag", "footage")
-    return f"https://github.com/{repo}/releases/download/{tag}/{name}" if repo else ""
+    if str(name).startswith("qimg__"):
+        tag = _quote_image_index().get(name, tag)
+    return f"https://github.com/{repo}/releases/download/{tag}/{name}"
 
 
 def _read_json_asset(name: str):
@@ -300,17 +376,12 @@ def _write_json_asset(name: str, obj) -> bool:
 
 def quote_image_pool() -> dict[str, Any]:
     """{game: [asset_name]} of synced quote backdrops, derived by listing the
-    qimg__<game>.<file> assets (no fragile manifest)."""
-    rel = _release()
-    if not rel:
-        return {}
-    repo = _cfg().get("release_repo")
+    qimg__<game>.<file> assets across the footage release AND every qimg-NN
+    overflow release (no fragile manifest)."""
     pool: dict[str, list[str]] = {}
-    for a in _fresh_assets(repo, rel.get("id")):
-        name = str(a.get("name", ""))
-        if name.startswith("qimg__"):
-            game = name[len("qimg__"):].split(".", 1)[0]
-            pool.setdefault(game, []).append(name)
+    for name in _quote_image_index():
+        game = name[len("qimg__"):].split(".", 1)[0]
+        pool.setdefault(game, []).append(name)
     return pool
 
 
