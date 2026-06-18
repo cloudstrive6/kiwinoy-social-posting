@@ -27,6 +27,7 @@ from datetime import datetime, timezone
 from core.config import CONFIG
 from orchestrator import (
     run_commentary_reel,
+    run_quote_card,
     run_ready_reel,
     run_carousel_slot,
     run_reel_slot,
@@ -91,6 +92,11 @@ def main() -> int:
         action="store_true",
         help="render + publish a game commentary reel (Taglish VO over b-roll, FB only)",
     )
+    g.add_argument(
+        "--quote",
+        action="store_true",
+        help="render + publish a motivational gaming quote CARD (FB only)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -142,6 +148,15 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[commentary] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    # Motivational quote card -> Facebook.
+    if args.quote:
+        try:
+            run_quote_card(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[quote] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     if args.photopost:

@@ -585,11 +585,26 @@ carousels:
 # scroll-stopping hooks. Written by Claude via your Claude subscription
 # (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs nothing per token. Posts
 # every 2 hours (cron in threads.yml); each run researches a fresh GAMES topic.
+# Motivational gaming quote cards (Facebook): an original English quote rendered
+# OVER a gameplay photo, 3x/day. Same quotes also feed the Threads/X track (60%).
+quotes:
+  enabled: true
+  image_dir: assets/images          # pick the backdrop photo from here...
+  prefer: [spider-man1, spider-man-miles, spider-man2]   # ...preferring these
+  exclude: [mlbb, sports]           # off-strategy folders to skip
+  post_to: [facebook]               # quote cards go to Facebook only
+  hashtags: ["#GamingMotivation", "#GamerLife", "#Gaming"]
+  # NOTE: image asset folders are currently sparse (few Spider-Man photos). When
+  # they run out, the renderer falls back to a striking frame from gameplay
+  # footage for variety. Add more photos to assets/images/<game>/ for best results.
+
 threads_posts:
   enabled: true
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
+  quote_ratio: 0.6         # ~60% of Threads/X posts are motivational gaming quotes
+                           # (per user); the rest are the game-news/verdict/poll mix
   # TRENDING-GAME FOCUS: instead of hopping between random games, each update post
   # rides the single hottest game / gaming moment of the period (a big new release,
   # a major update or patch, a viral moment, a showcase like the Game Awards) and

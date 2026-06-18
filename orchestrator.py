@@ -656,8 +656,11 @@ def run_carousel_slot(
 
 
 def _threads_type_for_now() -> str:
-    """Pick the Threads post type for this run by UTC hour."""
+    """Pick the Threads post type for this run. ~quote_ratio of posts are
+    motivational gaming quotes (per user, ~60%); the rest are game news by hour."""
     tp = CONFIG.threads_posts
+    if random.random() < float(tp.get("quote_ratio", 0.6)):
+        return "quote"
     h = datetime.now(timezone.utc).hour
     if h == int(tp.get("prediction_hour", 9)):
         return "prediction"
@@ -684,7 +687,13 @@ def run_threads(
     text = ""
     passed = False
 
-    if post_type == "poll":
+    if post_type == "quote":
+        # Original motivational quote — nothing to fact-check.
+        from agents import quote
+        log("Writing a motivational gaming quote...")
+        text = quote.threads_text()
+        passed = True
+    elif post_type == "poll":
         # Pure opinion — nothing to fact-check.
         log("Writing a gamer hot take + poll...")
         text = threads_writer.run_poll()
@@ -735,6 +744,78 @@ def run_threads(
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
+    _save(run_dir, result)
+    return result
+
+
+def _quote_footage_frame(run_dir, log) -> Optional[Any]:
+    """Fallback backdrop: a striking frame from gameplay footage, used when the
+    image asset folders are empty/sparse."""
+    try:
+        from core import frames
+        games = reel_composer.list_games()
+        prefer = [g for g in (CONFIG.reels.get("footage", {}) or {}).get("prefer", [])
+                  if g in games] or list(games)
+        if not prefer:
+            return None
+        clips = reel_composer.clips_for_game(random.choice(prefer), n=1)
+        if not clips:
+            return None
+        cands = frames.extract_candidates(clips[0], run_dir, n=3)
+        return random.choice(cands) if cands else None
+    except Exception as e:
+        log(f"footage-frame fallback failed ({e!r})")
+        return None
+
+
+def run_quote_card(
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Motivational gaming quote CARD (quote overlaid on a gameplay photo) -> FB.
+
+    Generates an original English quote, picks the best photo from the image
+    asset folders (falls back to a footage frame), renders a designed card, and
+    publishes to Facebook (quotes.post_to)."""
+    from pathlib import Path
+    from agents import quote
+
+    qcfg = CONFIG.raw().get("quotes", {}) or {}
+    run_dir = OUTPUT_DIR / f"{_stamp()}_quote_card"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[quote-card] {m}", flush=True)
+
+    q = quote.generate()
+    log(f"Quote: {q}")
+    photo = quote.pick_photo() or _quote_footage_frame(run_dir, log)
+    if not photo:
+        log("No photo (image assets empty + no footage frame) — skipping.")
+        return _skip(run_dir, {"kind": "quote_card", "quote": q}, "no_media")
+    log(f"Photo: {Path(photo).name}")
+
+    card_path = run_dir / "card.png"
+    quote.render_card(q, Path(photo), card_path, logo=_reel_logo())
+    (run_dir / "quote.txt").write_text(q, encoding="utf-8")
+
+    tags = " ".join(qcfg.get("hashtags", ["#GamingMotivation"]))
+    caption = f"{q}\n\n{tags}".strip()
+    targets = list(qcfg.get("post_to", ["facebook"]))
+
+    result: dict[str, Any] = {
+        "kind": "quote_card", "quote": q, "photo": str(photo),
+        "caption": caption, "card_path": str(card_path), "dry_run": dry_run,
+    }
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+    else:
+        log(f"Publishing quote card to {targets}...")
+        api_result = publisher.run(
+            caption=caption, image_bytes=card_path.read_bytes(),
+            platform_keys=targets, scheduled_at=scheduled_at)
+        result["published"] = True
+        result["postforme_result"] = api_result
+        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
     _save(run_dir, result)
     return result
 

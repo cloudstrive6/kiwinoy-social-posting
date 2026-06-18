@@ -13,8 +13,15 @@ are active:
    on-screen hook + short caption (both lore-grounded), color-graded footage,
    animated KG logo (plays once), random length **60/90/120/170s**. Posts to
    **Facebook, Instagram, Threads, YouTube** (never X).
-2. **Threads/X text track** — ~16/day. AAA-game text posts (≤280 chars), lore-
-   accurate, hype/positive tone. Posts to **Threads + X**.
+2. **Threads/X text track** — ~16/day. **~60% are original motivational gaming
+   quotes** (`threads_posts.quote_ratio`), the rest AAA-game text posts (≤280
+   chars), lore-accurate, hype/positive. Posts to **Threads + X**.
+4. **Motivational quote cards** — 3/day, **Facebook ONLY**. An original English
+   quote rendered (Pillow) OVER a gameplay photo from `assets/images/<game>/`
+   (falls back to a footage frame when sparse) with KG branding. Quotes are fully
+   original (no copyright). Run: `python run.py --quote`. Workflow `quotes.yml`,
+   config `quotes:`. NOTE: image asset folders are sparse — add more photos to
+   `assets/images/<game>/` for backdrop variety.
 3. **Game commentary reels** — 4/day, **Facebook ONLY**. A Taglish voiceover
    (ElevenLabs) over gameplay b-roll with burned Taglish subtitles, the SAME 3:4
    band layout + circular/animated logos + Taglish on-screen hook as the gameplay
