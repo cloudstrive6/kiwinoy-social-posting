@@ -148,18 +148,37 @@ def _release() -> Optional[dict[str, Any]]:
         return None
 
 
+_ASSETS_CACHE: dict[Any, list[dict[str, Any]]] = {}
+
+
 def _fresh_assets(repo: str, release_id: Any) -> list[dict[str, Any]]:
-    """Current asset list via the per-release endpoint (consistent, unlike the
-    tags endpoint which is cached and lags newly written assets)."""
+    """ALL current assets via the per-release endpoint (paginated — the release
+    can have thousands of quote-image assets), cached per process. Consistent
+    (unlike the tags endpoint, which is cached and lags newly written assets)."""
     if not repo or release_id is None:
         return []
+    if release_id in _ASSETS_CACHE:
+        return _ASSETS_CACHE[release_id]
+    out: list[dict[str, Any]] = []
     try:
-        r = requests.get(
-            f"https://api.github.com/repos/{repo}/releases/{release_id}/assets"
-            "?per_page=100", headers=_headers(), timeout=30)
-        return r.json() if r.status_code == 200 else []
+        for page in range(1, 300):
+            r = requests.get(
+                f"https://api.github.com/repos/{repo}/releases/{release_id}/assets"
+                f"?per_page=100&page={page}", headers=_headers(), timeout=30)
+            if r.status_code != 200:
+                break
+            chunk = r.json() or []
+            out += chunk
+            if len(chunk) < 100:
+                break
     except Exception:
-        return []
+        pass
+    _ASSETS_CACHE[release_id] = out
+    return out
+
+
+def _invalidate_assets_cache() -> None:
+    _ASSETS_CACHE.clear()
 
 
 def used_clips() -> set[str]:
@@ -213,6 +232,113 @@ def _write_ledger(used: set[str]) -> bool:
         return r.ok
     except Exception:
         return False
+
+
+# ---------------------------------------------------- quote assets (images/music)
+
+QIMAGE_MANIFEST = "_quote_images.json"
+QIMAGE_USED = "_quote_images_used.json"
+
+
+def asset_download_url(name: str) -> str:
+    """Public download URL for a release asset, by name (no listing needed)."""
+    cfg = _cfg()
+    repo = cfg.get("release_repo")
+    tag = cfg.get("release_tag", "footage")
+    return f"https://github.com/{repo}/releases/download/{tag}/{name}" if repo else ""
+
+
+def _read_json_asset(name: str):
+    """Read a small JSON release asset by name (by unique id, not the cached URL)."""
+    rel = _release()
+    if not rel:
+        return None
+    repo = _cfg().get("release_repo")
+    for a in _fresh_assets(repo, rel.get("id")):
+        if a.get("name") == name:
+            try:
+                r = requests.get(
+                    f"https://api.github.com/repos/{repo}/releases/assets/{a['id']}",
+                    headers={**_headers(), "Accept": "application/octet-stream"},
+                    timeout=30)
+                return r.json() if r.status_code == 200 else None
+            except Exception:
+                return None
+    return None
+
+
+def _write_json_asset(name: str, obj) -> bool:
+    token = _token()
+    cfg = _cfg()
+    repo = cfg.get("release_repo")
+    rel = _release()
+    if not token or not repo or not rel:
+        return False
+    h = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+    for a in _fresh_assets(repo, rel.get("id")):
+        if a.get("name") == name:
+            try:
+                requests.delete(
+                    f"https://api.github.com/repos/{repo}/releases/assets/{a['id']}",
+                    headers=h, timeout=30)
+            except Exception:
+                pass
+    upload_url = (rel.get("upload_url", "") or "").split("{")[0]
+    if not upload_url:
+        return False
+    try:
+        r = requests.post(
+            f"{upload_url}?name={name}",
+            headers={**h, "Content-Type": "application/json"},
+            data=json.dumps(obj, ensure_ascii=False).encode("utf-8"), timeout=60)
+        if r.ok:
+            _invalidate_assets_cache()
+        return r.ok
+    except Exception:
+        return False
+
+
+def quote_image_pool() -> dict[str, Any]:
+    """{game: [asset_name]} of synced quote backdrops, derived by listing the
+    qimg__<game>.<file> assets (no fragile manifest)."""
+    rel = _release()
+    if not rel:
+        return {}
+    repo = _cfg().get("release_repo")
+    pool: dict[str, list[str]] = {}
+    for a in _fresh_assets(repo, rel.get("id")):
+        name = str(a.get("name", ""))
+        if name.startswith("qimg__"):
+            game = name[len("qimg__"):].split(".", 1)[0]
+            pool.setdefault(game, []).append(name)
+    return pool
+
+
+def used_quote_images() -> set[str]:
+    return set((_read_json_asset(QIMAGE_USED) or {}).get("used", []) or [])
+
+
+def mark_quote_image(name: str) -> bool:
+    if not name:
+        return False
+    cur = used_quote_images()
+    if name in cur:
+        return True
+    cur.add(name)
+    return _write_json_asset(QIMAGE_USED, {"used": sorted(cur)})
+
+
+def reset_quote_images() -> bool:
+    return _write_json_asset(QIMAGE_USED, {"used": []})
+
+
+def quote_music_pool() -> list[str]:
+    rel = _release()
+    if not rel:
+        return []
+    repo = _cfg().get("release_repo")
+    return [a["name"] for a in _fresh_assets(repo, rel.get("id"))
+            if str(a.get("name", "")).startswith("qmusic")]
 
 
 def add_used_clip(clip_id: str) -> bool:

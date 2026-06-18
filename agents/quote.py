@@ -211,22 +211,88 @@ def _vision_best(photos: list[Path], quote: str) -> Optional[Path]:
     return None
 
 
+def _cache_dir() -> Path:
+    d = ROOT / "output" / ".quote_cache"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
 def pick_photo(quote: Optional[str] = None) -> Optional[Path]:
-    """Pick a backdrop photo for a quote card from the image asset folders
-    (avoiding recently-used ones). With a quote + multiple candidates, Claude
-    vision picks the most cinematic one and skips title/menu/UI screens.
-    """
-    photos = _candidate_photos()
+    """Pick a backdrop from the CLOUD quote-image pool (the Release manifest),
+    cycling through ALL images before repeating, in random order. Claude vision
+    picks the most cinematic of a few candidates. Falls back to local committed
+    images if the cloud pool isn't available (dev / pre-sync)."""
+    from core import gh_release
+    qcfg = CONFIG.raw().get("quotes", {}) or {}
+    pool = gh_release.quote_image_pool()
+    if pool:
+        chosen = _pick_release(pool, quote, qcfg)
+        if chosen:
+            return chosen
+    photos = _candidate_photos()      # local fallback
     if not photos:
         return None
-    seen = _recent_photos()
-    fresh = [p for p in photos if p.name not in seen] or photos
-    qcfg = CONFIG.raw().get("quotes", {}) or {}
+    fresh = [p for p in photos if p.name not in _recent_photos()] or photos
     if quote and len(fresh) > 1 and qcfg.get("vision_pick", True):
         best = _vision_best(fresh, quote)
         if best:
+            _remember_photo(best.name)
             return best
-    return random.choice(fresh)
+    pick = random.choice(fresh)
+    _remember_photo(pick.name)
+    return pick
+
+
+def _pick_release(pool: dict, quote, qcfg) -> Optional[Path]:
+    from core import gh_release
+    # Quotes are generic, so use ALL games' images (minus excluded), cycling
+    # through every image before repeating (per user) — not just the prefer list.
+    exclude = {str(g).lower() for g in (qcfg.get("exclude", []) or [])}
+    games = [g for g in pool if g.lower() not in exclude] or list(pool)
+    names = [n for g in games for n in (pool.get(g, []) or [])]
+    if not names:
+        return None
+    used = gh_release.used_quote_images()
+    fresh = [n for n in names if n not in used]
+    if not fresh:                     # every backdrop shown -> restart the cycle
+        gh_release.reset_quote_images()
+        fresh = names[:]
+    random.shuffle(fresh)
+    cands: list[tuple[str, Path]] = []
+    for name in fresh[:8]:
+        p = gh_release.download(
+            {"name": name, "url": gh_release.asset_download_url(name)}, _cache_dir())
+        if p:
+            cands.append((name, p))
+    if not cands:
+        return None
+    chosen = None
+    if quote and len(cands) > 1 and qcfg.get("vision_pick", True):
+        best = _vision_best([p for _, p in cands], quote)
+        chosen = next(((n, p) for n, p in cands if p == best), None)
+    chosen = chosen or random.choice(cands)
+    gh_release.mark_quote_image(chosen[0])
+    return chosen[1]
+
+
+def pick_music() -> "tuple[Optional[Path], float]":
+    """A quote-music track from the Release (qmusic) + a randomised MID-TRACK
+    start offset (the climax). Returns (local_path, start_seconds) or (None, 0)."""
+    from core import gh_release, ffmpeg
+    pool = gh_release.quote_music_pool()
+    if not pool:
+        return None, 0.0
+    name = random.choice(pool)
+    p = gh_release.download(
+        {"name": name, "url": gh_release.asset_download_url(name)}, _cache_dir())
+    if not p:
+        return None, 0.0
+    d = ffmpeg.duration(p) or 0.0
+    qcfg = CONFIG.raw().get("quotes", {}) or {}
+    lo = float(qcfg.get("music_start_min", 0.30))
+    hi = float(qcfg.get("music_start_max", 0.65))
+    start = random.uniform(lo, hi) * d if d > 0 else 0.0
+    return p, max(0.0, start)
 
 
 def _recent_photos() -> set[str]:

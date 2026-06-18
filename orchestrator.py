@@ -854,8 +854,11 @@ def run_quote_card(
             yt_clips = _quote_short_clips(int(qcfg.get("short_clips", 4)))
             if yt_clips:
                 text_png = quote.render_text_layer(q, run_dir / "text_layer.png", logo=_reel_logo())
+                music_path, music_start = quote.pick_music()
                 vid = reel_ffmpeg.build_quote_short(
-                    yt_clips, run_dir / "short.mp4", text_png, music=_reel_music(),
+                    yt_clips, run_dir / "short.mp4", text_png,
+                    music=music_path or _reel_music(), music_start=music_start,
+                    fps=int(qcfg.get("short_fps", 60)),
                     total_seconds=float(qcfg.get("short_seconds", 10)),
                     per_clip_seconds=float(qcfg.get("short_per_clip", 3)))
                 result["short_path"] = str(run_dir / "short.mp4")
