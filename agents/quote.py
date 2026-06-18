@@ -158,11 +158,9 @@ No hashtags, no emojis, no quotation marks, no preamble. Return ONLY the caption
 
 
 def threads_text() -> str:
-    """A motivational quote formatted for a Threads/X post: the quote + one tag."""
-    q = generate()
-    tags = (CONFIG.raw().get("quotes", {}) or {}).get("hashtags", ["#GamingMotivation"])
-    tag = tags[0] if tags else ""
-    return f"{q}\n\n{tag}".strip() if tag else q
+    """A motivational quote for a Threads/X TEXT post — just the quote, NO hashtags
+    (per user; Threads/X never get hashtags)."""
+    return generate()
 
 
 def _candidate_photos() -> list[Path]:
