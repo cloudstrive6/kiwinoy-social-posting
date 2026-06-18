@@ -592,7 +592,8 @@ quotes:
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
-  post_to: [facebook]               # quote cards go to Facebook only
+  post_to: [facebook, instagram, threads, x]   # same card + caption everywhere
+  hashtag_platforms: [facebook, instagram]     # ONLY these get hashtags (not X/Threads)
   hashtags: ["#GamingMotivation", "#GamerLife", "#Gaming"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
                                     # for the quote + skips title/menu/UI screens

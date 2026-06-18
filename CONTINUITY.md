@@ -16,12 +16,15 @@ are active:
 2. **Threads/X text track** — ~16/day. **~60% are original motivational gaming
    quotes** (`threads_posts.quote_ratio`), the rest AAA-game text posts (≤280
    chars), lore-accurate, hype/positive. Posts to **Threads + X**.
-4. **Motivational quote cards** — 3/day, **Facebook ONLY**. An original English
-   quote rendered (Pillow) OVER a gameplay photo from `assets/images/<game>/`
-   (falls back to a footage frame when sparse) with KG branding. Quotes are fully
-   original (no copyright). Run: `python run.py --quote`. Workflow `quotes.yml`,
-   config `quotes:`. NOTE: image asset folders are sparse — add more photos to
-   `assets/images/<game>/` for backdrop variety.
+4. **Motivational quote cards** — 3/day, to **Facebook + Instagram + Threads + X**
+   (same card + caption everywhere; hashtags only on FB/IG via
+   `quotes.hashtag_platforms`). An original English quote rendered (Pillow,
+   Montserrat) OVER a gameplay photo from `assets/images/<game>/` — Claude vision
+   picks the most cinematic shot + skips title/menu screens. The CAPTION elaborates
+   on the quote (1-2 relatable sentences), it does not repeat it. Run:
+   `python run.py --quote`. Workflow `quotes.yml`, config `quotes:`. NOTE: quote-card
+   photos must be COMMITTED to the repo (not the Release) to reach the cloud — when
+   the user adds photos to `assets/images/<game>/`, commit + push them.
 3. **Game commentary reels** — 4/day, **Facebook ONLY**. A Taglish voiceover
    (ElevenLabs) over gameplay b-roll with burned Taglish subtitles, the SAME 3:4
    band layout + circular/animated logos + Taglish on-screen hook as the gameplay

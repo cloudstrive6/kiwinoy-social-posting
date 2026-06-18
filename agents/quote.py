@@ -139,6 +139,24 @@ Return ONLY the quote line."""
     return line[:160] or "Every pro was once a beginner who refused to hit quit."
 
 
+def elaborate(quote_line: str) -> str:
+    """A SHORT (1-2 sentence) relatable elaboration of the quote, for the post
+    caption. Does NOT repeat the quote — it expands on it with a real-talk gamer
+    angle so it hits home."""
+    prompt = f"""A motivational gaming quote card shows this line: "{quote_line}"
+
+Write the post CAPTION that goes under it. Do NOT repeat or rephrase the quote.
+Instead expand on it in 1 to 2 short sentences with a relatable, real-talk gamer
+angle (the late-night grind, the boss that wrecked you, the clutch comeback, the
+squad that carried you) so it actually hits home. Warm and motivating, a little
+personal, like talking to a fellow gamer.
+
+No hashtags, no emojis, no quotation marks, no preamble. Return ONLY the caption."""
+    raw = ai.write(prompt, system=_system())
+    line = sanitize(raw).strip().strip('"').strip()
+    return line[:400] or "Keep going - the grind always pays off eventually."
+
+
 def threads_text() -> str:
     """A motivational quote formatted for a Threads/X post: the quote + one tag."""
     q = generate()

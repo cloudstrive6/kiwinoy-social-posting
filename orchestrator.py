@@ -797,25 +797,43 @@ def run_quote_card(
     quote.render_card(q, Path(photo), card_path, logo=_reel_logo())
     (run_dir / "quote.txt").write_text(q, encoding="utf-8")
 
-    tags = " ".join(qcfg.get("hashtags", ["#GamingMotivation"]))
-    caption = f"{q}\n\n{tags}".strip()
+    # Caption ELABORATES on the quote (relatable), it does NOT repeat it.
+    caption = quote.elaborate(q)
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    log(f"Quote: {q}\n           Caption: {caption}")
+
+    tags = " ".join(qcfg.get("hashtags", []))
     targets = list(qcfg.get("post_to", ["facebook"]))
+    tag_plats = set(qcfg.get("hashtag_platforms", ["facebook", "instagram"]))
+    with_tags = [p for p in targets if p in tag_plats]
+    no_tags = [p for p in targets if p not in tag_plats]  # Threads/X: no hashtags
 
     result: dict[str, Any] = {
         "kind": "quote_card", "quote": q, "photo": str(photo),
         "caption": caption, "card_path": str(card_path), "dry_run": dry_run,
     }
     if dry_run:
-        log("DRY RUN — skipping publish.")
+        log(f"DRY RUN — would post to {targets} (hashtags only on {with_tags}).")
         result["published"] = False
     else:
-        log(f"Publishing quote card to {targets}...")
-        api_result = publisher.run(
-            caption=caption, image_bytes=card_path.read_bytes(),
-            platform_keys=targets, scheduled_at=scheduled_at)
+        from core import postforme
+        media_url = postforme.upload_image(card_path.read_bytes(), content_type="image/png")
+        posts = []
+        if with_tags:
+            cap = f"{caption}\n\n{tags}".strip() if tags else caption
+            log(f"Publishing to {with_tags} (with hashtags)...")
+            posts.append(postforme.create_post(
+                caption=cap, social_accounts=CONFIG.account_ids(with_tags),
+                media_urls=[media_url], scheduled_at=scheduled_at))
+        if no_tags:
+            log(f"Publishing to {no_tags} (no hashtags)...")
+            posts.append(postforme.create_post(
+                caption=caption, social_accounts=CONFIG.account_ids(no_tags),
+                media_urls=[media_url], scheduled_at=scheduled_at))
         result["published"] = True
-        result["postforme_result"] = api_result
-        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+        result["postforme_result"] = posts
+        for p in posts:
+            log(f"Published. Post id: {p.get('id', '(see result.json)')}")
     _save(run_dir, result)
     return result
 
