@@ -603,6 +603,10 @@ quotes:
   short_seconds: 10                 # ~10s = best completion + loops for a quote Short
   short_per_clip: 3                 # ~3s per b-roll clip (so ~3-4 clips)
   short_clips: 4                    # how many clips to pull for the splice
+  short_fps: 60                     # CFR 60fps (per user)
+  music_dir: assets/background-music-for-quotes-videos  # dedicated quote music
+  music_start_min: 0.30             # start the music mid-track (climax), randomised
+  music_start_max: 0.65             # between these fractions of the track length
   # NOTE: image asset folders are currently sparse (few Spider-Man photos). When
   # they run out, the renderer falls back to a striking frame from gameplay
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
@@ -612,9 +616,9 @@ threads_posts:
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
-  quote_ratio: 0.25        # ~25% of Threads/X TEXT posts are quotes (reduced from
-                           # 0.6 now that image quote cards also post to Threads/X);
-                           # the rest are the game-news/verdict/poll mix
+  quote_ratio: 1.0         # 100% quotes on the Threads/X TEXT track (per user:
+                           # stop game-update posts, they were repetitive). Set
+                           # below 1.0 to bring back some game-news/verdict/poll.
   # TRENDING-GAME FOCUS: instead of hopping between random games, each update post
   # rides the single hottest game / gaming moment of the period (a big new release,
   # a major update or patch, a viral moment, a showcase like the Game Awards) and

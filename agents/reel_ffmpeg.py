@@ -440,17 +440,18 @@ def build_quote_short(
     out_path: Path,
     text_png: Path,
     music: Optional[Path] = None,
+    music_start: float = 0.0,
     total_seconds: float = 10.0,
     per_clip_seconds: float = 3.0,
     start_skip: float = 3.0,
-    fps: int = 30,
+    fps: int = 60,
     w: int = 1080,
     h: int = 1920,
 ) -> bytes:
     """A short, loop-friendly motivational quote SHORT for YouTube: gameplay
-    b-roll spliced FULL-SCREEN (9:16) + graded, the quote text overlaid (the
-    transparent text_png), with a music bed. No voiceover. ~total_seconds long.
-    Returns the MP4 bytes."""
+    b-roll spliced FULL-SCREEN (9:16) + graded at CFR `fps`, the quote text
+    overlaid (the transparent text_png), with a music bed that starts at
+    `music_start` seconds (mid-track climax). No voiceover. Returns the MP4 bytes."""
     clips = [Path(c) for c in clips if Path(c).exists()]
     if not clips:
         raise ReelFfmpegError("quote short: no clips")
@@ -487,7 +488,9 @@ def build_quote_short(
         text_idx = len(order)
         music_idx = None
         if music and Path(music).exists():
-            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            # seek mid-track (climax) + loop so a short track still fills the video
+            inputs += ["-stream_loop", "-1", "-ss", f"{max(0.0, music_start):.2f}",
+                       "-i", str(music)]
             music_idx = len(order) + 1
 
         grade = _grade_filter()
@@ -505,7 +508,9 @@ def build_quote_short(
                          "-filter_complex", ";".join(fc), "-map", "[v]"]
         if music_idx is not None:
             args += ["-map", f"{music_idx}:a"]
-        args += _v_encode() + _a_encode(music_idx is not None) + ["-shortest", str(out_path)]
+        # explicit CFR at the target fps (per user)
+        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(music_idx is not None) + ["-shortest", str(out_path)]
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         rc, err = ffmpeg.run(args, timeout=900)
