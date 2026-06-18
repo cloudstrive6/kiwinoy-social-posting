@@ -768,6 +768,17 @@ def _quote_footage_frame(run_dir, log) -> Optional[Any]:
         return None
 
 
+def _quote_short_clips(n: int) -> list:
+    """A few gameplay clips for the YouTube quote Short's b-roll (one game for
+    now; the user will add more games/clips for cross-game splices)."""
+    games = reel_composer.list_games()
+    if not games:
+        return []
+    prefer = [g for g in (CONFIG.reels.get("footage", {}) or {}).get("prefer", [])
+              if g in games] or list(games)
+    return reel_composer.clips_for_game(random.choice(prefer), n=max(2, n))
+
+
 def run_quote_card(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
@@ -834,6 +845,33 @@ def run_quote_card(
         result["postforme_result"] = posts
         for p in posts:
             log(f"Published. Post id: {p.get('id', '(see result.json)')}")
+
+    # YouTube can't take a static image, so the quote goes there as a short, loop-
+    # friendly VIDEO: the quote over spliced gameplay b-roll (~10s).
+    if qcfg.get("youtube_short", True):
+        try:
+            from agents import reel_ffmpeg
+            yt_clips = _quote_short_clips(int(qcfg.get("short_clips", 4)))
+            if yt_clips:
+                text_png = quote.render_text_layer(q, run_dir / "text_layer.png", logo=_reel_logo())
+                vid = reel_ffmpeg.build_quote_short(
+                    yt_clips, run_dir / "short.mp4", text_png, music=_reel_music(),
+                    total_seconds=float(qcfg.get("short_seconds", 10)),
+                    per_clip_seconds=float(qcfg.get("short_per_clip", 3)))
+                result["short_path"] = str(run_dir / "short.mp4")
+                if dry_run:
+                    log(f"DRY RUN — built YouTube Short ({len(vid)//1024} KB), not posting.")
+                else:
+                    yt = publisher.publish_video(
+                        caption=caption, video_bytes=vid, title=q[:90], short=True,
+                        scheduled_at=scheduled_at, targets=["youtube"])
+                    result["youtube_result"] = yt
+                    log(f"YouTube Short post id: {yt.get('id', '(see result.json)')}")
+            else:
+                log("No footage clips for the YouTube Short — skipping YT.")
+        except Exception as e:
+            log(f"YouTube Short skipped ({e!r})")
+
     _save(run_dir, result)
     return result
 

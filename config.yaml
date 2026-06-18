@@ -597,6 +597,12 @@ quotes:
   hashtags: ["#GamingMotivation", "#GamerLife", "#Gaming"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
                                     # for the quote + skips title/menu/UI screens
+  # YouTube can't take a static image, so the quote also goes there as a short,
+  # loop-friendly VIDEO: the quote over spliced gameplay b-roll.
+  youtube_short: true
+  short_seconds: 10                 # ~10s = best completion + loops for a quote Short
+  short_per_clip: 3                 # ~3s per b-roll clip (so ~3-4 clips)
+  short_clips: 4                    # how many clips to pull for the splice
   # NOTE: image asset folders are currently sparse (few Spider-Man photos). When
   # they run out, the renderer falls back to a striking frame from gameplay
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
@@ -606,8 +612,9 @@ threads_posts:
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
-  quote_ratio: 0.6         # ~60% of Threads/X posts are motivational gaming quotes
-                           # (per user); the rest are the game-news/verdict/poll mix
+  quote_ratio: 0.25        # ~25% of Threads/X TEXT posts are quotes (reduced from
+                           # 0.6 now that image quote cards also post to Threads/X);
+                           # the rest are the game-news/verdict/poll mix
   # TRENDING-GAME FOCUS: instead of hopping between random games, each update post
   # rides the single hottest game / gaming moment of the period (a big new release,
   # a major update or patch, a viral moment, a showcase like the Game Awards) and

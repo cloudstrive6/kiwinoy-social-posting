@@ -435,6 +435,85 @@ def build_commentary(
         return out_path.read_bytes()
 
 
+def build_quote_short(
+    clips: list[Path],
+    out_path: Path,
+    text_png: Path,
+    music: Optional[Path] = None,
+    total_seconds: float = 10.0,
+    per_clip_seconds: float = 3.0,
+    start_skip: float = 3.0,
+    fps: int = 30,
+    w: int = 1080,
+    h: int = 1920,
+) -> bytes:
+    """A short, loop-friendly motivational quote SHORT for YouTube: gameplay
+    b-roll spliced FULL-SCREEN (9:16) + graded, the quote text overlaid (the
+    transparent text_png), with a music bed. No voiceover. ~total_seconds long.
+    Returns the MP4 bytes."""
+    clips = [Path(c) for c in clips if Path(c).exists()]
+    if not clips:
+        raise ReelFfmpegError("quote short: no clips")
+    text_png = Path(text_png)
+    per = max(1.5, float(per_clip_seconds))
+    skip = max(0.0, float(start_skip))
+    real = {c: (ffmpeg.duration(c) or per) for c in clips}
+
+    def _in(c: Path) -> float:
+        d = real[c]
+        if d <= per:
+            return 0.0
+        if d > per + skip:
+            return random.uniform(skip, d - per)
+        return max(0.0, d - per)
+
+    order: list[tuple[Path, float]] = []
+    pool = clips[:]
+    random.shuffle(pool)
+    i = guard = 0
+    covered = 0.0
+    while covered < total_seconds and guard < 200:
+        c = pool[i % len(pool)]
+        order.append((c, _in(c)))
+        covered += per
+        i += 1
+        guard += 1
+
+    with tempfile.TemporaryDirectory():
+        inputs: list[str] = []
+        for c, start in order:
+            inputs += ["-ss", f"{start:.2f}", "-t", f"{per:.2f}", "-i", str(c)]
+        inputs += ["-i", str(text_png)]
+        text_idx = len(order)
+        music_idx = None
+        if music and Path(music).exists():
+            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            music_idx = len(order) + 1
+
+        grade = _grade_filter()
+        fc = [
+            f"[{k}:v]scale={w}:{h}:force_original_aspect_ratio=increase,"
+            f"crop={w}:{h},{grade}setsar=1,fps={fps}[v{k}]"
+            for k in range(len(order))
+        ]
+        fc.append("".join(f"[v{k}]" for k in range(len(order))) +
+                  f"concat=n={len(order)}:v=1:a=0[bgv]")
+        fc.append(f"[{text_idx}:v]format=rgba[txt]")
+        fc.append("[bgv][txt]overlay=0:0[v]")
+
+        args = inputs + ["-t", f"{total_seconds:.2f}",
+                         "-filter_complex", ";".join(fc), "-map", "[v]"]
+        if music_idx is not None:
+            args += ["-map", f"{music_idx}:a"]
+        args += _v_encode() + _a_encode(music_idx is not None) + ["-shortest", str(out_path)]
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=900)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"quote short failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
 def _v_encode() -> list[str]:
     return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]

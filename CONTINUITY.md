@@ -21,10 +21,14 @@ are active:
    `quotes.hashtag_platforms`). An original English quote rendered (Pillow,
    Montserrat) OVER a gameplay photo from `assets/images/<game>/` — Claude vision
    picks the most cinematic shot + skips title/menu screens. The CAPTION elaborates
-   on the quote (1-2 relatable sentences), it does not repeat it. Run:
+   on the quote (1-2 relatable sentences), it does not repeat it. Also posts to
+   **YouTube as a ~10s quote SHORT** (the quote over spliced gameplay b-roll +
+   music — YouTube can't take a static image), `quotes.youtube_short`. Run:
    `python run.py --quote`. Workflow `quotes.yml`, config `quotes:`. NOTE: quote-card
    photos must be COMMITTED to the repo (not the Release) to reach the cloud — when
-   the user adds photos to `assets/images/<game>/`, commit + push them.
+   the user adds photos to `assets/images/<game>/`, commit + push them. The Threads/X
+   TEXT-quote ratio was reduced to 25% (`threads_posts.quote_ratio`) since the
+   image cards now cover quotes there too.
 3. **Game commentary reels** — 4/day, **Facebook ONLY**. A Taglish voiceover
    (ElevenLabs) over gameplay b-roll with burned Taglish subtitles, the SAME 3:4
    band layout + circular/animated logos + Taglish on-screen hook as the gameplay

@@ -283,10 +283,20 @@ def render_card(
     ImageDraw.Draw(panel).rectangle([0, int(h * 0.30), w, int(h * 0.73)], fill=(0, 0, 0, 60))
     bg = Image.alpha_composite(bg, panel)
 
+    _draw_quote_content(bg, quote, logo, w, h)
+    bg.convert("RGB").save(out_path, "PNG")
+    _remember_photo(Path(photo_path).name)
+    return out_path
+
+
+def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: bool = False):
+    """Draw the quote mark + quote + red accent + circular logo + @handle onto the
+    given RGBA image (centred). Shared by the card and the YouTube-Short text layer.
+    strong_shadow adds an outline for legibility over moving video."""
+    from PIL import ImageDraw
     draw = ImageDraw.Draw(bg)
     red = (229, 9, 20, 255)
-    margin = 108
-    max_w = w - 2 * margin
+    max_w = w - 2 * 108
 
     # Fit the quote: shrink the premium font until it wraps within the text band.
     size, font, lines, line_h = 104, _font(104, "Bold"), [], int(104 * 1.24)
@@ -298,37 +308,45 @@ def render_card(
             break
     total_h = line_h * len(lines)
 
-    # Big red opening quote mark, centred above the text.
     qf = _font(170, "Bold")
-    qm = "“"
-    qw = draw.textlength(qm, font=qf)
-    draw.text(((w - qw) // 2, (h - total_h) // 2 - 205), qm, font=qf, fill=red)
+    qw = draw.textlength("“", font=qf)
+    draw.text(((w - qw) // 2, (h - total_h) // 2 - 205), "“", font=qf, fill=red)
 
-    # The quote, centred white with a soft shadow.
     y = (h - total_h) // 2 + 8
     for ln in lines:
-        tw = draw.textlength(ln, font=font)
-        x = (w - tw) // 2
-        draw.text((x + 3, y + 4), ln, font=font, fill=(0, 0, 0, 160))
+        x = (w - draw.textlength(ln, font=font)) // 2
+        if strong_shadow:
+            for dx, dy in ((-2, 0), (2, 0), (0, -2), (0, 2)):
+                draw.text((x + dx, y + dy), ln, font=font, fill=(0, 0, 0, 190))
+        draw.text((x + 3, y + 4), ln, font=font, fill=(0, 0, 0, 170))
         draw.text((x, y), ln, font=font, fill=(255, 255, 255, 255))
         y += line_h
 
-    # Brand-red accent line under the quote.
     cx = w // 2
     draw.rectangle([cx - 64, y + 22, cx + 64, y + 29], fill=red)
 
-    # Branding: the SAME circular KG logo as the reels + @handle near the bottom.
     handle = str(CONFIG.brand.get("handle", "@kiwinoygaming"))
     hfont = _font(40, "SemiBold")
     hw = draw.textlength(handle, font=hfont)
     if logo and Path(logo).exists():
         try:
-            lg = _circular_logo(logo, 104)
-            bg.alpha_composite(lg, ((w - 104) // 2, h - 220))
+            bg.alpha_composite(_circular_logo(logo, 104), ((w - 104) // 2, h - 220))
         except Exception:
             pass
     draw.text(((w - hw) // 2, h - 98), handle, font=hfont, fill=(240, 240, 240, 255))
 
-    bg.convert("RGB").save(out_path, "PNG")
-    _remember_photo(Path(photo_path).name)
+
+def render_text_layer(quote: str, out_path: Path, logo: Optional[Path] = None,
+                      w: int = 1080, h: int = 1920) -> Path:
+    """Transparent overlay PNG for the YouTube quote SHORT (9:16): a soft dark
+    legibility veil + the SAME quote typography as the card. Overlaid on graded
+    gameplay b-roll by reel_ffmpeg.build_quote_short."""
+    from PIL import Image, ImageDraw
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    bg = _vignette(Image.new("RGBA", (w, h), (0, 0, 0, 0)), 120)
+    panel = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    ImageDraw.Draw(panel).rectangle([0, int(h * 0.30), w, int(h * 0.70)], fill=(0, 0, 0, 95))
+    bg = Image.alpha_composite(bg, panel)
+    _draw_quote_content(bg, quote, logo, w, h, strong_shadow=True)
+    bg.save(out_path, "PNG")
     return out_path
