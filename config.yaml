@@ -1,6 +1,6 @@
 brand:
   name: KiwinoyGamer
-  handle: '@kiwinoygamer'
+  handle: '@kiwinoygaming'
   language: English
   voice: 'High-energy gaming creator who lives and breathes gacha games and sports.
     Confident, hype, and in-the-know — talks to the audience like a friend with the
@@ -594,6 +594,8 @@ quotes:
   exclude: [mlbb, sports]           # off-strategy folders to skip
   post_to: [facebook]               # quote cards go to Facebook only
   hashtags: ["#GamingMotivation", "#GamerLife", "#Gaming"]
+  vision_pick: true                 # Claude vision picks the most cinematic photo
+                                    # for the quote + skips title/menu/UI screens
   # NOTE: image asset folders are currently sparse (few Spider-Man photos). When
   # they run out, the renderer falls back to a striking frame from gameplay
   # footage for variety. Add more photos to assets/images/<game>/ for best results.

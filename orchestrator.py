@@ -787,7 +787,7 @@ def run_quote_card(
 
     q = quote.generate()
     log(f"Quote: {q}")
-    photo = quote.pick_photo() or _quote_footage_frame(run_dir, log)
+    photo = quote.pick_photo(q) or _quote_footage_frame(run_dir, log)
     if not photo:
         log("No photo (image assets empty + no footage frame) — skipping.")
         return _skip(run_dir, {"kind": "quote_card", "quote": q}, "no_media")

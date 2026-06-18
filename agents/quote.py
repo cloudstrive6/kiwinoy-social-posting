@@ -7,8 +7,8 @@ it's safe to run locally too).
 """
 from __future__ import annotations
 
+import glob
 import random
-import textwrap
 from pathlib import Path
 from typing import Optional
 
@@ -19,25 +19,91 @@ from core.style import HUMAN_VOICE, sanitize
 
 IMG_EXTS = {".png", ".jpg", ".jpeg", ".webp"}
 
-# Bold fonts to try in order: cloud (DejaVu via fonts-dejavu-core) then local
-# Windows. Avoids bundling a font; production (cloud) is consistent on DejaVu.
-_FONT_CANDIDATES = [
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    "C:/Windows/Fonts/segoeuib.ttf",
-    "C:/Windows/Fonts/arialbd.ttf",
-    "C:/Windows/Fonts/calibrib.ttf",
+# Premium typeface for the quote cards: prefer Montserrat (geometric, high-end
+# feel), then other clean fonts, then DejaVu (cloud default) / Windows (local).
+# The cloud workflow apt-installs fonts-montserrat so production is consistent.
+_FONT_GLOBS = [
+    "/usr/share/fonts/**/Montserrat-{w}.ttf",
+    "/usr/share/fonts/**/Poppins-{w}.ttf",
+    "/usr/share/fonts/**/OpenSans-{w}.ttf",
+    "/usr/share/fonts/**/Roboto-{w}.ttf",
+    "/usr/share/fonts/**/DejaVuSans-Bold.ttf",
 ]
+_FONT_WIN = {
+    "Bold": ["C:/Windows/Fonts/Bahnschrift.ttf", "C:/Windows/Fonts/seguisb.ttf",
+             "C:/Windows/Fonts/segoeuib.ttf", "C:/Windows/Fonts/arialbd.ttf"],
+    "SemiBold": ["C:/Windows/Fonts/seguisb.ttf", "C:/Windows/Fonts/Bahnschrift.ttf",
+                 "C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"],
+}
 
 
-def _font(size: int):
+def _font(size: int, weight: str = "Bold"):
     from PIL import ImageFont
-    for p in _FONT_CANDIDATES:
-        if Path(p).exists():
+    cands: list[str] = []
+    for g in _FONT_GLOBS:
+        cands += sorted(glob.glob(g.format(w=weight), recursive=True))
+    cands += _FONT_WIN.get(weight, _FONT_WIN["Bold"])
+    for p in cands:
+        if p and Path(p).exists():
             try:
                 return ImageFont.truetype(p, size)
             except Exception:
                 pass
     return ImageFont.load_default()
+
+
+def _circular_logo(src, size: int):
+    """The SAME circular logo treatment as the reels (centre-crop -> circle)."""
+    from PIL import Image, ImageChops, ImageDraw
+    im = Image.open(src).convert("RGBA")
+    iw, ih = im.size
+    s = min(iw, ih)
+    im = im.crop(((iw - s) // 2, (ih - s) // 2, (iw - s) // 2 + s, (ih - s) // 2 + s))
+    im = im.resize((size, size), Image.LANCZOS)
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, size - 1, size - 1), fill=255)
+    im.putalpha(ImageChops.multiply(im.getchannel("A"), mask))
+    return im
+
+
+def _vignette(img, strength: int = 150):
+    """Darken the edges (cinematic focus) via a blurred radial mask."""
+    from PIL import Image, ImageDraw, ImageFilter
+    w, h = img.size
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).ellipse(
+        [int(-w * 0.22), int(-h * 0.16), int(w * 1.22), int(h * 1.16)], fill=255)
+    mask = mask.filter(ImageFilter.GaussianBlur(max(w, h) // 6))
+    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    overlay.putalpha(mask.point(lambda v: int((255 - v) * strength / 255)))
+    return Image.alpha_composite(img.convert("RGBA"), overlay)
+
+
+def _vgrad(img, top: int = 60, bottom: int = 200):
+    """Vertical dark gradient (lighter top -> darker bottom) for depth + text."""
+    from PIL import Image
+    w, h = img.size
+    grad = Image.new("L", (1, h))
+    for y in range(h):
+        grad.putpixel((0, y), int(top + (bottom - top) * (y / h)))
+    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    overlay.putalpha(grad.resize((w, h)))
+    return Image.alpha_composite(img.convert("RGBA"), overlay)
+
+
+def _wrap(draw, text: str, font, max_w: int) -> list[str]:
+    words, lines, cur = text.split(), [], ""
+    for wd in words:
+        test = (cur + " " + wd).strip()
+        if draw.textlength(test, font=font) <= max_w:
+            cur = test
+        else:
+            if cur:
+                lines.append(cur)
+            cur = wd
+    if cur:
+        lines.append(cur)
+    return lines
 
 
 def _system() -> str:
@@ -100,17 +166,48 @@ def _candidate_photos() -> list[Path]:
     return photos
 
 
-def pick_photo() -> Optional[Path]:
-    """Pick a backdrop photo for a quote card (avoiding the most recent ones).
+def _vision_best(photos: list[Path], quote: str) -> Optional[Path]:
+    """Use Claude vision to pick the most CINEMATIC/emotional backdrop for the
+    quote, avoiding title/menu/UI/loading/copyright screens. None on failure."""
+    import re
+    cand = photos[:8]
+    try:
+        from core import claude_code
+        listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cand))
+        prompt = (
+            f"Use the Read tool to open these {len(cand)} candidate photos. Pick the "
+            f"ONE that works best as the backdrop for a motivational gaming quote "
+            f'card (quote: "{quote}"). Prefer a CINEMATIC, emotional, visually '
+            f"striking in-game moment. STRONGLY AVOID title screens, main menus, "
+            f"loading/pause screens, heavy HUD/UI, or anything with watermark or "
+            f"copyright text. Reply with ONLY the number of your pick.\n\n{listing}"
+        )
+        raw = claude_code.run(prompt, allowed_tools="Read", timeout=150)
+        m = re.search(r"\d+", raw or "")
+        if m:
+            idx = int(m.group()) - 1
+            if 0 <= idx < len(cand):
+                return cand[idx]
+    except Exception:
+        pass
+    return None
 
-    Primary source: the image asset folders (per the user's request). If those
-    are too sparse, the caller can fall back to a footage frame.
+
+def pick_photo(quote: Optional[str] = None) -> Optional[Path]:
+    """Pick a backdrop photo for a quote card from the image asset folders
+    (avoiding recently-used ones). With a quote + multiple candidates, Claude
+    vision picks the most cinematic one and skips title/menu/UI screens.
     """
     photos = _candidate_photos()
     if not photos:
         return None
     seen = _recent_photos()
     fresh = [p for p in photos if p.name not in seen] or photos
+    qcfg = CONFIG.raw().get("quotes", {}) or {}
+    if quote and len(fresh) > 1 and qcfg.get("vision_pick", True):
+        best = _vision_best(fresh, quote)
+        if best:
+            return best
     return random.choice(fresh)
 
 
@@ -142,9 +239,10 @@ def render_card(
     w: int = 1080,
     h: int = 1350,
 ) -> Path:
-    """Render a designed quote card: the photo as a darkened backdrop with the
-    quote in bold white centred text + KG branding. Returns the PNG path."""
-    from PIL import Image, ImageDraw, ImageFilter
+    """Render a PREMIUM quote card: the gameplay photo cinematically graded +
+    vignetted as a backdrop, the quote in a high-quality typeface, a brand-red
+    accent, and the CIRCULAR KG logo + @handle. Returns the PNG path."""
+    from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bg = Image.open(photo_path).convert("RGB")
@@ -155,62 +253,63 @@ def render_card(
     bw, bh = bg.size
     bg = bg.crop(((bw - w) // 2, (bh - h) // 2, (bw - w) // 2 + w, (bh - h) // 2 + h))
 
-    # Darken for legibility: blur a touch + a 55% black veil + stronger at the
-    # centre band where the text sits.
-    bg = bg.filter(ImageFilter.GaussianBlur(2))
-    veil = Image.new("RGBA", (w, h), (0, 0, 0, 140))
-    bg = Image.alpha_composite(bg.convert("RGBA"), veil)
-    band = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    ImageDraw.Draw(band).rectangle([0, int(h * 0.30), w, int(h * 0.74)], fill=(0, 0, 0, 90))
-    bg = Image.alpha_composite(bg, band)
+    # CINEMATIC grade for emotion: richer colour + contrast, a touch darker, soft
+    # focus, a vignette for the eye, and a top->bottom darkening gradient.
+    bg = ImageEnhance.Color(bg).enhance(1.18)
+    bg = ImageEnhance.Contrast(bg).enhance(1.12)
+    bg = ImageEnhance.Brightness(bg).enhance(0.94)
+    bg = bg.filter(ImageFilter.GaussianBlur(1.3))
+    bg = _vignette(bg.convert("RGBA"), 150)
+    bg = _vgrad(bg, 55, 195)
+    panel = Image.new("RGBA", (w, h), (0, 0, 0, 0))  # subtle legibility band
+    ImageDraw.Draw(panel).rectangle([0, int(h * 0.30), w, int(h * 0.73)], fill=(0, 0, 0, 60))
+    bg = Image.alpha_composite(bg, panel)
 
     draw = ImageDraw.Draw(bg)
-    # Big opening quote mark accent (brand red).
-    qfont = _font(180)
-    draw.text((80, int(h * 0.18)), "“", font=qfont, fill=(229, 9, 20, 255))
-
-    # Fit the quote: shrink font until it wraps within the margins + height.
-    margin = 110
+    red = (229, 9, 20, 255)
+    margin = 108
     max_w = w - 2 * margin
-    for size in (96, 88, 80, 72, 64, 58, 52):
-        font = _font(size)
-        # wrap by measured width
-        words, lines, cur = quote.split(), [], ""
-        for wd in words:
-            test = (cur + " " + wd).strip()
-            if draw.textlength(test, font=font) <= max_w:
-                cur = test
-            else:
-                if cur:
-                    lines.append(cur)
-                cur = wd
-        if cur:
-            lines.append(cur)
-        line_h = int(size * 1.28)
-        total_h = line_h * len(lines)
-        if total_h <= int(h * 0.40) and len(lines) <= 7:
-            break
 
-    y = (h - total_h) // 2 + 10
+    # Fit the quote: shrink the premium font until it wraps within the text band.
+    size, font, lines, line_h = 104, _font(104, "Bold"), [], int(104 * 1.24)
+    for size in (104, 96, 88, 80, 72, 64, 58):
+        font = _font(size, "Bold")
+        lines = _wrap(draw, quote, font, max_w)
+        line_h = int(size * 1.24)
+        if line_h * len(lines) <= int(h * 0.40) and len(lines) <= 7:
+            break
+    total_h = line_h * len(lines)
+
+    # Big red opening quote mark, centred above the text.
+    qf = _font(170, "Bold")
+    qm = "“"
+    qw = draw.textlength(qm, font=qf)
+    draw.text(((w - qw) // 2, (h - total_h) // 2 - 205), qm, font=qf, fill=red)
+
+    # The quote, centred white with a soft shadow.
+    y = (h - total_h) // 2 + 8
     for ln in lines:
         tw = draw.textlength(ln, font=font)
         x = (w - tw) // 2
-        # soft shadow + white text
-        draw.text((x + 3, y + 3), ln, font=font, fill=(0, 0, 0, 200))
+        draw.text((x + 3, y + 4), ln, font=font, fill=(0, 0, 0, 160))
         draw.text((x, y), ln, font=font, fill=(255, 255, 255, 255))
         y += line_h
 
-    # Branding: handle at the bottom, small circular logo above it if available.
-    handle = str(CONFIG.brand.get("handle", "@kiwinoygamer"))
-    hfont = _font(40)
+    # Brand-red accent line under the quote.
+    cx = w // 2
+    draw.rectangle([cx - 64, y + 22, cx + 64, y + 29], fill=red)
+
+    # Branding: the SAME circular KG logo as the reels + @handle near the bottom.
+    handle = str(CONFIG.brand.get("handle", "@kiwinoygaming"))
+    hfont = _font(40, "SemiBold")
     hw = draw.textlength(handle, font=hfont)
-    draw.text(((w - hw) // 2, h - 90), handle, font=hfont, fill=(235, 235, 235, 255))
     if logo and Path(logo).exists():
         try:
-            lg = Image.open(logo).convert("RGBA").resize((96, 96), Image.LANCZOS)
-            bg.alpha_composite(lg, ((w - 96) // 2, h - 200))
+            lg = _circular_logo(logo, 104)
+            bg.alpha_composite(lg, ((w - 104) // 2, h - 220))
         except Exception:
             pass
+    draw.text(((w - hw) // 2, h - 98), handle, font=hfont, fill=(240, 240, 240, 255))
 
     bg.convert("RGB").save(out_path, "PNG")
     _remember_photo(Path(photo_path).name)
