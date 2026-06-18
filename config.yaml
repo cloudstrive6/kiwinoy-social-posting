@@ -478,8 +478,8 @@ reels:
     # a bit smaller, sit it LOWER + centred (clear of the captions), and fade it
     # away after a few seconds so it's never on screen long.
     scale: 0.66           # compact badge (smaller than before)
-    bottom_margin: 340    # sit ABOVE YouTube's bottom UI band (~18%) so it reads
-                          # as branding, not fighting the title/handle/subtitles
+    bottom_margin: 200    # lower third, in the band over the subject's body: clears
+                          # YouTube's bottom UI AND the in-game subtitle line (user-placed)
     fade_start: 4.0       # begin fading out ~4s after it appears
     fade_dur: 1.5         # fade-out duration
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
