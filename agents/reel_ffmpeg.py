@@ -156,6 +156,24 @@ def _crop_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
     )
 
 
+def _anim_overlay(rgb_idx: int, alpha_idx: int, vlabel: str, w: int,
+                  out_label: str) -> list[str]:
+    """Filter lines for the animated lower-third: smaller + bottom-CENTRED + a
+    fade-out after a few seconds (viewer feedback: it was covering subtitles).
+    Plays once (eof_action=pass) then the footage shows clean."""
+    a = CONFIG.reels.get("logo_animated", {}) or {}
+    scale = float(a.get("scale", 0.78))
+    fstart = float(a.get("fade_start", 4.0))
+    fdur = float(a.get("fade_dur", 1.5))
+    margin = int(a.get("bottom_margin", 20))
+    lw = int(w * scale)
+    return [
+        f"[{rgb_idx}:v][{alpha_idx}:v]alphamerge,scale={lw}:-1,"
+        f"fade=t=out:st={fstart}:d={fdur}:alpha=1[animl]",
+        f"[{vlabel}][animl]overlay=(W-w)/2:H-h-{margin}:eof_action=pass[{out_label}]",
+    ]
+
+
 def _brand_logo(src: Optional[Path], out: Path) -> Optional[Path]:
     """Crop the brand logo to a CIRCLE + apply opacity (top-right overlay).
 
@@ -259,11 +277,7 @@ def build_gameplay(
             fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
         if anim_rgb_idx is not None:
-            fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
-                      f"scale={w}:-1[anim]")
-            # eof_action=pass -> after the logo finishes (once), the footage shows
-            # clean (no freeze-frame, no loop).
-            fc.append(f"[{vlabel}][anim]overlay=0:H-h:eof_action=pass[ova]")
+            fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
             vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
@@ -391,9 +405,7 @@ def build_commentary(
             fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
         if anim_rgb_idx is not None:
-            fc.append(f"[{anim_rgb_idx}:v][{anim_alpha_idx}:v]alphamerge,"
-                      f"scale={w}:-1[anim]")
-            fc.append(f"[{vlabel}][anim]overlay=0:H-h:eof_action=pass[ova]")
+            fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
             vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
