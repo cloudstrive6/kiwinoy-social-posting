@@ -168,6 +168,20 @@ GAMEPLAY reels use `reels.logo_animated` = a compact raised lower-third
 (`scale 0.66`, `bottom_margin 200`) — a YouTube-Shorts safe-zone fix so it clears
 the YT UI + in-game subtitles. COMMENTARY reels (FB-only) use
 `reels.commentary.logo_animated` = the original low lower-third (`scale 0.78`,
-`bottom_margin 20`). The YouTube quote SHORT is 15s (`quotes.short_seconds`), with
-the quote placed in the upper third (`render_text_layer` center_y ~0.34h, smaller
-font) + an opening fade/ease-in transition.
+`bottom_margin 20`). The YouTube quote SHORT is 19s (`quotes.short_seconds`), with
+the quote placed in the upper third (`render_text_layer` center_y ~0.30h), an
+opening fade/ease-in transition, and NO dark panel — legibility is a soft letter
+drop-shadow + thin outline (loop the still text PNG `-loop 1 -t total` so the fade
+animates; a single frame stays at fade-in alpha 0 = blank).
+
+**Quote content = REAL attributed game-story quotes** (no life-general; removed per
+user). `core/game_quotes.py` is a HAND-CURATED, VERIFIED set per universe (currently
+27 Spider-Man lines spanning the games + all film continuities + comics, each
+`{line, author, source}`) — NOT live-generated (accuracy, post-FF7-fabrication).
+`quote.story_quote(universe)` cycles all-before-repeat via the
+`_quote_story_used.json` ledger; when the set is exhausted it RESETS and repeats
+(it does not auto-generate new ones — expand `game_quotes.py` to add more).
+Attribution ("Author · Source") renders on card + short. `quote.pick_music(universe)`
+prefers `qmusic__<game>__*` (drop tracks in `<music_dir>/<game>/`), else universal.
+Quote posts are 3×/day, all `story` (`quotes.daily_themes {story:3}`), fired by the
+cron-job.org "Quote Cards" job at UTC 1,9,17 (PH 9:15a/5:15p/1:15a), evenly 24h.
