@@ -157,11 +157,12 @@ def _crop_chain(idx: int, w: int, h: int, fps: int, label: str) -> str:
 
 
 def _anim_overlay(rgb_idx: int, alpha_idx: int, vlabel: str, w: int,
-                  out_label: str) -> list[str]:
-    """Filter lines for the animated lower-third: smaller + bottom-CENTRED + a
-    fade-out after a few seconds (viewer feedback: it was covering subtitles).
-    Plays once (eof_action=pass) then the footage shows clean."""
-    a = CONFIG.reels.get("logo_animated", {}) or {}
+                  out_label: str, cfg: Optional[dict] = None) -> list[str]:
+    """Filter lines for the animated lower-third: bottom-CENTRED + a fade-out
+    after a few seconds (viewer feedback: it was covering subtitles). Plays once
+    (eof_action=pass) then the footage shows clean. `cfg` lets each reel type set
+    its own placement (gameplay sits higher for YouTube; commentary stays low)."""
+    a = cfg if cfg is not None else (CONFIG.reels.get("logo_animated", {}) or {})
     scale = float(a.get("scale", 0.78))
     fstart = float(a.get("fade_start", 4.0))
     fdur = float(a.get("fade_dur", 1.5))
@@ -405,7 +406,13 @@ def build_commentary(
             fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
         if anim_rgb_idx is not None:
-            fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
+            # Commentary keeps the ORIGINAL low lower-third (FB-only; the raised
+            # gameplay placement is a YouTube-Shorts fix and shouldn't apply here).
+            base = CONFIG.reels.get("logo_animated", {}) or {}
+            cmt = (CONFIG.reels.get("commentary", {}) or {}).get("logo_animated") or {}
+            anim_cfg = {**base, "scale": 0.78, "bottom_margin": 20, **cmt}
+            fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova",
+                                cfg=anim_cfg)
             vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 

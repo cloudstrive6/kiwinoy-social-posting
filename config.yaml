@@ -486,6 +486,14 @@ reels:
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
     enabled: true
+    # Animated-logo placement for COMMENTARY reels only. These stay the ORIGINAL
+    # low lower-third (FB-only) — the raised gameplay placement (logo_animated
+    # bottom_margin 200) is a YouTube-Shorts fix and must NOT apply here.
+    logo_animated:
+      scale: 0.78         # original larger badge
+      bottom_margin: 20   # sit low at the very bottom
+      fade_start: 4.0
+      fade_dur: 1.5
     short_seconds: 70
     medium_seconds: 150   # ~2.5 min
     long_seconds: 360     # ~6 min default; raise toward 900 (15 min) as desired
