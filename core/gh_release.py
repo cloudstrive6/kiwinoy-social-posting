@@ -42,30 +42,22 @@ def _headers() -> dict[str, str]:
 
 
 def list_assets(gamekey: str) -> list[dict[str, str]]:
-    """Return [{name, url}] release assets whose name starts with '<gamekey>__'."""
+    """Return [{name, url}] clip assets named '<gamekey>__*', aggregated across the
+    footage release AND every footage-NN overflow shard (GitHub caps a release at
+    1000 assets, so clips spill into footage-02, footage-03, ...)."""
     cfg = _cfg()
     if not cfg.get("use_releases"):
         return []
     repo = cfg.get("release_repo")
-    tag = cfg.get("release_tag", "footage")
     if not repo:
-        return []
-    try:
-        r = requests.get(
-            f"https://api.github.com/repos/{repo}/releases/tags/{tag}",
-            headers=_headers(), timeout=30,
-        )
-        if r.status_code != 200:
-            return []
-        assets = r.json().get("assets", []) or []
-    except Exception:
         return []
     prefix = f"{gamekey}__"
     out = []
-    for a in assets:
-        name = a.get("name", "")
-        if name.startswith(prefix) and Path(name).suffix.lower() in VIDEO_EXTS:
-            out.append({"name": name, "url": a.get("browser_download_url", "")})
+    for rel in _footage_releases():
+        for a in _fresh_assets(repo, rel.get("id")):
+            name = str(a.get("name", ""))
+            if name.startswith(prefix) and Path(name).suffix.lower() in VIDEO_EXTS:
+                out.append({"name": name, "url": a.get("browser_download_url", "")})
     return [a for a in out if a["url"]]
 
 
@@ -182,9 +174,36 @@ def _fresh_assets(repo: str, release_id: Any) -> list[dict[str, Any]]:
 
 def _invalidate_assets_cache() -> None:
     _ASSETS_CACHE.clear()
-    global _IMG_RELEASES, _QIMG_INDEX
+    global _IMG_RELEASES, _QIMG_INDEX, _FOOTAGE_RELEASES
     _IMG_RELEASES = None
     _QIMG_INDEX = None
+    _FOOTAGE_RELEASES = None
+
+
+_FOOTAGE_RELEASES: Optional[list[dict[str, Any]]] = None
+
+
+def _footage_releases() -> list[dict[str, Any]]:
+    """[{tag, id}] of releases that hold gameplay CLIPS: the footage release first,
+    then overflow shards tagged footage-NN (ascending). Cached per process."""
+    global _FOOTAGE_RELEASES
+    if _FOOTAGE_RELEASES is not None:
+        return _FOOTAGE_RELEASES
+    repo = _cfg().get("release_repo")
+    base = _cfg().get("release_tag", "footage")
+    res: list[dict[str, Any]] = []
+    if repo:
+        for rel in _list_all_releases(repo):
+            t = str(rel.get("tag_name", ""))
+            if t == base or re.match(r"^footage-\d+$", t):
+                res.append({"tag": t, "id": rel.get("id")})
+        res.sort(key=lambda r: (0 if r["tag"] == base else 1, r["tag"]))
+    if not res:
+        rel = _release()
+        if rel:
+            res = [{"tag": base, "id": rel.get("id")}]
+    _FOOTAGE_RELEASES = res
+    return res
 
 
 # ---- quote-image releases (GitHub caps each release at 1000 assets, so the

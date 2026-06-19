@@ -28,6 +28,7 @@ import mimetypes
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -170,17 +171,93 @@ def upload(game: str, files: list[str]) -> bool:
     return ok_all
 
 
-def sync(delete_local: bool = True, only_game: str | None = None) -> None:
-    """Proactively scan footage folders and push UNUSED clips to the cloud.
+FOOTAGE_CAP = 995  # leave headroom under GitHub's 1000-assets-per-release cap
 
-    Any clip not already on the 'footage' Release is uploaded; once a clip is
-    confirmed on the cloud, the LOCAL file is deleted (per the user's rule) to
-    free disk. Pass only_game to limit to one game, delete_local=False to keep.
-    """
+
+def _footage_shards(token: str) -> list[dict]:
+    """[{tag,id,up}] holding clips: footage release first, then footage-NN asc."""
+    base = _tag()
+    res = []
+    for rel in _all_releases(token):
+        t = str(rel.get("tag_name", ""))
+        if t == base or re.match(r"^footage-\d+$", t):
+            res.append({"tag": t, "id": rel["id"], "up": rel["upload_url"].split("{")[0]})
+    res.sort(key=lambda r: (0 if r["tag"] == base else 1, r["tag"]))
+    return res
+
+
+def _shard_assets(token: str, rid):
+    """(count, set-of-names) for a release, paginated."""
+    repo = _repo(); names = set()
+    for page in range(1, 400):
+        r = requests.get(f"{API}/repos/{repo}/releases/{rid}/assets?per_page=100&page={page}",
+                         headers=_h(token))
+        if r.status_code != 200:
+            break
+        ch = r.json() or []
+        names |= {a["name"] for a in ch}
+        if len(ch) < 100:
+            break
+    return len(names), names
+
+
+def _next_footage_tag(shards) -> str:
+    nums = [int(s["tag"].split("-")[1]) for s in shards if s["tag"].startswith("footage-")]
+    return f"footage-{(max(nums) + 1) if nums else 2:02d}"
+
+
+def _upload_clip(up_url: str, token: str, name: str, path: Path, ct: str) -> str:
+    """Stream-upload one clip. Returns 'ok' | 'full' | 'fail'."""
+    for attempt in range(3):
+        try:
+            with open(path, "rb") as fh:
+                r = requests.post(f"{up_url}?name={name}",
+                                  headers={**_h(token), "Content-Type": ct},
+                                  data=fh, timeout=3600)
+            if r.ok:
+                return "ok"
+            if r.status_code in (403, 422) and "already_exists" in r.text:
+                return "ok"
+            if r.status_code == 422 and "file_count" in r.text:
+                return "full"
+            if r.status_code in (403, 429):
+                time.sleep(20 * (attempt + 1)); continue
+            print(f"    upload {name} -> {r.status_code} {r.text[:160]}", flush=True)
+            return "fail"
+        except Exception as e:
+            print(f"    upload {name} err: {e!r}", flush=True)
+            time.sleep(5)
+    return "fail"
+
+
+def sync(delete_local: bool = True, only_game: str | None = None) -> None:
+    """Scan footage folders and push clips to the cloud, SHARDING across the
+    footage release + footage-NN overflow releases (GitHub caps a release at 1000
+    assets). Each clip confirmed on the cloud has its LOCAL copy deleted to free
+    disk. Pass only_game to limit to one game, delete_local=False to keep."""
     base = ROOT / (_cfg().get("dir", "reels/assets/footage"))
     if not base.exists():
         sys.exit(f"Footage dir not found: {base}")
-    existing = {a["name"] for a in _release(_token()).get("assets", [])}
+    token = _token()
+    shards = _footage_shards(token)
+    if not shards:
+        rel = _release(token)
+        shards = [{"tag": _tag(), "id": rel["id"], "up": rel["upload_url"].split("{")[0]}]
+    done = set(); counts = {}
+    for s in shards:
+        counts[s["tag"]], names = _shard_assets(token, s["id"])
+        done |= names
+
+    def current_target():
+        for s in shards:
+            if counts[s["tag"]] < FOOTAGE_CAP:
+                return s
+        tag = _next_footage_tag(shards)
+        rel = _get_or_create_release(token, tag, f"Reel footage {tag}",
+                                     "Overflow gameplay clips (GitHub caps releases at 1000 assets).")
+        s = {"tag": tag, "id": rel["id"], "up": rel["upload_url"].split("{")[0]}
+        shards.append(s); counts[tag] = 0; return s
+
     uploaded = already = deleted = failed = toobig = 0
     for sub in sorted(p for p in base.iterdir()
                       if p.is_dir() and not p.name.startswith(".")):
@@ -190,32 +267,39 @@ def sync(delete_local: bool = True, only_game: str | None = None) -> None:
         for f in sorted(sub.iterdir()):
             if not f.is_file() or f.suffix.lower() not in VIDEO_EXTS:
                 continue
+            name = _gh_name(game, f.name)
+            if name in done:
+                already += 1
+                if delete_local:
+                    try: f.unlink(); deleted += 1
+                    except Exception: pass
+                continue
             if f.stat().st_size > RELEASE_MAX:
-                print(f"  TOO BIG ({f.stat().st_size/1024**3:.1f} GB > 2GB), skipped: "
-                      f"{f.name} -- trim it first.")
+                print(f"  TOO BIG ({f.stat().st_size/1024**3:.1f} GB > 2GB), skipped: {f.name}")
                 toobig += 1
                 continue
-            on_cloud = _gh_name(game, f.name) in existing
-            if not on_cloud:
-                print(f"[{game}] {f.name}")
-                if upload(game, [str(f)]):
-                    uploaded += 1
-                    on_cloud = True
-                else:
-                    print("    upload failed -- keeping local.")
-                    failed += 1
+            ct = mimetypes.guess_type(str(f))[0] or "application/octet-stream"
+            print(f"[{game}] {f.name} ({f.stat().st_size/1024/1024:.0f} MB)", flush=True)
+            ok = False
+            for _ in range(len(shards) + 3):
+                tgt = current_target()
+                res = _upload_clip(tgt["up"], token, name, f, ct)
+                if res == "ok":
+                    counts[tgt["tag"]] += 1; ok = True
+                    print(f"    -> {tgt['tag']}", flush=True)
+                    break
+                if res == "full":
+                    counts[tgt["tag"]] = FOOTAGE_CAP + 1; continue
+                break
+            if ok:
+                done.add(name); uploaded += 1
+                if delete_local:
+                    try: f.unlink(); deleted += 1
+                    except Exception as e: print(f"    could not delete local ({e!r}).")
             else:
-                print(f"[{game}] already on cloud: {f.name}")
-                already += 1
-            if on_cloud and delete_local:
-                try:
-                    f.unlink()
-                    deleted += 1
-                    print("    deleted local copy.")
-                except Exception as e:
-                    print(f"    could not delete local ({e!r}).")
-    print(f"\nsync done: uploaded {uploaded}, already-present {already}, "
-          f"local-deleted {deleted}, failed {failed}, too-big {toobig}")
+                failed += 1; print("    upload failed -- keeping local.")
+    print(f"\nsync done: uploaded {uploaded}, already {already}, local-deleted {deleted}, "
+          f"failed {failed}, too-big {toobig}; shards: {[s['tag'] for s in shards]}")
 
 
 def list_assets() -> None:
