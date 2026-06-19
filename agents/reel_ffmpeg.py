@@ -503,7 +503,11 @@ def build_quote_short(
         inputs: list[str] = []
         for c, start in order:
             inputs += ["-ss", f"{start:.2f}", "-t", f"{per:.2f}", "-i", str(c)]
-        inputs += ["-i", str(text_png)]
+        # LOOP the still quote PNG into a real timed stream (at the output fps) so
+        # the fade-in actually animates across frames. A single-frame input would
+        # be frozen at t=0 — where fade-in alpha is 0 — leaving the quote invisible.
+        inputs += ["-loop", "1", "-framerate", str(fps), "-t",
+                   f"{total_seconds:.2f}", "-i", str(text_png)]
         text_idx = len(order)
         music_idx = None
         if music and Path(music).exists():
