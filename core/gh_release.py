@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 import subprocess
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -401,6 +403,41 @@ def mark_quote_image(name: str) -> bool:
 
 def reset_quote_images() -> bool:
     return _write_json_asset(QIMAGE_USED, {"used": []})
+
+
+QUOTE_THEMES_ASSET = "_quote_themes.json"
+
+
+def _today_ph() -> str:
+    """Today's date in PH time (UTC+8) — the quote schedule fires at PH primes."""
+    return time.strftime("%Y-%m-%d", time.gmtime(time.time() + 8 * 3600))
+
+
+def pick_quote_theme(targets: Optional[dict[str, int]] = None) -> str:
+    """Pick the quote theme whose daily target is furthest from being met, so a
+    set of generic (un-themed) external triggers still lands the desired per-day
+    mix (e.g. 2 'gameplay' + 2 'life'). Ties broken randomly. Fail-open to random."""
+    targets = targets or {"gameplay": 2, "life": 2}
+    try:
+        led = _read_json_asset(QUOTE_THEMES_ASSET) or {}
+        counts = led.get("counts", {}) if led.get("date") == _today_ph() else {}
+        deficits = {t: n - int(counts.get(t, 0)) for t, n in targets.items()}
+        mx = max(deficits.values())
+        pool = [t for t, d in deficits.items() if d == mx] if mx > 0 else list(targets)
+        return random.choice(pool)
+    except Exception:
+        return random.choice(list(targets))
+
+
+def record_quote_theme(theme: str) -> bool:
+    """Increment today's count for `theme` in the daily ledger (resets on new day)."""
+    if not theme:
+        return False
+    led = _read_json_asset(QUOTE_THEMES_ASSET) or {}
+    today = _today_ph()
+    counts = dict(led.get("counts", {})) if led.get("date") == today else {}
+    counts[theme] = int(counts.get(theme, 0)) + 1
+    return _write_json_asset(QUOTE_THEMES_ASSET, {"date": today, "counts": counts})
 
 
 def quote_music_pool() -> list[str]:

@@ -601,10 +601,14 @@ carousels:
 # scroll-stopping hooks. Written by Claude via your Claude subscription
 # (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs nothing per token. Posts
 # every 2 hours (cron in threads.yml); each run researches a fresh GAMES topic.
-# Motivational gaming quote cards (Facebook): an original English quote rendered
-# OVER a gameplay photo, 3x/day. Same quotes also feed the Threads/X track (60%).
+# Motivational quote cards (Facebook + IG + Threads/X + YouTube short): an original
+# English quote rendered OVER a gameplay photo, 4x/day. Each day mixes 2 GAMEPLAY-
+# themed quotes (gaming metaphor) + 2 LIFE-in-general quotes (daily_themes). A
+# date-keyed ledger on the Release balances the mix across the generic external
+# triggers, so the 4 cron-job.org fires self-sort into 2 + 2 regardless of order.
 quotes:
   enabled: true
+  daily_themes: {gameplay: 2, life: 2}   # per-day target mix (4x/day total)
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip

@@ -115,10 +115,31 @@ def _system() -> str:
     )
 
 
-def generate(extra_avoid: Optional[list[str]] = None) -> str:
-    """Return ONE original English motivational gaming quote (no attribution)."""
+def generate(extra_avoid: Optional[list[str]] = None, theme: str = "gameplay") -> str:
+    """Return ONE original English motivational quote (no attribution). theme
+    'gameplay' uses a gaming metaphor; 'life' is general life motivation (no
+    gaming references) so the page mixes both kinds of inspiration."""
     avoid = avoid_block()
-    prompt = f"""Write ONE original, scroll-stopping MOTIVATIONAL quote about GAMING and life.
+    if theme == "life":
+        prompt = f"""Write ONE original, scroll-stopping MOTIVATIONAL quote about LIFE in general.
+
+Like a shareable quote-card line about growth, resilience, discipline, self-belief,
+showing up, perseverance, purpose, or making the most of today. This one is NOT
+about gaming — do NOT use any gaming words or metaphors.
+
+Rules:
+- Genuinely inspiring, not cheesy or corny. Confident, a little bold.
+- ENGLISH. 6 to 18 words. One line (one sentence, or two very short ones).
+- FULLY ORIGINAL: do NOT quote or paraphrase real people, books, movies, or any
+  known quote. Invent it.
+- No hashtags, no emojis, no quotation marks, no author/attribution. Just the line.
+
+{avoid}
+
+Return ONLY the quote line."""
+        fallback = "Small steps taken daily still outrun standing still."
+    else:
+        prompt = f"""Write ONE original, scroll-stopping MOTIVATIONAL quote about GAMING and life.
 
 Like a shareable quote-card line. Use a gaming metaphor or idea (respawn, boss
 fight, the grind, level up, checkpoint, co-op, hard mode, bad RNG, comeback) and
@@ -134,33 +155,45 @@ Rules:
 {avoid}
 
 Return ONLY the quote line."""
+        fallback = "Every pro was once a beginner who refused to hit quit."
     raw = ai.write(prompt, system=_system())
     line = sanitize(raw).strip().strip('"').splitlines()[0].strip().strip('"')
-    return line[:160] or "Every pro was once a beginner who refused to hit quit."
+    return line[:160] or fallback
 
 
-def elaborate(quote_line: str) -> str:
+def elaborate(quote_line: str, theme: str = "gameplay") -> str:
     """A SHORT (1-2 sentence) relatable elaboration of the quote, for the post
-    caption. Does NOT repeat the quote — it expands on it with a real-talk gamer
-    angle so it hits home."""
-    prompt = f"""A motivational gaming quote card shows this line: "{quote_line}"
+    caption. Does NOT repeat the quote — it expands on it. theme matches the quote
+    ('gameplay' = gamer angle; 'life' = everyday-life angle, no gaming refs)."""
+    if theme == "life":
+        angle = ("a relatable, real-talk angle about everyday life (the early "
+                 "mornings, the quiet setbacks, the showing-up again, the small "
+                 "wins that add up) — NO gaming references")
+        fallback = "Keep showing up - the small wins always add up."
+    else:
+        angle = ("a relatable, real-talk gamer angle (the late-night grind, the "
+                 "boss that wrecked you, the clutch comeback, the squad that "
+                 "carried you)")
+        fallback = "Keep going - the grind always pays off eventually."
+    prompt = f"""A motivational quote card shows this line: "{quote_line}"
 
 Write the post CAPTION that goes under it. Do NOT repeat or rephrase the quote.
-Instead expand on it in 1 to 2 short sentences with a relatable, real-talk gamer
-angle (the late-night grind, the boss that wrecked you, the clutch comeback, the
-squad that carried you) so it actually hits home. Warm and motivating, a little
-personal, like talking to a fellow gamer.
+Instead expand on it in 1 to 2 short sentences with {angle} so it actually hits
+home. Warm and motivating, a little personal.
 
 No hashtags, no emojis, no quotation marks, no preamble. Return ONLY the caption."""
     raw = ai.write(prompt, system=_system())
     line = sanitize(raw).strip().strip('"').strip()
-    return line[:400] or "Keep going - the grind always pays off eventually."
+    return line[:400] or fallback
 
 
-def threads_text() -> str:
+def threads_text(theme: Optional[str] = None) -> str:
     """A motivational quote for a Threads/X TEXT post — just the quote, NO hashtags
-    (per user; Threads/X never get hashtags)."""
-    return generate()
+    (per user; Threads/X never get hashtags). theme defaults to a random mix of
+    gameplay + life so the text track gets both kinds of inspiration too."""
+    if theme is None:
+        theme = random.choice(["gameplay", "life"])
+    return generate(theme=theme)
 
 
 def _candidate_photos() -> list[Path]:

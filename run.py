@@ -107,6 +107,12 @@ def main() -> int:
         choices=["update", "prediction", "poll"],
         help="Threads post type (with --threads); default = auto by UTC hour",
     )
+    p.add_argument(
+        "--quote-theme",
+        choices=["auto", "gameplay", "life"],
+        default="auto",
+        help="quote theme (with --quote); 'auto' lets the daily ledger balance the mix",
+    )
     p.add_argument("--dry-run", action="store_true", help="skip publishing")
     p.add_argument(
         "--schedule-at",
@@ -153,7 +159,8 @@ def main() -> int:
     # Motivational quote card -> Facebook.
     if args.quote:
         try:
-            run_quote_card(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            run_quote_card(dry_run=args.dry_run, scheduled_at=args.schedule_at,
+                           theme=args.quote_theme)
             return 0
         except Exception as e:
             print(f"[quote] ERROR: {e}", file=sys.stderr, flush=True)

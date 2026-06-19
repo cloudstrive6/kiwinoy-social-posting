@@ -782,26 +782,36 @@ def _quote_short_clips(n: int) -> list:
 def run_quote_card(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
+    theme: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Motivational gaming quote CARD (quote overlaid on a gameplay photo) -> FB.
+    """Motivational quote CARD (quote overlaid on a gameplay photo) -> FB.
 
     Generates an original English quote, picks the best photo from the image
     asset folders (falls back to a footage frame), renders a designed card, and
-    publishes to Facebook (quotes.post_to)."""
+    publishes to Facebook (quotes.post_to). theme is 'gameplay' or 'life'; when
+    None/'auto' a daily ledger picks whichever is below its per-day target so the
+    generic external triggers land the configured mix (default 2 gameplay + 2 life)."""
     from pathlib import Path
     from agents import quote
+    from core import gh_release
 
     qcfg = CONFIG.raw().get("quotes", {}) or {}
     run_dir = OUTPUT_DIR / f"{_stamp()}_quote_card"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[quote-card] {m}", flush=True)
 
-    q = quote.generate()
+    if theme in (None, "auto"):
+        theme = gh_release.pick_quote_theme(qcfg.get("daily_themes") or None)
+    if not dry_run:
+        gh_release.record_quote_theme(theme)  # claim the slot so runs self-balance
+    log(f"Theme: {theme}")
+
+    q = quote.generate(theme=theme)
     log(f"Quote: {q}")
     photo = quote.pick_photo(q) or _quote_footage_frame(run_dir, log)
     if not photo:
         log("No photo (image assets empty + no footage frame) — skipping.")
-        return _skip(run_dir, {"kind": "quote_card", "quote": q}, "no_media")
+        return _skip(run_dir, {"kind": "quote_card", "quote": q, "theme": theme}, "no_media")
     log(f"Photo: {Path(photo).name}")
 
     card_path = run_dir / "card.png"
@@ -809,7 +819,7 @@ def run_quote_card(
     (run_dir / "quote.txt").write_text(q, encoding="utf-8")
 
     # Caption ELABORATES on the quote (relatable), it does NOT repeat it.
-    caption = quote.elaborate(q)
+    caption = quote.elaborate(q, theme=theme)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     log(f"Quote: {q}\n           Caption: {caption}")
 
@@ -820,7 +830,7 @@ def run_quote_card(
     no_tags = [p for p in targets if p not in tag_plats]  # Threads/X: no hashtags
 
     result: dict[str, Any] = {
-        "kind": "quote_card", "quote": q, "photo": str(photo),
+        "kind": "quote_card", "quote": q, "theme": theme, "photo": str(photo),
         "caption": caption, "card_path": str(card_path), "dry_run": dry_run,
     }
     if dry_run:

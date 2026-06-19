@@ -1,11 +1,12 @@
 name: KiwinoyGamer Auto-Quote-Cards
 
-# Motivational gaming QUOTE CARDS to Facebook: an original English quote rendered
-# (Pillow) over a gameplay photo from the image asset folders, 3x/day. The same
-# quote style also feeds the Threads/X track (~60% of those posts).
+# Motivational QUOTE CARDS (FB + IG + Threads/X + a YouTube short): an original
+# English quote rendered (Pillow) over a gameplay photo, 4x/day. Each day mixes
+# 2 GAMEPLAY-themed + 2 LIFE-in-general quotes; a date-keyed ledger on the Release
+# balances the mix, so the theme input can stay 'auto' on every trigger.
 #
 # Triggered by an EXTERNAL scheduler (cron-job.org job "KiwinoyGamer Quote Cards")
-# 3x/day at Philippine prime times, same reliable approach as the other tracks.
+# 4x/day at Philippine prime times, same reliable approach as the other tracks.
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +14,10 @@ on:
         description: "Dry run (render but do not publish)? true/false"
         required: false
         default: "false"
+      theme:
+        description: "Quote theme: auto | gameplay | life (auto = ledger balances 2+2/day)"
+        required: false
+        default: "auto"
 
 concurrency:
   group: kiwinoy-auto-quotes
@@ -62,4 +67,5 @@ jobs:
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          python run.py --quote $DRY
+          THEME="${{ github.event.inputs.theme }}"
+          python run.py --quote --quote-theme "${THEME:-auto}" $DRY
