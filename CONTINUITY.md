@@ -150,3 +150,24 @@ Other gotchas: the GitHub `releases/tags` asset list is CDN-cached (use the
 per-release `/releases/{id}/assets` endpoint); read Release JSON assets by asset
 **id**, not the download URL (also CDN-cached); `gh_release` reads must be
 authenticated or they hit the 60/hr anon rate limit.
+
+**Quote backdrops are SHARDED across releases.** GitHub caps every Release at
+**1000 assets**. The footage Release filled at 933 quote images (`qimg__<game>.<file>.jpg`)
++ clips + ledgers, so the ~7,400 backdrops overflow into prerelease shards tagged
+`qimg-01`, `qimg-02`, … (each ≤~995). `tools/quote_assets.py sync_images` fills the
+current shard and rolls to the next (creating `qimg-NN` on demand) when GitHub
+returns the `file_count` error; it resume-skips names already uploaded across ALL
+shards and deletes local on success. `core/gh_release` reads aggregate `qimg__`
+across the footage Release + every `qimg-NN` shard (`_image_releases` /
+`_quote_image_index`, cached), and `asset_download_url` resolves each backdrop to
+the shard holding it. As of 2026-06-19: ~7,339 backdrops across `footage` +
+`qimg-01..07`, all local images deleted.
+
+**Animated logo placement differs per reel type** (`reel_ffmpeg._anim_overlay(cfg=)`):
+GAMEPLAY reels use `reels.logo_animated` = a compact raised lower-third
+(`scale 0.66`, `bottom_margin 200`) — a YouTube-Shorts safe-zone fix so it clears
+the YT UI + in-game subtitles. COMMENTARY reels (FB-only) use
+`reels.commentary.logo_animated` = the original low lower-third (`scale 0.78`,
+`bottom_margin 20`). The YouTube quote SHORT is 15s (`quotes.short_seconds`), with
+the quote placed in the upper third (`render_text_layer` center_y ~0.34h, smaller
+font) + an opening fade/ease-in transition.
