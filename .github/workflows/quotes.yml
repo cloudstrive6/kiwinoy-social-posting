@@ -18,6 +18,10 @@ on:
         description: "Quote theme: auto | gameplay | life (auto = ledger balances 2+2/day)"
         required: false
         default: "auto"
+      schedule_at:
+        description: "Optional ISO time to schedule publish (e.g. 2026-06-19T04:30:00Z); empty = now"
+        required: false
+        default: ""
 
 concurrency:
   group: kiwinoy-auto-quotes
@@ -68,4 +72,7 @@ jobs:
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           THEME="${{ github.event.inputs.theme }}"
-          python run.py --quote --quote-theme "${THEME:-auto}" $DRY
+          SCHED="${{ github.event.inputs.schedule_at }}"
+          SCHEDARG=""
+          if [ -n "$SCHED" ]; then SCHEDARG="--schedule-at $SCHED"; fi
+          python run.py --quote --quote-theme "${THEME:-auto}" $SCHEDARG $DRY
