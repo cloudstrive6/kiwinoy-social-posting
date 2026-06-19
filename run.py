@@ -109,9 +109,10 @@ def main() -> int:
     )
     p.add_argument(
         "--quote-theme",
-        choices=["auto", "gameplay", "life"],
+        choices=["auto", "story", "life", "gameplay"],
         default="auto",
-        help="quote theme (with --quote); 'auto' lets the daily ledger balance the mix",
+        help="quote theme (with --quote): story=real attributed game quote, life=original; "
+             "'auto' lets the daily ledger balance the mix",
     )
     p.add_argument("--dry-run", action="store_true", help="skip publishing")
     p.add_argument(

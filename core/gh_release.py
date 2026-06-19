@@ -405,6 +405,28 @@ def reset_quote_images() -> bool:
     return _write_json_asset(QIMAGE_USED, {"used": []})
 
 
+STORY_QUOTES_ASSET = "_quote_story_used.json"
+
+
+def used_story_quotes() -> set[str]:
+    """Keys of game-story quotes already posted (cycle-all-before-repeat)."""
+    return set((_read_json_asset(STORY_QUOTES_ASSET) or {}).get("used", []) or [])
+
+
+def mark_story_quote(key: str) -> bool:
+    if not key:
+        return False
+    cur = used_story_quotes()
+    if key in cur:
+        return True
+    cur.add(key)
+    return _write_json_asset(STORY_QUOTES_ASSET, {"used": sorted(cur)})
+
+
+def reset_story_quotes() -> bool:
+    return _write_json_asset(STORY_QUOTES_ASSET, {"used": []})
+
+
 QUOTE_THEMES_ASSET = "_quote_themes.json"
 
 
@@ -417,7 +439,7 @@ def pick_quote_theme(targets: Optional[dict[str, int]] = None) -> str:
     """Pick the quote theme whose daily target is furthest from being met, so a
     set of generic (un-themed) external triggers still lands the desired per-day
     mix (e.g. 2 'gameplay' + 2 'life'). Ties broken randomly. Fail-open to random."""
-    targets = targets or {"gameplay": 2, "life": 2}
+    targets = targets or {"story": 2, "life": 2}
     try:
         led = _read_json_asset(QUOTE_THEMES_ASSET) or {}
         counts = led.get("counts", {}) if led.get("date") == _today_ph() else {}

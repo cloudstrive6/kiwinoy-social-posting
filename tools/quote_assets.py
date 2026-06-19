@@ -226,10 +226,16 @@ def sync_music() -> None:
     if not mdir.exists():
         print("no quote-music dir"); return
     up_n = del_n = 0
-    for f in sorted(mdir.iterdir()):
+    # Top-level files = universal/fallback (qmusic__<file>). Files inside a
+    # per-game subfolder = tagged for that game (qmusic__<game>__<file>) so the
+    # reel can match music to the footage's universe.
+    for f in sorted(mdir.rglob("*")):
         if not f.is_file() or f.suffix.lower() not in AUDIO_EXTS:
             continue
-        name = footage._gh_name(MUSIC_PREFIX, f.name)
+        rel = f.relative_to(mdir)
+        tag = rel.parts[0] if len(rel.parts) > 1 else ""   # subfolder = game tag
+        stem = f"{tag}__{f.name}" if tag else f.name
+        name = footage._gh_name(MUSIC_PREFIX, stem)
         ok = name in existing or _upload_bytes(up, token, name, f.read_bytes(),
                                                "audio/mpeg")
         if ok:

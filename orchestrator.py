@@ -802,11 +802,25 @@ def run_quote_card(
 
     if theme in (None, "auto"):
         theme = gh_release.pick_quote_theme(qcfg.get("daily_themes") or None)
+    if theme == "gameplay":            # legacy alias for the game-story theme
+        theme = "story"
     if not dry_run:
         gh_release.record_quote_theme(theme)  # claim the slot so runs self-balance
-    log(f"Theme: {theme}")
 
-    q = quote.generate(theme=theme)
+    universe = str(qcfg.get("story_universe", "spider-man"))
+    attribution = None
+    story = None
+    if theme == "story":
+        # A REAL, attributed quote from the footage's universe (e.g. Spider-Man).
+        story = quote.story_quote(universe)
+        if story:
+            q = story["line"]
+            attribution = f"{story['author']}  ·  {story['source']}"
+        else:
+            theme = "life"             # no curated quote set yet -> safe fallback
+    if theme != "story":
+        q = quote.generate(theme="life")
+    log(f"Theme: {theme}" + (f" ({universe}: {attribution})" if attribution else ""))
     log(f"Quote: {q}")
     photo = quote.pick_photo(q) or _quote_footage_frame(run_dir, log)
     if not photo:
@@ -815,11 +829,12 @@ def run_quote_card(
     log(f"Photo: {Path(photo).name}")
 
     card_path = run_dir / "card.png"
-    quote.render_card(q, Path(photo), card_path, logo=_reel_logo())
+    quote.render_card(q, Path(photo), card_path, logo=_reel_logo(), attribution=attribution)
     (run_dir / "quote.txt").write_text(q, encoding="utf-8")
 
     # Caption ELABORATES on the quote (relatable), it does NOT repeat it.
-    caption = quote.elaborate(q, theme=theme)
+    caption = (quote.elaborate_story(story["line"], story["author"], story["source"])
+               if story else quote.elaborate(q, theme="life"))
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     log(f"Quote: {q}\n           Caption: {caption}")
 
@@ -830,8 +845,9 @@ def run_quote_card(
     no_tags = [p for p in targets if p not in tag_plats]  # Threads/X: no hashtags
 
     result: dict[str, Any] = {
-        "kind": "quote_card", "quote": q, "theme": theme, "photo": str(photo),
-        "caption": caption, "card_path": str(card_path), "dry_run": dry_run,
+        "kind": "quote_card", "quote": q, "theme": theme, "attribution": attribution,
+        "photo": str(photo), "caption": caption, "card_path": str(card_path),
+        "dry_run": dry_run,
     }
     if dry_run:
         log(f"DRY RUN — would post to {targets} (hashtags only on {with_tags}).")
@@ -863,8 +879,9 @@ def run_quote_card(
             from agents import reel_ffmpeg
             yt_clips = _quote_short_clips(int(qcfg.get("short_clips", 4)))
             if yt_clips:
-                text_png = quote.render_text_layer(q, run_dir / "text_layer.png", logo=_reel_logo())
-                music_path, music_start = quote.pick_music()
+                text_png = quote.render_text_layer(q, run_dir / "text_layer.png",
+                                                   logo=_reel_logo(), attribution=attribution)
+                music_path, music_start = quote.pick_music(universe if story else None)
                 vid = reel_ffmpeg.build_quote_short(
                     yt_clips, run_dir / "short.mp4", text_png,
                     music=music_path or _reel_music(), music_start=music_start,

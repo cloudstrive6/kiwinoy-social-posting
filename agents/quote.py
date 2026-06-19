@@ -196,6 +196,41 @@ def threads_text(theme: Optional[str] = None) -> str:
     return generate(theme=theme)
 
 
+def story_quote(universe: str = "spider-man") -> Optional[dict]:
+    """A REAL, attributed iconic quote from the game's whole universe (e.g. the
+    Spider-Man games + films + comics), cycling through ALL before any repeat.
+    Returns {line, author, source}, or None if we have no quote set for it."""
+    from core import game_quotes, gh_release
+    quotes = game_quotes.quotes_for(universe)
+    if not quotes:
+        return None
+    used = gh_release.used_story_quotes()
+    fresh = [q for q in quotes if q["line"] not in used]
+    if not fresh:                       # all shown -> restart the cycle
+        gh_release.reset_story_quotes()
+        fresh = quotes[:]
+    q = random.choice(fresh)
+    gh_release.mark_story_quote(q["line"])
+    return q
+
+
+def elaborate_story(line: str, author: str, source: str) -> str:
+    """Caption for a real game-story quote: reflect on WHY the moment hits, without
+    repeating the line. Warm, a little hyped, spoiler-light."""
+    prompt = f"""A Spider-Man quote card shows this line:
+"{line}" - {author} ({source})
+
+Write the post CAPTION under it. Do NOT repeat or rephrase the quote. In 1 to 2
+short sentences, reflect on what makes this moment land - the emotion, the weight
+of the choice, why it still resonates with players and fans. Warm, a little hyped,
+spoiler-light, true to the character.
+
+No hashtags, no emojis, no quotation marks, no preamble. Return ONLY the caption."""
+    raw = ai.write(prompt, system=_system())
+    out = sanitize(raw).strip().strip('"').strip()
+    return out[:400] or "Some lines stay with you long after the credits roll."
+
+
 def _candidate_photos() -> list[Path]:
     """Photos from the image asset folders, preferring on-strategy games."""
     qcfg = CONFIG.raw().get("quotes", {}) or {}
@@ -306,14 +341,27 @@ def _pick_release(pool: dict, quote, qcfg) -> Optional[Path]:
     return chosen[1]
 
 
-def pick_music() -> "tuple[Optional[Path], float]":
-    """A quote-music track from the Release (qmusic) + a randomised MID-TRACK
-    start offset (the climax). Returns (local_path, start_seconds) or (None, 0)."""
+def _music_tag(name: str) -> Optional[str]:
+    """Game tag of a qmusic asset: 'qmusic__<game>__<file>' -> '<game>'; a plain
+    'qmusic__<file>' (no game folder) -> None (a universal/fallback track)."""
+    rest = name[len("qmusic__"):] if name.startswith("qmusic__") else name
+    return rest.split("__", 1)[0].lower() if "__" in rest else None
+
+
+def pick_music(universe: Optional[str] = None) -> "tuple[Optional[Path], float]":
+    """A quote-music track from the Release (qmusic) + a randomised MID-TRACK start
+    offset (the climax). When `universe` is given (e.g. 'spider-man'), PREFER tracks
+    tagged for it (qmusic__<game>__...), falling back to untagged/universal tracks.
+    Returns (local_path, start_seconds) or (None, 0)."""
     from core import gh_release, ffmpeg
     pool = gh_release.quote_music_pool()
     if not pool:
         return None, 0.0
-    name = random.choice(pool)
+    u = (universe or "").strip().lower()
+    tagged = [n for n in pool if u and (_music_tag(n) or "") and
+              (u in _music_tag(n) or _music_tag(n) in u)]
+    universal = [n for n in pool if _music_tag(n) is None]
+    name = random.choice(tagged or universal or pool)
     p = gh_release.download(
         {"name": name, "url": gh_release.asset_download_url(name)}, _cache_dir())
     if not p:
@@ -353,6 +401,7 @@ def render_card(
     logo: Optional[Path] = None,
     w: int = 1080,
     h: int = 1350,
+    attribution: Optional[str] = None,
 ) -> Path:
     """Render a PREMIUM quote card: the gameplay photo cinematically graded +
     vignetted as a backdrop, the quote in a high-quality typeface, a brand-red
@@ -376,11 +425,7 @@ def render_card(
     bg = bg.filter(ImageFilter.GaussianBlur(1.3))
     bg = _vignette(bg.convert("RGBA"), 150)
     bg = _vgrad(bg, 55, 195)
-    panel = Image.new("RGBA", (w, h), (0, 0, 0, 0))  # subtle legibility band
-    ImageDraw.Draw(panel).rectangle([0, int(h * 0.30), w, int(h * 0.73)], fill=(0, 0, 0, 60))
-    bg = Image.alpha_composite(bg, panel)
-
-    _draw_quote_content(bg, quote, logo, w, h)
+    _draw_quote_content(bg, quote, logo, w, h, attribution=attribution)
     bg.convert("RGB").save(out_path, "PNG")
     _remember_photo(Path(photo_path).name)
     return out_path
@@ -388,12 +433,13 @@ def render_card(
 
 def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: bool = False,
                         center_y: Optional[int] = None, sizes=None,
-                        band_frac: float = 0.40, quote_mark_size: int = 170):
-    """Draw the quote mark + quote + red accent + circular logo + @handle onto the
-    given RGBA image (centred). Shared by the card and the YouTube-Short text layer.
-    strong_shadow adds an outline for legibility over moving video. center_y / sizes
-    let the Short use a smaller font placed higher (the card keeps the defaults)."""
-    from PIL import ImageDraw
+                        band_frac: float = 0.40, quote_mark_size: int = 170,
+                        attribution: Optional[str] = None):
+    """Draw the quote mark + quote + red accent + attribution + circular logo +
+    @handle onto the given RGBA image (centred). NO background panel — legibility
+    comes from a soft drop-shadow + a thin outline on the letters themselves.
+    center_y / sizes let the Short sit higher + smaller than the card."""
+    from PIL import Image, ImageDraw, ImageFilter
     draw = ImageDraw.Draw(bg)
     red = (229, 9, 20, 255)
     max_w = w - 2 * 108
@@ -415,20 +461,51 @@ def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: boo
 
     qf = _font(quote_mark_size, "Bold")
     qw = draw.textlength("“", font=qf)
-    draw.text(((w - qw) // 2, top - int(quote_mark_size * 1.2)), "“", font=qf, fill=red)
+    qx, qy = (w - qw) // 2, top - int(quote_mark_size * 1.2)
+    afont = _font(max(30, int(size * 0.5)), "SemiBold") if attribution else None
 
+    # pre-compute line + accent + attribution positions
+    placed = []
     y = top + 8
     for ln in lines:
-        x = (w - draw.textlength(ln, font=font)) // 2
-        if strong_shadow:
-            for dx, dy in ((-2, 0), (2, 0), (0, -2), (0, 2)):
-                draw.text((x + dx, y + dy), ln, font=font, fill=(0, 0, 0, 190))
-        draw.text((x + 3, y + 4), ln, font=font, fill=(0, 0, 0, 170))
-        draw.text((x, y), ln, font=font, fill=(255, 255, 255, 255))
+        placed.append(((w - draw.textlength(ln, font=font)) // 2, y, ln))
         y += line_h
+    accent_y = y + 22
+    attr_xy = None
+    if attribution and afont:
+        aw = draw.textlength(attribution, font=afont)
+        attr_xy = ((w - aw) // 2, accent_y + 30)
+
+    # --- soft drop-shadow: the letters cast it (no dark panel behind them) ---
+    shadow = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shadow)
+    sd.text((qx, qy), "“", font=qf, fill=(0, 0, 0, 255))
+    for x, ly, ln in placed:
+        sd.text((x, ly), ln, font=font, fill=(0, 0, 0, 255))
+    if attr_xy:
+        sd.text(attr_xy, attribution, font=afont, fill=(0, 0, 0, 255))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
+    bg.alpha_composite(shadow)
+    if strong_shadow:                 # double up over bright/moving video
+        bg.alpha_composite(shadow)
+
+    # --- crisp text on top, with a thin dark outline for edge definition ---
+    draw = ImageDraw.Draw(bg)
+    draw.text((qx, qy), "“", font=qf, fill=red)
+    outline = ((-2, 0), (2, 0), (0, -2), (0, 2), (-2, -2), (2, 2), (2, -2), (-2, 2))
+    for x, ly, ln in placed:
+        for dx, dy in outline:
+            draw.text((x + dx, ly + dy), ln, font=font, fill=(0, 0, 0, 170))
+        draw.text((x, ly), ln, font=font, fill=(255, 255, 255, 255))
 
     cx = w // 2
-    draw.rectangle([cx - 64, y + 22, cx + 64, y + 29], fill=red)
+    draw.rectangle([cx - 64, accent_y, cx + 64, accent_y + 7], fill=red)
+
+    if attr_xy:
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            draw.text((attr_xy[0] + dx, attr_xy[1] + dy), attribution, font=afont,
+                      fill=(0, 0, 0, 150))
+        draw.text(attr_xy, attribution, font=afont, fill=(236, 236, 236, 255))
 
     handle = str(CONFIG.brand.get("handle", "@kiwinoygaming"))
     hfont = _font(40, "SemiBold")
@@ -442,21 +519,16 @@ def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: boo
 
 
 def render_text_layer(quote: str, out_path: Path, logo: Optional[Path] = None,
-                      w: int = 1080, h: int = 1920) -> Path:
-    """Transparent overlay PNG for the YouTube quote SHORT (9:16): a soft dark
-    legibility veil + the SAME quote typography as the card. Overlaid on graded
-    gameplay b-roll by reel_ffmpeg.build_quote_short."""
-    from PIL import Image, ImageDraw
+                      w: int = 1080, h: int = 1920,
+                      attribution: Optional[str] = None) -> Path:
+    """Transparent overlay PNG for the YouTube quote SHORT (9:16). NO dark panel —
+    just a soft vignette + the quote with a drop-shadow/outline on the letters,
+    sat a little HIGHER and a touch SMALLER. Overlaid on graded b-roll."""
+    from PIL import Image
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    # The quote sits HIGHER (upper-middle) and a touch SMALLER than the card, so it
-    # reads as a tidy block in the top third rather than sprawling down the centre.
-    center_y = int(h * 0.34)
-    bg = _vignette(Image.new("RGBA", (w, h), (0, 0, 0, 0)), 120)
-    panel = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    ImageDraw.Draw(panel).rectangle([0, int(h * 0.12), w, int(h * 0.56)], fill=(0, 0, 0, 95))
-    bg = Image.alpha_composite(bg, panel)
+    bg = _vignette(Image.new("RGBA", (w, h), (0, 0, 0, 0)), 95)
     _draw_quote_content(bg, quote, logo, w, h, strong_shadow=True,
-                        center_y=center_y, sizes=(78, 70, 62, 56, 50, 46, 42),
-                        band_frac=0.34, quote_mark_size=124)
+                        center_y=int(h * 0.30), sizes=(70, 63, 57, 52, 47, 43, 39),
+                        band_frac=0.34, quote_mark_size=110, attribution=attribution)
     bg.save(out_path, "PNG")
     return out_path

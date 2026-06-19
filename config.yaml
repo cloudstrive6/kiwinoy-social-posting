@@ -608,7 +608,16 @@ carousels:
 # triggers, so the 4 cron-job.org fires self-sort into 2 + 2 regardless of order.
 quotes:
   enabled: true
-  daily_themes: {gameplay: 2, life: 2}   # per-day target mix (4x/day total)
+  # Per-day target mix (4x/day total). 'story' = a REAL, attributed iconic quote
+  # from the footage's game universe (curated set in core/game_quotes.py, e.g. the
+  # whole Spider-Man world: games + films + comics). 'life' = an original general
+  # motivational line. A date-keyed ledger balances the mix across the triggers.
+  daily_themes: {story: 2, life: 2}
+  story_universe: spider-man         # which universe the 'story' quotes come from
+  # Quote MUSIC matches the game: drop tracks in
+  # assets/background-music-for-quotes-videos/<game>/ -> uploaded as
+  # qmusic__<game>__<file> and PREFERRED for that universe. Tracks left at the top
+  # level stay a universal fallback (the current Spider-Man tracks live there).
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
