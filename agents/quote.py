@@ -353,30 +353,38 @@ def render_card(
     return out_path
 
 
-def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: bool = False):
+def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: bool = False,
+                        center_y: Optional[int] = None, sizes=None,
+                        band_frac: float = 0.40, quote_mark_size: int = 170):
     """Draw the quote mark + quote + red accent + circular logo + @handle onto the
     given RGBA image (centred). Shared by the card and the YouTube-Short text layer.
-    strong_shadow adds an outline for legibility over moving video."""
+    strong_shadow adds an outline for legibility over moving video. center_y / sizes
+    let the Short use a smaller font placed higher (the card keeps the defaults)."""
     from PIL import ImageDraw
     draw = ImageDraw.Draw(bg)
     red = (229, 9, 20, 255)
     max_w = w - 2 * 108
+    if center_y is None:
+        center_y = h // 2
+    if sizes is None:
+        sizes = (104, 96, 88, 80, 72, 64, 58)
 
     # Fit the quote: shrink the premium font until it wraps within the text band.
-    size, font, lines, line_h = 104, _font(104, "Bold"), [], int(104 * 1.24)
-    for size in (104, 96, 88, 80, 72, 64, 58):
+    size, font, lines, line_h = sizes[0], _font(sizes[0], "Bold"), [], int(sizes[0] * 1.24)
+    for size in sizes:
         font = _font(size, "Bold")
         lines = _wrap(draw, quote, font, max_w)
         line_h = int(size * 1.24)
-        if line_h * len(lines) <= int(h * 0.40) and len(lines) <= 7:
+        if line_h * len(lines) <= int(h * band_frac) and len(lines) <= 7:
             break
     total_h = line_h * len(lines)
+    top = center_y - total_h // 2
 
-    qf = _font(170, "Bold")
+    qf = _font(quote_mark_size, "Bold")
     qw = draw.textlength("“", font=qf)
-    draw.text(((w - qw) // 2, (h - total_h) // 2 - 205), "“", font=qf, fill=red)
+    draw.text(((w - qw) // 2, top - int(quote_mark_size * 1.2)), "“", font=qf, fill=red)
 
-    y = (h - total_h) // 2 + 8
+    y = top + 8
     for ln in lines:
         x = (w - draw.textlength(ln, font=font)) // 2
         if strong_shadow:
@@ -407,10 +415,15 @@ def render_text_layer(quote: str, out_path: Path, logo: Optional[Path] = None,
     gameplay b-roll by reel_ffmpeg.build_quote_short."""
     from PIL import Image, ImageDraw
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    # The quote sits HIGHER (upper-middle) and a touch SMALLER than the card, so it
+    # reads as a tidy block in the top third rather than sprawling down the centre.
+    center_y = int(h * 0.34)
     bg = _vignette(Image.new("RGBA", (w, h), (0, 0, 0, 0)), 120)
     panel = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    ImageDraw.Draw(panel).rectangle([0, int(h * 0.30), w, int(h * 0.70)], fill=(0, 0, 0, 95))
+    ImageDraw.Draw(panel).rectangle([0, int(h * 0.12), w, int(h * 0.56)], fill=(0, 0, 0, 95))
     bg = Image.alpha_composite(bg, panel)
-    _draw_quote_content(bg, quote, logo, w, h, strong_shadow=True)
+    _draw_quote_content(bg, quote, logo, w, h, strong_shadow=True,
+                        center_y=center_y, sizes=(78, 70, 62, 56, 50, 46, 42),
+                        band_frac=0.34, quote_mark_size=124)
     bg.save(out_path, "PNG")
     return out_path

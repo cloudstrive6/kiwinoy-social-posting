@@ -616,9 +616,9 @@ quotes:
   # YouTube can't take a static image, so the quote also goes there as a short,
   # loop-friendly VIDEO: the quote over spliced gameplay b-roll.
   youtube_short: true
-  short_seconds: 10                 # ~10s = best completion + loops for a quote Short
-  short_per_clip: 3                 # ~3s per b-roll clip (so ~3-4 clips)
-  short_clips: 4                    # how many clips to pull for the splice
+  short_seconds: 15                 # 15s (10s wasn't getting pushed by the YT algo)
+  short_per_clip: 3                 # ~3s per b-roll clip (so ~5 clips)
+  short_clips: 5                    # how many clips to pull for the splice (15/3)
   short_fps: 60                     # CFR 60fps (per user)
   music_dir: assets/background-music-for-quotes-videos  # dedicated quote music
   music_start_min: 0.30             # start the music mid-track (climax), randomised

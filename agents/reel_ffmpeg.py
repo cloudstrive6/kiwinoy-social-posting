@@ -520,8 +520,9 @@ def build_quote_short(
         ]
         fc.append("".join(f"[v{k}]" for k in range(len(order))) +
                   f"concat=n={len(order)}:v=1:a=0[bgv]")
-        fc.append(f"[{text_idx}:v]format=rgba[txt]")
-        fc.append("[bgv][txt]overlay=0:0[v]")
+        # Opening transition: the quote fades in while easing up a few px (~0.7s).
+        fc.append(f"[{text_idx}:v]format=rgba,fade=t=in:st=0:d=0.7:alpha=1[txt]")
+        fc.append("[bgv][txt]overlay=x=0:y='if(lt(t,0.7),(0.7-t)/0.7*55,0)'[v]")
 
         args = inputs + ["-t", f"{total_seconds:.2f}",
                          "-filter_complex", ";".join(fc), "-map", "[v]"]
