@@ -817,9 +817,9 @@ def run_quote_card(
             q = story["line"]
             attribution = f"{story['author']}  ·  {story['source']}"
         else:
-            theme = "life"             # no curated quote set yet -> safe fallback
+            theme = "gameplay"         # no curated set yet -> game-themed fallback (no life)
     if theme != "story":
-        q = quote.generate(theme="life")
+        q = quote.generate(theme="gameplay")
     log(f"Theme: {theme}" + (f" ({universe}: {attribution})" if attribution else ""))
     log(f"Quote: {q}")
     photo = quote.pick_photo(q) or _quote_footage_frame(run_dir, log)

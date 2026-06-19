@@ -439,7 +439,7 @@ def pick_quote_theme(targets: Optional[dict[str, int]] = None) -> str:
     """Pick the quote theme whose daily target is furthest from being met, so a
     set of generic (un-themed) external triggers still lands the desired per-day
     mix (e.g. 2 'gameplay' + 2 'life'). Ties broken randomly. Fail-open to random."""
-    targets = targets or {"story": 2, "life": 2}
+    targets = targets or {"story": 3}
     try:
         led = _read_json_asset(QUOTE_THEMES_ASSET) or {}
         counts = led.get("counts", {}) if led.get("date") == _today_ph() else {}

@@ -601,18 +601,15 @@ carousels:
 # scroll-stopping hooks. Written by Claude via your Claude subscription
 # (CLAUDE_CODE_OAUTH_TOKEN) so the high frequency costs nothing per token. Posts
 # every 2 hours (cron in threads.yml); each run researches a fresh GAMES topic.
-# Motivational quote cards (Facebook + IG + Threads/X + YouTube short): an original
-# English quote rendered OVER a gameplay photo, 4x/day. Each day mixes 2 GAMEPLAY-
-# themed quotes (gaming metaphor) + 2 LIFE-in-general quotes (daily_themes). A
-# date-keyed ledger on the Release balances the mix across the generic external
-# triggers, so the 4 cron-job.org fires self-sort into 2 + 2 regardless of order.
+# Quote cards + a YouTube short (Facebook + IG + Threads/X + YouTube), 3x/day,
+# evenly spread across 24h. EVERY post is a REAL, attributed quote from the
+# footage's game universe (Spider-Man: games + films + comics). Life-general quotes
+# were removed (per user) — it's all game/story now.
 quotes:
   enabled: true
-  # Per-day target mix (4x/day total). 'story' = a REAL, attributed iconic quote
-  # from the footage's game universe (curated set in core/game_quotes.py, e.g. the
-  # whole Spider-Man world: games + films + comics). 'life' = an original general
-  # motivational line. A date-keyed ledger balances the mix across the triggers.
-  daily_themes: {story: 2, life: 2}
+  # Per-day target (3x/day). ALL 'story' = a REAL, attributed quote from the
+  # footage's universe (curated set in core/game_quotes.py). No life-general quotes.
+  daily_themes: {story: 3}
   story_universe: spider-man         # which universe the 'story' quotes come from
   # Quote MUSIC matches the game: drop tracks in
   # assets/background-music-for-quotes-videos/<game>/ -> uploaded as
@@ -629,9 +626,9 @@ quotes:
   # YouTube can't take a static image, so the quote also goes there as a short,
   # loop-friendly VIDEO: the quote over spliced gameplay b-roll.
   youtube_short: true
-  short_seconds: 15                 # 15s (10s wasn't getting pushed by the YT algo)
-  short_per_clip: 3                 # ~3s per b-roll clip (so ~5 clips)
-  short_clips: 5                    # how many clips to pull for the splice (15/3)
+  short_seconds: 19                 # 19s reel (per user)
+  short_per_clip: 3                 # ~3s per b-roll clip
+  short_clips: 7                    # distinct clips to pull for the splice (~19/3)
   short_fps: 60                     # CFR 60fps (per user)
   music_dir: assets/background-music-for-quotes-videos  # dedicated quote music
   music_start_min: 0.30             # start the music mid-track (climax), randomised

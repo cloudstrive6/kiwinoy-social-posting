@@ -189,11 +189,8 @@ No hashtags, no emojis, no quotation marks, no preamble. Return ONLY the caption
 
 def threads_text(theme: Optional[str] = None) -> str:
     """A motivational quote for a Threads/X TEXT post — just the quote, NO hashtags
-    (per user; Threads/X never get hashtags). theme defaults to a random mix of
-    gameplay + life so the text track gets both kinds of inspiration too."""
-    if theme is None:
-        theme = random.choice(["gameplay", "life"])
-    return generate(theme=theme)
+    (per user; Threads/X never get hashtags). Game-related only (no life-general)."""
+    return generate(theme=theme or "gameplay")
 
 
 def story_quote(universe: str = "spider-man") -> Optional[dict]:

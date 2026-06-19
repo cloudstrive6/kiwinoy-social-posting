@@ -43,6 +43,14 @@ SPIDER_MAN: list[dict[str, str]] = [
      "author": "Miles Morales", "source": "Marvel's Spider-Man: Miles Morales"},
     {"line": "Go get 'em, tiger.",
      "author": "Mary Jane Watson", "source": "Spider-Man"},
+    {"line": "Intelligence is not a privilege, it's a gift - use it for the good of mankind.",
+     "author": "Otto Octavius", "source": "Spider-Man 2"},
+    {"line": "No matter how lost you feel, you have to hold on to hope.",
+     "author": "Gwen Stacy", "source": "The Amazing Spider-Man 2"},
+    {"line": "Be greater. Together.",
+     "author": "Marvel's Spider-Man 2", "source": "Insomniac Games"},
+    {"line": "The brightest light casts the darkest shadow, but it is still the brightest light.",
+     "author": "Madame Web", "source": "Spider-Man comics"},
 ]
 
 # universe key -> its curated quote list
