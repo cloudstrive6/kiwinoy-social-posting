@@ -841,8 +841,12 @@ def run_quote_card(
     tags = " ".join(qcfg.get("hashtags", []))
     targets = list(qcfg.get("post_to", ["facebook"]))
     tag_plats = set(qcfg.get("hashtag_platforms", ["facebook", "instagram"]))
-    with_tags = [p for p in targets if p in tag_plats]
-    no_tags = [p for p in targets if p not in tag_plats]  # Threads/X: no hashtags
+    # Instagram now gets the quote REEL (the same video as YouTube), NOT the static
+    # card (per user) — handled in the reel section below. The card image still goes
+    # to Facebook (with hashtags) + Threads/X (no hashtags).
+    img_targets = [p for p in targets if p != "instagram"]
+    with_tags = [p for p in img_targets if p in tag_plats]
+    no_tags = [p for p in img_targets if p not in tag_plats]  # Threads/X: no hashtags
 
     result: dict[str, Any] = {
         "kind": "quote_card", "quote": q, "theme": theme, "attribution": attribution,
@@ -850,7 +854,8 @@ def run_quote_card(
         "dry_run": dry_run,
     }
     if dry_run:
-        log(f"DRY RUN — would post to {targets} (hashtags only on {with_tags}).")
+        log(f"DRY RUN — card to {img_targets} (hashtags on {with_tags}); "
+            f"reel to IG+YouTube.")
         result["published"] = False
     else:
         from core import postforme
@@ -872,8 +877,10 @@ def run_quote_card(
         for p in posts:
             log(f"Published. Post id: {p.get('id', '(see result.json)')}")
 
-    # YouTube can't take a static image, so the quote goes there as a short, loop-
-    # friendly VIDEO: the quote over spliced gameplay b-roll (~10s).
+    # The quote also goes out as a short, loop-friendly REEL (quote over spliced
+    # gameplay b-roll) to YouTube AND Instagram (IG gets the reel instead of the
+    # static card, per user). IG Reels like hashtags, so the reel caption carries
+    # them when IG is a target.
     if qcfg.get("youtube_short", True):
         try:
             from agents import reel_ffmpeg
@@ -889,18 +896,23 @@ def run_quote_card(
                     total_seconds=float(qcfg.get("short_seconds", 10)),
                     per_clip_seconds=float(qcfg.get("short_per_clip", 3)))
                 result["short_path"] = str(run_dir / "short.mp4")
+                reel_targets = ["youtube"] + (["instagram"] if "instagram" in targets else [])
+                reel_caption = (f"{caption}\n\n{tags}".strip()
+                                if tags and "instagram" in reel_targets else caption)
                 if dry_run:
-                    log(f"DRY RUN — built YouTube Short ({len(vid)//1024} KB), not posting.")
+                    log(f"DRY RUN — built quote reel ({len(vid)//1024} KB) for "
+                        f"{reel_targets}, not posting.")
                 else:
-                    yt = publisher.publish_video(
-                        caption=caption, video_bytes=vid, title=q[:90], short=True,
-                        scheduled_at=scheduled_at, targets=["youtube"])
-                    result["youtube_result"] = yt
-                    log(f"YouTube Short post id: {yt.get('id', '(see result.json)')}")
+                    rv = publisher.publish_video(
+                        caption=reel_caption, video_bytes=vid, title=q[:90], short=True,
+                        scheduled_at=scheduled_at, targets=reel_targets)
+                    result["reel_result"] = rv
+                    log(f"Quote reel ({'+'.join(reel_targets)}) post id: "
+                        f"{rv.get('id', '(see result.json)')}")
             else:
-                log("No footage clips for the YouTube Short — skipping YT.")
+                log("No footage clips for the quote reel — skipping IG/YouTube video.")
         except Exception as e:
-            log(f"YouTube Short skipped ({e!r})")
+            log(f"Quote reel skipped ({e!r})")
 
     _save(run_dir, result)
     return result
