@@ -822,7 +822,8 @@ def run_quote_card(
         q = quote.generate(theme="gameplay")
     log(f"Theme: {theme}" + (f" ({universe}: {attribution})" if attribution else ""))
     log(f"Quote: {q}")
-    photo = quote.pick_photo(q) or _quote_footage_frame(run_dir, log)
+    photo = quote.pick_photo(q, universe=(universe if story else None)) \
+        or _quote_footage_frame(run_dir, log)
     if not photo:
         log("No photo (image assets empty + no footage frame) — skipping.")
         return _skip(run_dir, {"kind": "quote_card", "quote": q, "theme": theme}, "no_media")

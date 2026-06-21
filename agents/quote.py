@@ -280,16 +280,18 @@ def _cache_dir() -> Path:
     return d
 
 
-def pick_photo(quote: Optional[str] = None) -> Optional[Path]:
-    """Pick a backdrop from the CLOUD quote-image pool (the Release manifest),
-    cycling through ALL images before repeating, in random order. Claude vision
-    picks the most cinematic of a few candidates. Falls back to local committed
-    images if the cloud pool isn't available (dev / pre-sync)."""
+def pick_photo(quote: Optional[str] = None,
+               universe: Optional[str] = None) -> Optional[Path]:
+    """Pick a backdrop from the CLOUD quote-image pool, cycling through ALL images
+    before repeating, in random order. When `universe` is given (e.g. 'spider-man'),
+    the backdrop is restricted to images from THAT game universe so it matches the
+    quote (a Spider-Man quote never lands on an FF7/other-game shot). Claude vision
+    picks the most cinematic of a few candidates; local fallback for dev."""
     from core import gh_release
     qcfg = CONFIG.raw().get("quotes", {}) or {}
     pool = gh_release.quote_image_pool()
     if pool:
-        chosen = _pick_release(pool, quote, qcfg)
+        chosen = _pick_release(pool, quote, qcfg, universe)
         if chosen:
             return chosen
     photos = _candidate_photos()      # local fallback
@@ -306,12 +308,16 @@ def pick_photo(quote: Optional[str] = None) -> Optional[Path]:
     return pick
 
 
-def _pick_release(pool: dict, quote, qcfg) -> Optional[Path]:
-    from core import gh_release
-    # Quotes are generic, so use ALL games' images (minus excluded), cycling
-    # through every image before repeating (per user) — not just the prefer list.
+def _pick_release(pool: dict, quote, qcfg, universe=None) -> Optional[Path]:
+    from core import gh_release, game_quotes
     exclude = {str(g).lower() for g in (qcfg.get("exclude", []) or [])}
     games = [g for g in pool if g.lower() not in exclude] or list(pool)
+    # Match the backdrop to the quote's universe (e.g. a Spider-Man quote only gets
+    # a Spider-Man-game shot). Fall back to all games if that universe has none.
+    if universe:
+        matched = [g for g in games if game_quotes.universe_for_game(g) == universe]
+        if matched:
+            games = matched
     names = [n for g in games for n in (pool.get(g, []) or [])]
     if not names:
         return None
