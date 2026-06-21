@@ -815,7 +815,7 @@ def run_quote_card(
         story = quote.story_quote(universe)
         if story:
             q = story["line"]
-            attribution = f"{story['author']}  ·  {story['source']}"
+            attribution = story["author"]  # just WHO said it (no game/movie source)
         else:
             theme = "gameplay"         # no curated set yet -> game-themed fallback (no life)
     if theme != "story":

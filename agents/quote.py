@@ -469,9 +469,12 @@ def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: boo
         y += line_h
     accent_y = y + 22
     attr_xy = None
+    attr_text = None
     if attribution and afont:
-        aw = draw.textlength(attribution, font=afont)
-        attr_xy = ((w - aw) // 2, accent_y + 30)
+        # Like a normal quote card: "— Person", RIGHT-aligned under the quote.
+        attr_text = f"— {attribution}"
+        aw = draw.textlength(attr_text, font=afont)
+        attr_xy = (w - 108 - int(aw), accent_y + 30)
 
     # --- soft drop-shadow: the letters cast it (no dark panel behind them) ---
     shadow = Image.new("RGBA", (w, h), (0, 0, 0, 0))
@@ -480,7 +483,7 @@ def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: boo
     for x, ly, ln in placed:
         sd.text((x, ly), ln, font=font, fill=(0, 0, 0, 255))
     if attr_xy:
-        sd.text(attr_xy, attribution, font=afont, fill=(0, 0, 0, 255))
+        sd.text(attr_xy, attr_text, font=afont, fill=(0, 0, 0, 255))
     shadow = shadow.filter(ImageFilter.GaussianBlur(8))
     bg.alpha_composite(shadow)
     if strong_shadow:                 # double up over bright/moving video
@@ -500,9 +503,9 @@ def _draw_quote_content(bg, quote: str, logo, w: int, h: int, strong_shadow: boo
 
     if attr_xy:
         for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            draw.text((attr_xy[0] + dx, attr_xy[1] + dy), attribution, font=afont,
+            draw.text((attr_xy[0] + dx, attr_xy[1] + dy), attr_text, font=afont,
                       fill=(0, 0, 0, 150))
-        draw.text(attr_xy, attribution, font=afont, fill=(236, 236, 236, 255))
+        draw.text(attr_xy, attr_text, font=afont, fill=(236, 236, 236, 255))
 
     handle = str(CONFIG.brand.get("handle", "@kiwinoygaming"))
     hfont = _font(40, "SemiBold")
