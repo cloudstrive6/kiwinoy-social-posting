@@ -704,6 +704,9 @@ def run_threads(
 
     post_type: "update", "prediction", or "poll" (polls skip fact-check).
     """
+    if not (CONFIG.raw().get("threads_posts", {}) or {}).get("enabled", True):
+        print("[threads] disabled (threads_posts.enabled=false) — skipping.", flush=True)
+        return {"kind": "threads", "published": False, "skipped": "disabled"}
     post_type = post_type or _threads_type_for_now()
     run_dir = OUTPUT_DIR / f"{_stamp()}_threads_{post_type}"
     run_dir.mkdir(parents=True, exist_ok=True)

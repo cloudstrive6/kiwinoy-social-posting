@@ -649,7 +649,9 @@ quotes:
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
 
 threads_posts:
-  enabled: true
+  enabled: false           # STOPPED (per user) — caption-only Threads/X text posts
+                           # got no engagement. Re-enable when relaunching Threads
+                           # with an engagement-driven (conversational) strategy.
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
