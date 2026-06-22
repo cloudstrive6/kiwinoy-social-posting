@@ -393,7 +393,7 @@ reels:
     - {match: ['resident evil', 'veronica'], dir: re}
     - {match: ['halo', 'master chief'], dir: halo}
     - {match: ['last of us', 'tlou', 'ellie', 'abby', 'naughty dog'], dir: thelastofus2}
-    - {match: ['miles morales'], dir: spider-man-miles}
+    - {match: ['miles morales'], dir: spider-man-miles-morales}
     - {match: ['spider-man 2', 'spiderman 2', 'spider-man2'], dir: spider-man2}
     - {match: ['spider-man', 'spiderman', 'spider man', 'peter parker', 'insomniac'], dir: spider-man1}
   # Pretty display names for footage folder keys (used in titles + voiceovers).
@@ -410,7 +410,7 @@ reels:
     halo: 'Halo'
     thelastofus2: 'The Last of Us Part II'
     spider-man1: "Marvel's Spider-Man"
-    spider-man-miles: "Marvel's Spider-Man: Miles Morales"
+    spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
     spider-man2: "Marvel's Spider-Man 2"
     general: 'this game'
   # 2-3 super-relevant hashtags per game for SHORT reel/video captions (content

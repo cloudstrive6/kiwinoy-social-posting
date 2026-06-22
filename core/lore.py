@@ -52,7 +52,7 @@ GAME_LORE: dict[str, str] = {
         "civilian (not Spider-Man); the man in the lab with Peter is Otto the "
         "mentor (not an enemy)."
     ),
-    "spider-man-miles": (
+    "spider-man-miles-morales": (
         "MARVEL'S SPIDER-MAN: MILES MORALES (2020) — a NEW, still-learning Miles "
         "Morales as Spider-Man, over a snowy Christmas in Harlem, NYC. Peter Parker "
         "is away in Symkaria, so Miles guards the city.\n"
@@ -150,7 +150,7 @@ def lore_for(game: str) -> str:
 # front. First match wins; order from most specific to least.
 _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("spider-man2", ("spider-man 2", "spiderman 2", "marvel's spider-man 2")),
-    ("spider-man-miles", ("miles morales",)),
+    ("spider-man-miles-morales", ("miles morales",)),
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
     ("ff7", ("final fantasy vii", "final fantasy 7", "ff7", "ffvii", "ff vii",
              "rebirth", "crisis core", "sephiroth", "cloud strife")),
