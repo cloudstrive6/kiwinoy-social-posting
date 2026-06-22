@@ -417,7 +417,7 @@ reels:
   # .run_short). Keep it tight - never a wall of tags.
   game_hashtags:
     spider-man1: ["#MarvelsSpiderManRemastered", "#spiderman"]
-    spider-man-miles: ["#MilesMorales", "#SpiderMan", "#PS5"]
+    spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan"]
     spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#PS5"]
     ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth"]
     thelastofus2: ["#TheLastofUs", "#TLOU2", "#PS5"]
@@ -631,7 +631,7 @@ quotes:
   # same video as YouTube) instead of the card; YouTube gets the reel too.
   post_to: [facebook, instagram, threads, x]
   hashtag_platforms: [facebook, instagram]     # FB card + IG reel get hashtags (not X/Threads)
-  hashtags: ["#GamingMotivation", "#GamerLife", "#Gaming"]
+  hashtags: ["#spiderman", "#gaming", "#marvel"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
                                     # for the quote + skips title/menu/UI screens
   # YouTube can't take a static image, so the quote also goes there as a short,
