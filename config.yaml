@@ -365,7 +365,7 @@ reels:
     exclude: [mlbb, dota2, cs2, lol]
     # DOUBLE DOWN on Marvel's Spider-Man (2026-06-14, user): when any of these have
     # footage, the topic agent picks from them first. Empty/none-present = any game.
-    prefer: [spider-man1, spider-man-miles, spider-man2]
+    prefer: [spider-man1, spider-man-miles-morales, spider-man2]
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
     #   python tools/footage.py upload <game> <path-to-clip.mp4>
@@ -625,7 +625,7 @@ quotes:
   # qmusic__<game>__<file> and PREFERRED for that universe. Tracks left at the top
   # level stay a universal fallback (the current Spider-Man tracks live there).
   image_dir: assets/images          # pick the backdrop photo from here...
-  prefer: [spider-man1, spider-man-miles, spider-man2]   # ...preferring these
+  prefer: [spider-man1, spider-man-miles-morales, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
   # FB + Threads/X get the static CARD image; Instagram gets the quote REEL (the
   # same video as YouTube) instead of the card; YouTube gets the reel too.

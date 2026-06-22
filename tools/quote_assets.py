@@ -124,16 +124,16 @@ def _asset_count(token, rid) -> int:
 
 
 def _image_release_shards(token) -> list[dict]:
-    """[{tag, id, up}] holding quote images: footage release first, then qimg-NN
-    overflow shards ascending. Creates none here."""
-    base = footage._tag()
+    """[{tag, id, up}] of the qimg-NN image shards (ascending). New images go to
+    these — NOT the footage release, which is reserved for clips + ledgers (the
+    legacy qimg that lived there were migrated out)."""
     res = []
     for rel in footage._all_releases(token):
         t = str(rel.get("tag_name", ""))
-        if t == base or re.match(r"^qimg-\d+$", t):
+        if re.match(r"^qimg-\d+$", t):
             res.append({"tag": t, "id": rel["id"],
                         "up": rel["upload_url"].split("{")[0]})
-    res.sort(key=lambda r: (0 if r["tag"] == base else 1, r["tag"]))
+    res.sort(key=lambda r: r["tag"])
     return res
 
 
