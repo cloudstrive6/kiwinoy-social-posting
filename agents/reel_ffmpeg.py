@@ -205,6 +205,36 @@ def _brand_logo(src: Optional[Path], out: Path) -> Optional[Path]:
         return Path(src)
 
 
+def _prep_game_logo(src: Path, out: Path) -> Optional[Path]:
+    """Trim the transparent padding off a game-logo PNG (e.g. a 2200x2200 canvas
+    around a wide wordmark) so it scales tight + sharp. Returns the trimmed PNG."""
+    try:
+        from PIL import Image
+        im = Image.open(src).convert("RGBA")
+        bbox = im.getbbox()
+        if bbox:
+            im = im.crop(bbox)
+        im.save(out, "PNG")
+        return out
+    except Exception:
+        return Path(src) if Path(src).exists() else None
+
+
+def _game_logo_overlay(idx: int, vlabel: str, w: int, out_label: str) -> list[str]:
+    """Overlay the (trimmed) game logo at TOP-CENTRE, scaled to fit ABOVE the hook
+    so it never overlaps the on-screen caption (which starts at hook_margin_v)."""
+    g = CONFIG.reels.get("game_logo", {}) or {}
+    cap = CONFIG.reels.get("caption", {}) or {}
+    hook_mv = int(cap.get("hook_margin_v", 250))
+    top = int(g.get("top_margin", 36))
+    bw = int(w * float(g.get("scale_w", 0.5)))
+    max_h = min(int(g.get("max_h", 160)), max(60, hook_mv - top - 24))  # keep above hook
+    return [
+        f"[{idx}:v]format=rgba,scale={bw}:{max_h}:force_original_aspect_ratio=decrease[glogo]",
+        f"[{vlabel}][glogo]overlay=(W-w)/2:{top}[{out_label}]",
+    ]
+
+
 def build_gameplay(
     clip: Path,
     out_path: Path,
@@ -218,6 +248,7 @@ def build_gameplay(
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
+    game_logo: Optional[Path] = None,
     fill: bool = True,
 ) -> bytes:
     """Single standalone gameplay clip in a w x h frame, with the footage
@@ -245,6 +276,14 @@ def build_gameplay(
             inputs += ["-i", str(logo)]
             logo_idx = next_idx
             next_idx += 1
+
+        game_logo_idx = None
+        if game_logo and Path(game_logo).exists():
+            gl = _prep_game_logo(Path(game_logo), Path(tmp) / "glogo.png")
+            if gl:
+                inputs += ["-i", str(gl)]
+                game_logo_idx = next_idx
+                next_idx += 1
 
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
@@ -277,6 +316,9 @@ def build_gameplay(
             # top-right of the FOOTAGE (just below the hook band), not the frame.
             fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
+        if game_logo_idx is not None:                    # game logo: top-centre, above the hook
+            fc += _game_logo_overlay(game_logo_idx, vlabel, w, "ovg")
+            vlabel = "ovg"
         if anim_rgb_idx is not None:
             fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
             vlabel = "ova"
@@ -313,6 +355,7 @@ def build_commentary(
     foot_h: int = 1440,
     top_band: Optional[int] = None,
     anim_logo: Optional[tuple] = None,
+    game_logo: Optional[Path] = None,
     music: Optional[Path] = None,
     per_clip_seconds: float = 8.0,
     start_skip: float = 3.0,
@@ -382,6 +425,13 @@ def build_commentary(
             inputs += ["-i", str(logo)]
             logo_idx = next_idx
             next_idx += 1
+        game_logo_idx = None
+        if game_logo and Path(game_logo).exists():
+            gl = _prep_game_logo(Path(game_logo), Path(tmp) / "glogo.png")
+            if gl:
+                inputs += ["-i", str(gl)]
+                game_logo_idx = next_idx
+                next_idx += 1
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
             inputs += ["-i", str(anim_logo[0]), "-i", str(anim_logo[1])]  # NOT looped
@@ -405,6 +455,9 @@ def build_commentary(
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")
             fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
             vlabel = "ovk"
+        if game_logo_idx is not None:                    # game logo: top-centre, above the hook
+            fc += _game_logo_overlay(game_logo_idx, vlabel, w, "ovg")
+            vlabel = "ovg"
         if anim_rgb_idx is not None:
             # Commentary keeps the ORIGINAL low lower-third (FB-only; the raised
             # gameplay placement is a YouTube-Shorts fix and shouldn't apply here).

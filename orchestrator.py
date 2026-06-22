@@ -52,6 +52,30 @@ def _anim_logo() -> Optional[tuple]:
     return None
 
 
+def _game_logo(game: Optional[str]) -> Optional[Any]:
+    """The game's logo PNG for the top-centre reel overlay, matched by filename
+    keyword to the game's universe/key. Drop new PNGs in reels/assets/game-logo/
+    named for the game (e.g. '...Spider-Man...'); returns None if none matches so
+    the reel just renders without a game logo."""
+    from core import game_quotes
+    if not game:
+        return None
+    folder = ROOT / (CONFIG.reels.get("game_logo", {}) or {}).get(
+        "dir", "reels/assets/game-logo")
+    if not folder.exists():
+        return None
+    keys = {"".join(c for c in s.lower() if c.isalnum())
+            for s in (game_quotes.universe_for_game(game) or game, game)}
+    keys.discard("")
+    for p in sorted(folder.iterdir()):
+        if p.suffix.lower() != ".png":
+            continue
+        norm = "".join(c for c in p.stem.lower() if c.isalnum())
+        if any(k in norm for k in keys):
+            return p
+    return None
+
+
 def _reel_music() -> Optional[Any]:
     """Pick a random royalty-free music track path (or None)."""
     import random
@@ -366,6 +390,7 @@ def run_gameplay_reel(
         top_band=int(gcfg.get("top_band", 360)),
         target_seconds=target,
         music=_reel_music(), anim_logo=_anim_logo(),
+        game_logo=_game_logo(brief.get("game")),
     )
     # Actual length = min(target, clip length). FB Reels caps ~90s, so anything
     # longer publishes as a Reel on IG + Short on YouTube but a feed video on FB.
@@ -476,6 +501,7 @@ def run_commentary_reel(
         w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
         foot_h=int(gcfg.get("footage_height", 1440)),
         top_band=int(gcfg.get("top_band", 320)), anim_logo=_anim_logo(),
+        game_logo=_game_logo(brief.get("game")),
         per_clip_seconds=float(ccfg.get("broll_seconds", 8)),
         start_skip=float(ccfg.get("broll_start_min", 3)),
     )

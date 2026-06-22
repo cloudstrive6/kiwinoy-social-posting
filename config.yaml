@@ -482,6 +482,15 @@ reels:
                           # YouTube's bottom UI AND the in-game subtitle line (user-placed)
     fade_start: 4.0       # begin fading out ~4s after it appears
     fade_dur: 1.5         # fade-out duration
+  # GAME logo overlay (top-centre, ABOVE the hook) on gameplay + commentary reels.
+  # Drop a PNG per game in `dir`; it's matched to the game by filename keyword (e.g.
+  # a file containing 'Spider-Man' is used for the Spider-Man games). Transparent
+  # padding is auto-trimmed; kept above hook_margin_v so it never covers the hook.
+  game_logo:
+    dir: reels/assets/game-logo
+    scale_w: 0.5          # max width as a fraction of the frame
+    max_h: 160            # max height (clamped to stay above the hook)
+    top_margin: 36        # px from the top edge
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
