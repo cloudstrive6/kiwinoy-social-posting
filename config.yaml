@@ -649,15 +649,25 @@ quotes:
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
 
 threads_posts:
-  enabled: false           # STOPPED (per user) — caption-only Threads/X text posts
-                           # got no engagement. Re-enable when relaunching Threads
-                           # with an engagement-driven (conversational) strategy.
+  enabled: true            # ENGAGEMENT-DRIVEN Threads/X track (per user) — replaces
+                           # the old caption-only quotes that got no engagement.
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
-  quote_ratio: 1.0         # 100% quotes on the Threads/X TEXT track (per user:
-                           # stop game-update posts, they were repetitive). Set
-                           # below 1.0 to bring back some game-news/verdict/poll.
+  # ENGAGEMENT-FIRST: most posts are conversation-STARTERS that pull replies (the
+  # Threads growth lever); ~update_ratio ride a trending gaming moment instead.
+  update_ratio: 0.2
+  engagement_formats: [this_or_that, would_you_rather, rank, hot_take, nostalgia, question, poll]
+  # Franchises the conversation-starters are about (Spider-Man-weighted, our niche):
+  subjects:
+  - "Marvel's Spider-Man (the Insomniac games)"
+  - "Marvel's Spider-Man 2"
+  - "Spider-Man: Miles Morales"
+  - "the Spider-Man movies (incl. Spider-Verse)"
+  - "Final Fantasy VII (the compilation)"
+  - "The Last of Us"
+  - "Kingdom Hearts"
+  - "Halo"
   # TRENDING-GAME FOCUS: instead of hopping between random games, each update post
   # rides the single hottest game / gaming moment of the period (a big new release,
   # a major update or patch, a viral moment, a showcase like the Game Awards) and
@@ -684,9 +694,7 @@ threads_posts:
   - Spicy but POSITIVE hot take or ranking (a fun, confident opinion - never a complaint)
   hashtags: ["#Gaming", "#PS5", "#PCGaming", "#PinoyGamer"]   # at most 1 used per post
 
-  # Post-type rotation. The every-2-hours cron fires at odd UTC hours; these two
-  # hours are reserved for the mandatory daily types, the rest are games updates.
-  prediction_hour: 9        # a "verdict" breakdown (is it worth it? hype vs reality)
+  prediction_hour: 9        # (legacy, unused by the engagement rotation)
   poll_hour: 15             # a gamer hot take + reply-to-vote poll
   # Same exact AAA scope, for the verdict/breakdown post (kept in sync with above).
   esports:

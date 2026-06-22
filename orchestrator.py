@@ -682,17 +682,16 @@ def run_carousel_slot(
 
 
 def _threads_type_for_now() -> str:
-    """Pick the Threads post type for this run. ~quote_ratio of posts are
-    motivational gaming quotes (per user, ~60%); the rest are game news by hour."""
+    """Pick the Threads post type. ENGAGEMENT-FIRST (per user): mostly conversation-
+    starters (this-or-that / hot-take / question / poll...) that drive REPLIES, plus
+    ~update_ratio that ride a trending gaming moment ('update')."""
     tp = CONFIG.threads_posts
-    if random.random() < float(tp.get("quote_ratio", 0.6)):
-        return "quote"
-    h = datetime.now(timezone.utc).hour
-    if h == int(tp.get("prediction_hour", 9)):
-        return "prediction"
-    if h == int(tp.get("poll_hour", 15)):
-        return "poll"
-    return "update"
+    if random.random() < float(tp.get("update_ratio", 0.2)):
+        return "update"
+    formats = list(tp.get("engagement_formats") or
+                   ["this_or_that", "hot_take", "question", "rank",
+                    "would_you_rather", "nostalgia", "poll"])
+    return random.choice(formats)
 
 
 def run_threads(
@@ -716,34 +715,39 @@ def run_threads(
     text = ""
     passed = False
 
-    if post_type == "quote":
-        # Original motivational quote — nothing to fact-check.
-        from agents import quote
-        log("Writing a motivational gaming quote...")
-        text = quote.threads_text()
-        passed = True
-    elif post_type == "poll":
+    tcfg = CONFIG.raw().get("threads_posts", {}) or {}
+    if post_type == "poll":
         # Pure opinion — nothing to fact-check.
         log("Writing a gamer hot take + poll...")
         text = threads_writer.run_poll()
         passed = True
-    else:
-        categories = ["games", "verdict"] if post_type == "prediction" else ["games"]
+    elif post_type in threads_writer.ENGAGEMENT_FORMATS:
+        # Conversation-starter about one of our franchises (evergreen). Still
+        # fact-checked for lore accuracy (never reference a game that doesn't exist).
+        subject = random.choice(tcfg.get("subjects") or ["Marvel's Spider-Man"])
+        brief = {"subject": subject, "focus_game": subject, "key_facts": [],
+                 "title": f"{post_type.replace('_', ' ')} - {subject}"}
         for attempt in range(2):
             if attempt:
                 log("Regenerating after fact-check fail...")
-            log(f"Researching a trending topic ({'+'.join(categories)})...")
-            brief = threads_research.run(categories)
+            log(f"Writing a {post_type} conversation-starter about {subject}...")
+            text = threads_writer.run_engagement(post_type, subject)
+            if _factcheck_ok(text, brief, "claude", log):
+                passed = True
+                break
+    else:
+        # "update" — ride a trending gaming moment.
+        for attempt in range(2):
+            if attempt:
+                log("Regenerating after fact-check fail...")
+            log("Researching a trending topic (games)...")
+            brief = threads_research.run(["games"])
             (run_dir / "brief.json").write_text(
                 json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8"
             )
             log(f"Topic: {brief.get('title')}")
-            if post_type == "prediction":
-                log("Writing the game verdict/breakdown...")
-                text = threads_writer.run_prediction(brief)
-            else:
-                log("Writing the Threads post...")
-                text = threads_writer.run(brief)
+            log("Writing the Threads post...")
+            text = threads_writer.run(brief)
             if _factcheck_ok(text, brief, "claude", log):
                 passed = True
                 break

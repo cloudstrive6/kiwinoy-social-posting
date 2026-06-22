@@ -135,6 +135,56 @@ Write like a sharp gamer giving the real verdict (worth it? hype vs reality?):
     return _generate(prompt, limit)
 
 
+# Conversation-STARTER formats — built to drive REPLIES (the Threads growth lever),
+# grounded in a real franchise we cover, friendly + positive, never bashing.
+ENGAGEMENT_FORMATS = {
+    "this_or_that": "Pose a 'this or that' debate from {subject}: two beloved, comparable "
+                    "things (two games, suits, characters, endings, bosses) and ask which is "
+                    "better and WHY. e.g. 'Spider-Man 2 or the first game - better story?'",
+    "would_you_rather": "A fun 'would you rather' rooted in {subject}'s world, powers, or "
+                        "choices - two tempting options, ask people to pick one.",
+    "rank": "Ask the community to RANK or NAME the best in {subject}: 'name the best "
+            "[boss/suit/moment/character]', or 'rank these...'. Easy to reply to.",
+    "hot_take": "Drop a bold but FRIENDLY hot take about {subject} that fans will want to "
+                "argue with - keep it positive (never bash the game or its characters), then "
+                "invite the comeback.",
+    "nostalgia": "A nostalgia hook about {subject} that makes long-time fans reminisce and "
+                 "reply ('remember when...', 'the first time you...').",
+    "question": "One open, easy-to-answer question {subject} fans love (favourite moment, "
+                "suit, boss, line; who they main; their first time playing).",
+}
+
+
+def run_engagement(fmt: str, subject: str) -> str:
+    """A conversation-STARTER Threads post about `subject`, in the given format,
+    built to pull replies (the Threads growth lever). Lore-accurate + positive."""
+    t = CONFIG.threads_posts
+    limit = int(t.get("max_chars", 500))
+    instr = ENGAGEMENT_FORMATS.get(fmt, ENGAGEMENT_FORMATS["question"]).format(subject=subject)
+    brief = {"subject": subject, "focus_game": subject, "title": f"{fmt} about {subject}"}
+    prompt = f"""Write ONE Threads post to spark a CONVERSATION among {subject} fans.
+
+{now_context()}
+{DATETIME_RULE}
+
+FORMAT: {instr}
+
+{_lore_block(brief)}
+Rules:
+- First line = a scroll-stopping hook. Keep the whole thing tight, then END with a
+  prompt that makes replying irresistible (a question, "drop yours below", "A or B?").
+- Conversational hype gamer voice. FRIENDLY + positive - spark debate, not negativity;
+  never bash the game or its characters.
+- Only reference REAL, canon {subject} content; never invent games, characters, or plot.
+- HARD LIMIT: {limit} characters or less. No hashtags.
+- Output ONLY the post text. No preamble, no surrounding quotes, no labels.
+
+{POSITIVE_TONE}
+
+{HUMAN_VOICE}"""
+    return _generate(prompt, limit)
+
+
 def run_poll() -> str:
     """Risk/probability hot take + a 2-option 'reply-to-vote' poll."""
     t = CONFIG.threads_posts
