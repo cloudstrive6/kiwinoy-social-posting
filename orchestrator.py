@@ -64,15 +64,17 @@ def _game_logo(game: Optional[str]) -> Optional[Any]:
         "dir", "reels/assets/game-logo")
     if not folder.exists():
         return None
-    keys = {"".join(c for c in s.lower() if c.isalnum())
-            for s in (game_quotes.universe_for_game(game) or game, game)}
-    keys.discard("")
-    for p in sorted(folder.iterdir()):
-        if p.suffix.lower() != ".png":
+    norm = lambda s: "".join(c for c in s.lower() if c.isalnum())
+    pngs = [(p, norm(p.stem)) for p in sorted(folder.iterdir())
+            if p.suffix.lower() == ".png"]
+    # Prefer a logo matching the SPECIFIC game (e.g. a Miles Morales logo for Miles
+    # footage), then fall back to the broader universe logo (e.g. Marvel Spider-Man).
+    for key in (norm(game), norm(game_quotes.universe_for_game(game) or "")):
+        if not key:
             continue
-        norm = "".join(c for c in p.stem.lower() if c.isalnum())
-        if any(k in norm for k in keys):
-            return p
+        for p, nm in pngs:
+            if key in nm:
+                return p
     return None
 
 
