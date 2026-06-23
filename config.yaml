@@ -652,8 +652,7 @@ quotes:
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
 
 threads_posts:
-  enabled: false           # PAUSED (per user 2026-06-23): captions-only Threads/X
-                           # posts weren't landing; resume when the following is bigger.
+  enabled: true            # RESUMED (per user 2026-06-23): picking up traction.
                            # ENGAGEMENT-DRIVEN Threads/X track — replaces the old
                            # caption-only quotes that got no engagement.
   model: "sonnet"          # claude model alias used by the Threads agents
