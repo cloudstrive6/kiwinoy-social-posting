@@ -627,16 +627,19 @@ quotes:
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles-morales, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
-  # FB + Threads/X get the static CARD image; Instagram gets the quote REEL (the
-  # same video as YouTube) instead of the card; YouTube gets the reel too.
-  post_to: [facebook, instagram, threads, x]
+  # FB + Threads/X get the static CARD image. The IG + YouTube quote REELS are
+  # PAUSED (per user 2026-06-23) — they underperformed the gameplay reels and may
+  # be confusing the algorithm; re-add instagram + set youtube_short: true to resume.
+  post_to: [facebook, threads, x]
   hashtag_platforms: [facebook, instagram]     # FB card + IG reel get hashtags (not X/Threads)
   hashtags: ["#spiderman", "#gaming", "#marvel"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
                                     # for the quote + skips title/menu/UI screens
   # YouTube can't take a static image, so the quote also goes there as a short,
   # loop-friendly VIDEO: the quote over spliced gameplay b-roll.
-  youtube_short: true
+  youtube_short: false              # PAUSED (per user 2026-06-23): IG+YouTube quote
+                                    # reels underperformed gameplay reels; FB/Threads/X
+                                    # keep the static card. Set true to resume.
   short_seconds: 19                 # 19s reel (per user)
   short_per_clip: 3                 # ~3s per b-roll clip
   short_clips: 7                    # distinct clips to pull for the splice (~19/3)
@@ -649,8 +652,10 @@ quotes:
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
 
 threads_posts:
-  enabled: true            # ENGAGEMENT-DRIVEN Threads/X track (per user) — replaces
-                           # the old caption-only quotes that got no engagement.
+  enabled: false           # PAUSED (per user 2026-06-23): captions-only Threads/X
+                           # posts weren't landing; resume when the following is bigger.
+                           # ENGAGEMENT-DRIVEN Threads/X track — replaces the old
+                           # caption-only quotes that got no engagement.
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
