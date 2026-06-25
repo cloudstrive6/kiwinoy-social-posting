@@ -137,9 +137,11 @@ def run_reel(
     video_bytes: bytes,
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
+    targets: Optional[list[str]] = None,
 ) -> dict[str, Any]:
-    """Publish a short reel to FB/IG/Threads/YouTube (Reels/Shorts)."""
-    return publish_video(caption, video_bytes, short=True,
+    """Publish a short reel to the video platforms (Reels/Shorts). Pass `targets`
+    to restrict (e.g. drop YouTube on slots where it's paused)."""
+    return publish_video(caption, video_bytes, short=True, targets=targets,
                          scheduled_at=scheduled_at, is_draft=is_draft)
 
 
@@ -148,9 +150,10 @@ def run_video_post(
     video_bytes: bytes,
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
+    targets: Optional[list[str]] = None,
 ) -> dict[str, Any]:
-    """Publish a LONG video (commentary) to FB/IG/Threads/YouTube (feed video on FB)."""
-    return publish_video(caption, video_bytes, short=False,
+    """Publish a LONG video (commentary) to the video platforms (feed video on FB)."""
+    return publish_video(caption, video_bytes, short=False, targets=targets,
                          scheduled_at=scheduled_at, is_draft=is_draft)
 
 

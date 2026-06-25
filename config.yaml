@@ -289,13 +289,13 @@ platforms:
   threads_post_to:
   - threads
   - x
-  # VIDEO reels/clips post to every platform EXCEPT X (2026-06-14, user): Facebook
-  # Reels, Instagram Reels, Threads video, and YouTube Shorts.
+  # VIDEO reels/clips post to these (X excluded): Facebook Reels, Instagram Reels,
+  # Threads video. YouTube is NOT here — it's controlled separately by
+  # reels.youtube (PAUSED 2026-06-26 after the channel's Shorts reach was throttled).
   video_post_to:
   - facebook
   - instagram
   - threads
-  - youtube
   # STABLE references — these never change when you disconnect/reconnect an
   # account in Post for Me. account_ids() resolves them to the live spc_ id at
   # runtime, so a reconnect NEVER needs a config edit. (Set each account's
@@ -320,6 +320,14 @@ platforms:
 # storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
   enabled: true
+  # YouTube Shorts control for gameplay reels (separate from video_post_to). YouTube
+  # throttled the channel's new-Short reach (6 auto-Shorts/day flagged as repetitive),
+  # so (#4) PAUSED 2026-06-26: enabled=false -> no reel posts to YouTube at all.
+  # On resume, set enabled=true and (#1) YouTube only posts on `slots` (2 of the 6
+  # daily reel slots ~= 2/day) instead of every slot, to look less bulk/automated.
+  youtube:
+    enabled: false
+    slots: [3, 6]          # reel slot ids (1-6) that may post to YouTube when enabled
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity

@@ -410,9 +410,18 @@ def run_gameplay_reel(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        log("Publishing gameplay reel to FB/IG/YouTube/Threads...")
+        # YouTube is gated separately (reels.youtube): paused entirely, or — when
+        # enabled — only on a couple of reel slots, so we don't flood the channel
+        # with bulk auto-Shorts (which got its reach throttled).
+        targets = [t for t in CONFIG.platforms.get(
+            "video_post_to", ["facebook", "instagram", "threads"]) if t != "x"]
+        ycfg = CONFIG.reels.get("youtube", {}) or {}
+        if ycfg.get("enabled", False) and slot_id in (ycfg.get("slots") or []):
+            targets = targets + ["youtube"]
+        log(f"Publishing gameplay reel to {', '.join(targets)}...")
         api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
-            caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+            caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
+            targets=targets)
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
