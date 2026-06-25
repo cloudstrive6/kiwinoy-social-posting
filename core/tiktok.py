@@ -49,6 +49,18 @@ TIMEOUT = 300
 CHUNK = 10 * 1024 * 1024            # 10MB working chunk (TikTok allows 5-64MB)
 SINGLE_MAX = 64 * 1024 * 1024       # <=64MB may upload as one chunk
 
+# Local-only escape hatch: some dev machines (e.g. with Avast) intercept TLS and
+# break cert verification to TikTok hosts. Set KG_INSECURE_TLS=1 to skip verify
+# for LOCAL ad-hoc runs only. NEVER set this in CI — it defaults to secure verify.
+if os.environ.get("KG_INSECURE_TLS") == "1":
+    import urllib3
+    urllib3.disable_warnings()
+    _ins_orig = requests.sessions.Session.request
+    def _ins_request(self, method, url, **kw):
+        kw.setdefault("verify", False)
+        return _ins_orig(self, method, url, **kw)
+    requests.sessions.Session.request = _ins_request
+
 
 class TikTokError(RuntimeError):
     pass
