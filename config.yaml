@@ -719,3 +719,17 @@ threads_posts:
 # Research is web-search based: OpenAI web search for image/reel topics, Claude
 # web search for Threads. (The last30days engine was removed — it surfaced stale,
 # pre-announcement threads.)
+
+# TikTok cross-post via TikTok's OWN Content Posting API (direct, no middleman /
+# no subscription). The gameplay reels publish straight to TikTok; Post for Me
+# still handles IG/YT/FB/Threads. Secrets (client key/secret + refresh token) are
+# env-only (public repo). Toggle off to stop the TikTok cross-post.
+tiktok:
+  enabled: true
+  redirect_uri: "https://cloudstrive6.github.io/kiwinoygamer/"  # must EXACTLY match the TikTok app's registered redirect
+  # UNAUDITED apps can ONLY post SELF_ONLY (private). Keep this until TikTok audits
+  # the app (~1-2 weeks), then switch to PUBLIC_TO_EVERYONE.
+  privacy: "SELF_ONLY"
+  disable_comment: false
+  disable_duet: false
+  disable_stitch: false
