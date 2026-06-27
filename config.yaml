@@ -450,6 +450,15 @@ reels:
   # on top, the game's own audio kept, NO voiceover. Short Reel.
   gameplay:
     enabled: true
+    # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
+    # look each day — format variety helps avoid platform spam-detection.
+    #   classic  = footage crop-filled vertical + hook bar + logos (original).
+    #   triptych = 3 panels: top still+hook / middle UNCROPPED gameplay / bottom
+    #              game key art (drop art in art_dir/<game>/).
+    # [classic, triptych] -> slots 1,3,5 classic; 2,4,6 triptych (3 + 3 per day).
+    # A game with no art image falls back to classic for that slot.
+    layouts: [classic, triptych]
+    art_dir: reels/assets/game-art
     # Each reel randomly picks ONE of these as its max length, for variety. The
     # actual length = min(picked value, the clip's own length). <=90s publishes
     # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook

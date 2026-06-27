@@ -78,6 +78,27 @@ def _game_logo(game: Optional[str]) -> Optional[Any]:
     return None
 
 
+def _game_art(game: Optional[str]) -> Optional[Any]:
+    """A random key-art image for the 3-panel reel's bottom band. Drop image files
+    in reels/assets/game-art/<game>/ (named by the footage folder key, e.g.
+    spider-man1 / spider-man-miles-morales; the game's universe is also tried).
+    Returns None if none exist so the reel falls back to the classic layout."""
+    from core import game_quotes
+    if not game:
+        return None
+    base = ROOT / (CONFIG.reels.get("gameplay", {}) or {}).get(
+        "art_dir", "reels/assets/game-art")
+    exts = {".png", ".jpg", ".jpeg", ".webp"}
+    for key in (str(game), game_quotes.universe_for_game(game) or ""):
+        d = base / key if key else None
+        if d and d.is_dir():
+            arts = [p for p in sorted(d.iterdir())
+                    if p.is_file() and p.suffix.lower() in exts]
+            if arts:
+                return random.choice(arts)
+    return None
+
+
 def _reel_music() -> Optional[Any]:
     """Pick a random royalty-free music track path (or None)."""
     import random
@@ -382,18 +403,34 @@ def run_gameplay_reel(
     # Vary the reel length: pick one of the configured targets at random.
     choices = [float(x) for x in (gcfg.get("target_seconds_choices") or [])]
     target = random.choice(choices) if choices else float(gcfg.get("target_seconds", 75))
-    log(f"Rendering gameplay reel with ffmpeg (target <={int(target)}s)...")
     reel_path = run_dir / "reel.mp4"
-    video_bytes = reel_ffmpeg.build_gameplay(
-        clip_path, reel_path, hook=hook, logo=_reel_logo(),
-        fps=int(gcfg.get("fps", CONFIG.reels.get("fps", 60))),
-        w=int(gcfg.get("width", 1080)), h=int(gcfg.get("height", 1920)),
-        foot_h=int(gcfg.get("footage_height", 1320)),
-        top_band=int(gcfg.get("top_band", 360)),
-        target_seconds=target,
-        music=_reel_music(), anim_logo=_anim_logo(),
-        game_logo=_game_logo(brief.get("game")),
-    )
+    fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
+    rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
+    # Alternate the layout per slot so the channel isn't 6x the same look each day
+    # (format variety helps avoid platform spam-detection). ['classic','triptych']
+    # -> slots 1,3,5 classic; 2,4,6 the 3-panel format (screenshot+hook / gameplay /
+    # game art). Falls back to classic if the game has no art image.
+    layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
+    layout = layouts[(slot_id - 1) % len(layouts)]
+    art = _game_art(brief.get("game")) if layout == "triptych" else None
+    if layout == "triptych" and art:
+        log(f"Rendering 3-panel gameplay reel (art: {art.name}, <={int(target)}s)...")
+        video_bytes = reel_ffmpeg.build_gameplay_triptych(
+            clip_path, reel_path, hook=hook, game_art=art, logo=_reel_logo(),
+            fps=fps, w=rw, h=rh, target_seconds=target, music=_reel_music())
+    else:
+        if layout == "triptych":
+            log("No game art for this game — using the classic layout this slot.")
+        log(f"Rendering gameplay reel with ffmpeg (target <={int(target)}s)...")
+        video_bytes = reel_ffmpeg.build_gameplay(
+            clip_path, reel_path, hook=hook, logo=_reel_logo(),
+            fps=fps, w=rw, h=rh,
+            foot_h=int(gcfg.get("footage_height", 1320)),
+            top_band=int(gcfg.get("top_band", 360)),
+            target_seconds=target,
+            music=_reel_music(), anim_logo=_anim_logo(),
+            game_logo=_game_logo(brief.get("game")),
+        )
     # Actual length = min(target, clip length). FB Reels caps ~90s, so anything
     # longer publishes as a Reel on IG + Short on YouTube but a feed video on FB.
     actual = ffmpeg.duration(reel_path) or target

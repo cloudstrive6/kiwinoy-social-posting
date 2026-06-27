@@ -340,6 +340,98 @@ def build_gameplay(
         return out_path.read_bytes()
 
 
+def build_gameplay_triptych(
+    clip: Path,
+    out_path: Path,
+    hook: str,
+    game_art: Path,
+    logo: Optional[Path] = None,
+    fps: int = 60,
+    w: int = 1080,
+    h: int = 1920,
+    target_seconds: float = 75.0,
+    music: Optional[Path] = None,
+) -> bytes:
+    """3-PANEL gameplay reel (the meme/TikTok layout). The w x h frame is split into
+    three equal horizontal bands; a 16:9 element is centred in each:
+      - TOP    : a still frame grabbed from the clip + the HOOK caption on it.
+      - MIDDLE : the gameplay video UNCROPPED (16:9 fits the band edge-to-edge).
+      - BOTTOM : the game's key art (from reels/assets/game-art/<game>/).
+    Returns the rendered MP4 bytes. Raises if the clip or art is missing (the
+    orchestrator then falls back to the classic layout)."""
+    clip, game_art = Path(clip), Path(game_art)
+    if not clip.exists():
+        raise ReelFfmpegError(f"gameplay clip missing: {clip}")
+    if not game_art.exists():
+        raise ReelFfmpegError(f"game art missing: {game_art}")
+    dur = ffmpeg.duration(clip) or target_seconds
+    show = min(float(target_seconds), dur) if dur else float(target_seconds)
+    band = h // 3
+
+    with tempfile.TemporaryDirectory() as tmp:
+        # Top-panel screenshot: a representative still grabbed from the clip.
+        shot = Path(tmp) / "shot.png"
+        ss = min(2.0, max(0.5, (dur or 2.0) * 0.3))
+        ffmpeg.run(["-ss", f"{ss:.2f}", "-i", str(clip), "-frames:v", "1",
+                    "-q:v", "2", str(shot)], timeout=120)
+        if not shot.exists():
+            ffmpeg.run(["-i", str(clip), "-frames:v", "1", "-q:v", "2", str(shot)],
+                       timeout=120)
+
+        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")
+
+        inputs: list[str] = ["-i", str(clip),
+                             "-loop", "1", "-i", str(shot),
+                             "-loop", "1", "-i", str(game_art)]
+        next_idx = 3
+        logo_idx = None
+        if logo and Path(logo).exists():
+            inputs += ["-loop", "1", "-i", str(logo)]
+            logo_idx = next_idx
+            next_idx += 1
+        keep_audio = ffmpeg.has_audio(clip)
+        music_idx = None
+        if not keep_audio and music and Path(music).exists():
+            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            music_idx = next_idx
+            next_idx += 1
+
+        grade = _grade_filter()  # graded gameplay; the still + art stay natural
+        fc = [
+            f"color=c=black:s={w}x{h}:r={fps}[bg]",
+            f"[0:v]scale={w}:-2,{grade}setsar=1,fps={fps}[mid]",
+            # darken the top still so the white hook stays readable over it.
+            f"[1:v]scale={w}:-2,eq=brightness=-0.18,setsar=1[top]",
+            f"[2:v]scale={w}:-2,setsar=1[bot]",
+            f"[bg][top]overlay=(W-w)/2:({band}-h)/2[b1]",
+            f"[b1][mid]overlay=(W-w)/2:{band}+({band}-h)/2[b2]",
+            f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
+        ]
+        vlabel = "b3"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-28:24[ovk]")  # KG mark, top-right
+            vlabel = "ovk"
+        fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
+
+        args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                         "-map", "[v]"]
+        if keep_audio:
+            args += ["-map", "0:a"]
+        elif music_idx is not None:
+            args += ["-map", f"{music_idx}:a"]
+        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(bool(keep_audio or music_idx is not None))
+        args += ["-shortest", str(out_path)]
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=1800)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"triptych render failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
 def build_commentary(
     clips: list[Path],
     out_path: Path,
