@@ -99,6 +99,39 @@ def _game_art(game: Optional[str]) -> Optional[Any]:
     return None
 
 
+def _game_screenshot(game: Optional[str]) -> Optional[Any]:
+    """A real game screenshot for the triptych TOP panel, pulled from the cloud
+    image library (the assets/images uploaded to the qimg pool), matched to the
+    game's universe. Does NOT touch the quote-card image ledger. Returns None so
+    the renderer falls back to a still frame from the clip."""
+    from core import gh_release, game_quotes
+    if not game:
+        return None
+    try:
+        pool = gh_release.quote_image_pool()
+        if not pool:
+            return None
+        universe = game_quotes.universe_for_game(game)
+        games = list(pool)
+        if str(game) in pool:                 # exact game folder first (SM1 -> SM1 shots)
+            games = [str(game)]
+        elif universe:                        # else any image from the same universe
+            matched = [g for g in games
+                       if game_quotes.universe_for_game(g) == universe]
+            if matched:
+                games = matched
+        names = [n for g in games for n in (pool.get(g, []) or [])]
+        if not names:
+            return None
+        name = random.choice(names)
+        return gh_release.download(
+            {"name": name, "url": gh_release.asset_download_url(name)},
+            ROOT / "output" / ".art_cache")
+    except Exception as e:
+        print(f"[reel] game screenshot fetch failed ({e!r})", flush=True)
+        return None
+
+
 def _reel_music() -> Optional[Any]:
     """Pick a random royalty-free music track path (or None)."""
     import random
@@ -414,10 +447,13 @@ def run_gameplay_reel(
     layout = layouts[(slot_id - 1) % len(layouts)]
     art = _game_art(brief.get("game")) if layout == "triptych" else None
     if layout == "triptych" and art:
-        log(f"Rendering 3-panel gameplay reel (art: {art.name}, <={int(target)}s)...")
+        top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
+        log(f"Rendering 3-panel gameplay reel (art: {art.name}, "
+            f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
         video_bytes = reel_ffmpeg.build_gameplay_triptych(
-            clip_path, reel_path, hook=hook, game_art=art, logo=_reel_logo(),
-            fps=fps, w=rw, h=rh, target_seconds=target, music=_reel_music())
+            clip_path, reel_path, hook=hook, game_art=art, top_image=top,
+            logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
+            music=_reel_music())
     else:
         if layout == "triptych":
             log("No game art for this game — using the classic layout this slot.")

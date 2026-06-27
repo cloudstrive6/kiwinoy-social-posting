@@ -345,6 +345,7 @@ def build_gameplay_triptych(
     out_path: Path,
     hook: str,
     game_art: Path,
+    top_image: Optional[Path] = None,
     logo: Optional[Path] = None,
     fps: int = 60,
     w: int = 1080,
@@ -369,14 +370,18 @@ def build_gameplay_triptych(
     band = h // 3
 
     with tempfile.TemporaryDirectory() as tmp:
-        # Top-panel screenshot: a representative still grabbed from the clip.
-        shot = Path(tmp) / "shot.png"
-        ss = min(2.0, max(0.5, (dur or 2.0) * 0.3))
-        ffmpeg.run(["-ss", f"{ss:.2f}", "-i", str(clip), "-frames:v", "1",
-                    "-q:v", "2", str(shot)], timeout=120)
-        if not shot.exists():
-            ffmpeg.run(["-i", str(clip), "-frames:v", "1", "-q:v", "2", str(shot)],
-                       timeout=120)
+        # Top panel: prefer a curated game screenshot (from the cloud image library);
+        # otherwise grab a representative still from the clip itself.
+        if top_image and Path(top_image).exists():
+            shot = Path(top_image)
+        else:
+            shot = Path(tmp) / "shot.png"
+            ss = min(2.0, max(0.5, (dur or 2.0) * 0.3))
+            ffmpeg.run(["-ss", f"{ss:.2f}", "-i", str(clip), "-frames:v", "1",
+                        "-q:v", "2", str(shot)], timeout=120)
+            if not shot.exists():
+                ffmpeg.run(["-i", str(clip), "-frames:v", "1", "-q:v", "2", str(shot)],
+                           timeout=120)
 
         ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
         logo = _brand_logo(logo, Path(tmp) / "kglogo.png")
