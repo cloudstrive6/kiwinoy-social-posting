@@ -352,6 +352,7 @@ def build_gameplay_triptych(
     h: int = 1920,
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
+    anim_logo: Optional[tuple] = None,
 ) -> bytes:
     """3-PANEL gameplay reel (the meme/TikTok layout). The w x h frame is split into
     three equal horizontal bands; a 16:9 element is centred in each:
@@ -395,6 +396,13 @@ def build_gameplay_triptych(
             inputs += ["-loop", "1", "-i", str(logo)]
             logo_idx = next_idx
             next_idx += 1
+        anim_rgb_idx = None
+        if anim_logo and all(p and Path(p).exists() for p in anim_logo):
+            # animated KiwinoyGaming lower-third — plays ONCE at the start, same spot
+            # as the classic layout (bottom-centre), then fades out.
+            inputs += ["-i", str(anim_logo[0]), "-i", str(anim_logo[1])]
+            anim_rgb_idx, anim_alpha_idx = next_idx, next_idx + 1
+            next_idx += 2
         keep_audio = ffmpeg.has_audio(clip)
         music_idx = None
         if not keep_audio and music and Path(music).exists():
@@ -418,6 +426,10 @@ def build_gameplay_triptych(
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")
             fc.append(f"[{vlabel}][lg]overlay=W-w-28:24[ovk]")  # KG mark, top-right
             vlabel = "ovk"
+        # NOTE: deliberately NO game logo here — the bottom game-art already carries it.
+        if anim_rgb_idx is not None:
+            fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
+            vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),

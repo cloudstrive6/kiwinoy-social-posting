@@ -453,7 +453,7 @@ def run_gameplay_reel(
         video_bytes = reel_ffmpeg.build_gameplay_triptych(
             clip_path, reel_path, hook=hook, game_art=art, top_image=top,
             logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
-            music=_reel_music())
+            music=_reel_music(), anim_logo=_anim_logo())
     else:
         if layout == "triptych":
             log("No game art for this game — using the classic layout this slot.")
