@@ -410,12 +410,16 @@ def build_gameplay_triptych(
             music_idx = next_idx
             next_idx += 1
 
-        grade = _grade_filter()  # graded gameplay; the still + art stay natural
+        grade = _grade_filter()  # graded gameplay; the art stays natural
+        # Darken the top still (like the quote cards) so the white hook stays the
+        # dominant element. rr/gg/bb<1 multiplies brightness -> 0.55 ~= a 45% black
+        # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
+        dim = float((CONFIG.reels.get("gameplay", {}) or {}).get("triptych_top_dim", 0.55))
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}[bg]",
             f"[0:v]scale={w}:-2,{grade}setsar=1,fps={fps}[mid]",
-            # darken the top still so the white hook stays readable over it.
-            f"[1:v]scale={w}:-2,eq=brightness=-0.18,setsar=1[top]",
+            f"[1:v]scale={w}:-2,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},"
+            f"setsar=1[top]",
             f"[2:v]scale={w}:-2,setsar=1[bot]",
             f"[bg][top]overlay=(W-w)/2:({band}-h)/2[b1]",
             f"[b1][mid]overlay=(W-w)/2:{band}+({band}-h)/2[b2]",

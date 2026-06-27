@@ -459,6 +459,9 @@ reels:
     # A game with no art image falls back to classic for that slot.
     layouts: [classic, triptych]
     art_dir: reels/assets/game-art
+    # Darken the triptych TOP still (like the quote cards) so the hook caption
+    # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
+    triptych_top_dim: 0.55
     # Each reel randomly picks ONE of these as its max length, for variety. The
     # actual length = min(picked value, the clip's own length). <=90s publishes
     # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook
