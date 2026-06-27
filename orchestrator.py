@@ -926,7 +926,7 @@ def run_quote_card(
     # gameplay b-roll) to YouTube AND Instagram (IG gets the reel instead of the
     # static card, per user). IG Reels like hashtags, so the reel caption carries
     # them when IG is a target.
-    if qcfg.get("youtube_short", True):
+    if qcfg.get("youtube_short", True) or "instagram" in targets:
         try:
             from agents import reel_ffmpeg
             yt_clips = _quote_short_clips(int(qcfg.get("short_clips", 4)))
@@ -941,7 +941,8 @@ def run_quote_card(
                     total_seconds=float(qcfg.get("short_seconds", 10)),
                     per_clip_seconds=float(qcfg.get("short_per_clip", 3)))
                 result["short_path"] = str(run_dir / "short.mp4")
-                reel_targets = ["youtube"] + (["instagram"] if "instagram" in targets else [])
+                reel_targets = ((["youtube"] if qcfg.get("youtube_short", True) else [])
+                                + (["instagram"] if "instagram" in targets else []))
                 reel_caption = (f"{caption}\n\n{tags}".strip()
                                 if tags and "instagram" in reel_targets else caption)
                 if dry_run:

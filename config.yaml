@@ -635,10 +635,11 @@ quotes:
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles-morales, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
-  # FB + Threads/X get the static CARD image. The IG + YouTube quote REELS are
-  # PAUSED (per user 2026-06-23) — they underperformed the gameplay reels and may
-  # be confusing the algorithm; re-add instagram + set youtube_short: true to resume.
-  post_to: [facebook, threads, x]
+  # FB + Threads/X get the static CARD image; Instagram gets the quote REEL.
+  # IG quote reel RESUMED 2026-06-26 (IG-only — adds content variety, may help avoid
+  # spam-detection). The YouTube quote reel stays PAUSED (youtube_short: false) while
+  # YT recovers; flip youtube_short: true to resume that too.
+  post_to: [facebook, instagram, threads, x]
   hashtag_platforms: [facebook, instagram]     # FB card + IG reel get hashtags (not X/Threads)
   hashtags: ["#spiderman", "#gaming", "#marvel"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
