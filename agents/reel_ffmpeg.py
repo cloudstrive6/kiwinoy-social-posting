@@ -439,6 +439,19 @@ def build_gameplay_triptych(
         if anim_rgb_idx is not None:
             fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
             vlabel = "ova"
+        # Lowkey "KIWINOYGAMING" wordmark at the bottom-centre of the TOP panel.
+        wm = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_wordmark", {}) or {}
+        if wm.get("enabled", True) and wm.get("text"):
+            font = str(wm.get("font", "assets/fonts/tarrget-font/TarrgetRegular-WEOz.otf"))
+            txt = str(wm.get("text", "KIWINOYGAMING"))
+            size = int(wm.get("size", 42))
+            opac = float(wm.get("opacity", 0.85))
+            off = int(wm.get("bottom_offset", 22))
+            fc.append(
+                f"[{vlabel}]drawtext=fontfile={font}:text={txt}:fontcolor=white@{opac}:"
+                f"fontsize={size}:x=(w-text_w)/2:y={band}-text_h-{off}:"
+                f"shadowcolor=black@0.5:shadowx=2:shadowy=2[ovw]")
+            vlabel = "ovw"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),

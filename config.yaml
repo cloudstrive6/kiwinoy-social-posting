@@ -462,6 +462,15 @@ reels:
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
     triptych_top_dim: 0.55
+    # Lowkey "KIWINOYGAMING" wordmark at the bottom-centre of the triptych TOP panel
+    # (Tarrget font). Simple + understated so it doesn't fight the hook.
+    triptych_wordmark:
+      enabled: true
+      text: "KIWINOYGAMING"
+      font: assets/fonts/tarrget-font/TarrgetRegular-WEOz.otf
+      size: 40
+      opacity: 0.82
+      bottom_offset: 22   # px above the bottom edge of the top panel
     # Each reel randomly picks ONE of these as its max length, for variety. The
     # actual length = min(picked value, the clip's own length). <=90s publishes
     # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook
@@ -492,6 +501,8 @@ reels:
   # Source .mov is huge + VP9/VP8 alpha was unreliable in this ffmpeg, so it's two
   # small H.264 streams (RGB + alpha matte) recombined with alphamerge at render.
   logo_animated:
+    enabled: false        # DROPPED 2026-06-27 (per user) — no animated logo on any
+                          # reel/video. Flip true to bring it back.
     rgb: reels/assets/logo/kiwinoy_logo_rgb.mp4
     alpha: reels/assets/logo/kiwinoy_logo_alpha.mp4
     # The KiwinoyGaming Logo Reveal (8s), white background keyed out -> transparent.

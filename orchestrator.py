@@ -44,8 +44,12 @@ def _reel_logo() -> Optional[Any]:
 
 
 def _anim_logo() -> Optional[tuple]:
-    """(rgb_mp4, alpha_mp4) paths for the animated lower-third logo, or None."""
+    """(rgb_mp4, alpha_mp4) paths for the animated lower-third logo, or None.
+    Disabled globally per user (2026-06-27) — return None so no reel/video overlays
+    it. Flip reels.logo_animated.enabled back to true to bring it back."""
     a = CONFIG.reels.get("logo_animated", {}) or {}
+    if not a.get("enabled", True):
+        return None
     rgb, alpha = a.get("rgb"), a.get("alpha")
     if rgb and alpha and (ROOT / rgb).exists() and (ROOT / alpha).exists():
         return (ROOT / rgb, ROOT / alpha)
@@ -441,10 +445,16 @@ def run_gameplay_reel(
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
     # Alternate the layout per slot so the channel isn't 6x the same look each day
     # (format variety helps avoid platform spam-detection). ['classic','triptych']
-    # -> slots 1,3,5 classic; 2,4,6 the 3-panel format (screenshot+hook / gameplay /
-    # game art). Falls back to classic if the game has no art image.
+    # [classic, triptych] alternates EACH gameplay reel (3+3/day). NOTE: the reels
+    # cron only ever sends slot 1, so we can't key off slot_id — instead alternate
+    # on the persistent used-clip counter (grows by 1 each gameplay reel), which
+    # flips the layout every run. Falls back to classic if the game has no art.
     layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
-    layout = layouts[(slot_id - 1) % len(layouts)]
+    try:
+        from core import gh_release as _ghr
+        layout = layouts[len(_ghr.used_clips()) % len(layouts)]
+    except Exception:
+        layout = layouts[0]
     art = _game_art(brief.get("game")) if layout == "triptych" else None
     if layout == "triptych" and art:
         top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
