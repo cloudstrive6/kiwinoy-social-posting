@@ -167,11 +167,16 @@ def _anim_overlay(rgb_idx: int, alpha_idx: int, vlabel: str, w: int,
     fstart = float(a.get("fade_start", 4.0))
     fdur = float(a.get("fade_dur", 1.5))
     margin = int(a.get("bottom_margin", 20))
+    start = float(a.get("start", 0.0))  # delay: reveal only AFTER N s of the reel
     lw = int(w * scale)
+    # When start>0, shift the animation's timeline so it begins at reel t=start, and
+    # gate the overlay so nothing shows before then (clean for a logo-reveal intro).
+    delay = f",setpts=PTS+{start}/TB" if start > 0 else ""
+    gate = f":enable='gte(t,{start})'" if start > 0 else ""
     return [
         f"[{rgb_idx}:v][{alpha_idx}:v]alphamerge,scale={lw}:-1,"
-        f"fade=t=out:st={fstart}:d={fdur}:alpha=1[animl]",
-        f"[{vlabel}][animl]overlay=(W-w)/2:H-h-{margin}:eof_action=pass[{out_label}]",
+        f"fade=t=out:st={fstart}:d={fdur}:alpha=1{delay}[animl]",
+        f"[{vlabel}][animl]overlay=(W-w)/2:H-h-{margin}:eof_action=pass{gate}[{out_label}]",
     ]
 
 

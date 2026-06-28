@@ -494,13 +494,14 @@ reels:
   logo_animated:
     rgb: reels/assets/logo/kiwinoy_logo_rgb.mp4
     alpha: reels/assets/logo/kiwinoy_logo_alpha.mp4
-    # Viewer feedback: the lower-third was covering in-game subtitles. So scale it
-    # a bit smaller, sit it LOWER + centred (clear of the captions), and fade it
-    # away after a few seconds so it's never on screen long.
+    # The KiwinoyGaming Logo Reveal (8s), white background keyed out -> transparent.
+    # It starts AFTER the first 4s of the reel, plays its reveal, then fades at the
+    # end. (Source .mov is huge + git-ignored; this is the processed rgb+alpha pair.)
     scale: 0.66           # compact badge (smaller than before)
     bottom_margin: 200    # lower third, in the band over the subject's body: clears
                           # YouTube's bottom UI AND the in-game subtitle line (user-placed)
-    fade_start: 4.0       # begin fading out ~4s after it appears
+    start: 4.0            # delay: reveal begins 4s into the reel (per user)
+    fade_start: 6.5       # begin fading out near the END of the 8s reveal
     fade_dur: 1.5         # fade-out duration
   # GAME logo overlay (top-centre, ABOVE the hook) on gameplay + commentary reels.
   # Drop a PNG per game in `dir`; it's matched to the game by filename keyword (e.g.
@@ -521,7 +522,8 @@ reels:
     logo_animated:
       scale: 0.78         # original larger badge
       bottom_margin: 20   # sit low at the very bottom
-      fade_start: 4.0
+      start: 4.0          # reveal begins 4s in (same as gameplay)
+      fade_start: 6.5     # fade near the end of the 8s reveal
       fade_dur: 1.5
     short_seconds: 70
     medium_seconds: 150   # ~2.5 min
