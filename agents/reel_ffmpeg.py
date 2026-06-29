@@ -439,14 +439,19 @@ def build_footage_rotated(
             next_idx += 1
 
         grade = _grade_filter()
-        # fill to 1920x1080, grade, then transpose=1 (90° CW) -> 1080x1920 portrait.
+        # Build the graded LANDSCAPE first, overlay the logo at the landscape top-right,
+        # THEN rotate the whole frame 90° CW -> 1080x1920. This way the logo rotates
+        # WITH the footage, so when the viewer tilts their phone to watch the gameplay
+        # right-side-up, footage + logo are both upright (and the logo lands top-right).
         fc = [f"[0:v]scale=1920:1080:force_original_aspect_ratio=increase,"
-              f"crop=1920:1080,{grade}transpose=1,setsar=1,fps={fps}[base]"]
-        vlabel = "base"
+              f"crop=1920:1080,{grade}setsar=1[land]"]
+        comp = "land"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")
-            fc.append(f"[{vlabel}][lg]overlay=W-w-28:36[v]")  # upright, top-right
-            vlabel = "v"
+            fc.append(f"[land][lg]overlay=W-w-38:38[comp]")  # landscape top-right
+            comp = "comp"
+        fc.append(f"[{comp}]transpose=1,fps={fps}[v]")  # rotate footage + logo together
+        vlabel = "v"
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
                          "-map", f"[{vlabel}]"]
