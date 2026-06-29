@@ -33,6 +33,7 @@ from orchestrator import (
     run_reel_slot,
     run_slot,
     run_threads,
+    run_threads_footage,
     run_threads_image,
 )
 
@@ -75,6 +76,12 @@ def main() -> int:
         dest="threads_image",
         action="store_true",
         help="run a Threads IMAGE post (designed photo + headline)",
+    )
+    g.add_argument(
+        "--threads-footage",
+        dest="threads_footage",
+        action="store_true",
+        help="run a Threads FOOTAGE post (landscape graded gameplay + hook caption)",
     )
     g.add_argument(
         "--photopost",
@@ -130,6 +137,14 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    if args.threads_footage:
+        try:
+            run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            return 0
+        except Exception as e:
+            print(f"[threads-footage] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     if args.threads_image:

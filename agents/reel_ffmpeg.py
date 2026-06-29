@@ -345,6 +345,67 @@ def build_gameplay(
         return out_path.read_bytes()
 
 
+def build_threads_landscape(
+    clip: Path,
+    out_path: Path,
+    logo: Optional[Path] = None,
+    fps: int = 60,
+    w: int = 1920,
+    h: int = 1080,
+    target_seconds: float = 60.0,
+    music: Optional[Path] = None,
+) -> bytes:
+    """Landscape (1920x1080) gameplay clip for a Threads VIDEO post: the footage
+    'as is' (16:9, not reframed), GRADED like the reels, with the circular KG logo
+    in the top-right corner. No burned text — the hook is the post caption. CFR fps.
+    Keeps the game audio (or loops music). Returns the rendered MP4 bytes."""
+    clip = Path(clip)
+    if not clip.exists():
+        raise ReelFfmpegError(f"clip missing: {clip}")
+    dur = ffmpeg.duration(clip) or target_seconds
+    show = min(float(target_seconds), dur) if dur else float(target_seconds)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")  # same circular corner mark
+        inputs: list[str] = ["-i", str(clip)]
+        next_idx, logo_idx = 1, None
+        if logo and Path(logo).exists():
+            inputs += ["-loop", "1", "-i", str(logo)]
+            logo_idx = next_idx
+            next_idx += 1
+        keep_audio = ffmpeg.has_audio(clip)
+        music_idx = None
+        if not keep_audio and music and Path(music).exists():
+            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            music_idx = next_idx
+            next_idx += 1
+
+        grade = _grade_filter()
+        fc = [f"[0:v]scale={w}:{h}:force_original_aspect_ratio=increase,"
+              f"crop={w}:{h},{grade}setsar=1,fps={fps}[base]"]
+        vlabel = "base"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-{int(w*0.02)}:{int(h*0.04)}[v]")
+            vlabel = "v"
+
+        args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                         "-map", f"[{vlabel}]"]
+        if keep_audio:
+            args += ["-map", "0:a"]
+        elif music_idx is not None:
+            args += ["-map", f"{music_idx}:a"]
+        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(bool(keep_audio or music_idx is not None))
+        args += ["-shortest", str(out_path)]
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=1800)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"threads landscape render failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
 def build_gameplay_triptych(
     clip: Path,
     out_path: Path,

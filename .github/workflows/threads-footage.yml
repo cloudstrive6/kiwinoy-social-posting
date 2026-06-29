@@ -1,0 +1,62 @@
+name: KiwinoyGamer Auto-Threads-Footage
+
+# Threads FOOTAGE track: a graded landscape (1920x1080) gameplay clip 'as is' + the
+# circular KG corner logo, with the clip's hook as the caption (CFR 60fps). Posts to
+# Threads only. Triggered by an EXTERNAL scheduler (cron-job.org) 4x/day, interleaved
+# with the caption-only Threads track so the two never overlap.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (render but do not publish)? true/false"
+        required: false
+        default: "false"
+
+concurrency:
+  group: kiwinoy-auto-threads-footage
+  cancel-in-progress: false
+
+jobs:
+  threads-footage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # fallback if token expires
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      GH_TOKEN: ${{ github.token }}                         # download footage from the Release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install ffmpeg + fonts
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Render + publish the Threads footage post
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python run.py --threads-footage $DRY
+
+      - name: Upload run artifacts (caption, result)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: threads-footage-output-${{ github.run_id }}
+          path: output/
+          retention-days: 14
+          if-no-files-found: ignore

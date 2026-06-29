@@ -157,6 +157,18 @@ def run_video_post(
                          scheduled_at=scheduled_at, is_draft=is_draft)
 
 
+def run_threads_video(
+    caption: str,
+    video_bytes: bytes,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Publish a landscape gameplay VIDEO to the Threads account only (the hook is
+    the caption). short=False -> posts as a normal (16:9) video, not a Reel."""
+    return publish_video(caption, video_bytes, short=False, targets=["threads"],
+                         scheduled_at=scheduled_at, is_draft=is_draft)
+
+
 def run_threads(
     text: str,
     scheduled_at: Optional[str] = None,

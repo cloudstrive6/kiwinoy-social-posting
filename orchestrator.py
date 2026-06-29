@@ -1047,6 +1047,68 @@ def run_quote_card(
     return result
 
 
+def run_threads_footage(
+    dry_run: bool = False,
+    scheduled_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Threads FOOTAGE post: a graded landscape (1920x1080) gameplay clip 'as is' +
+    the circular KG corner logo, with the clip's HOOK as the caption. CFR 60fps.
+    Posts to Threads only. Separate cadence from the caption-only Threads track."""
+    tf = CONFIG.raw().get("threads_footage", {}) or {}
+    if not tf.get("enabled", True):
+        print("[threads-footage] disabled — skipping.", flush=True)
+        return {"kind": "threads_footage", "published": False, "skipped": "disabled"}
+    run_dir = OUTPUT_DIR / f"{_stamp()}_threads_footage"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[threads-footage] {m}", flush=True)
+
+    games = reel_composer.list_games()
+    if not games:
+        return _skip(run_dir, {"kind": "threads_footage"}, "no_media")
+    prefer = [str(g) for g in (CONFIG.reels.get("footage", {}).get("prefer", []) or [])]
+    preferred = {k: v for k, v in games.items() if k in prefer} or games
+    game = random.choice(list(preferred))
+    # a RANDOM clip — deliberately does NOT touch the gameplay-reel used-clip ledger.
+    from core import gh_release
+    cands = reel_composer._candidates(game)
+    clip = None
+    if cands:
+        _name, item = random.choice(cands)
+        clip = gh_release.download(item, ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
+            "cache_dir", "reels/assets/footage/.cache"))
+    if not clip:
+        return _skip(run_dir, {"kind": "threads_footage", "game": game}, "no_media")
+    log(f"Game: {game} | clip: {Path(clip).name}")
+
+    log("Reviewing the clip to write the hook caption...")
+    hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
+    caption = hook  # per user: the hook IS the caption
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    log(f"Hook: {hook}")
+
+    log("Rendering landscape (1920x1080, graded, +logo, CFR 60)...")
+    out = run_dir / "threads_footage.mp4"
+    video_bytes = reel_ffmpeg.build_threads_landscape(
+        Path(clip), out, logo=_reel_logo(),
+        fps=int(tf.get("fps", 60)),
+        target_seconds=float(tf.get("seconds", 60)),
+        music=_reel_music())
+
+    result: dict[str, Any] = {
+        "kind": "threads_footage", "game": game, "hook": hook,
+        "caption": caption, "path": str(out), "dry_run": dry_run}
+    if dry_run:
+        log("DRY RUN — not posting.")
+        result["published"] = False
+    else:
+        log("Publishing to Threads...")
+        result["postforme_result"] = publisher.run_threads_video(
+            caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
+        result["published"] = True
+    _save(run_dir, result)
+    return result
+
+
 def run_threads_image(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,

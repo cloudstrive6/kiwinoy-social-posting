@@ -761,6 +761,15 @@ threads_posts:
   - "story-rich single-player vs endless live-service grind"
   - "preorder hype vs wait-for-the-reviews patience"
 
+# Threads FOOTAGE track (separate from the caption-only Threads posts): a graded
+# landscape (1920x1080) gameplay clip 'as is' + the circular KG corner logo, with
+# the clip's hook as the caption, CFR 60fps. Scheduled 4x/day, interleaved with the
+# caption track so the two never overlap.
+threads_footage:
+  enabled: true
+  seconds: 60          # max clip length (longer clips are trimmed)
+  fps: 60              # CFR 60fps
+
 # Research is web-search based: OpenAI web search for image/reel topics, Claude
 # web search for Threads. (The last30days engine was removed — it surfaced stale,
 # pre-announcement threads.)
