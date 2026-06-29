@@ -770,6 +770,21 @@ threads_posts:
 # landscape (1920x1080) gameplay clip 'as is' + the circular KG corner logo, with
 # the clip's hook as the caption, CFR 60fps. Scheduled 4x/day, interleaved with the
 # caption track so the two never overlap.
+# Long-form YouTube (DIRECT YouTube Data API v3, LOCAL only — multi-GB 4K HDR
+# can't run in CI). Concatenates labelled 4K/60 HDR10 PART files into one full-game
+# video + circular KG logo (HDR10 preserved, matching the Premiere preset),
+# generates a clickbait thumbnail, then uploads + schedules. Run on your machine:
+#   python run.py --youtube --parts "D:\Vids\The Last of Us 1 (Rendered)"
+youtube_longform:
+  enabled: true
+  privacy: private            # 'private'+publish_at = scheduled; or 'public'/'unlisted'
+  category_id: "20"           # 20 = Gaming
+  made_for_kids: false
+  graphics_pct: 0.58          # logo brightness toward HDR graphics-white (203 nits) — calibrate
+  bitrate: "63M"
+  logo_size: 480              # circular KG logo diameter on the 4K frame
+  default_tags: [gaming, walkthrough, playthrough, "4K", HDR, "60fps"]
+
 threads_footage:
   enabled: true
   seconds: 60          # max clip length (longer clips are trimmed)

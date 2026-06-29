@@ -85,6 +85,21 @@ class _Config:
     def tiktok_refresh_token(self) -> str:
         return self._key("TIKTOK_REFRESH_TOKEN")
 
+    # YouTube Data API v3 (direct, LOCAL long-form uploads). client_id/secret from
+    # our Desktop OAuth client (project kg-postforme); the refresh_token mints an
+    # access_token each run. Env-only (public repo).
+    @property
+    def youtube_client_id(self) -> str:
+        return self._key("YOUTUBE_CLIENT_ID")
+
+    @property
+    def youtube_client_secret(self) -> str:
+        return self._key("YOUTUBE_CLIENT_SECRET")
+
+    @property
+    def youtube_refresh_token(self) -> str:
+        return self._key("YOUTUBE_REFRESH_TOKEN")
+
     # ---- convenience accessors ----------------------------------------
     @property
     def brand(self) -> dict[str, Any]:
@@ -121,6 +136,10 @@ class _Config:
     @property
     def reels(self) -> dict[str, Any]:
         return self._data.get("reels", {})
+
+    @property
+    def youtube_longform(self) -> dict[str, Any]:
+        return self._data.get("youtube_longform", {})
 
     @property
     def carousels(self) -> dict[str, Any]:
