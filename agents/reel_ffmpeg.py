@@ -19,6 +19,7 @@ safe for CI. Fails by raising ReelFfmpegError; the orchestrator logs + skips.
 from __future__ import annotations
 
 import random
+import re
 import tempfile
 from pathlib import Path
 from typing import Any, Optional
@@ -187,17 +188,18 @@ def _anim_overlay(rgb_idx: int, alpha_idx: int, vlabel: str, w: int,
     ]
 
 
-def _brand_logo(src: Optional[Path], out: Path) -> Optional[Path]:
+def _brand_logo(src: Optional[Path], out: Path, size: Optional[int] = None) -> Optional[Path]:
     """Crop the brand logo to a CIRCLE + apply opacity (top-right overlay).
 
     Done in Pillow (robust) rather than an ffmpeg circle-mask. Returns the
-    circular PNG path, or the raw src on failure, or None if no logo.
+    circular PNG path, or the raw src on failure, or None if no logo. `size`
+    overrides the rendered diameter (e.g. larger for a 4K long-form frame).
     """
     if not src or not Path(src).exists():
         return None
     try:
         from PIL import Image, ImageChops, ImageDraw
-        size = int(CONFIG.reels.get("brand_logo_size", 140))
+        size = int(size or CONFIG.reels.get("brand_logo_size", 140))
         opacity = max(0.0, min(1.0, float(CONFIG.reels.get("brand_logo_opacity", 0.6))))
         im = Image.open(src).convert("RGBA")
         w, h = im.size
@@ -475,6 +477,94 @@ def build_footage_rotated(
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"rotated footage render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
+
+
+def _part_order_key(p: Path):
+    """Order gameplay parts by the number after 'part' (handles 'Part 2',
+    'part 5.1', 'Part_10'); files without a part number sort last by name."""
+    m = re.search(r"part[\s_\-]*([0-9]+(?:\.[0-9]+)?)", p.name, re.IGNORECASE)
+    return (float(m.group(1)) if m else float("inf"), p.name.lower())
+
+
+def build_longform_hdr(
+    parts: list[Path],
+    out_path: Path,
+    logo: Optional[Path] = None,
+    graphics_pct: float = 0.58,
+    bitrate: str = "63M",
+    keyint: int = 72,
+    fps: str = "60000/1001",   # 59.94
+    logo_size: int = 480,
+    timeout: int = 36000,
+) -> Path:
+    """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video,
+    overlay the circular KG logo top-right, and re-encode PRESERVING HDR10 to match
+    the user's Premiere preset: H.264 High10 (10-bit), Rec.2100 PQ / Rec2020,
+    HDR10 metadata (MaxCLL 1000 / MaxFALL 200, MasterDisplay L 0.01-1000), ~63 Mbps.
+
+    Parts MUST share the same codec/res/fps/colour (same export preset) so they
+    concat cleanly. The logo is an sRGB graphic scaled to ~graphics_pct of full
+    range so it lands near HDR graphics-white (203 nits ~= 58% PQ) — calibrate
+    graphics_pct on an HDR display. Returns out_path (does NOT load bytes — the
+    full-game file can be tens of GB)."""
+    parts = sorted([Path(p) for p in parts], key=_part_order_key)
+    missing = [str(p) for p in parts if not p.exists()]
+    if not parts or missing:
+        raise ReelFfmpegError(f"longform parts missing: {missing or 'none provided'}")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        n = len(parts)
+        inputs: list[str] = []
+        for p in parts:
+            inputs += ["-i", str(p)]
+        logo_idx = n
+        logo_png = (_brand_logo(logo, Path(tmp) / "kglogo.png", size=logo_size)
+                    if logo else None)
+        has_logo = bool(logo_png and Path(logo_png).exists())
+        if has_logo:
+            inputs += ["-loop", "1", "-i", str(logo_png)]
+
+        # concat all parts (video + audio) in order
+        concat_in = "".join(f"[{i}:v:0][{i}:a:0]" for i in range(n))
+        fc = [f"{concat_in}concat=n={n}:v=1:a=1[cv][ca]"]
+        vlabel = "cv"
+        if has_logo:
+            margin = int(3840 * 0.02)
+            # sRGB logo scaled toward HDR graphics-white (PQ ~58% = 203 nits), then
+            # overlaid onto the PQ/Rec2020 signal. graphics_pct is the calibration knob.
+            gp = max(0.05, min(1.0, float(graphics_pct)))
+            fc += [
+                f"[{logo_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
+                f"format=rgba[lg]",
+                f"[{vlabel}][lg]overlay=W-w-{margin}:{margin}:format=auto[v]",
+            ]
+            vlabel = "v"
+
+        # HDR10 static metadata in x264 units: chromaticity in 0.00002 steps,
+        # luminance in 0.0001 cd/m^2 steps. Rec2020 primaries + D65; L max 1000, min 0.01.
+        master = ("G(8500,39850)B(6550,2300)R(35400,14600)"
+                  "WP(15635,16450)L(10000000,100)")
+        x264p = (f"keyint={keyint}:min-keyint={keyint}:colorprim=bt2020:"
+                 f"transfer=smpte2084:colormatrix=bt2020nc:"
+                 f"mastering-display={master}:cll=1000,200")
+
+        args = inputs + [
+            "-filter_complex", ";".join(fc),
+            "-map", f"[{vlabel}]", "-map", "[ca]",
+            "-c:v", "libx264", "-profile:v", "high10", "-level", "5.2",
+            "-pix_fmt", "yuv420p10le", "-r", fps,
+            "-color_primaries", "bt2020", "-color_trc", "smpte2084",
+            "-colorspace", "bt2020nc", "-color_range", "tv",
+            "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate, "-bufsize", "126M",
+            "-x264-params", x264p,
+            "-c:a", "aac", "-b:a", "384k",
+            "-movflags", "+faststart", "-shortest", str(out_path),
+        ]
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=timeout)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"longform HDR render failed (rc={rc}):\n{err[-2000:]}")
+    return out_path
 
 
 def build_gameplay_triptych(
