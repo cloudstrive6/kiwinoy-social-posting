@@ -536,6 +536,9 @@ def run_commentary_reel(
     from core import ffmpeg as ff
 
     ccfg = CONFIG.reels.get("commentary", {}) or {}
+    if not ccfg.get("enabled", True):
+        print("[commentary] paused (reels.commentary.enabled=false) — skipping.", flush=True)
+        return {"kind": "commentary", "published": False, "skipped": "disabled"}
     if length is None:
         try:
             length = str(CONFIG.reel_slot(slot_id).get("length", "")).lower() or None

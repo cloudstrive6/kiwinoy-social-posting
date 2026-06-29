@@ -538,7 +538,7 @@ reels:
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
-    enabled: true
+    enabled: false        # PAUSED (2026-06-29, user) — flip true to resume
     # Animated-logo placement for COMMENTARY reels only. These stay the ORIGINAL
     # low lower-third (FB-only) — the raised gameplay placement (logo_animated
     # bottom_margin 200) is a YouTube-Shorts fix and must NOT apply here.
