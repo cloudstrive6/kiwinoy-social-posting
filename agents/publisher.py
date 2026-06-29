@@ -96,8 +96,6 @@ def _video_placements(targets: list[str], title: str, short: bool) -> dict[str, 
         cfg["facebook"] = {"placement": "reels"}  # long video -> omit = FB feed
     if "youtube" in targets:
         cfg["youtube"] = {"title": (title or "KiwinoyGamer").strip()[:95]}
-    if "threads" in targets and _threads_topic():
-        cfg["threads"] = {"topic_tag": _threads_topic()}
     return cfg
 
 
@@ -171,17 +169,6 @@ def run_threads_video(
                          scheduled_at=scheduled_at, is_draft=is_draft)
 
 
-def _threads_topic() -> Optional[str]:
-    """The Threads topic_tag to attach to every Threads post (e.g. 'Gaming Threads').
-    Threads allows ONE topic per post: 1-50 chars, no periods/ampersands. The tag
-    only applies to Threads; Post for Me ignores it for X and other platforms."""
-    t = (CONFIG.threads_posts or {}).get("topic")
-    if not t:
-        return None
-    t = str(t).replace(".", "").replace("&", "").strip()
-    return t[:50] or None
-
-
 def run_threads(
     text: str,
     scheduled_at: Optional[str] = None,
@@ -195,12 +182,10 @@ def run_threads(
             "No Threads/X account IDs in config.yaml. Connect them in Post for "
             "Me and run `python tools/list_accounts.py --save`."
         )
-    topic = _threads_topic()
     return postforme.create_post(
         caption=text,
         social_accounts=account_ids,
         media_urls=None,
         scheduled_at=scheduled_at,
         is_draft=is_draft,
-        platform_configurations=({"threads": {"topic_tag": topic}} if topic else None),
     )
