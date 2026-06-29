@@ -1088,10 +1088,9 @@ def run_threads_footage(
 
     log("Reviewing the clip to write the hook caption...")
     hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
-    gtags = content._reel_hashtags({"game": game}, 1)  # ONLY the primary game hashtag
-    caption = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
+    caption = hook  # horizontal (as-is) footage -> hook + #GamingThreads (added by publisher)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-    log(f"Hook: {hook} | tag: {gtags[0] if gtags else '-'}")
+    log(f"Hook: {hook}")
 
     log("Rendering landscape (1920x1080, graded, +logo, CFR 60)...")
     out = run_dir / "threads_footage.mp4"
