@@ -471,6 +471,13 @@ reels:
       size: 40
       opacity: 0.82
       bottom_offset: 22   # px above the bottom edge of the top panel
+    # Moving glow/flare that sweeps across the bottom game-art panel (a soft white
+    # light band). Set enabled:false to turn it off.
+    triptych_glow:
+      enabled: true
+      width: 300          # band width in px (wider = softer, broader sweep)
+      intensity: 0.42     # peak brightness of the sweep (0=off, 1=strong)
+      speed: 240          # px/second the band travels (higher = faster sweep)
     # Each reel randomly picks ONE of these as its max length, for variety. The
     # actual length = min(picked value, the clip's own length). <=90s publishes
     # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook

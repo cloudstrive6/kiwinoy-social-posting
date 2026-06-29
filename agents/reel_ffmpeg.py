@@ -396,6 +396,26 @@ def build_gameplay_triptych(
                              "-loop", "1", "-i", str(shot),
                              "-loop", "1", "-i", str(game_art)]
         next_idx = 3
+        # Moving glow/flare for the bottom game-art panel: a soft white light band
+        # (gaussian across X, full height) that sweeps across the art over time.
+        # Config: reels.gameplay.triptych_glow.
+        arth = round(w * 9 / 16)
+        gl = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_glow", {}) or {}
+        glow_on, streak_idx, bw = bool(gl.get("enabled", True)), None, int(gl.get("width", 300))
+        if glow_on:
+            soft = max(1.0, bw / 3.2)
+            a_peak = int(max(0.0, min(1.0, float(gl.get("intensity", 0.42)))) * 255)
+            streak = Path(tmp) / "streak.png"
+            ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={bw}x{arth}", "-vf",
+                        ("format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':"
+                         f"a='{a_peak}*exp(-pow((X-{bw}/2)/{soft:.1f},2))'"),
+                        "-frames:v", "1", str(streak)], timeout=60)
+            if streak.exists():
+                inputs += ["-loop", "1", "-i", str(streak)]
+                streak_idx = next_idx
+                next_idx += 1
+            else:
+                glow_on = False
         logo_idx = None
         if logo and Path(logo).exists():
             inputs += ["-loop", "1", "-i", str(logo)]
@@ -415,17 +435,29 @@ def build_gameplay_triptych(
             music_idx = next_idx
             next_idx += 1
 
-        grade = _grade_filter()  # graded gameplay; the art stays natural
+        grade = _grade_filter()  # enhance the gameplay AND the game art (like classic)
         # Darken the top still (like the quote cards) so the white hook stays the
         # dominant element. rr/gg/bb<1 multiplies brightness -> 0.55 ~= a 45% black
         # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
         dim = float((CONFIG.reels.get("gameplay", {}) or {}).get("triptych_top_dim", 0.55))
+        # Bottom panel: fill the art to the 16:9 panel, GRADE it, then sweep a glow.
+        if glow_on and streak_idx is not None:
+            speed = int(gl.get("speed", 240))
+            bot_lines = [
+                f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
+                f"crop={w}:{arth},{grade}setsar=1[artg]",
+                f"[artg][{streak_idx}:v]overlay=x='mod(t*{speed},{w}+{bw})-{bw}':"
+                f"y=0:eof_action=pass[bot]",
+            ]
+        else:
+            bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
+                         f"crop={w}:{arth},{grade}setsar=1[bot]"]
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}[bg]",
             f"[0:v]scale={w}:-2,{grade}setsar=1,fps={fps}[mid]",
             f"[1:v]scale={w}:-2,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},"
             f"setsar=1[top]",
-            f"[2:v]scale={w}:-2,setsar=1[bot]",
+            *bot_lines,
             f"[bg][top]overlay=(W-w)/2:({band}-h)/2[b1]",
             f"[b1][mid]overlay=(W-w)/2:{band}+({band}-h)/2[b2]",
             f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
