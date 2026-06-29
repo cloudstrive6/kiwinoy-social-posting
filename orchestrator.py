@@ -1078,7 +1078,9 @@ def run_threads_footage(
             "cache_dir", "reels/assets/footage/.cache"))
     if not clip:
         return _skip(run_dir, {"kind": "threads_footage", "game": game}, "no_media")
-    log(f"Game: {game} | clip: {Path(clip).name}")
+    from pathlib import Path
+    clip = Path(clip)
+    log(f"Game: {game} | clip: {clip.name}")
 
     log("Reviewing the clip to write the hook caption...")
     hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
@@ -1089,7 +1091,7 @@ def run_threads_footage(
     log("Rendering landscape (1920x1080, graded, +logo, CFR 60)...")
     out = run_dir / "threads_footage.mp4"
     video_bytes = reel_ffmpeg.build_threads_landscape(
-        Path(clip), out, logo=_reel_logo(),
+        clip, out, logo=_reel_logo(),
         fps=int(tf.get("fps", 60)),
         target_seconds=float(tf.get("seconds", 60)),
         music=_reel_music())
