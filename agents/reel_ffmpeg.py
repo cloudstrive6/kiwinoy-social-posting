@@ -109,17 +109,24 @@ def build_ass(
     hook: Optional[str] = None,
     hook_end: float = 0.0,
     subtitles: Optional[list[dict[str, Any]]] = None,
+    hook_center: Optional[tuple[int, int]] = None,
 ) -> Path:
     """Write an ASS subtitle file: a persistent hook + timed subtitle events.
 
     hook        -> top caption text (shown 0 .. hook_end seconds).
     subtitles   -> [{start, end, text}, ...] bottom captions (seconds).
+    hook_center -> if set, the hook is centred (\\an5) on this (x, y) point instead
+                   of the default top-anchored Hook style — used to centre the hook
+                   in the top 1/3 band of the triptych regardless of line count.
     """
     lines = [_ass_header(w, h)]
     if hook:
+        htext = ffmpeg.ass_escape(hook.upper())
+        if hook_center:
+            htext = f"{{\\an5\\pos({int(hook_center[0])},{int(hook_center[1])})}}" + htext
         lines.append(
             f"Dialogue: 0,{ffmpeg.ass_time(0)},{ffmpeg.ass_time(max(1.0, hook_end))},"
-            f"Hook,,0,0,0,,{ffmpeg.ass_escape(hook.upper())}\n"
+            f"Hook,,0,0,0,,{htext}\n"
         )
     for s in subtitles or []:
         lines.append(
@@ -514,8 +521,10 @@ def build_gameplay_triptych(
                 ffmpeg.run(["-i", str(clip), "-frames:v", "1", "-q:v", "2", str(shot)],
                            timeout=120)
 
-        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
-        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")
+        # Hook centred in the top 1/3 band (per user) — vertical centre of band 0.
+        # No circle KG logo on the triptych anymore (per user).
+        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show,
+                        hook_center=(w // 2, band // 2))
 
         inputs: list[str] = ["-i", str(clip),
                              "-loop", "1", "-i", str(shot),
@@ -547,11 +556,6 @@ def build_gameplay_triptych(
                 next_idx += 1
             else:
                 glow_on = False
-        logo_idx = None
-        if logo and Path(logo).exists():
-            inputs += ["-loop", "1", "-i", str(logo)]
-            logo_idx = next_idx
-            next_idx += 1
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
             # animated KiwinoyGaming lower-third — plays ONCE at the start, same spot
@@ -622,11 +626,7 @@ def build_gameplay_triptych(
             f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
         ]
         vlabel = "b3"
-        if logo_idx is not None:
-            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
-            fc.append(f"[{vlabel}][lg]overlay=W-w-28:24[ovk]")  # KG mark, top-right
-            vlabel = "ovk"
-        # NOTE: deliberately NO game logo here — the bottom game-art already carries it.
+        # NOTE: no circle KG logo (removed per user) and no game logo on the triptych.
         if anim_rgb_idx is not None:
             fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")
             vlabel = "ova"
