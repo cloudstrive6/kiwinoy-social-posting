@@ -446,11 +446,13 @@ def build_gameplay_triptych(
         # Bottom panel: fill the art to the 16:9 panel, GRADE it, then sweep a glow.
         if glow_on and blob_idx is not None:
             sway = float(gl.get("sway", 0.42))           # how far the light wanders
+            spd = max(0.1, float(gl.get("speed", 1.0)))  # <1 = slower wander
             ax, bx = w * sway, w * sway * 0.4
             ay, by = arth * sway, arth * sway * 0.45
+            p1, p2, p3, p4 = 6.3 / spd, 9.7 / spd, 5.1 / spd, 8.3 / spd
             # wandering light centre (non-commensurate periods -> path never repeats)
-            lx = f"(W-w)/2+{ax:.0f}*sin(2*PI*t/6.3)+{bx:.0f}*sin(2*PI*t/9.7)"
-            ly = f"(H-h)/2+{ay:.0f}*sin(2*PI*t/5.1)+{by:.0f}*sin(2*PI*t/8.3)"
+            lx = f"(W-w)/2+{ax:.0f}*sin(2*PI*t/{p1:.2f})+{bx:.0f}*sin(2*PI*t/{p2:.2f})"
+            ly = f"(H-h)/2+{ay:.0f}*sin(2*PI*t/{p3:.2f})+{by:.0f}*sin(2*PI*t/{p4:.2f})"
             bot_lines = [
                 f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
                 f"crop={w}:{arth},{grade}setsar=1,format=gbrp[artg]",
