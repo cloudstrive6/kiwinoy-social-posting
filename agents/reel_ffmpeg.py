@@ -405,7 +405,10 @@ def build_gameplay_triptych(
         glow_on, blob_idx = bool(gl.get("enabled", True)), None
         bd = int(gl.get("size", 640))               # soft light diameter (px)
         if glow_on:
-            sr = max(1.0, bd / 3.0)                  # gaussian radius (soft edges)
+            # feather: higher -> the gaussian fades fully to 0 well inside the tile,
+            # so there's NO hard ring/edge (the moving shape stays invisible).
+            feather = max(2.5, float(gl.get("feather", 6.0)))
+            sr = max(1.0, bd / feather)              # gaussian radius (soft edges)
             a_peak = int(max(0.0, min(1.0, float(gl.get("intensity", 0.5)))) * 255)
             blob = Path(tmp) / "glow.png"
             ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={bd}x{bd}", "-vf",

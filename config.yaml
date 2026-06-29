@@ -476,7 +476,8 @@ reels:
     # reflection, not a visible band). Set enabled:false to turn it off.
     triptych_glow:
       enabled: true
-      size: 500           # soft light diameter in px (tighter = more focused glint)
+      size: 560           # tile size in px (room for the soft tail to fade out)
+      feather: 6.0        # softness of the fade; higher = NO visible edge/ring
       intensity: 0.58     # how strongly it lifts the highlights (a touch stronger)
       sway: 0.5           # how far the light wanders across the panel (0..~0.5)
       speed: 0.8          # wander speed; 1.0 = base, <1 = slower/more elegant
