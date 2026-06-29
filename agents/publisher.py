@@ -157,6 +157,22 @@ def run_video_post(
                          scheduled_at=scheduled_at, is_draft=is_draft)
 
 
+def _threads_hashtag() -> Optional[str]:
+    """A hashtag appended to Threads captions (e.g. '#GamingThreads') — a workaround
+    for Threads topics, which Post for Me doesn't expose. On Threads a hashtag is
+    clickable like a topic. Config: threads_posts.hashtag."""
+    h = (CONFIG.threads_posts or {}).get("hashtag")
+    if not h:
+        return None
+    h = str(h).strip()
+    return h if h.startswith("#") else ("#" + h.lstrip("#"))
+
+
+def _with_threads_tag(text: str) -> str:
+    tag = _threads_hashtag()
+    return f"{(text or '').rstrip()}\n\n{tag}".strip() if tag else (text or "")
+
+
 def run_threads_video(
     caption: str,
     video_bytes: bytes,
@@ -164,9 +180,9 @@ def run_threads_video(
     is_draft: bool = False,
 ) -> dict[str, Any]:
     """Publish a landscape gameplay VIDEO to the Threads account only (the hook is
-    the caption). short=False -> posts as a normal (16:9) video, not a Reel."""
-    return publish_video(caption, video_bytes, short=False, targets=["threads"],
-                         scheduled_at=scheduled_at, is_draft=is_draft)
+    the caption, plus the Threads hashtag). short=False -> normal 16:9 video."""
+    return publish_video(_with_threads_tag(caption), video_bytes, short=False,
+                         targets=["threads"], scheduled_at=scheduled_at, is_draft=is_draft)
 
 
 def run_threads(
@@ -183,7 +199,7 @@ def run_threads(
             "Me and run `python tools/list_accounts.py --save`."
         )
     return postforme.create_post(
-        caption=text,
+        caption=_with_threads_tag(text),
         social_accounts=account_ids,
         media_urls=None,
         scheduled_at=scheduled_at,

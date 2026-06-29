@@ -700,6 +700,10 @@ threads_posts:
   enabled: true            # RESUMED (per user 2026-06-23): picking up traction.
                            # ENGAGEMENT-DRIVEN Threads/X track — replaces the old
                            # caption-only quotes that got no engagement.
+  # A hashtag appended to every Threads caption (captions + footage) — a workaround
+  # for Threads topics, which Post for Me can't set. On Threads a hashtag is
+  # clickable like a topic. Set "" to disable.
+  hashtag: "#GamingThreads"
   model: "sonnet"          # claude model alias used by the Threads agents
   max_chars: 280           # X (free) caps at 280; keeps every post valid on both
   category: games
