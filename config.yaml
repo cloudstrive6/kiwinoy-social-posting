@@ -16,6 +16,7 @@ models:
   writer_anthropic: claude-sonnet-4-6
   claude_model: sonnet           # model used for the free Claude Code calls
   research: gpt-4.1              # (unused now — image/reel research uses Claude)
+  vision_openai: gpt-4.1        # OpenAI vision FALLBACK for the clip observer
   image: gpt-image-1            # IMAGE GENERATOR stays on OpenAI (paid)
   web_search_tool: web_search
   writer_max_tokens: 1024

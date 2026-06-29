@@ -68,6 +68,24 @@ def write(prompt: str, system: str = "", model: str | None = None) -> str:
     return (resp.output_text or "").strip()
 
 
+def vision(prompt: str, image_paths: list, system: str = "", model: str | None = None) -> str:
+    """Vision generation: look at the given image files + a prompt, return text.
+    The OpenAI fallback for the gameplay-clip observer when Claude is unavailable."""
+    model = model or CONFIG.models.get("vision_openai") or CONFIG.models.get("writer_openai") or "gpt-4.1"
+    content: list[dict] = [{"type": "input_text", "text": prompt}]
+    for p in image_paths:
+        with open(p, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode("ascii")
+        content.append({"type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64}"})
+    msgs: list[dict] = []
+    if system:
+        msgs.append({"role": "system", "content": system})
+    msgs.append({"role": "user", "content": content})
+    resp = client().responses.create(model=model, input=msgs)
+    return (resp.output_text or "").strip()
+
+
 def image(prompt: str, size: str | None = None, quality: str | None = None) -> bytes:
     """Generate one image with gpt-image-1. Returns PNG bytes."""
     cfg = CONFIG.image

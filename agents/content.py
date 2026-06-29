@@ -181,28 +181,49 @@ Return ONLY the line."""
     return f"{line}\n\n{' '.join(tags)}".strip()
 
 
+def _text(prompt: str, timeout: int = 120) -> str:
+    """Claude text generation with an OpenAI fallback. Tries the Claude chain
+    (Max OAuth -> Anthropic API key); if BOTH are unavailable (expired token, out
+    of usage, $0 API credits), falls back to the funded OpenAI writer so we keep
+    getting real hooks/captions instead of generic placeholders."""
+    from core import claude_code, openai_client
+
+    try:
+        return claude_code.run(prompt, timeout=timeout)
+    except claude_code.ClaudeCodeError as e:
+        print(f"[content] Claude unavailable ({e}); falling back to OpenAI.", flush=True)
+        return openai_client.write(prompt)
+
+
 def _observe_clip(cands: list, gname: str) -> str:
     """Stage 1 (vision OBSERVER): describe ONLY what's literally on screen across
     the frames — setting, characters' appearance (no name-guessing), action and
     any on-screen text. This factual read is then handed to the captioner so it
-    knows what's going on before it writes the line."""
-    from core import claude_code
+    knows what's going on before it writes the line. Claude vision first, then the
+    OpenAI vision fallback if Claude is unavailable."""
+    from core import claude_code, openai_client
 
-    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
-    prompt = (
-        f"Use the Read tool to open these {len(cands)} frames (in order) from ONE "
-        f"short {gname} gameplay clip.\n"
-        "Describe ONLY what you can literally SEE — do not guess names or backstory. "
-        "Cover, in 3-5 plain sentences:\n"
+    instruction = (
+        f"These are {len(cands)} frames (in order) from ONE short {gname} gameplay "
+        "clip.\nDescribe ONLY what you can literally SEE — do not guess names or "
+        "backstory. Cover, in 3-5 plain sentences:\n"
         "- SETTING/location (indoor lab, rooftop, street, snow, etc.)\n"
         "- CHARACTERS visible, by APPEARANCE only (e.g. 'man in a lab coat', 'figure "
         "in a red-and-blue spider suit', 'teen in a hoodie') — never assume who they "
         "are.\n"
         "- The ACTION / what is happening or being done.\n"
-        "- Any on-screen TEXT, subtitles, objective markers or UI you can read.\n\n"
+        "- Any on-screen TEXT, subtitles, objective markers or UI you can read."
+    )
+    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
+    claude_prompt = (
+        f"Use the Read tool to open these frames first.\n\n{instruction}\n\n"
         f"Frames:\n{listing}"
     )
-    return sanitize(claude_code.run(prompt, allowed_tools="Read", timeout=180)).strip()
+    try:
+        return sanitize(claude_code.run(claude_prompt, allowed_tools="Read", timeout=180)).strip()
+    except claude_code.ClaudeCodeError as e:
+        print(f"[content] observer: Claude unavailable ({e}); using OpenAI vision.", flush=True)
+        return sanitize(openai_client.vision(instruction, cands)).strip()
 
 
 def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -> str:
@@ -234,7 +255,7 @@ def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -
         + ("Natural Taglish is welcome. " if taglish else "Write it in ENGLISH. ")
         + "No hashtags, no emojis, no quotes, no preamble — just the line."
     )
-    return sanitize(claude_code.run(prompt, timeout=120)).strip()
+    return sanitize(_text(prompt, timeout=120)).strip()
 
 
 def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) -> tuple[str, str]:
@@ -276,7 +297,7 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) ->
         f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
         'Return ONLY this JSON: {"hook": "the on-screen hook", "caption": "the caption"}'
     )
-    raw = claude_code.run(prompt, timeout=150)
+    raw = _text(prompt, timeout=150)
     hook, caption = "", ""
     try:
         d = extract_json(raw)
