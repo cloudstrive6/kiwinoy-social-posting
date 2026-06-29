@@ -501,10 +501,14 @@ def run_gameplay_reel(
         ycfg = CONFIG.reels.get("youtube", {}) or {}
         if ycfg.get("enabled", False) and slot_id in (ycfg.get("slots") or []):
             targets = targets + ["youtube"]
+        # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
+        # full caption + their fuller hashtags.
+        gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
+        threads_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
         log(f"Publishing gameplay reel to {', '.join(targets)}...")
         api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
-            targets=targets)
+            targets=targets, threads_caption=threads_cap)
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
@@ -1084,9 +1088,10 @@ def run_threads_footage(
 
     log("Reviewing the clip to write the hook caption...")
     hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
-    caption = hook  # per user: the hook IS the caption
+    gtags = content._reel_hashtags({"game": game}, 1)  # ONLY the primary game hashtag
+    caption = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-    log(f"Hook: {hook}")
+    log(f"Hook: {hook} | tag: {gtags[0] if gtags else '-'}")
 
     log("Rendering landscape (1920x1080, graded, +logo, CFR 60)...")
     out = run_dir / "threads_footage.mp4"

@@ -107,18 +107,24 @@ def publish_video(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
     targets: Optional[list[str]] = None,
+    threads_caption: Optional[str] = None,
 ) -> dict[str, Any]:
     """Upload + publish a video. Defaults to every video platform (FB/IG/Threads/
     YouTube); pass `targets` to restrict (e.g. ["facebook"] for commentary). X is
     always excluded. short=True for Reels/Shorts; False for a long video. Falls
     back to a no-placement post if the placement config is rejected, so one
-    platform's quirk can't sink the whole post."""
+    platform's quirk can't sink the whole post. `threads_caption` overrides the
+    caption for Threads ONLY (e.g. a single game hashtag) while FB/IG/YT keep the
+    full caption."""
     targets = [t for t in (targets if targets is not None else _video_targets()) if t != "x"]
     account_ids = CONFIG.account_ids(targets)
     if not account_ids:
         raise postforme.PostForMeError(_NO_ACCOUNTS)
     media_url = postforme.upload_video(video_bytes)
     placements = _video_placements(targets, title or caption.splitlines()[0] if caption else "", short)
+    if "threads" in targets and threads_caption:
+        placements = {**placements, "threads": {**placements.get("threads", {}),
+                                                "caption": threads_caption}}
     try:
         return postforme.create_post(
             caption=caption, social_accounts=account_ids, media_urls=[media_url],
@@ -138,11 +144,13 @@ def run_reel(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
     targets: Optional[list[str]] = None,
+    threads_caption: Optional[str] = None,
 ) -> dict[str, Any]:
     """Publish a short reel to the video platforms (Reels/Shorts). Pass `targets`
-    to restrict (e.g. drop YouTube on slots where it's paused)."""
+    to restrict; `threads_caption` overrides the caption on Threads only."""
     return publish_video(caption, video_bytes, short=True, targets=targets,
-                         scheduled_at=scheduled_at, is_draft=is_draft)
+                         scheduled_at=scheduled_at, is_draft=is_draft,
+                         threads_caption=threads_caption)
 
 
 def run_video_post(
@@ -151,10 +159,12 @@ def run_video_post(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
     targets: Optional[list[str]] = None,
+    threads_caption: Optional[str] = None,
 ) -> dict[str, Any]:
     """Publish a LONG video (commentary) to the video platforms (feed video on FB)."""
     return publish_video(caption, video_bytes, short=False, targets=targets,
-                         scheduled_at=scheduled_at, is_draft=is_draft)
+                         scheduled_at=scheduled_at, is_draft=is_draft,
+                         threads_caption=threads_caption)
 
 
 def _threads_hashtag() -> Optional[str]:
@@ -179,9 +189,9 @@ def run_threads_video(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Publish a landscape gameplay VIDEO to the Threads account only (the hook is
-    the caption, plus the Threads hashtag). short=False -> normal 16:9 video."""
-    return publish_video(_with_threads_tag(caption), video_bytes, short=False,
+    """Publish a landscape gameplay VIDEO to the Threads account only. The caller
+    supplies the full caption (hook + single game hashtag). short=False -> 16:9."""
+    return publish_video(caption, video_bytes, short=False,
                          targets=["threads"], scheduled_at=scheduled_at, is_draft=is_draft)
 
 
