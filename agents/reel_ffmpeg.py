@@ -396,23 +396,26 @@ def build_gameplay_triptych(
                              "-loop", "1", "-i", str(shot),
                              "-loop", "1", "-i", str(game_art)]
         next_idx = 3
-        # Moving glow/flare for the bottom game-art panel: a soft white light band
-        # (gaussian across X, full height) that sweeps across the art over time.
-        # Config: reels.gameplay.triptych_glow.
+        # Moving glow for the bottom game-art panel: a big SOFT round light that
+        # WANDERS (sin-based, non-repeating path) so the art's own highlights/edges/
+        # text/subject shimmer as it passes — a moving reflection, not a band. The
+        # light is a soft radial blob; the glow only lifts the art where the light is.
         arth = round(w * 9 / 16)
         gl = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_glow", {}) or {}
-        glow_on, streak_idx, bw = bool(gl.get("enabled", True)), None, int(gl.get("width", 300))
+        glow_on, blob_idx = bool(gl.get("enabled", True)), None
+        bd = int(gl.get("size", 640))               # soft light diameter (px)
         if glow_on:
-            soft = max(1.0, bw / 3.2)
-            a_peak = int(max(0.0, min(1.0, float(gl.get("intensity", 0.42)))) * 255)
-            streak = Path(tmp) / "streak.png"
-            ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={bw}x{arth}", "-vf",
-                        ("format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':"
-                         f"a='{a_peak}*exp(-pow((X-{bw}/2)/{soft:.1f},2))'"),
-                        "-frames:v", "1", str(streak)], timeout=60)
-            if streak.exists():
-                inputs += ["-loop", "1", "-i", str(streak)]
-                streak_idx = next_idx
+            sr = max(1.0, bd / 3.0)                  # gaussian radius (soft edges)
+            a_peak = int(max(0.0, min(1.0, float(gl.get("intensity", 0.5)))) * 255)
+            blob = Path(tmp) / "glow.png"
+            ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={bd}x{bd}", "-vf",
+                        ("format=rgba,geq=r=255:g=255:b=255:"
+                         f"a='{a_peak}*exp(-(pow((X-{bd}/2)/{sr:.1f},2)"
+                         f"+pow((Y-{bd}/2)/{sr:.1f},2)))'"),
+                        "-frames:v", "1", str(blob)], timeout=60)
+            if blob.exists():
+                inputs += ["-loop", "1", "-i", str(blob)]
+                blob_idx = next_idx
                 next_idx += 1
             else:
                 glow_on = False
@@ -441,13 +444,23 @@ def build_gameplay_triptych(
         # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
         dim = float((CONFIG.reels.get("gameplay", {}) or {}).get("triptych_top_dim", 0.55))
         # Bottom panel: fill the art to the 16:9 panel, GRADE it, then sweep a glow.
-        if glow_on and streak_idx is not None:
-            speed = int(gl.get("speed", 240))
+        if glow_on and blob_idx is not None:
+            sway = float(gl.get("sway", 0.42))           # how far the light wanders
+            ax, bx = w * sway, w * sway * 0.4
+            ay, by = arth * sway, arth * sway * 0.45
+            # wandering light centre (non-commensurate periods -> path never repeats)
+            lx = f"(W-w)/2+{ax:.0f}*sin(2*PI*t/6.3)+{bx:.0f}*sin(2*PI*t/9.7)"
+            ly = f"(H-h)/2+{ay:.0f}*sin(2*PI*t/5.1)+{by:.0f}*sin(2*PI*t/8.3)"
             bot_lines = [
                 f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
-                f"crop={w}:{arth},{grade}setsar=1[artg]",
-                f"[artg][{streak_idx}:v]overlay=x='mod(t*{speed},{w}+{bw})-{bw}':"
-                f"y=0:eof_action=pass[bot]",
+                f"crop={w}:{arth},{grade}setsar=1,format=gbrp[artg]",
+                f"[artg]split[artA][artB]",
+                f"color=c=black:s={w}x{arth}:r={fps},format=gbrp[lblk]",
+                f"[lblk][{blob_idx}:v]overlay=x='{lx}':y='{ly}':eof_action=pass[light]",
+                # art x light -> only the lit region's detail survives; screen it back
+                # onto the art so highlights/edges/text glow where the light is.
+                f"[artB][light]blend=all_mode=multiply[lit]",
+                f"[artA][lit]blend=all_mode=screen,format=yuv420p[bot]",
             ]
         else:
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
