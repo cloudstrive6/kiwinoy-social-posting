@@ -132,8 +132,16 @@ def main() -> int:
     # Threads track has no slots — one independent run per invocation.
     if args.threads:
         try:
-            run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at,
-                        post_type=args.type)
+            # One Threads cron fires 8x/day; route by UTC hour -> footage on the
+            # footage hours (default 3/9/15/21), caption otherwise (1/7/13/19).
+            import datetime as _dt
+            tf = CONFIG.raw().get("threads_footage", {}) or {}
+            foot_hours = {int(h) for h in (tf.get("hours") or [3, 9, 15, 21])}
+            if tf.get("enabled", True) and _dt.datetime.now(_dt.timezone.utc).hour in foot_hours:
+                run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            else:
+                run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at,
+                            post_type=args.type)
             return 0
         except Exception as e:
             print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)

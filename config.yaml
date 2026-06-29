@@ -769,6 +769,9 @@ threads_footage:
   enabled: true
   seconds: 60          # max clip length (longer clips are trimmed)
   fps: 60              # CFR 60fps
+  # The single Threads cron fires 8x/day; these UTC hours route to a FOOTAGE post,
+  # the other 4 (1/7/13/19) route to a caption post. Keeps the two interleaved.
+  hours: [3, 9, 15, 21]
 
 # Research is web-search based: OpenAI web search for image/reel topics, Claude
 # web search for Threads. (The last30days engine was removed — it surfaced stale,
