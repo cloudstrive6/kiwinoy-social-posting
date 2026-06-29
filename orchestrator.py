@@ -1112,6 +1112,28 @@ def run_threads_footage(
         result["postforme_result"] = publisher.run_threads_video(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at)
         result["published"] = True
+
+        # Also post the SAME footage to INSTAGRAM, rotated 90° CW (bottom -> left),
+        # with the FULL gameplay-reel hashtags (per user).
+        if tf.get("instagram", True):
+            try:
+                log("Rendering rotated (90° CW) version for Instagram...")
+                ig_out = run_dir / "ig_rotated.mp4"
+                ig_bytes = reel_ffmpeg.build_footage_rotated(
+                    clip, ig_out, logo=_reel_logo(),
+                    fps=int(tf.get("fps", 60)),
+                    target_seconds=float(tf.get("seconds", 60)),
+                    music=_reel_music())
+                ig_tags = content._reel_hashtags({"game": game})  # full reel hashtags
+                ig_caption = f"{hook}\n\n{' '.join(ig_tags)}".strip() if ig_tags else hook
+                (run_dir / "ig_caption.txt").write_text(ig_caption, encoding="utf-8")
+                log(f"Publishing rotated footage to Instagram ({' '.join(ig_tags)})...")
+                result["ig_result"] = publisher.publish_video(
+                    ig_caption, ig_bytes, short=True, targets=["instagram"],
+                    scheduled_at=scheduled_at)
+            except Exception as e:  # IG is a bonus — never sink the Threads post
+                log(f"Instagram rotated post skipped ({e!r})")
+                result["ig_error"] = repr(e)
     _save(run_dir, result)
     return result
 

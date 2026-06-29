@@ -406,6 +406,65 @@ def build_threads_landscape(
         return out_path.read_bytes()
 
 
+def build_footage_rotated(
+    clip: Path,
+    out_path: Path,
+    logo: Optional[Path] = None,
+    fps: int = 60,
+    target_seconds: float = 60.0,
+    music: Optional[Path] = None,
+) -> bytes:
+    """The landscape gameplay ROTATED 90° CLOCKWISE into a 1080x1920 portrait (so the
+    footage's bottom edge ends up on the LEFT). Graded; the KG corner logo stays
+    UPRIGHT top-right; CFR fps. For an Instagram reel. Returns the MP4 bytes."""
+    clip = Path(clip)
+    if not clip.exists():
+        raise ReelFfmpegError(f"clip missing: {clip}")
+    dur = ffmpeg.duration(clip) or target_seconds
+    show = min(float(target_seconds), dur) if dur else float(target_seconds)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")
+        inputs: list[str] = ["-i", str(clip)]
+        next_idx, logo_idx = 1, None
+        if logo and Path(logo).exists():
+            inputs += ["-loop", "1", "-i", str(logo)]
+            logo_idx = next_idx
+            next_idx += 1
+        keep_audio = ffmpeg.has_audio(clip)
+        music_idx = None
+        if not keep_audio and music and Path(music).exists():
+            inputs += ["-stream_loop", "-1", "-i", str(music)]
+            music_idx = next_idx
+            next_idx += 1
+
+        grade = _grade_filter()
+        # fill to 1920x1080, grade, then transpose=1 (90° CW) -> 1080x1920 portrait.
+        fc = [f"[0:v]scale=1920:1080:force_original_aspect_ratio=increase,"
+              f"crop=1920:1080,{grade}transpose=1,setsar=1,fps={fps}[base]"]
+        vlabel = "base"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-28:36[v]")  # upright, top-right
+            vlabel = "v"
+
+        args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                         "-map", f"[{vlabel}]"]
+        if keep_audio:
+            args += ["-map", "0:a"]
+        elif music_idx is not None:
+            args += ["-map", f"{music_idx}:a"]
+        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(bool(keep_audio or music_idx is not None))
+        args += ["-shortest", str(out_path)]
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        rc, err = ffmpeg.run(args, timeout=1800)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"rotated footage render failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
 def build_gameplay_triptych(
     clip: Path,
     out_path: Path,
