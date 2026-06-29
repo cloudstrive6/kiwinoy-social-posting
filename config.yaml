@@ -481,6 +481,7 @@ reels:
       intensity: 0.58     # how strongly it lifts the highlights (a touch stronger)
       sway: 0.38          # how far the light wanders across the panel (0..~0.5)
       speed: 0.65         # wander speed; 1.0 = base, <1 = slower/more elegant
+      dual: true          # a 2nd light mirrored on the opposite side of the panel
     # Each reel randomly picks ONE of these as its max length, for variety. The
     # actual length = min(picked value, the clip's own length). <=90s publishes
     # as a Reel/Short everywhere; >90s auto-routes as a long video on Facebook

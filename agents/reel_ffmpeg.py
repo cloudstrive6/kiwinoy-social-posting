@@ -450,20 +450,36 @@ def build_gameplay_triptych(
         if glow_on and blob_idx is not None:
             sway = float(gl.get("sway", 0.42))           # how far the light wanders
             spd = max(0.1, float(gl.get("speed", 1.0)))  # <1 = slower wander
+            dual = bool(gl.get("dual", True))            # a 2nd light on the opposite side
             ax, bx = w * sway, w * sway * 0.4
             ay, by = arth * sway, arth * sway * 0.45
             p1, p2, p3, p4 = 6.3 / spd, 9.7 / spd, 5.1 / spd, 8.3 / spd
-            # wandering light centre (non-commensurate periods -> path never repeats)
-            lx = f"(W-w)/2+{ax:.0f}*sin(2*PI*t/{p1:.2f})+{bx:.0f}*sin(2*PI*t/{p2:.2f})"
-            ly = f"(H-h)/2+{ay:.0f}*sin(2*PI*t/{p3:.2f})+{by:.0f}*sin(2*PI*t/{p4:.2f})"
+            # wandering offset (non-commensurate periods -> the path never repeats)
+            dx = f"{ax:.0f}*sin(2*PI*t/{p1:.2f})+{bx:.0f}*sin(2*PI*t/{p2:.2f})"
+            dy = f"{ay:.0f}*sin(2*PI*t/{p3:.2f})+{by:.0f}*sin(2*PI*t/{p4:.2f})"
             bot_lines = [
                 f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
                 f"crop={w}:{arth},{grade}setsar=1,format=gbrp[artg]",
                 f"[artg]split[artA][artB]",
                 f"color=c=black:s={w}x{arth}:r={fps},format=gbrp[lblk]",
-                f"[lblk][{blob_idx}:v]overlay=x='{lx}':y='{ly}':eof_action=pass[light]",
-                # art x light -> only the lit region's detail survives; screen it back
-                # onto the art so highlights/edges/text glow where the light is.
+            ]
+            if dual:
+                bot_lines += [
+                    f"[{blob_idx}:v]split[bl1][bl2]",
+                    f"[lblk][bl1]overlay=x='(W-w)/2+{dx}':y='(H-h)/2+{dy}':"
+                    f"eof_action=pass[lg1]",
+                    # 2nd light mirrored through centre -> always on the opposite side
+                    f"[lg1][bl2]overlay=x='(W-w)/2-({dx})':y='(H-h)/2-({dy})':"
+                    f"eof_action=pass[light]",
+                ]
+            else:
+                bot_lines += [
+                    f"[lblk][{blob_idx}:v]overlay=x='(W-w)/2+{dx}':y='(H-h)/2+{dy}':"
+                    f"eof_action=pass[light]",
+                ]
+            # art x light -> only the lit regions survive; screen it back onto the
+            # art so highlights/edges/text glow where each light is.
+            bot_lines += [
                 f"[artB][light]blend=all_mode=multiply[lit]",
                 f"[artA][lit]blend=all_mode=screen,format=yuv420p[bot]",
             ]
