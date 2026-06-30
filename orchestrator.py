@@ -1197,7 +1197,8 @@ def run_youtube_longform(
         lower_third_start=float(yl.get("lower_third_start", 7.0)),
         graphics_pct=float(yl.get("graphics_pct", 0.58)),
         bitrate=str(yl.get("bitrate", "63M")),
-        logo_size=int(yl.get("logo_size", 480)))
+        logo_size=int(yl.get("logo_size", 480)),
+        audio_lufs=yl.get("audio_lufs", -14.0))
 
     log("Generating thumbnail...")
     img = _game_screenshot(game) if game else None

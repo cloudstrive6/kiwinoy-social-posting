@@ -497,6 +497,7 @@ def build_longform_hdr(
     keyint: int = 72,
     fps: str = "60000/1001",   # 59.94
     logo_size: int = 480,
+    audio_lufs: Optional[float] = -14.0,
     timeout: int = 36000,
 ) -> Path:
     """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video and
@@ -565,6 +566,14 @@ def build_longform_hdr(
             ]
             vlabel = "vlt"
 
+        # Loudness-normalize the (concatenated) audio to a consistent target — parts
+        # can be exported at different levels, so this evens the whole game out.
+        # -14 LUFS = YouTube's playback target; TP -1.5 dBTP, LRA 11.
+        alabel = "ca"
+        if audio_lufs is not None:
+            fc.append(f"[ca]loudnorm=I={float(audio_lufs):.1f}:TP=-1.5:LRA=11[aout]")
+            alabel = "aout"
+
         # HDR10 static metadata in x264 units: chromaticity in 0.00002 steps,
         # luminance in 0.0001 cd/m^2 steps. Rec2020 primaries + D65; L max 1000, min 0.01.
         master = ("G(8500,39850)B(6550,2300)R(35400,14600)"
@@ -575,7 +584,7 @@ def build_longform_hdr(
 
         args = inputs + [
             "-filter_complex", ";".join(fc),
-            "-map", f"[{vlabel}]", "-map", "[ca]",
+            "-map", f"[{vlabel}]", "-map", f"[{alabel}]",
             "-c:v", "libx264", "-profile:v", "high10", "-level", "5.2",
             "-pix_fmt", "yuv420p10le", "-r", fps,
             "-color_primaries", "bt2020", "-color_trc", "smpte2084",
