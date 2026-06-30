@@ -1181,9 +1181,20 @@ def run_youtube_longform(
     log(f"Title: {title}")
 
     out = run_dir / "fullgame.mp4"
-    log("Rendering full-game (concat + KG logo + HDR10 encode) — this takes a while...")
+    use_logo = bool(yl.get("logo", False))   # YouTube's own watermark covers it -> default off
+    lt = yl.get("lower_third")
+    lt_path = None
+    if lt:
+        lt_path = Path(lt) if Path(lt).is_absolute() else (ROOT / lt)
+        lt_path = lt_path if lt_path.exists() else None
+    log(f"Rendering full-game (concat + HDR10 encode"
+        f"{' + logo' if use_logo else ''}"
+        f"{' + lower-third' if lt_path else ''}) — this takes a while...")
     reel_ffmpeg.build_longform_hdr(
-        files, out, logo=_reel_logo(),
+        files, out,
+        logo=_reel_logo() if use_logo else None,
+        lower_third=lt_path,
+        lower_third_start=float(yl.get("lower_third_start", 7.0)),
         graphics_pct=float(yl.get("graphics_pct", 0.58)),
         bitrate=str(yl.get("bitrate", "63M")),
         logo_size=int(yl.get("logo_size", 480)))

@@ -490,6 +490,8 @@ def build_longform_hdr(
     parts: list[Path],
     out_path: Path,
     logo: Optional[Path] = None,
+    lower_third: Optional[Path] = None,
+    lower_third_start: float = 7.0,
     graphics_pct: float = 0.58,
     bitrate: str = "63M",
     keyint: int = 72,
@@ -497,16 +499,20 @@ def build_longform_hdr(
     logo_size: int = 480,
     timeout: int = 36000,
 ) -> Path:
-    """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video,
-    overlay the circular KG logo top-right, and re-encode PRESERVING HDR10 to match
-    the user's Premiere preset: H.264 High10 (10-bit), Rec.2100 PQ / Rec2020,
-    HDR10 metadata (MaxCLL 1000 / MaxFALL 200, MasterDisplay L 0.01-1000), ~63 Mbps.
+    """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video and
+    re-encode PRESERVING HDR10 to match the user's Premiere preset: H.264 High10
+    (10-bit), Rec.2100 PQ / Rec2020, HDR10 metadata (MaxCLL 1000 / MaxFALL 200,
+    MasterDisplay L 0.01-1000), ~63 Mbps.
 
-    Parts MUST share the same codec/res/fps/colour (same export preset) so they
-    concat cleanly. The logo is an sRGB graphic scaled to ~graphics_pct of full
-    range so it lands near HDR graphics-white (203 nits ~= 58% PQ) — calibrate
-    graphics_pct on an HDR display. Returns out_path (does NOT load bytes — the
-    full-game file can be tens of GB)."""
+    Optional overlays (both SDR graphics scaled toward HDR graphics-white via
+    graphics_pct — calibrate on an HDR display):
+      logo         -> circular KG mark, top-right (persists). Usually omitted now
+                      because YouTube's own channel watermark covers it.
+      lower_third  -> a transparent (alpha) .mov that plays ONCE at lower_third_start
+                      seconds (e.g. the Gaming Social lower-thirds at 0:07).
+
+    Parts MUST share the same codec/res/fps/colour (same export preset). Returns
+    out_path (does NOT load bytes — the full-game file can be tens of GB)."""
     parts = sorted([Path(p) for p in parts], key=_part_order_key)
     missing = [str(p) for p in parts if not p.exists()]
     if not parts or missing:
@@ -514,31 +520,50 @@ def build_longform_hdr(
 
     with tempfile.TemporaryDirectory() as tmp:
         n = len(parts)
+        gp = max(0.05, min(1.0, float(graphics_pct)))
         inputs: list[str] = []
         for p in parts:
             inputs += ["-i", str(p)]
-        logo_idx = n
+        idx = n
+        # optional circular KG logo — a SINGLE frame (overlay repeats it for the whole
+        # video, so no -loop + no -shortest, which would truncate to the lower-third).
         logo_png = (_brand_logo(logo, Path(tmp) / "kglogo.png", size=logo_size)
                     if logo else None)
-        has_logo = bool(logo_png and Path(logo_png).exists())
-        if has_logo:
-            inputs += ["-loop", "1", "-i", str(logo_png)]
+        logo_idx = None
+        if logo_png and Path(logo_png).exists():
+            inputs += ["-i", str(logo_png)]
+            logo_idx = idx
+            idx += 1
+        # optional animated lower-third (transparent-alpha .mov) — plays ONCE.
+        lt_idx = None
+        if lower_third and Path(lower_third).exists():
+            inputs += ["-i", str(lower_third)]
+            lt_idx = idx
+            idx += 1
 
         # concat all parts (video + audio) in order
         concat_in = "".join(f"[{i}:v:0][{i}:a:0]" for i in range(n))
         fc = [f"{concat_in}concat=n={n}:v=1:a=1[cv][ca]"]
         vlabel = "cv"
-        if has_logo:
+        # SDR graphics are scaled toward HDR graphics-white (PQ ~58% = 203 nits) before
+        # overlaying onto the PQ/Rec2020 signal. graphics_pct is the calibration knob.
+        if logo_idx is not None:
             margin = int(3840 * 0.02)
-            # sRGB logo scaled toward HDR graphics-white (PQ ~58% = 203 nits), then
-            # overlaid onto the PQ/Rec2020 signal. graphics_pct is the calibration knob.
-            gp = max(0.05, min(1.0, float(graphics_pct)))
             fc += [
-                f"[{logo_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
-                f"format=rgba[lg]",
-                f"[{vlabel}][lg]overlay=W-w-{margin}:{margin}:format=auto[v]",
+                f"[{logo_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},format=rgba[lg]",
+                f"[{vlabel}][lg]overlay=W-w-{margin}:{margin}:format=auto[vl]",
             ]
-            vlabel = "v"
+            vlabel = "vl"
+        if lt_idx is not None:
+            st = max(0.0, float(lower_third_start))
+            # delay the lower-third to t=start, gate it, play once (eof_action=pass).
+            fc += [
+                f"[{lt_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
+                f"setpts=PTS+{st}/TB[lt]",
+                f"[{vlabel}][lt]overlay=0:0:enable='gte(t,{st})':"
+                f"eof_action=pass:format=auto[vlt]",
+            ]
+            vlabel = "vlt"
 
         # HDR10 static metadata in x264 units: chromaticity in 0.00002 steps,
         # luminance in 0.0001 cd/m^2 steps. Rec2020 primaries + D65; L max 1000, min 0.01.
@@ -558,7 +583,7 @@ def build_longform_hdr(
             "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate, "-bufsize", "126M",
             "-x264-params", x264p,
             "-c:a", "aac", "-b:a", "384k",
-            "-movflags", "+faststart", "-shortest", str(out_path),
+            "-movflags", "+faststart", str(out_path),   # NO -shortest (keep full length)
         ]
         out_path.parent.mkdir(parents=True, exist_ok=True)
         rc, err = ffmpeg.run(args, timeout=timeout)

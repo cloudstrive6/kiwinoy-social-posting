@@ -780,9 +780,12 @@ youtube_longform:
   privacy: private            # 'private'+publish_at = scheduled; or 'public'/'unlisted'
   category_id: "20"           # 20 = Gaming
   made_for_kids: false
-  graphics_pct: 0.58          # logo brightness toward HDR graphics-white (203 nits) — calibrate
+  logo: false                 # circular KG logo overlay — OFF (YouTube's own channel watermark covers it)
+  lower_third: "reels/assets/logo/Gaming Social Lower Thirds B - Youtube - Transparent BG.mov"
+  lower_third_start: 7.0      # seconds into the video the lower-third animation plays (once)
+  graphics_pct: 0.58          # SDR-graphic brightness toward HDR graphics-white (203 nits) — calibrate
   bitrate: "63M"
-  logo_size: 480              # circular KG logo diameter on the 4K frame
+  logo_size: 480              # circular KG logo diameter on the 4K frame (only if logo: true)
   default_tags: [gaming, walkthrough, playthrough, "4K", HDR, "60fps"]
 
 threads_footage:
