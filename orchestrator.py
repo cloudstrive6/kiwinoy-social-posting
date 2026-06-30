@@ -1144,6 +1144,9 @@ def run_youtube_longform(
     parts,
     game: Optional[str] = None,
     title: Optional[str] = None,
+    description: Optional[str] = None,
+    thumb_text: Optional[str] = None,
+    tags: Optional[list[str]] = None,
     thumb_image: Optional[str] = None,
     publish_at: Optional[str] = None,
     dry_run: bool = False,
@@ -1177,8 +1180,23 @@ def run_youtube_longform(
     log(f"{len(files)} parts | game: {game or '(pass --game for the thumbnail image)'}")
 
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or (game or "this game")
-    meta = content.youtube_longform_meta(game or "", gname)
-    title = title or meta["title"]
+    # Metadata: explicit overrides win. For specific CLIPS the agent supplies all
+    # of title/description/thumb_text (from reviewing the clip), so the generic
+    # full-game AI writer is skipped entirely; otherwise it fills the gaps.
+    if title and description and thumb_text:
+        meta = {"title": title, "description": description, "thumbnail": thumb_text,
+                "tags": tags or list(yl.get("default_tags", []))}
+    else:
+        meta = content.youtube_longform_meta(game or "", gname)
+        if title:
+            meta["title"] = title
+        if description:
+            meta["description"] = description
+        if thumb_text:
+            meta["thumbnail"] = thumb_text
+        if tags:
+            meta["tags"] = tags
+    title = meta["title"]
     log(f"Title: {title}")
 
     out = run_dir / "fullgame.mp4"

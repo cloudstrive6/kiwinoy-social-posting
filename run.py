@@ -139,6 +139,9 @@ def main() -> int:
     )
     p.add_argument("--game", help="(with --youtube) game key for the thumbnail image")
     p.add_argument("--title", help="(with --youtube) explicit video title (overrides the auto title)")
+    p.add_argument("--description", help="(with --youtube) explicit description (overrides the auto one)")
+    p.add_argument("--thumb-text", help="(with --youtube) thumbnail overlay words, e.g. 'SEPHIROTH BOSS' (default FULL GAME)")
+    p.add_argument("--tags", help="(with --youtube) comma-separated tags")
     p.add_argument("--thumb-image", help="(with --youtube) explicit thumbnail base image (overrides the game pool)")
     p.add_argument(
         "--publish-at", default=None,
@@ -204,8 +207,10 @@ def main() -> int:
                   file=sys.stderr)
             return 2
         try:
+            tags = [t.strip() for t in args.tags.split(",") if t.strip()] if args.tags else None
             run_youtube_longform(args.parts, game=args.game, title=args.title,
-                                 thumb_image=args.thumb_image,
+                                 description=args.description, thumb_text=args.thumb_text,
+                                 tags=tags, thumb_image=args.thumb_image,
                                  publish_at=args.publish_at, dry_run=args.dry_run)
             return 0
         except Exception as e:
