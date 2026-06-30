@@ -1144,6 +1144,7 @@ def run_youtube_longform(
     parts,
     game: Optional[str] = None,
     title: Optional[str] = None,
+    thumb_image: Optional[str] = None,
     publish_at: Optional[str] = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
@@ -1201,7 +1202,7 @@ def run_youtube_longform(
         audio_lufs=yl.get("audio_lufs", -14.0))
 
     log("Generating thumbnail...")
-    img = _game_screenshot(game) if game else None
+    img = thumb_image or (_game_screenshot(game) if game else None)
     thumb = run_dir / "thumb.jpg"
     try:
         thumbnail.build_thumbnail(meta["thumbnail"], thumb, image=str(img) if img else None)

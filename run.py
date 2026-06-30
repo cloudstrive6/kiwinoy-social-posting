@@ -138,6 +138,8 @@ def main() -> int:
         help="(with --youtube) folder of, or path to, the labelled 4K/60 HDR PART files",
     )
     p.add_argument("--game", help="(with --youtube) game key for the thumbnail image")
+    p.add_argument("--title", help="(with --youtube) explicit video title (overrides the auto title)")
+    p.add_argument("--thumb-image", help="(with --youtube) explicit thumbnail base image (overrides the game pool)")
     p.add_argument(
         "--publish-at", default=None,
         help="(with --youtube) RFC3339 UTC time to schedule the video, e.g. 2026-07-01T12:00:00Z",
@@ -202,7 +204,8 @@ def main() -> int:
                   file=sys.stderr)
             return 2
         try:
-            run_youtube_longform(args.parts, game=args.game,
+            run_youtube_longform(args.parts, game=args.game, title=args.title,
+                                 thumb_image=args.thumb_image,
                                  publish_at=args.publish_at, dry_run=args.dry_run)
             return 0
         except Exception as e:
