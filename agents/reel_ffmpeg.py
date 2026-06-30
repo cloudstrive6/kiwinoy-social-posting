@@ -492,6 +492,7 @@ def build_longform_hdr(
     logo: Optional[Path] = None,
     lower_third: Optional[Path] = None,
     lower_third_start: float = 7.0,
+    lower_third_fade: float = 1.0,
     graphics_pct: float = 0.58,
     bitrate: str = "63M",
     keyint: int = 72,
@@ -558,9 +559,15 @@ def build_longform_hdr(
         if lt_idx is not None:
             st = max(0.0, float(lower_third_start))
             # delay the lower-third to t=start, gate it, play once (eof_action=pass).
+            # Fade its ALPHA out over the last lower_third_fade seconds so it doesn't
+            # cut abruptly (fade is in the clip's OWN time, before the setpts delay).
+            ltdur = ffmpeg.duration(Path(lower_third)) or 10.0
+            fdur = max(0.0, min(float(lower_third_fade), ltdur))
+            fade = (f"fade=t=out:st={max(0.0, ltdur - fdur):.2f}:d={fdur:.2f}:alpha=1,"
+                    if fdur > 0 else "")
             fc += [
                 f"[{lt_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
-                f"setpts=PTS+{st}/TB[lt]",
+                f"format=rgba,{fade}setpts=PTS+{st}/TB[lt]",
                 f"[{vlabel}][lt]overlay=0:0:enable='gte(t,{st})':"
                 f"eof_action=pass:format=auto[vlt]",
             ]
