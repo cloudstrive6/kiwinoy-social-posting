@@ -35,6 +35,7 @@ from orchestrator import (
     run_threads,
     run_threads_footage,
     run_threads_image,
+    run_youtube_longform,
 )
 
 
@@ -104,6 +105,11 @@ def main() -> int:
         action="store_true",
         help="render + publish a motivational gaming quote CARD (FB only)",
     )
+    g.add_argument(
+        "--youtube",
+        action="store_true",
+        help="LOCAL: concat the --parts 4K/60 HDR files into a full-game video + upload to YouTube",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
         "--carousel", action="store_true",
@@ -126,6 +132,15 @@ def main() -> int:
         "--schedule-at",
         default=None,
         help="ISO time to schedule the post (default: publish now)",
+    )
+    p.add_argument(
+        "--parts",
+        help="(with --youtube) folder of, or path to, the labelled 4K/60 HDR PART files",
+    )
+    p.add_argument("--game", help="(with --youtube) game key for the thumbnail image")
+    p.add_argument(
+        "--publish-at", default=None,
+        help="(with --youtube) RFC3339 UTC time to schedule the video, e.g. 2026-07-01T12:00:00Z",
     )
     args = p.parse_args()
 
@@ -178,6 +193,20 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[commentary] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]
+    if args.youtube:
+        if not args.parts:
+            print("[youtube] --parts is required (folder of, or path to, the 4K HDR part files)",
+                  file=sys.stderr)
+            return 2
+        try:
+            run_youtube_longform(args.parts, game=args.game,
+                                 publish_at=args.publish_at, dry_run=args.dry_run)
+            return 0
+        except Exception as e:
+            print(f"[youtube] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     # Motivational quote card -> Facebook.

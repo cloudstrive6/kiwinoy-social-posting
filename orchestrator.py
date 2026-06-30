@@ -1140,6 +1140,89 @@ def run_threads_footage(
     return result
 
 
+def run_youtube_longform(
+    parts,
+    game: Optional[str] = None,
+    title: Optional[str] = None,
+    publish_at: Optional[str] = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """LOCAL long-form YouTube: concat the labelled 4K/60 HDR10 PART files into one
+    full-game video (+ circular KG logo, HDR10 preserved to the Premiere preset),
+    generate a clickbait thumbnail, and upload (scheduled if publish_at). `parts`
+    is a folder OR a list of files. HEAVY — run on your own machine, not CI."""
+    from pathlib import Path
+
+    from agents import thumbnail
+
+    yl = CONFIG.youtube_longform or {}
+    if not yl.get("enabled", True):
+        print("[youtube] disabled — skipping.", flush=True)
+        return {"kind": "youtube_longform", "published": False, "skipped": "disabled"}
+
+    src = Path(str(parts))
+    if src.is_dir():
+        files = sorted([f for f in src.iterdir()
+                        if f.suffix.lower() in (".mp4", ".mov", ".mkv", ".m4v")])
+    else:
+        files = [Path(x) for x in (parts if isinstance(parts, (list, tuple)) else [parts])]
+    files = [f for f in files if f.exists()]
+    if not files:
+        raise ValueError(f"no part files found at: {parts}")
+
+    run_dir = OUTPUT_DIR / f"{_stamp()}_youtube_longform"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[youtube] {m}", flush=True)
+    log(f"{len(files)} parts | game: {game or '(pass --game for the thumbnail image)'}")
+
+    gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or (game or "this game")
+    meta = content.youtube_longform_meta(game or "", gname)
+    title = title or meta["title"]
+    log(f"Title: {title}")
+
+    out = run_dir / "fullgame.mp4"
+    log("Rendering full-game (concat + KG logo + HDR10 encode) — this takes a while...")
+    reel_ffmpeg.build_longform_hdr(
+        files, out, logo=_reel_logo(),
+        graphics_pct=float(yl.get("graphics_pct", 0.58)),
+        bitrate=str(yl.get("bitrate", "63M")),
+        logo_size=int(yl.get("logo_size", 480)))
+
+    log("Generating thumbnail...")
+    img = _game_screenshot(game) if game else None
+    thumb = run_dir / "thumb.jpg"
+    try:
+        thumbnail.build_thumbnail(meta["thumbnail"], thumb, image=str(img) if img else None)
+    except Exception as e:
+        log(f"thumbnail failed ({e!r}) — uploading without a custom thumbnail")
+        thumb = None
+
+    result: dict[str, Any] = {
+        "kind": "youtube_longform", "game": game, "title": title,
+        "video": str(out), "parts": [f.name for f in files], "dry_run": dry_run}
+    if dry_run:
+        log(f"DRY RUN — rendered {out.name} ({out.stat().st_size / 1e9:.2f} GB); not uploading.")
+        result["published"] = False
+        _save(run_dir, result)
+        return result
+
+    from core import youtube
+    log(f"Uploading to YouTube (privacy={yl.get('privacy', 'private')}"
+        f"{', scheduled ' + publish_at if publish_at else ''})...")
+    api = youtube.upload_video(
+        out, title=title, description=meta["description"], tags=meta["tags"],
+        privacy=str(yl.get("privacy", "private")), publish_at=publish_at,
+        category_id=str(yl.get("category_id", "20")),
+        made_for_kids=bool(yl.get("made_for_kids", False)),
+        thumbnail=str(thumb) if thumb else None)
+    result["published"] = True
+    result["video_id"] = api.get("id")
+    result["url"] = f"https://youtu.be/{api.get('id', '')}"
+    log(f"Done: {result['url']}")
+    _save(run_dir, result)
+    return result
+
+
 def run_threads_image(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,

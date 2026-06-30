@@ -343,6 +343,46 @@ def hook_and_caption_from_video(
     return hook, f"{line}\n\n{' '.join(tags)}".strip()
 
 
+def youtube_longform_meta(game: str = "", gname: str = "") -> dict:
+    """YouTube metadata for a FULL-GAME long-form video: a clickable title, a few
+    PUNCHY thumbnail words, an SEO description, and search tags. Falls back to safe
+    values if the model is unavailable."""
+    gname = gname or "this game"
+    prompt = (
+        f"You are writing YouTube metadata for a FULL-GAME long-form video of "
+        f"{gname} (a complete playthrough, 4K 60fps HDR). Return ONLY this JSON:\n"
+        '{"title": "...", "thumbnail": "...", "description": "...", "tags": ["..."]}\n'
+        "- title: a scroll-stopping but HONEST YouTube title (<=90 chars) that "
+        "includes the game name and that it's a full game / walkthrough.\n"
+        "- thumbnail: 2-4 PUNCHY words for the thumbnail overlay (big-caps energy, "
+        'e.g. "THE FULL GAME", "EVERY BOSS", "100% RUN").\n'
+        "- description: 2-3 sentence description.\n"
+        "- tags: 8-15 lowercase search tags.\n"
+        "No markdown, no preamble — just the JSON."
+    )
+    title = thumb = desc = ""
+    tags: list[str] = []
+    try:
+        d = extract_json(_text(prompt, timeout=150))
+        title = sanitize(str(d.get("title", ""))).strip()[:95]
+        thumb = sanitize(str(d.get("thumbnail", ""))).strip()[:40]
+        desc = sanitize(str(d.get("description", ""))).strip()[:4900]
+        tags = [sanitize(str(t)).strip() for t in (d.get("tags") or []) if str(t).strip()][:15]
+    except Exception as e:
+        print(f"[content] longform meta failed ({e!r}); using fallbacks.", flush=True)
+    if not title:
+        title = f"{gname} - FULL GAME Walkthrough (4K 60FPS HDR)"[:95]
+    if not thumb:
+        thumb = "THE FULL GAME"
+    if not desc:
+        desc = (f"The complete {gname} playthrough in 4K 60fps HDR — the full game "
+                f"start to finish.")
+    if not tags:
+        tags = [gname.lower(), "full game", "walkthrough", "playthrough", "4k",
+                "hdr", "60fps", "gameplay"]
+    return {"title": title, "thumbnail": thumb, "description": desc, "tags": tags}
+
+
 def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str:
     """REVIEW a gameplay clip and write an accurate clip-title caption.
 
