@@ -784,6 +784,8 @@ youtube_longform:
   lower_third: "reels/assets/logo/Gaming Social Lower Thirds B - Youtube - Transparent BG.mov"
   lower_third_start: 7.0      # seconds into the video the lower-third animation plays (once)
   lower_third_fade: 1.0       # fade the lower-third's last N seconds out (so it doesn't cut abruptly)
+  lower_third_scale: 0.4      # scale the lower-third smaller (1.0 = full 4K frame)
+  lower_third_pos: bottom-left  # full | bottom | bottom-left | bottom-right (keep it out of the action)
   audio_lufs: -14.0           # loudness-normalize the game audio to this target (YouTube ~= -14 LUFS); null = off
   graphics_pct: 0.58          # SDR-graphic brightness toward HDR graphics-white (203 nits) — calibrate
   bitrate: "63M"

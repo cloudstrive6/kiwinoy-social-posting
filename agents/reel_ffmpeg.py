@@ -493,6 +493,8 @@ def build_longform_hdr(
     lower_third: Optional[Path] = None,
     lower_third_start: float = 7.0,
     lower_third_fade: float = 1.0,
+    lower_third_scale: float = 1.0,
+    lower_third_pos: str = "full",
     graphics_pct: float = 0.58,
     bitrate: str = "63M",
     keyint: int = 72,
@@ -565,10 +567,16 @@ def build_longform_hdr(
             fdur = max(0.0, min(float(lower_third_fade), ltdur))
             fade = (f"fade=t=out:st={max(0.0, ltdur - fdur):.2f}:d={fdur:.2f}:alpha=1,"
                     if fdur > 0 else "")
+            s = max(0.05, min(1.0, float(lower_third_scale)))
+            scl = f"scale=trunc(iw*{s}/2)*2:trunc(ih*{s}/2)*2," if s < 1.0 else ""
+            pos = {"full": "0:0",
+                   "bottom": "(W-w)/2:H-h-60",
+                   "bottom-left": "60:H-h-60",
+                   "bottom-right": "W-w-60:H-h-60"}.get(str(lower_third_pos), "0:0")
             fc += [
-                f"[{lt_idx}:v]colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
+                f"[{lt_idx}:v]{scl}colorchannelmixer=rr={gp}:gg={gp}:bb={gp},"
                 f"format=rgba,{fade}setpts=PTS+{st}/TB[lt]",
-                f"[{vlabel}][lt]overlay=0:0:enable='gte(t,{st})':"
+                f"[{vlabel}][lt]overlay={pos}:enable='gte(t,{st})':"
                 f"eof_action=pass:format=auto[vlt]",
             ]
             vlabel = "vlt"

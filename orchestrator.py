@@ -1215,6 +1215,8 @@ def run_youtube_longform(
         lower_third=lt_path,
         lower_third_start=float(yl.get("lower_third_start", 7.0)),
         lower_third_fade=float(yl.get("lower_third_fade", 1.0)),
+        lower_third_scale=float(yl.get("lower_third_scale", 1.0)),
+        lower_third_pos=str(yl.get("lower_third_pos", "full")),
         graphics_pct=float(yl.get("graphics_pct", 0.58)),
         bitrate=str(yl.get("bitrate", "63M")),
         logo_size=int(yl.get("logo_size", 480)),
