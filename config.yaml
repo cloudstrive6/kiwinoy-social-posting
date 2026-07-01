@@ -388,6 +388,15 @@ reels:
     auto_zoom_max: 1.7 # cap the zoom-in so the subject is never cropped too tight
     pool_crop_bottom: 0.045   # trim the copyright strip off the bottom of cloud-pool stills
     variants: 3        # thumbnail variants generated per upload (for A/B Test & Compare)
+    # Relevance: for a titled clip (Part N or a story moment) pull the thumbnail
+    # BACKGROUND from the clip's OWN frames (relevant by construction) instead of the
+    # random cloud pool. Full-game concats still use the curated pool (iconic shots).
+    clip_bg_from_video: true
+    # VISION judge (Phase 2): Claude Haiku rates each variant for relevance + scroll-
+    # stopping and PICKS the best (~half a cent/thumbnail). Needs ANTHROPIC_API_KEY;
+    # fails open to the free heuristic inspector on any error / no key.
+    vision_judge: true
+    vision_model: claude-haiku-4-5
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

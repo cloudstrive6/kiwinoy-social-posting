@@ -1247,6 +1247,41 @@ def run_threads_footage(
     return result
 
 
+def _video_bg_frames(video, n: int = 6) -> list:
+    """Candidate BACKGROUND frames pulled from the actual video (so the thumbnail is
+    relevant to the clip by construction). HDR->SDR tonemapped; returned best-first
+    (well-exposed + high-detail; dark/flat/menu frames sink to the bottom)."""
+    from core import ffmpeg as _ff
+    dur = _ff.duration(video) or 60.0
+    tmp = OUTPUT_DIR / f"{_stamp()}_bgframes"
+    tmp.mkdir(parents=True, exist_ok=True)
+    tm = ("zscale=t=linear:npl=100,tonemap=hable,"
+          "zscale=t=bt709:m=bt709:p=bt709:r=tv,format=yuv420p")
+    frames = []
+    for i in range(max(1, n)):
+        t = dur * (0.1 + 0.8 * (i / max(1, n - 1)))    # spread across the middle 80%
+        p = tmp / f"f{i:02d}.jpg"
+        rc, _ = _ff.run(["-ss", f"{t:.1f}", "-i", str(video), "-map", "0:v:0",
+                         "-vf", tm, "-frames:v", "1", str(p)], timeout=120)
+        if rc == 0 and p.exists():
+            frames.append(p)
+    try:
+        import numpy as np
+        from PIL import Image
+        scored = []
+        for p in frames:
+            a = np.asarray(Image.open(p).convert("RGB").resize((160, 90)), dtype=np.float32)
+            mean, std = float(a.mean()), float(a.std())
+            sat = float((a.max(axis=2) - a.min(axis=2)).mean())
+            expo = 1.0 - abs(mean - 120.0) / 120.0     # penalise too dark / blown out
+            s = 0.5 * max(0.0, expo) + 0.3 * min(std, 70.0) / 70.0 + 0.2 * min(sat, 90.0) / 90.0
+            scored.append((s, p))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [p for _, p in scored]
+    except Exception:
+        return frames
+
+
 def _part_number(files) -> Optional[int]:
     """The Part number when this is a SINGLE-part upload (e.g. 'Halo - Part 1.mp4');
     None for a multi-part concat (= the full game)."""
@@ -1388,36 +1423,63 @@ def run_youtube_longform(
     else:
         log("No character cutouts for this game (add PNGs to reels/assets/game-character/"
             f"{game or '<game>'}/) — using the subject-in-background look.")
-    specs: list[dict] = []
-    if thumb_image:                                   # explicit pick wins -> variant_1
-        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box, game_logo=gl,
-                          character=gchar()))
-    for pi in (_pool_samples(game, nvar) if game else []):   # curated cloud stills
-        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop, game_logo=gl,
-                          character=gchar()))
-    if not specs:                                     # fallback: tonemapped footage frame
+    # Background candidates, priority: explicit --thumb-image > FRAMES FROM THE ACTUAL
+    # VIDEO (relevant by construction — for Part clips + story-moment clips) > curated
+    # cloud stills (full-game concat) > one tonemapped footage frame. (img, crop, sharpen)
+    use_clip_bg = (part_n is not None or story) and bool(tcfg.get("clip_bg_from_video", True))
+    bgs: list = []
+    if thumb_image:
+        bgs.append((str(thumb_image), 0.0, 0.0))
+    if use_clip_bg:
+        vf = _video_bg_frames(out, nvar + 2)
+        if vf:
+            log(f"Backgrounds from the clip's own frames ({len(vf)} candidates, relevant by construction).")
+            bgs += [(str(f), 0.0, 0.5) for f in vf]
+    if len(bgs) < nvar and game:
+        bgs += [(pi, pcrop, 0.0) for pi in _pool_samples(game, nvar)]   # curated cloud stills
+    if not bgs:                                       # fallback: one tonemapped footage frame
         ffimg = run_dir / "thumb_frame.jpg"
         _tm = ("zscale=t=linear:npl=100,tonemap=hable,"
                "zscale=t=bt709:m=bt709:p=bt709:r=tv,format=yuv420p")
         _ff.run(["-ss", f"{max(1.0, (_ff.duration(out) or 60) * 0.4):.1f}", "-i", str(out),
                  "-map", "0:v:0", "-vf", _tm, "-frames:v", "1", str(ffimg)], timeout=120)
-        specs.append(dict(text=txt, image=str(ffimg) if ffimg.exists() else None,
-                          box_fill=box, sharpen=0.6, game_logo=gl, character=gchar()))
+        if ffimg.exists():
+            bgs.append((str(ffimg), 0.0, 0.6))
+    specs: list[dict] = [
+        dict(text=txt, image=img, box_fill=box, crop_bottom=cb, sharpen=sh,
+             game_logo=gl, character=gchar())
+        for img, cb, sh in bgs[:nvar]] or [
+        dict(text=txt, image=None, box_fill=box, game_logo=gl, character=gchar())]
+
     thumb = None
     try:
         variants = thumbnail.build_variants(tdir, specs[:nvar])
-        # QC INSPECTOR: score each variant against the scroll-stopping bar, publish the
-        # BEST (not just #1), and log any that fall short (Phase-2 vision judge later).
-        best = -1.0
+        # INSPECTOR: prefer the Claude-Haiku VISION judge (relevance + scroll-stopping)
+        # when enabled + the key is funded; else the free heuristic. Publish the best.
+        vcfg = bool(tcfg.get("vision_judge", False))
+        vmodel = str(tcfg.get("vision_model", "claude-haiku-4-5"))
+        best, how = -1.0, "heuristic"
         for i, v in enumerate(variants):
-            q = thumbnail.inspect_thumbnail(
-                v, has_character=bool(specs[i].get("character")), game_logo=gl)
-            log(f"  {v.name}: score {q['score']} "
-                + ("OK" if q["ok"] else "— " + "; ".join(q["issues"])))
-            if q["score"] > best:
-                best, thumb = q["score"], v
+            vj = None
+            if vcfg:
+                from core import vision
+                vj = vision.judge_thumbnail(v, topic=title, model=vmodel)
+            if vj is not None:
+                how = "vision"
+                log(f"  {v.name}: vision rel={vj['relevant']:.0f}/10 ss={vj['scroll_stopping']:.0f}/10 "
+                    f"-> {vj['score']} | {vj['verdict']}"
+                    + (" | " + "; ".join(vj["issues"]) if vj["issues"] else ""))
+                score = vj["score"]
+            else:
+                q = thumbnail.inspect_thumbnail(
+                    v, has_character=bool(specs[i].get("character")), game_logo=gl)
+                log(f"  {v.name}: heuristic {q['score']} "
+                    + ("OK" if q["ok"] else "— " + "; ".join(q["issues"])))
+                score = q["score"]
+            if score > best:
+                best, thumb = score, v
         if thumb:
-            log(f"{len(variants)} variant(s) -> {tdir} (live: {thumb.name}, score {best})")
+            log(f"{len(variants)} variant(s) -> {tdir} (live: {thumb.name}, {how} score {best})")
     except Exception as e:
         log(f"thumbnail variants failed ({e!r}) — no custom thumbnail")
 
