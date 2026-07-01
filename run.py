@@ -147,6 +147,14 @@ def main() -> int:
         "--publish-at", default=None,
         help="(with --youtube) RFC3339 UTC time to schedule the video, e.g. 2026-07-01T12:00:00Z",
     )
+    p.add_argument(
+        "--public", action="store_true",
+        help="(with --youtube) publish PUBLIC immediately (overrides the private default)",
+    )
+    p.add_argument(
+        "--privacy", default=None,
+        help="(with --youtube) explicit privacy: public | unlisted | private",
+    )
     args = p.parse_args()
 
     # Threads track has no slots — one independent run per invocation.
@@ -208,10 +216,12 @@ def main() -> int:
             return 2
         try:
             tags = [t.strip() for t in args.tags.split(",") if t.strip()] if args.tags else None
+            privacy = args.privacy or ("public" if args.public else None)
             run_youtube_longform(args.parts, game=args.game, title=args.title,
                                  description=args.description, thumb_text=args.thumb_text,
                                  tags=tags, thumb_image=args.thumb_image,
-                                 publish_at=args.publish_at, dry_run=args.dry_run)
+                                 publish_at=args.publish_at, privacy=privacy,
+                                 dry_run=args.dry_run)
             return 0
         except Exception as e:
             print(f"[youtube] ERROR: {e}", file=sys.stderr, flush=True)

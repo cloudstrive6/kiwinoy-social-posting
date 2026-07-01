@@ -1227,6 +1227,7 @@ def run_youtube_longform(
     tags: Optional[list[str]] = None,
     thumb_image: Optional[str] = None,
     publish_at: Optional[str] = None,
+    privacy: Optional[str] = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """LOCAL long-form YouTube: concat the labelled 4K/60 HDR10 PART files into one
@@ -1342,11 +1343,15 @@ def run_youtube_longform(
         return result
 
     from core import youtube
-    log(f"Uploading to YouTube (privacy={yl.get('privacy', 'private')}"
+    # privacy: CLI override (--public / --privacy) wins, else the config default.
+    # NOTE: publish_at forces a scheduled (private-until-then) upload that then goes
+    # PUBLIC at that time, so it takes precedence over an immediate privacy choice.
+    priv = str(privacy or yl.get("privacy", "private")).lower()
+    log(f"Uploading to YouTube (privacy={priv}"
         f"{', scheduled ' + publish_at if publish_at else ''})...")
     api = youtube.upload_video(
         out, title=title, description=meta["description"], tags=meta["tags"],
-        privacy=str(yl.get("privacy", "private")), publish_at=publish_at,
+        privacy=priv, publish_at=publish_at,
         category_id=str(yl.get("category_id", "20")),
         made_for_kids=bool(yl.get("made_for_kids", False)),
         thumbnail=str(thumb) if thumb else None)

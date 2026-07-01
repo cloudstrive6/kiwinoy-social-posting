@@ -67,9 +67,31 @@ SPIDER_MAN: list[dict[str, str]] = [
      "author": "Peter Parker", "source": "No Way Home"},
 ]
 
+HALO: list[dict[str, str]] = [
+    {"line": "Wake me when you need me.",
+     "author": "Master Chief", "source": "Halo 3"},
+    {"line": "Sir. Finishing this fight.",
+     "author": "Master Chief", "source": "Halo 2"},
+    {"line": "I need a weapon.",
+     "author": "Master Chief", "source": "Halo 3"},
+    {"line": "Were it so easy.",
+     "author": "The Arbiter", "source": "Halo 3"},
+    {"line": "Don't make a girl a promise if you know you can't keep it.",
+     "author": "Cortana", "source": "Halo 3"},
+    {"line": "I am a monument to all your sins.",
+     "author": "Gravemind", "source": "Halo 2"},
+    {"line": "This cave is not a natural formation.",
+     "author": "343 Guilty Spark", "source": "Halo: Combat Evolved"},
+    {"line": "Thought I'd try shooting my way out. Mix things up a little.",
+     "author": "Master Chief", "source": "Halo 2"},
+    {"line": "Send me out... with a bang.",
+     "author": "Sergeant Johnson", "source": "Halo 3"},
+]
+
 # universe key -> its curated quote list
 UNIVERSES: dict[str, list[dict[str, str]]] = {
     "spider-man": SPIDER_MAN,
+    "halo": HALO,
 }
 
 
@@ -79,6 +101,8 @@ def universe_for_game(game: str) -> str | None:
     g = "".join(ch for ch in (game or "").lower() if ch.isalnum())
     if "spiderman" in g:
         return "spider-man"
+    if "halo" in g or "masterchief" in g:
+        return "halo"
     return None
 
 
