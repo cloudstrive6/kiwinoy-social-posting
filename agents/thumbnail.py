@@ -115,6 +115,8 @@ def build_thumbnail(
     box_fill: tuple = (214, 18, 18),     # YouTube-red "FULL GAME" box
     font_path: Optional[str] = None,     # override the headline font
     focus: Optional[tuple] = None,       # subject point (fx, fy in 0..1); None = auto
+    zoom: float = 1.0,                   # >1 crops toward the subject (emotion face-zoom)
+    sharpen: float = 0.0,                # extra crispening for soft footage frames (0..1)
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -131,6 +133,21 @@ def build_thumbnail(
     base = base.resize((max(W, int(bw * s)), max(H, int(bh * s))), Image.LANCZOS)
     bw, bh = base.size
     base = base.crop(((bw - W) // 2, (bh - H) // 2, (bw - W) // 2 + W, (bh - H) // 2 + H))
+
+    # Emotion face-zoom: crop tighter TOWARD the subject, then scale back up.
+    z = max(1.0, min(2.2, float(zoom)))
+    if z > 1.01:
+        fpt = focus or (0.5, 0.45)
+        cw, ch = int(W / z), int(H / z)
+        cx = int(min(W - cw, max(0, fpt[0] * W - cw / 2)))
+        cy = int(min(H - ch, max(0, fpt[1] * H - ch / 2)))
+        base = base.crop((cx, cy, cx + cw, cy + ch)).resize((W, H), Image.LANCZOS)
+
+    # Crispen soft footage frames (curated stills don't need it; skip for them).
+    if float(sharpen) > 0:
+        from PIL import ImageFilter
+        base = base.filter(ImageFilter.UnsharpMask(
+            radius=2.2, percent=int(90 * float(sharpen)), threshold=2))
 
     # Attention grade (config-tunable via reels.thumbnail.*): pop the image so it
     # stops the scroll — vibrance + contrast + a touch brighter + clarity — then a
@@ -209,3 +226,30 @@ def build_thumbnail(
 
     base.save(out_path, "JPEG", quality=92, optimize=True)
     return out_path
+
+
+def curated_candidates(game: str) -> list[Path]:
+    """Curated still images available locally for a game (+ 'general') — sharper and
+    cleaner than footage frames, so preferred for thumbnails when a suitable one
+    exists. The cloud image pool is added separately by the caller."""
+    exts = {".jpg", ".jpeg", ".png", ".webp"}
+    out: list[Path] = []
+    for g in (game or "", "general"):
+        d = ROOT / "assets/images" / g
+        if g and d.is_dir():
+            out += sorted(p for p in d.iterdir() if p.suffix.lower() in exts)
+    return out
+
+
+def build_variants(out_dir, specs: Sequence[dict]) -> list[Path]:
+    """Render several thumbnail variants for YouTube's A/B 'Test & Compare'. Each
+    spec is a dict of build_thumbnail kwargs (text/image/box_fill/focus/zoom/...).
+    Returns the variant_N.jpg paths (upload 2-3 to Studio; it serves the CTR winner)."""
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths: list[Path] = []
+    for i, spec in enumerate(specs, 1):
+        p = out_dir / f"variant_{i}.jpg"
+        build_thumbnail(out_path=p, **spec)
+        paths.append(p)
+    return paths
