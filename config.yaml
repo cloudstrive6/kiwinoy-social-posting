@@ -372,9 +372,21 @@ reels:
                            # keeps the face clear of the top-right 4K/HDR badge)
     character_top: 0.0     # head near the top; body runs off the bottom
     character_side: right  # which side the character stands on (logo+text take the other)
-    character_bg_darken: 0.6   # darken the background (0-1) so the character pops
-    character_bg_sat: 0.85     # slightly desaturate the background too
+    character_bg_darken: 0.7   # darken the background (0-1) so the character pops (keep the bg vibrant)
+    character_bg_sat: 0.9      # slightly desaturate the background too
     character_shadow: true # soft contact shadow so the cutout separates from the bg
+    # SUBJECT grade — bright, vibrant + crisp like the MKIceAndFire samples. The cutout
+    # is graded on its OWN (a dark gameplay-frame subject gets lifted), separate from the bg.
+    subject_grade: true
+    subject_target_lum: 140    # auto-lift the subject's mean brightness toward this
+    subject_brightness_min: 0.9   # clamp the auto-lift (don't crush a good render)
+    subject_brightness_max: 1.7   # clamp the auto-lift (don't blow out a bright frame)
+    subject_contrast: 1.14
+    subject_saturation: 1.22
+    subject_clarity: 1.35
+    subject_rim: 0.32          # tight bright edge behind the subject (0-1) -> pops off the bg (subtle)
+    subject_rim_px: 8
+    subject_rim_blur: 5
     vignette: 0.38     # darken AWAY from the subject (pull the eye in)
     spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
     auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus

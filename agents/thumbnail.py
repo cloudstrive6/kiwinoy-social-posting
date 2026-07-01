@@ -168,6 +168,35 @@ def _autocrop_alpha(img):
     return img.crop(bbox) if bbox else img
 
 
+def _grade_subject(rgba, *, target_lum: float = 140.0, bmin: float = 0.9, bmax: float = 1.7,
+                   contrast: float = 1.14, saturation: float = 1.22, clarity: float = 1.35):
+    """Grade the CUT-OUT subject on its own so it reads bright, vibrant + crisp — the
+    MKIceAndFire 'subject pops' look — no matter how dark/flat the source frame was.
+    'Check + adjust': measures the subject's mean luminance over its OPAQUE pixels only
+    and auto-lifts brightness toward `target_lum` (clamped to [bmin,bmax] so an
+    already-bright render isn't blown out / a curated render isn't crushed), then adds
+    contrast, saturation + clarity. Alpha is preserved untouched."""
+    import numpy as np
+    from PIL import Image, ImageEnhance
+    rgba = rgba.convert("RGBA")
+    r, g, b, a = rgba.split()
+    rgb = Image.merge("RGB", (r, g, b))
+    arr = np.asarray(rgb).astype("float32")
+    mask = np.asarray(a) > 32
+    if int(mask.sum()) > 64:
+        lum = 0.299 * arr[..., 0] + 0.587 * arr[..., 1] + 0.114 * arr[..., 2]
+        mean = float(lum[mask].mean())
+        mult = max(bmin, min(bmax, (target_lum / mean) if mean > 1 else 1.0))
+    else:
+        mult = 1.0
+    rgb = ImageEnhance.Brightness(rgb).enhance(mult)
+    rgb = ImageEnhance.Contrast(rgb).enhance(contrast)
+    rgb = ImageEnhance.Color(rgb).enhance(saturation)
+    rgb = ImageEnhance.Sharpness(rgb).enhance(clarity)
+    r2, g2, b2 = rgb.split()
+    return Image.merge("RGBA", (r2, g2, b2, a))
+
+
 def inspect_thumbnail(path, *, has_character: bool = False,
                       game_logo: Optional[str] = None) -> dict:
     """Heuristic QC (no AI, free): does the thumbnail meet the scroll-stopping bar?
@@ -298,24 +327,45 @@ def build_thumbnail(
     # so the full-colour character pops. Logo/badge/text layer on top.
     if character and Path(str(character)).exists():
         try:
-            dk = float(g.get("character_bg_darken", 0.6))
+            from PIL import ImageFilter
+            dk = float(g.get("character_bg_darken", 0.7))
             if dk < 1.0:                                  # subdue the bg -> character pops
                 base = ImageEnhance.Brightness(base).enhance(dk)
-                base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.85)))
+                base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.9)))
             ch = _autocrop_alpha(Image.open(str(character)).convert("RGBA"))
             th = int(H * max(0.6, float(g.get("character_scale", 1.14))))   # >1 => off the bottom
             ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
             maxw = int(W * float(g.get("character_max_w", 0.6)))
             if ch.width > maxw:
                 ch = ch.resize((maxw, max(1, int(ch.height * maxw / ch.width))), Image.LANCZOS)
+            # GRADE THE SUBJECT independently: bright, vibrant + crisp like the samples
+            # (a dark cutout from a gameplay frame gets lifted; a bright render is left).
+            if float(g.get("subject_grade", 1)):
+                ch = _grade_subject(
+                    ch, target_lum=float(g.get("subject_target_lum", 140)),
+                    bmin=float(g.get("subject_brightness_min", 0.9)),
+                    bmax=float(g.get("subject_brightness_max", 1.7)),
+                    contrast=float(g.get("subject_contrast", 1.14)),
+                    saturation=float(g.get("subject_saturation", 1.22)),
+                    clarity=float(g.get("subject_clarity", 1.35)))
             side = str(g.get("character_side", "right"))
             xc = float(g.get("character_x", 0.63))         # horizontal CENTRE (face clears the badge)
             cx = int(W * (xc if side == "right" else 1.0 - xc) - ch.width / 2)
             cy = int(H * float(g.get("character_top", 0.0)))   # head near the top; body bleeds off bottom
-            if float(g.get("character_shadow", 1)):
-                base = _place_shadowed(base, ch, (cx, cy), blur=26, dark=0.45, offset=(0, 0))
-            else:
-                c = base.convert("RGBA"); c.alpha_composite(ch, (cx, cy)); base = c.convert("RGB")
+            c = base.convert("RGBA")
+            if float(g.get("character_shadow", 1)):        # soft dark aura -> depth / grounding
+                sh = Image.new("RGBA", ch.size, (0, 0, 0, 0))
+                sh.putalpha(ch.split()[-1].point(lambda v: int(v * 0.45)))
+                c.alpha_composite(sh.filter(ImageFilter.GaussianBlur(26)), (cx, cy + 6))
+            rim = max(0.0, min(1.0, float(g.get("subject_rim", 0.45))))
+            if rim > 0:                                    # tight bright edge -> subject/bg separation
+                m = ch.split()[-1].filter(ImageFilter.MaxFilter(int(g.get("subject_rim_px", 10)) | 1))
+                m = m.filter(ImageFilter.GaussianBlur(float(g.get("subject_rim_blur", 7))))
+                halo = Image.new("RGBA", ch.size, (255, 255, 255, 0))
+                halo.putalpha(m.point(lambda v: int(v * rim)))
+                c.alpha_composite(halo, (cx, cy))
+            c.alpha_composite(ch, (cx, cy))
+            base = c.convert("RGB")
             draw = ImageDraw.Draw(base)
         except Exception:
             pass
