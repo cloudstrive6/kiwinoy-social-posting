@@ -8,3 +8,7 @@
 # character PNGs / subject-in-the-background), so the reels/CI paths never need them.
 rembg>=2.0.50
 onnxruntime>=1.16.0
+# tools/find_character.py: web-source a hero render. requests to fetch; truststore so
+# HTTPS verification uses the OS trust store (works behind Avast's TLS interception).
+requests>=2.31.0
+truststore>=0.9.0

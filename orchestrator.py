@@ -126,7 +126,7 @@ def _game_character(game: Optional[str]) -> Optional[Any]:
         d = base / key if key else None
         if d and d.is_dir():
             pngs = [p for p in sorted(d.iterdir())
-                    if p.is_file() and p.suffix.lower() == ".png"]
+                    if p.is_file() and p.suffix.lower() in (".png", ".webp")]  # both carry alpha
             if pngs:
                 return random.choice(pngs)
     return None
