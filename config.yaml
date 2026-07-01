@@ -350,6 +350,11 @@ reels:
     brightness: 1.04
     clarity: 1.6       # sharpening / crispness
     bloom: 0.45        # soft glow on highlights (cinematic/premium; 0 = off)
+    # Game LOGO (top-left) + GLOW/pop, MKIceAndFire-style (drop a game logo PNG in
+    # reels/assets/game-logo/, matched to the game by filename keyword):
+    logo_height: 168   # game-logo height on the 1280x720 thumbnail
+    logo_glow: true    # soft drop shadow behind the game logo (reads on any bg)
+    text_glow: true    # soft glow/shadow behind the PART/FULL GAME box (pop)
     vignette: 0.38     # darken AWAY from the subject (pull the eye in)
     spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
     auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus

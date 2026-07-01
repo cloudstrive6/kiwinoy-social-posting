@@ -146,6 +146,22 @@ def _focus_grade(base, focus, vignette: float, spotlight: float):
     return Image.fromarray(arr.clip(0, 255).astype("uint8"))
 
 
+def _place_shadowed(base, layer, xy, *, blur: float = 14.0, dark: float = 0.6,
+                    offset: tuple = (0, 7)):
+    """Composite an RGBA `layer` onto RGB `base` at xy over a soft drop shadow (a
+    blurred dark silhouette from the layer's alpha) so it lifts off any background —
+    the premium 'logo/box pops' look. Returns a new RGB image."""
+    from PIL import Image, ImageFilter
+
+    sh = Image.new("RGBA", layer.size, (0, 0, 0, 0))
+    sh.putalpha(layer.split()[-1].point(lambda v: int(v * dark)))
+    sh = sh.filter(ImageFilter.GaussianBlur(blur))
+    canvas = base.convert("RGBA")
+    canvas.alpha_composite(sh, (int(xy[0] + offset[0]), int(xy[1] + offset[1])))
+    canvas.alpha_composite(layer, (int(xy[0]), int(xy[1])))
+    return canvas.convert("RGB")
+
+
 def build_thumbnail(
     text: str = "FULL GAME",
     out_path=None,
@@ -228,14 +244,17 @@ def build_thumbnail(
                         max(0.0, float(g.get("spotlight", 0.18))))
     draw = ImageDraw.Draw(base)
 
-    # game logo, top-left
+    # game logo, top-left (with a soft drop shadow so it reads on any background)
     if game_logo and Path(game_logo).exists():
         try:
             lg = Image.open(game_logo).convert("RGBA")
-            lh = 150
+            lh = int(g.get("logo_height", 168))
             lg = lg.resize((max(1, int(lg.width * (lh / lg.height))), lh), Image.LANCZOS)
-            base.alpha_composite(lg.convert("RGBA"), (44, 36)) if base.mode == "RGBA" \
-                else base.paste(lg, (44, 36), lg)
+            if float(g.get("logo_glow", 1)):
+                base = _place_shadowed(base, lg, (44, 34), blur=16, dark=0.7, offset=(0, 6))
+                draw = ImageDraw.Draw(base)   # base replaced -> refresh the draw handle
+            else:
+                base.paste(lg, (44, 34), lg)
         except Exception:
             pass
 
@@ -276,12 +295,23 @@ def build_thumbnail(
     f = _font(fsize, hl)
     tw, th = _tsize(draw, txt, f)
     padx, pady = 34, 20
+    bw2, bh2 = tw + padx * 2, th + pady * 2
     x0, y1 = 46, H - 46
-    x1, y0 = x0 + tw + padx * 2, y1 - (th + pady * 2)
-    draw.rounded_rectangle([x0, y0, x1, y1], radius=16, fill=box_fill,
-                           outline=(255, 255, 255), width=8)
-    draw.text(((x0 + x1) // 2, (y0 + y1) // 2), txt, font=f, fill=(255, 255, 255),
-              anchor="mm", stroke_width=2, stroke_fill=(0, 0, 0))
+    y0 = y1 - bh2
+    # Render the box+text on its own transparent layer (pad 10px for the outline),
+    # then drop it onto the image with a soft glow/shadow behind it (pop).
+    layer = Image.new("RGBA", (bw2 + 20, bh2 + 20), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    ld.rounded_rectangle([10, 10, 10 + bw2, 10 + bh2], radius=16, fill=box_fill,
+                         outline=(255, 255, 255), width=8)
+    ld.text((10 + bw2 // 2, 10 + bh2 // 2), txt, font=f, fill=(255, 255, 255),
+            anchor="mm", stroke_width=2, stroke_fill=(0, 0, 0))
+    if float(g.get("text_glow", 1)):
+        base = _place_shadowed(base, layer, (x0 - 10, y0 - 10), blur=18, dark=0.75, offset=(0, 8))
+    else:
+        c = base.convert("RGBA")
+        c.alpha_composite(layer, (x0 - 10, y0 - 10))
+        base = c.convert("RGB")
 
     base.save(out_path, "JPEG", quality=92, optimize=True)
     return out_path

@@ -1218,6 +1218,34 @@ def run_threads_footage(
     return result
 
 
+def _part_number(files) -> Optional[int]:
+    """The Part number when this is a SINGLE-part upload (e.g. 'Halo - Part 1.mp4');
+    None for a multi-part concat (= the full game)."""
+    if len(files) != 1:
+        return None
+    import os
+    import re as _r
+    m = _r.search(r"part[\s_\-]*([0-9]+)", os.path.basename(str(files[0])), _r.IGNORECASE)
+    return int(m.group(1)) if m else None
+
+
+def _part_meta(gname: str, n: int, yl: dict) -> dict[str, Any]:
+    """Deterministic YouTube metadata for a single-PART walkthrough upload — the
+    proven 'Part N ... (FULL GAME)' format the big full-game channels use."""
+    return {
+        "title": (f"{gname} Gameplay Walkthrough Part {n} "
+                  f"[4K 60FPS HDR] - No Commentary (FULL GAME)")[:100],
+        "thumbnail": f"PART {n}",
+        "description": (f"{gname} Gameplay Walkthrough Part {n} in 4K 60fps HDR, no "
+                        f"commentary. This series will cover the full {gname} playthrough "
+                        f"from start to finish — subscribe for the next parts!"),
+        "tags": (list(yl.get("default_tags", [])) +
+                 [gname.lower(), f"{gname.lower()} part {n}", "walkthrough",
+                  "gameplay walkthrough", "no commentary", "playthrough", "4k", "hdr",
+                  "60fps"])[:15],
+    }
+
+
 def run_youtube_longform(
     parts,
     game: Optional[str] = None,
@@ -1262,11 +1290,14 @@ def run_youtube_longform(
     # Metadata: explicit overrides win. For specific CLIPS the agent supplies all
     # of title/description/thumb_text (from reviewing the clip), so the generic
     # full-game AI writer is skipped entirely; otherwise it fills the gaps.
+    part_n = _part_number(files)
     if title and description and thumb_text:
         meta = {"title": title, "description": description, "thumbnail": thumb_text,
                 "tags": tags or list(yl.get("default_tags", []))}
     else:
-        meta = content.youtube_longform_meta(game or "", gname)
+        # Single PART upload -> 'Part N' title + 'PART N' thumbnail; else full-game.
+        meta = (_part_meta(gname, part_n, yl) if part_n is not None
+                else content.youtube_longform_meta(game or "", gname))
         if title:
             meta["title"] = title
         if description:
@@ -1276,6 +1307,8 @@ def run_youtube_longform(
         if tags:
             meta["tags"] = tags
     title = meta["title"]
+    if part_n is not None:
+        log(f"Single-part upload -> Part {part_n}")
     log(f"Title: {title}")
 
     out = run_dir / "fullgame.mp4"
@@ -1310,12 +1343,18 @@ def run_youtube_longform(
     tcfg = CONFIG.reels.get("thumbnail", {}) or {}
     pcrop = float(tcfg.get("pool_crop_bottom", 0.045))
     nvar = max(1, int(tcfg.get("variants", 3)))
-    box, txt = (255, 196, 0), meta["thumbnail"]
+    # Red PART box (MKIceAndFire style) for a single part; gold FULL GAME otherwise.
+    box = (214, 18, 18) if part_n is not None else (255, 196, 0)
+    txt = meta["thumbnail"]
+    glogo = _game_logo(game) if game else None       # official game logo (top-left) if we have one
+    gl = str(glogo) if glogo else None
+    if glogo:
+        log(f"Thumbnail game logo: {Path(glogo).name}")
     specs: list[dict] = []
     if thumb_image:                                   # explicit pick wins -> variant_1
-        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box))
+        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box, game_logo=gl))
     for pi in (_pool_samples(game, nvar) if game else []):   # curated cloud stills
-        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop))
+        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop, game_logo=gl))
     if not specs:                                     # fallback: tonemapped footage frame
         ffimg = run_dir / "thumb_frame.jpg"
         _tm = ("zscale=t=linear:npl=100,tonemap=hable,"
@@ -1323,7 +1362,7 @@ def run_youtube_longform(
         _ff.run(["-ss", f"{max(1.0, (_ff.duration(out) or 60) * 0.4):.1f}", "-i", str(out),
                  "-map", "0:v:0", "-vf", _tm, "-frames:v", "1", str(ffimg)], timeout=120)
         specs.append(dict(text=txt, image=str(ffimg) if ffimg.exists() else None,
-                          box_fill=box, sharpen=0.6))
+                          box_fill=box, sharpen=0.6, game_logo=gl))
     thumb = None
     try:
         variants = thumbnail.build_variants(tdir, specs[:nvar])
