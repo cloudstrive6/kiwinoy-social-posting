@@ -340,6 +340,12 @@ reels:
     headline_font: assets/fonts/montserrat/Montserrat.ttf   # variable -> heaviest weight
     long_font: assets/fonts/anton/Anton-Regular.ttf         # condensed, for long titles
     long_threshold: 14                                      # chars over which to use the condensed font
+    # Attention grade for the base image (make it pop, pull the eye to the subject):
+    vibrance: 1.35     # colour saturation (1.0 = none; >1.5 starts to look cheap)
+    contrast: 1.16
+    brightness: 1.04
+    clarity: 1.6       # sharpening / crispness
+    vignette: 0.35     # darken the edges (0 = off, ~0.5 = strong)
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

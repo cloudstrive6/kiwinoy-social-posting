@@ -76,8 +76,19 @@ def build_thumbnail(
     base = base.resize((max(W, int(bw * s)), max(H, int(bh * s))), Image.LANCZOS)
     bw, bh = base.size
     base = base.crop(((bw - W) // 2, (bh - H) // 2, (bw - W) // 2 + W, (bh - H) // 2 + H))
-    base = ImageEnhance.Contrast(base).enhance(1.10)
-    base = ImageEnhance.Color(base).enhance(1.25)
+
+    # Attention grade (config-tunable via reels.thumbnail.*): pop the image so it
+    # stops the scroll — vibrance + contrast + a touch brighter + clarity — then a
+    # VIGNETTE (darken the edges) so the eye is pulled to the centre/subject.
+    g = _CFG()
+    base = ImageEnhance.Color(base).enhance(float(g.get("vibrance", 1.35)))
+    base = ImageEnhance.Contrast(base).enhance(float(g.get("contrast", 1.16)))
+    base = ImageEnhance.Brightness(base).enhance(float(g.get("brightness", 1.04)))
+    base = ImageEnhance.Sharpness(base).enhance(float(g.get("clarity", 1.6)))
+    vstr = max(0.0, min(0.9, float(g.get("vignette", 0.35))))
+    if vstr > 0:
+        vig = Image.radial_gradient("L").resize((W, H)).point(lambda v: int(v * vstr))
+        base = Image.composite(Image.new("RGB", (W, H), (0, 0, 0)), base, vig)
     draw = ImageDraw.Draw(base)
 
     # game logo, top-left
