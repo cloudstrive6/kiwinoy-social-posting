@@ -100,6 +100,15 @@ class _Config:
     def youtube_refresh_token(self) -> str:
         return self._key("YOUTUBE_REFRESH_TOKEN")
 
+    # Backblaze B2 (long-form 4K HDR source archive, via rclone). Env-only.
+    @property
+    def b2_key_id(self) -> str:
+        return self._key("B2_KEY_ID")
+
+    @property
+    def b2_app_key(self) -> str:
+        return self._key("B2_APP_KEY")
+
     # ---- convenience accessors ----------------------------------------
     @property
     def brand(self) -> dict[str, Any]:

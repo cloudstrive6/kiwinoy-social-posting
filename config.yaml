@@ -792,6 +792,16 @@ youtube_longform:
   logo_size: 480              # circular KG logo diameter on the 4K frame (only if logo: true)
   default_tags: [gaming, walkthrough, playthrough, "4K", HDR, "60fps"]
 
+# Long-form 4K HDR source archive -> Backblaze B2 (frees local disk). Uses rclone.
+# Push a finished game to the cloud + delete local; pull it back for more clips.
+#   python tools/archive_longform.py push final-fantasy-7-remake
+longform_archive:
+  enabled: true
+  provider: b2
+  remote: kgb2                        # rclone remote name (configured from .env at runtime)
+  bucket: kiwinoygamer-longform       # your B2 bucket name
+  local_dir: reels/assets/longform
+
 threads_footage:
   enabled: true
   seconds: 60          # max clip length (longer clips are trimmed)
