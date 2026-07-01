@@ -111,6 +111,27 @@ def _game_art(game: Optional[str]) -> Optional[Any]:
     return None
 
 
+def _game_character(game: Optional[str]) -> Optional[Any]:
+    """A random TRANSPARENT character cutout PNG for the thumbnail's prominent
+    foreground subject. Drop hero renders (Cloud, Master Chief, ...) in
+    reels/assets/game-character/<game>/ (matched by the footage key, then the game's
+    universe). PNG only (they need transparency). None if none exist -> the thumbnail
+    falls back to the subject-in-the-background look."""
+    from core import game_quotes
+    if not game:
+        return None
+    base = ROOT / (CONFIG.reels.get("thumbnail", {}) or {}).get(
+        "character_dir", "reels/assets/game-character")
+    for key in (str(game), game_quotes.universe_for_game(game) or ""):
+        d = base / key if key else None
+        if d and d.is_dir():
+            pngs = [p for p in sorted(d.iterdir())
+                    if p.is_file() and p.suffix.lower() == ".png"]
+            if pngs:
+                return random.choice(pngs)
+    return None
+
+
 def _game_screenshot(game: Optional[str]) -> Optional[Any]:
     """A real game screenshot for the triptych TOP panel, pulled from the cloud
     image library (the assets/images uploaded to the qimg pool), matched to the
@@ -1361,11 +1382,19 @@ def run_youtube_longform(
     gl = str(glogo) if glogo else None
     if glogo:
         log(f"Thumbnail game logo: {Path(glogo).name}")
+    gchar = lambda: (str(_game_character(game)) if game else None)   # random hero cutout / variant
+    if gchar():
+        log("Prominent character cutout(s) available — compositing in the foreground.")
+    else:
+        log("No character cutouts for this game (add PNGs to reels/assets/game-character/"
+            f"{game or '<game>'}/) — using the subject-in-background look.")
     specs: list[dict] = []
     if thumb_image:                                   # explicit pick wins -> variant_1
-        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box, game_logo=gl))
+        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box, game_logo=gl,
+                          character=gchar()))
     for pi in (_pool_samples(game, nvar) if game else []):   # curated cloud stills
-        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop, game_logo=gl))
+        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop, game_logo=gl,
+                          character=gchar()))
     if not specs:                                     # fallback: tonemapped footage frame
         ffimg = run_dir / "thumb_frame.jpg"
         _tm = ("zscale=t=linear:npl=100,tonemap=hable,"
@@ -1373,13 +1402,22 @@ def run_youtube_longform(
         _ff.run(["-ss", f"{max(1.0, (_ff.duration(out) or 60) * 0.4):.1f}", "-i", str(out),
                  "-map", "0:v:0", "-vf", _tm, "-frames:v", "1", str(ffimg)], timeout=120)
         specs.append(dict(text=txt, image=str(ffimg) if ffimg.exists() else None,
-                          box_fill=box, sharpen=0.6, game_logo=gl))
+                          box_fill=box, sharpen=0.6, game_logo=gl, character=gchar()))
     thumb = None
     try:
         variants = thumbnail.build_variants(tdir, specs[:nvar])
-        thumb = variants[0] if variants else None     # variant_1 = the chosen/live one
-        log(f"{len(variants)} thumbnail variant(s) -> {tdir}"
-            + (f" (live: {thumb.name})" if thumb else ""))
+        # QC INSPECTOR: score each variant against the scroll-stopping bar, publish the
+        # BEST (not just #1), and log any that fall short (Phase-2 vision judge later).
+        best = -1.0
+        for i, v in enumerate(variants):
+            q = thumbnail.inspect_thumbnail(
+                v, has_character=bool(specs[i].get("character")), game_logo=gl)
+            log(f"  {v.name}: score {q['score']} "
+                + ("OK" if q["ok"] else "— " + "; ".join(q["issues"])))
+            if q["score"] > best:
+                best, thumb = q["score"], v
+        if thumb:
+            log(f"{len(variants)} variant(s) -> {tdir} (live: {thumb.name}, score {best})")
     except Exception as e:
         log(f"thumbnail variants failed ({e!r}) — no custom thumbnail")
 

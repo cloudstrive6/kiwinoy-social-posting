@@ -162,6 +162,51 @@ def _place_shadowed(base, layer, xy, *, blur: float = 14.0, dark: float = 0.6,
     return canvas.convert("RGB")
 
 
+def _autocrop_alpha(img):
+    """Trim fully-transparent borders so a character PNG scales by its real bounds."""
+    bbox = img.split()[-1].getbbox()
+    return img.crop(bbox) if bbox else img
+
+
+def inspect_thumbnail(path, *, has_character: bool = False,
+                      game_logo: Optional[str] = None) -> dict:
+    """Heuristic QC (no AI, free): does the thumbnail meet the scroll-stopping bar?
+    Returns {ok, score 0-1, issues[]}. Used to PICK the best variant + flag problems
+    (the vision-based judge comes in Phase 2 when AI billing is back)."""
+    import numpy as np
+    from PIL import Image
+
+    issues: list[str] = []
+    im = Image.open(path).convert("RGB")
+    arr = np.asarray(im, dtype=np.float32)
+    # 1) subject prominence: a composited character guarantees it; else measure span
+    if not has_character:
+        try:
+            _, _, span = _subject(im)
+            if span < 0.45:
+                issues.append("subject not prominent (no character; small saliency)")
+        except Exception:
+            pass
+    # 2) exposure + punch
+    mean, std = float(arr.mean()), float(arr.std())
+    if mean < 38:
+        issues.append("too dark")
+    elif mean > 226:
+        issues.append("washed out / too bright")
+    if std < 26:
+        issues.append("low contrast (flat, not scroll-stopping)")
+    # 3) logo transparency — a solid-background logo shows as an ugly box
+    if game_logo and Path(str(game_logo)).exists():
+        try:
+            a = np.asarray(Image.open(str(game_logo)).convert("RGBA"))[:, :, 3]
+            if float((a < 10).mean()) < 0.05:
+                issues.append("game logo has no transparent background (shows a box)")
+        except Exception:
+            pass
+    return {"ok": not issues, "score": round(max(0.0, 1.0 - 0.25 * len(issues)), 2),
+            "issues": issues}
+
+
 def build_thumbnail(
     text: str = "FULL GAME",
     out_path=None,
@@ -175,6 +220,7 @@ def build_thumbnail(
     sharpen: float = 0.0,                # extra crispening for soft footage frames (0..1)
     crop_bottom: float = 0.0,            # trim this fraction off the source bottom (copyright strip)
     auto_compose: Optional[bool] = None,  # analyze + auto-crop toward the subject (None = config default, on)
+    character: Optional[str] = None,     # transparent character PNG composited big in the foreground
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -190,6 +236,8 @@ def build_thumbnail(
         bw, bh = base.size
         base = base.crop((0, 0, bw, int(bh * (1 - min(0.15, float(crop_bottom))))))
     auto = _CFG().get("auto_compose", True) if auto_compose is None else bool(auto_compose)
+    if character and Path(str(character)).exists():
+        auto = False   # the composited character is the subject; keep the bg a full scene
     bw, bh = base.size
     s = max(W / bw, H / bh)
     base = base.resize((max(W, int(bw * s)), max(H, int(bh * s))), Image.LANCZOS)
@@ -244,14 +292,40 @@ def build_thumbnail(
                         max(0.0, float(g.get("spotlight", 0.18))))
     draw = ImageDraw.Draw(base)
 
-    # game logo, top-left (with a soft drop shadow so it reads on any background)
+    # PROMINENT foreground CHARACTER cutout (transparent PNG) — the #1 CTR lever.
+    # Large, bottom-anchored on one side, so the other side stays clear for the logo
+    # + headline box. Rendered UNDER the logo/badge/text (added below) so those stay
+    # readable. Sits over the graded scene with a soft contact shadow to separate it.
+    if character and Path(str(character)).exists():
+        try:
+            ch = _autocrop_alpha(Image.open(str(character)).convert("RGBA"))
+            th = int(H * max(0.5, min(1.0, float(g.get("character_scale", 0.92)))))
+            ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
+            maxw = int(W * float(g.get("character_max_w", 0.72)))
+            if ch.width > maxw:
+                ch = ch.resize((maxw, max(1, int(ch.height * maxw / ch.width))), Image.LANCZOS)
+            side = str(g.get("character_side", "right"))
+            cx = (W - ch.width - 20) if side == "right" else 20
+            cy = H - ch.height + int(H * 0.02)             # feet just past the bottom edge
+            if float(g.get("character_shadow", 1)):
+                base = _place_shadowed(base, ch, (cx, cy), blur=24, dark=0.5, offset=(0, 0))
+            else:
+                c = base.convert("RGBA"); c.alpha_composite(ch, (cx, cy)); base = c.convert("RGB")
+            draw = ImageDraw.Draw(base)
+        except Exception:
+            pass
+
+    # game logo, top-left (with a SUBTLE drop shadow so it reads on any background —
+    # kept light so it never looks like a box behind a transparent logo)
     if game_logo and Path(game_logo).exists():
         try:
             lg = Image.open(game_logo).convert("RGBA")
             lh = int(g.get("logo_height", 168))
             lg = lg.resize((max(1, int(lg.width * (lh / lg.height))), lh), Image.LANCZOS)
             if float(g.get("logo_glow", 1)):
-                base = _place_shadowed(base, lg, (44, 34), blur=16, dark=0.7, offset=(0, 6))
+                base = _place_shadowed(base, lg, (44, 34),
+                                       blur=float(g.get("logo_shadow_blur", 10)),
+                                       dark=float(g.get("logo_shadow_dark", 0.42)), offset=(0, 4))
                 draw = ImageDraw.Draw(base)   # base replaced -> refresh the draw handle
             else:
                 base.paste(lg, (44, 34), lg)

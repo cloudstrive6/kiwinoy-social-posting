@@ -354,8 +354,17 @@ reels:
     # reels/assets/game-logo/, matched to the game by filename keyword):
     logo_height: 168   # game-logo height on the 1280x720 thumbnail
     logo_glow: true    # soft drop shadow behind the game logo (reads on any bg)
+    logo_shadow_blur: 10   # game-logo shadow softness (lower = tighter, less box-like)
+    logo_shadow_dark: 0.42 # game-logo shadow strength (lower = subtler; avoids a 'box' look)
     text_glow: true    # soft glow/shadow behind the PART/FULL GAME box (pop)
     badge_opacity: 0.6 # 4K/HDR badge box: 0 = fully see-through, 1 = solid black
+    # PROMINENT foreground character cutout (the #1 CTR lever). Drop transparent hero
+    # PNGs in reels/assets/game-character/<game>/ (matched like the logos); the
+    # thumbnail composites one big over the scene, so the subject is unmistakable.
+    character_scale: 0.92  # character height as a fraction of the 720px frame
+    character_max_w: 0.72  # cap its width (fraction of 1280) so it never covers everything
+    character_side: right  # which side the character stands on (logo+text take the other)
+    character_shadow: true # soft contact shadow so the cutout separates from the bg
     vignette: 0.38     # darken AWAY from the subject (pull the eye in)
     spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
     auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus
