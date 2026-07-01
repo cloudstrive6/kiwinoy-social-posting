@@ -919,10 +919,20 @@ threads_footage:
 # still handles IG/YT/FB/Threads. Secrets (client key/secret + refresh token) are
 # env-only (public repo). Toggle off to stop the TikTok cross-post.
 tiktok:
+  # TikTok posting route. Our OWN app (below) was REJECTED by TikTok for self-posting,
+  # so TikTok now goes through Zernio (an approved posting platform). Set via: direct
+  # only if TikTok ever approves our own app.
+  via: zernio
+  zernio:
+    account_id: ""                 # from `python -m core.zernio accounts` (or env ZERNIO_TIKTOK_ACCOUNT_ID)
+    privacy_level: PUBLIC_TO_EVERYONE   # must be one of the account's creator-info options
+    draft: false                   # false = direct auto-post; true = TikTok Creator Inbox (tap to finish)
+    allow_comment: true
+    allow_duet: true
+    allow_stitch: true
+  # --- legacy direct-app fields (unused while via: zernio) ---
   enabled: true
   redirect_uri: "https://cloudstrive6.github.io/kiwinoygamer/"  # must EXACTLY match the TikTok app's registered redirect
-  # UNAUDITED apps can ONLY post SELF_ONLY (private). Keep this until TikTok audits
-  # the app (~1-2 weeks), then switch to PUBLIC_TO_EVERYONE.
   privacy: "SELF_ONLY"
   disable_comment: false
   disable_duet: false

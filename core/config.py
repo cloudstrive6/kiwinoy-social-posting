@@ -70,6 +70,12 @@ class _Config:
     def elevenlabs_api_key(self) -> str:
         return self._key("ELEVENLABS_API_KEY")
 
+    # Zernio unified social API — we route TikTok through it (our own TikTok app was
+    # rejected for self-posting; Zernio holds TikTok's approval). Env-only.
+    @property
+    def zernio_api_key(self) -> str:
+        return self._key("ZERNIO_API_KEY")
+
     # TikTok Content Posting API (direct, no middleman). client_key/secret identify
     # our TikTok app; the long-lived refresh_token mints a short-lived access_token
     # each run. All three are env-only (public repo).

@@ -660,6 +660,13 @@ def run_gameplay_reel(
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
 
+        # TikTok via Zernio (our own TikTok app was rejected for self-posting). Separate
+        # from the Post-for-Me platforms; best-effort, never sinks the main post.
+        from core import zernio
+        if zernio.enabled():
+            log("Posting to TikTok via Zernio...")
+            result["zernio_result"] = zernio.publish_reel(video_bytes, caption)
+
         # Instagram-exclusive rotated reel: its own IG-only post with full hashtags.
         ig_video = video_bytes                      # the video IG received (for the Story)
         if ig_rotated and ig_rotated_bytes is not None:
