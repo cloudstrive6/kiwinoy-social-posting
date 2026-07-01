@@ -382,9 +382,9 @@ reels:
     subject_target_lum: 140    # auto-lift the subject's mean brightness toward this
     subject_brightness_min: 0.9   # clamp the auto-lift (don't crush a good render)
     subject_brightness_max: 1.7   # clamp the auto-lift (don't blow out a bright frame)
-    subject_contrast: 1.14
-    subject_saturation: 1.22
-    subject_clarity: 1.35
+    subject_contrast: 1.08
+    subject_saturation: 1.05     # gentle — a big boost sunburns warm-lit skin
+    subject_clarity: 1.2
     subject_rim: 0.32          # tight bright edge behind the subject (0-1) -> pops off the bg (subtle)
     subject_rim_px: 8
     subject_rim_blur: 5
