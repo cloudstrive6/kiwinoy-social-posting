@@ -924,7 +924,7 @@ tiktok:
   # only if TikTok ever approves our own app.
   via: zernio
   zernio:
-    account_id: ""                 # from `python -m core.zernio accounts` (or env ZERNIO_TIKTOK_ACCOUNT_ID)
+    account_id: "6a45a57f9d9472faae490d32"   # kiwinoygamer TikTok (via `python -m core.zernio accounts`)
     privacy_level: PUBLIC_TO_EVERYONE   # must be one of the account's creator-info options
     draft: false                   # false = direct auto-post; true = TikTok Creator Inbox (tap to finish)
     allow_comment: true

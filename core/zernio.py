@@ -21,6 +21,15 @@ from typing import Optional
 
 from core.config import CONFIG
 
+# Behind an intercepting HTTPS proxy (Avast on the local machine) Python's certifi
+# bundle doesn't trust the proxy cert. truststore uses the OS trust store so
+# verification stays on. No-op / skipped in CI where truststore isn't installed.
+try:
+    import truststore as _truststore
+    _truststore.inject_into_ssl()
+except Exception:
+    _truststore = None
+
 BASE = "https://zernio.com/api/v1"
 
 
@@ -74,9 +83,11 @@ def list_accounts(platform: str = "tiktok") -> list:
 
 
 def post_video(video_url: str, caption: str, *, account_id: Optional[str] = None,
-               scheduled_for: Optional[str] = None) -> dict:
+               scheduled_for: Optional[str] = None,
+               privacy_level: Optional[str] = None, draft: Optional[bool] = None) -> dict:
     """Publish (or schedule) a video to TikTok via Zernio. `video_url` must be a public
-    HTTPS URL (our Post-for-Me media_url works). Returns the Zernio post JSON."""
+    HTTPS URL (our Post-for-Me media_url works). `privacy_level`/`draft` override the
+    config (e.g. SELF_ONLY for a private smoke-test). Returns the Zernio post JSON."""
     import uuid
 
     import requests
@@ -85,8 +96,8 @@ def post_video(video_url: str, caption: str, *, account_id: Optional[str] = None
         raise RuntimeError("No Zernio TikTok account id (config tiktok.zernio.account_id)")
     c = _cfg()
     tiktok_data = {
-        "draft": bool(c.get("draft", False)),                 # False = direct auto-post
-        "privacyLevel": str(c.get("privacy_level", "PUBLIC_TO_EVERYONE")),
+        "draft": bool(c.get("draft", False)) if draft is None else bool(draft),
+        "privacyLevel": privacy_level or str(c.get("privacy_level", "PUBLIC_TO_EVERYONE")),
         "allowComment": bool(c.get("allow_comment", True)),
         "allowDuet": bool(c.get("allow_duet", True)),
         "allowStitch": bool(c.get("allow_stitch", True)),
