@@ -486,6 +486,31 @@ def _part_order_key(p: Path):
     return (float(m.group(1)) if m else float("inf"), p.name.lower())
 
 
+def _measure_loudness(parts: list[Path], target_i: float = -14.0,
+                      tp: float = -1.5, lra: float = 11.0) -> Optional[dict]:
+    """Pass 1 of two-pass loudnorm: measure the CONCATENATED audio's loudness
+    (audio-only, no video decode). Returns loudnorm's JSON stats (input_i/tp/lra/
+    thresh + target_offset) for the correction pass, or None if parsing fails."""
+    import json
+
+    n = len(parts)
+    inputs: list[str] = []
+    for p in parts:
+        inputs += ["-i", str(p)]
+    ain = "".join(f"[{i}:a:0]" for i in range(n))
+    fc = (f"{ain}concat=n={n}:v=0:a=1[a];"
+          f"[a]loudnorm=I={target_i}:TP={tp}:LRA={lra}:print_format=json")
+    _, err = ffmpeg.run(inputs + ["-filter_complex", fc, "-vn", "-f", "null", "-"],
+                        timeout=7200)
+    blocks = re.findall(r"\{[^{}]*\"input_i\"[^{}]*\}", err or "", re.DOTALL)
+    if not blocks:
+        return None
+    try:
+        return json.loads(blocks[-1])
+    except Exception:
+        return None
+
+
 def build_longform_hdr(
     parts: list[Path],
     out_path: Path,
@@ -586,7 +611,18 @@ def build_longform_hdr(
         # -14 LUFS = YouTube's playback target; TP -1.5 dBTP, LRA 11.
         alabel = "ca"
         if audio_lufs is not None:
-            fc.append(f"[ca]loudnorm=I={float(audio_lufs):.1f}:TP=-1.5:LRA=11[aout]")
+            # Two-pass loudnorm: measure the concatenated audio, then correct to the
+            # target accurately (single-pass under/overshoots on dynamic content).
+            I = float(audio_lufs)
+            m = _measure_loudness(parts, I)
+            if m:
+                fc.append(
+                    f"[ca]loudnorm=I={I:.1f}:TP=-1.5:LRA=11:"
+                    f"measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
+                    f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:"
+                    f"offset={m['target_offset']}:linear=true[aout]")
+            else:
+                fc.append(f"[ca]loudnorm=I={I:.1f}:TP=-1.5:LRA=11[aout]")  # fallback
             alabel = "aout"
 
         # HDR10 static metadata in x264 units: chromaticity in 0.00002 steps,
