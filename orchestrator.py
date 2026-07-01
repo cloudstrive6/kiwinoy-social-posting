@@ -471,18 +471,20 @@ def run_gameplay_reel(
     reel_path = run_dir / "reel.mp4"
     fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
-    # Alternate the layout per slot so the channel isn't 6x the same look each day
-    # (format variety helps avoid platform spam-detection). ['classic','triptych']
-    # [classic, triptych] alternates EACH gameplay reel (3+3/day). NOTE: the reels
-    # cron only ever sends slot 1, so we can't key off slot_id — instead alternate
-    # on the persistent used-clip counter (grows by 1 each gameplay reel), which
-    # flips the layout every run. Falls back to classic if the game has no art.
+    # Format variety per reel (helps avoid platform spam-detection). FB / Threads /
+    # YouTube alternate the NON-rotated layouts (classic <-> triptych); the sideways
+    # "rotated" look is INSTAGRAM-EXCLUSIVE (per user), shown on IG ~every 3rd reel.
+    # The reels cron always sends slot 1, so we can't key off slot_id — alternate on
+    # the persistent used-clip counter (grows by 1 each gameplay reel).
     layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
     try:
         from core import gh_release as _ghr
-        layout = layouts[len(_ghr.used_clips()) % len(layouts)]
+        n = len(_ghr.used_clips())
     except Exception:
-        layout = layouts[0]
+        n = 0
+    main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
+    layout = main_layouts[n % len(main_layouts)]          # classic/triptych: FB/Threads/YT (+IG usually)
+    ig_rotated = ("rotated" in layouts) and (n % 3 == 2)  # IG-only rotated turn
     art = _game_art(brief.get("game")) if layout == "triptych" else None
     if layout == "triptych" and art:
         top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
@@ -509,8 +511,22 @@ def run_gameplay_reel(
     # longer publishes as a Reel on IG + Short on YouTube but a feed video on FB.
     actual = ffmpeg.duration(reel_path) or target
     is_short = actual <= 90.0
-    log(f"Reel rendered -> {reel_path} ({len(video_bytes)//1024} KB, "
+    log(f"Reel rendered ({layout}) -> {reel_path} ({len(video_bytes)//1024} KB, "
         f"{actual:.0f}s, {'Reel/Short' if is_short else 'long video on FB'})")
+
+    # Instagram-EXCLUSIVE rotated version — rendered only on IG's rotated turn. The
+    # landscape gameplay ROTATED 90° CW into 9:16 (KG logo upright top-right, no hook
+    # bar — the hook rides the caption). FB/Threads/YouTube never get this look.
+    ig_rotated_bytes = None
+    if ig_rotated:
+        log(f"Rendering Instagram-only ROTATED (90° CW) reel (<={int(target)}s)...")
+        try:
+            ig_rotated_bytes = reel_ffmpeg.build_footage_rotated(
+                clip_path, run_dir / "reel_ig_rotated.mp4", logo=_reel_logo(),
+                fps=fps, target_seconds=target, music=_reel_music())
+        except Exception as e:
+            log(f"Rotated render failed ({e!r}) — IG will get the {layout} reel instead.")
+            ig_rotated = False
 
     result: dict[str, Any] = {
         "slot_id": slot_id, "kind": "gameplay", "brief": brief, "clip_id": clip_id,
@@ -521,29 +537,63 @@ def run_gameplay_reel(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     else:
-        # YouTube is gated separately (reels.youtube): paused entirely, or — when
-        # enabled — only on a couple of reel slots, so we don't flood the channel
-        # with bulk auto-Shorts (which got its reach throttled).
+        # YouTube is gated separately (reels.youtube). RESUMED 2026-07-01: 3 reels/day
+        # = 3 Shorts/day (the spam-safe cap), so when enabled EVERY gameplay reel also
+        # posts to YouTube. (The old per-slot gate never matched — the reels cron
+        # always sends slot 1.)
         targets = [t for t in CONFIG.platforms.get(
             "video_post_to", ["facebook", "instagram", "threads"]) if t != "x"]
         ycfg = CONFIG.reels.get("youtube", {}) or {}
-        if ycfg.get("enabled", False) and slot_id in (ycfg.get("slots") or []):
+        if ycfg.get("enabled", False):
             targets = targets + ["youtube"]
         # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
         # full caption + their fuller hashtags.
         gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
         threads_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
-        log(f"Publishing gameplay reel to {', '.join(targets)}...")
+        # On IG's rotated turn, IG gets its OWN rotated reel (below) — so drop IG from
+        # the main classic/triptych post; otherwise IG shares the main reel.
+        main_targets = [t for t in targets if t != "instagram"] if ig_rotated else targets
+        log(f"Publishing {layout} reel to {', '.join(main_targets)}...")
         api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
             caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
-            targets=targets, threads_caption=threads_cap)
+            targets=main_targets, threads_caption=threads_cap)
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+
+        # Instagram-exclusive rotated reel: its own IG-only post with full hashtags.
+        ig_video = video_bytes                      # the video IG received (for the Story)
+        if ig_rotated and ig_rotated_bytes is not None:
+            try:
+                ig_tags = content._reel_hashtags({"game": brief.get("game")})
+                ig_caption = f"{hook}\n\n{' '.join(ig_tags)}".strip() if ig_tags else hook
+                log(f"Publishing Instagram-only rotated reel ({' '.join(ig_tags)})...")
+                result["ig_rotated_result"] = publisher.run_reel(
+                    caption=ig_caption, video_bytes=ig_rotated_bytes,
+                    scheduled_at=scheduled_at, targets=["instagram"])
+                ig_video = ig_rotated_bytes
+                log("Instagram rotated reel published.")
+            except Exception as e:  # IG rotated is a bonus — never sink the main post
+                log(f"Instagram rotated reel skipped ({e!r})")
+                result["ig_rotated_error"] = repr(e)
+
         # Remember this clip so the next gameplay reel uses fresh footage. The
         # clip itself stays on the release for future commentary reels.
         if reel_composer.mark_clip_used(clip_id):
             log(f"Marked clip used: {clip_id}")
+
+        # Reach-booster: also repost the reel to the Instagram STORY (placement=
+        # stories), using whichever video IG received. IG-only, best-effort.
+        if gcfg.get("ig_stories", False) and "instagram" in targets:
+            try:
+                log("Reposting reel to Instagram Story...")
+                story_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
+                result["ig_story_result"] = publisher.run_ig_story(
+                    caption=story_cap, video_bytes=ig_video, scheduled_at=scheduled_at)
+                log("IG Story reposted.")
+            except Exception as e:  # Stories are ephemeral bonus reach — never fatal
+                log(f"IG Story repost skipped ({e!r})")
+                result["ig_story_error"] = repr(e)
     _save(run_dir, result)
     return result
 

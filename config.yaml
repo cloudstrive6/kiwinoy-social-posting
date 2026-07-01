@@ -327,8 +327,12 @@ reels:
   # On resume, set enabled=true and (#1) YouTube only posts on `slots` (2 of the 6
   # daily reel slots ~= 2/day) instead of every slot, to look less bulk/automated.
   youtube:
-    enabled: false
-    slots: [3, 6]          # reel slot ids (1-6) that may post to YouTube when enabled
+    # RESUMED 2026-07-01 (per user): 3 Shorts/day = the 3 daily gameplay reels (the
+    # spam-safe max). The reels cron fires 3x/day and always sends slot 1, so YouTube
+    # posts on EVERY gameplay reel when enabled (the old per-slot gate never matched
+    # slot 1). All Shorts are gameplay reels (classic / triptych / rotated rotation).
+    enabled: true
+    slots: [1, 2, 3]       # legacy/reference only — enabled now posts on every reel
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
@@ -474,9 +478,17 @@ reels:
     #   classic  = footage crop-filled vertical + hook bar + logos (original).
     #   triptych = 3 panels: top still+hook / middle UNCROPPED gameplay / bottom
     #              game key art (drop art in art_dir/<game>/).
-    # [classic, triptych] -> slots 1,3,5 classic; 2,4,6 triptych (3 + 3 per day).
-    # A game with no art image falls back to classic for that slot.
-    layouts: [classic, triptych]
+    #   rotated  = the landscape gameplay ROTATED 90° CW into 9:16 (the "as-is"
+    #              rotated look), KG logo upright top-right, no hook bar.
+    # FB / Threads / YouTube alternate classic <-> triptych (via the used-clip
+    # counter). 'rotated' is INSTAGRAM-EXCLUSIVE (per user 2026-07-01): IG shows it
+    # ~every 3rd reel as its own IG-only post, so IG's daily posts cycle all three
+    # while the other platforms never get the sideways look. A game with no art falls
+    # back to classic for its triptych turn.
+    layouts: [classic, triptych, rotated]
+    # Also repost every gameplay reel to the Instagram STORY (placement=stories) as a
+    # reach-booster (2026-07-01, per user). Best-effort: never sinks the main post.
+    ig_stories: true
     art_dir: reels/assets/game-art
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
@@ -613,28 +625,21 @@ reels:
   #   two evening-prime slots; one open esports + one gacha for variety.
   schedule:
     slots:
-    # GAMEPLAY-ONLY, 6x/DAY (2026-06-15, user): 6 gameplay reels per day, spread
-    # evenly (every 4 hours). Each = a gameplay clip, English hook in the top band,
-    # circular KG logo top-right, animated KiwinoyGaming logo bottom, agent-written
-    # caption -> FB/IG/Threads/YouTube. Footage-driven (Spider-Man etc.); skips if
-    # no footage. (Commentary reels paused for now.)
+    # GAMEPLAY-ONLY, 3x/DAY (2026-07-01, user): reduced from 6 -> 3 reels/day (4+
+    # clips/day splits engagement + risks reach throttling). The REAL cadence is set
+    # by the EXTERNAL cron-job.org job (it POSTs slot 1 to reels.yml 3x/day); these
+    # slots are reference. Evenly spaced every 8h (per user): 00/08/16 UTC = 8 AM /
+    # 4 PM / 12 AM PHT. Each reel = a gameplay clip (classic/triptych to FB/Threads/
+    # YouTube Short; IG also cycles the rotated look) + English hook + KG logo, plus
+    # an IG Story repost. Footage-driven; skips if no footage. PHT = UTC+8.
     - id: 1
-      time: '00:00'   # 8:25 AM PHT
+      time: '00:00'   # 8:00 AM PHT
       kind: gameplay
     - id: 2
-      time: '04:00'   # 12:25 PM PHT
+      time: '08:00'   # 4:00 PM PHT
       kind: gameplay
     - id: 3
-      time: '08:00'   # 4:25 PM PHT
-      kind: gameplay
-    - id: 4
-      time: '12:00'   # 8:25 PM PHT (prime)
-      kind: gameplay
-    - id: 5
-      time: '16:00'   # 12:25 AM PHT
-      kind: gameplay
-    - id: 6
-      time: '20:00'   # 4:25 AM PHT
+      time: '16:00'   # 12:00 AM PHT
       kind: gameplay
 
 # Image-set posts: a daily post built from a large CURATED image set stored on a
@@ -679,9 +684,11 @@ carousels:
 # were removed (per user) — it's all game/story now.
 quotes:
   enabled: true
-  # Per-day target (3x/day). ALL 'story' = a REAL, attributed quote from the
-  # footage's universe (curated set in core/game_quotes.py). No life-general quotes.
-  daily_themes: {story: 3}
+  # Per-day target (2x/day, 2026-07-01 per user), every 12h. The EXTERNAL cron-job.org
+  # quotes job fires 06:00 + 18:00 UTC (2PM / 2AM PHT) — interleaved with the reels
+  # (00/08/16) + footage (10/22) so FB/Threads posts stay ~2h+ apart. ALL 'story' = a
+  # REAL, attributed quote from the footage's universe (curated core/game_quotes.py).
+  daily_themes: {story: 2}
   story_universe: spider-man         # which universe the 'story' quotes come from
   # Quote MUSIC matches the game: drop tracks in
   # assets/background-music-for-quotes-videos/<game>/ -> uploaded as
@@ -690,12 +697,11 @@ quotes:
   image_dir: assets/images          # pick the backdrop photo from here...
   prefer: [spider-man1, spider-man-miles-morales, spider-man2]   # ...preferring these
   exclude: [mlbb, sports]           # off-strategy folders to skip
-  # FB + Threads/X get the static CARD image; Instagram gets the quote REEL.
-  # IG quote reel RESUMED 2026-06-26 (IG-only — adds content variety, may help avoid
-  # spam-detection). The YouTube quote reel stays PAUSED (youtube_short: false) while
-  # YT recovers; flip youtube_short: true to resume that too.
-  post_to: [facebook, instagram, threads, x]
-  hashtag_platforms: [facebook, instagram]     # FB card + IG reel get hashtags (not X/Threads)
+  # PHOTO QUOTE CARDS only, 2x/day -> Facebook + Threads (2026-07-01, per user). The
+  # IG quote REEL is STOPPED (IG now gets the 3 gameplay reels + Story instead) and X
+  # is dropped from quotes. FB gets hashtags; Threads does not. youtube_short stays off.
+  post_to: [facebook, threads]
+  hashtag_platforms: [facebook]                # FB card gets hashtags (not Threads)
   hashtags: ["#spiderman", "#gaming", "#marvel"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
                                     # for the quote + skips title/menu/UI screens
@@ -824,12 +830,18 @@ threads_footage:
   enabled: true
   seconds: 60          # max clip length (longer clips are trimmed)
   fps: 60              # CFR 60fps
-  # Also post the SAME footage to Instagram, ROTATED 90° clockwise (the footage's
-  # bottom edge ends up on the left), with the full gameplay-reel hashtags.
-  instagram: true
-  # The single Threads cron fires 8x/day; these UTC hours route to a FOOTAGE post,
-  # the other 4 (1/7/13/19) route to a caption post. Keeps the two interleaved.
-  hours: [3, 9, 15, 21]
+  # Horizontal 'as-is' footage now posts to Threads + Facebook, 2x/day (2026-07-01,
+  # per user). Threads gets #GamingThreads; Facebook gets the plain hook. The
+  # rotated-90° Instagram version is OFF here — that "rotated" format moved into the
+  # gameplay-reel layout rotation (reels.gameplay.layouts) so IG gets it there
+  # instead. Set instagram: true to bring the footage-track IG version back.
+  instagram: false
+  post_to: [threads, facebook]
+  # Reference times for the EXTERNAL cron-job.org footage job (it runs
+  # `run.py --threads-footage`). 2x/day, every 12h, interleaved with the reels
+  # (00/08/16) + quote cards (06/18) so FB/Threads posts stay ~2h+ apart:
+  # 10:00 UTC = 6PM PHT, 22:00 UTC = 6AM PHT.
+  hours: [10, 22]
 
 # Research is web-search based: OpenAI web search for image/reel topics, Claude
 # web search for Threads. (The last30days engine was removed — it surfaced stale,

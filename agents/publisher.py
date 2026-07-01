@@ -189,11 +189,37 @@ def run_threads_video(
     scheduled_at: Optional[str] = None,
     is_draft: bool = False,
 ) -> dict[str, Any]:
-    """Publish a landscape (as-is/horizontal) gameplay VIDEO to the Threads account
-    only. These footage posts get #GamingThreads (NOT the game hashtag — that's for
-    the vertical gameplay reels). short=False -> 16:9."""
-    return publish_video(_with_threads_tag(caption), video_bytes, short=False,
-                         targets=["threads"], scheduled_at=scheduled_at, is_draft=is_draft)
+    """Publish a landscape (as-is/horizontal) gameplay VIDEO to the footage track's
+    platforms (Threads + Facebook by default; config threads_footage.post_to). On
+    Threads the caption gets #GamingThreads appended (a Threads-topic workaround, NOT
+    the game hashtag — that's for the vertical reels); Facebook keeps the plain hook.
+    short=False -> 16:9 feed video."""
+    targets = [t for t in (CONFIG.raw().get("threads_footage", {}) or {}).get(
+        "post_to", ["threads"]) if t != "x"]
+    return publish_video(caption, video_bytes, short=False, targets=targets,
+                         scheduled_at=scheduled_at, is_draft=is_draft,
+                         threads_caption=_with_threads_tag(caption))
+
+
+def run_ig_story(
+    caption: str,
+    video_bytes: bytes,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Repost a reel to the Instagram STORY (placement=stories) as a reach-booster.
+    Instagram-only. Deliberately does NOT fall back to a no-placement post (unlike
+    publish_video), so a rejected 'stories' placement can never accidentally publish
+    the video to the IG feed — it just raises and the caller logs + skips."""
+    account_ids = CONFIG.account_ids(["instagram"])
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_url = postforme.upload_video(video_bytes)
+    return postforme.create_post(
+        caption=caption, social_accounts=account_ids, media_urls=[media_url],
+        scheduled_at=scheduled_at, is_draft=is_draft,
+        platform_configurations={"instagram": {"placement": "stories"}},
+    )
 
 
 def run_threads(
