@@ -1,0 +1,10 @@
+# Local-only: automatic subject cutout for long-form YouTube thumbnails (core/cutout.py).
+# Heavy (downloads a ~176 MB U2-Net/ISNet model on first run) — NOT installed in CI;
+# install this only on the machine that runs `python run.py --youtube`.
+#
+#   pip install -r requirements-cutout.txt
+#
+# The thumbnail pipeline fails open if these are absent (falls back to curated
+# character PNGs / subject-in-the-background), so the reels/CI paths never need them.
+rembg>=2.0.50
+onnxruntime>=1.16.0

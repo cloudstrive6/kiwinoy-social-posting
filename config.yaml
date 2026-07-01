@@ -398,6 +398,8 @@ reels:
     vision_judge: true
     vision_model: claude-haiku-4-5   # 1st choice (Anthropic)
     vision_openai_model: gpt-4o-mini # fallback if Anthropic errors/unfunded (OpenAI)
+    cutout_auto: true                # no curated render? auto-cut the hero from the stills (rembg)
+    cutout_model: isnet-general-use  # rembg model (u2net_human_seg = humans only; isnet = general)
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

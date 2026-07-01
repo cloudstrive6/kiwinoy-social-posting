@@ -1417,12 +1417,6 @@ def run_youtube_longform(
     gl = str(glogo) if glogo else None
     if glogo:
         log(f"Thumbnail game logo: {Path(glogo).name}")
-    gchar = lambda: (str(_game_character(game)) if game else None)   # random hero cutout / variant
-    if gchar():
-        log("Prominent character cutout(s) available — compositing in the foreground.")
-    else:
-        log("No character cutouts for this game (add PNGs to reels/assets/game-character/"
-            f"{game or '<game>'}/) — using the subject-in-background look.")
     # Background candidates, priority: explicit --thumb-image > FRAMES FROM THE ACTUAL
     # VIDEO (relevant by construction — for Part clips + story-moment clips) > curated
     # cloud stills (full-game concat) > one tonemapped footage frame. (img, crop, sharpen)
@@ -1445,11 +1439,42 @@ def run_youtube_longform(
                  "-map", "0:v:0", "-vf", _tm, "-frames:v", "1", str(ffimg)], timeout=120)
         if ffimg.exists():
             bgs.append((str(ffimg), 0.0, 0.6))
+
+    # PROMINENT FOREGROUND CHARACTER (#1 CTR lever). Priority: a hand-curated hero
+    # render (cleanest) > else AUTO-CUT the best subject out of the candidate stills
+    # with rembg (core/cutout.py) so every game gets a hero with no manual curation.
+    curated = _game_character(game) if game else None
+    char_png = str(curated) if curated else None
+    cut_idx = None    # which bg frame the auto-cut came from (so we don't reuse it as its own backdrop)
+    if char_png:
+        log(f"Curated character render: {Path(char_png).name} — compositing in the foreground.")
+    elif bool(tcfg.get("cutout_auto", True)) and bgs:
+        from core import cutout as _cut
+        if _cut.available():
+            cp = _cut.best_cutout([b[0] for b in bgs], run_dir / "cutout",
+                                  model=str(tcfg.get("cutout_model", "isnet-general-use")),
+                                  limit=nvar + 2)
+            if cp:
+                char_png = str(cp)
+                try: cut_idx = int(Path(cp).stem.split("_")[1])
+                except Exception: cut_idx = None
+                log(f"Auto-cut hero from the pool ({Path(cp).name}) — no curated render needed.")
+        if not char_png:
+            log("No curated render + rembg not installed (pip install -r requirements-cutout.txt) "
+                "— using the subject-in-the-background look.")
+    else:
+        log("No character render for this game — subject-in-the-background look.")
+
+    # Don't sit the sharp cutout on top of its own (darkened) source frame — push that
+    # frame to the back of the backdrop list so it's only used if needed to fill nvar.
+    bg_order = list(bgs)
+    if char_png and cut_idx is not None and 0 <= cut_idx < len(bgs) and len(bgs) > 1:
+        bg_order = [b for k, b in enumerate(bgs) if k != cut_idx] + [bgs[cut_idx]]
     specs: list[dict] = [
         dict(text=txt, image=img, box_fill=box, crop_bottom=cb, sharpen=sh,
-             game_logo=gl, character=gchar())
-        for img, cb, sh in bgs[:nvar]] or [
-        dict(text=txt, image=None, box_fill=box, game_logo=gl, character=gchar())]
+             game_logo=gl, character=char_png)
+        for img, cb, sh in bg_order[:nvar]] or [
+        dict(text=txt, image=None, box_fill=box, game_logo=gl, character=char_png)]
 
     thumb = None
     try:
