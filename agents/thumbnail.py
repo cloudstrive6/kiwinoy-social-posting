@@ -117,6 +117,7 @@ def build_thumbnail(
     focus: Optional[tuple] = None,       # subject point (fx, fy in 0..1); None = auto
     zoom: float = 1.0,                   # >1 crops toward the subject (emotion face-zoom)
     sharpen: float = 0.0,                # extra crispening for soft footage frames (0..1)
+    crop_bottom: float = 0.0,            # trim this fraction off the source bottom (copyright strip)
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -128,6 +129,9 @@ def build_thumbnail(
 
     base = (Image.open(image).convert("RGB") if image and Path(image).exists()
             else Image.new("RGB", (W, H), (15, 16, 32)))
+    if float(crop_bottom) > 0:            # trim the copyright strip off pool stills
+        bw, bh = base.size
+        base = base.crop((0, 0, bw, int(bh * (1 - min(0.15, float(crop_bottom))))))
     bw, bh = base.size
     s = max(W / bw, H / bh)
     base = base.resize((max(W, int(bw * s)), max(H, int(bh * s))), Image.LANCZOS)

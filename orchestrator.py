@@ -136,6 +136,34 @@ def _game_screenshot(game: Optional[str]) -> Optional[Any]:
         return None
 
 
+def _pool_samples(game: Optional[str], n: int = 3) -> list[str]:
+    """Download up to n curated stills from the cloud image pool for a game (exact
+    game, else its universe) — the preferred, sharp thumbnail source."""
+    if not game:
+        return []
+    try:
+        from core import game_quotes, gh_release
+        pool = gh_release.quote_image_pool() or {}
+        names = list(pool.get(str(game), []) or [])
+        if not names:
+            uni = game_quotes.universe_for_game(game)
+            if uni:
+                names = [x for g in pool if game_quotes.universe_for_game(g) == uni
+                         for x in (pool.get(g) or [])]
+        if not names:
+            return []
+        out: list[str] = []
+        for nm in random.sample(names, min(int(n), len(names))):
+            p = gh_release.download({"name": nm, "url": gh_release.asset_download_url(nm)},
+                                    ROOT / "output" / ".thumb_pool")
+            if p:
+                out.append(str(p))
+        return out
+    except Exception as e:
+        print(f"[youtube] pool sample failed ({e!r})", flush=True)
+        return []
+
+
 def _reel_music() -> Optional[Any]:
     """Pick a random royalty-free music track path (or None)."""
     import random
@@ -1222,14 +1250,37 @@ def run_youtube_longform(
         logo_size=int(yl.get("logo_size", 480)),
         audio_lufs=yl.get("audio_lufs", -14.0))
 
-    log("Generating thumbnail...")
-    img = thumb_image or (_game_screenshot(game) if game else None)
-    thumb = run_dir / "thumb.jpg"
+    log("Generating thumbnail variants...")
+    import re as _re
+
+    from core import ffmpeg as _ff
+    slug = (_re.sub(r"[^a-z0-9]+", "-", (title or game or "video").lower()).strip("-") or "video")[:60]
+    tdir = ROOT / "thumbnails" / (game or "misc") / slug
+    tcfg = CONFIG.reels.get("thumbnail", {}) or {}
+    pcrop = float(tcfg.get("pool_crop_bottom", 0.045))
+    nvar = max(1, int(tcfg.get("variants", 3)))
+    box, txt = (255, 196, 0), meta["thumbnail"]
+    specs: list[dict] = []
+    if thumb_image:                                   # explicit pick wins -> variant_1
+        specs.append(dict(text=txt, image=str(thumb_image), box_fill=box))
+    for pi in (_pool_samples(game, nvar) if game else []):   # curated cloud stills
+        specs.append(dict(text=txt, image=pi, box_fill=box, crop_bottom=pcrop))
+    if not specs:                                     # fallback: tonemapped footage frame
+        ffimg = run_dir / "thumb_frame.jpg"
+        _tm = ("zscale=t=linear:npl=100,tonemap=hable,"
+               "zscale=t=bt709:m=bt709:p=bt709:r=tv,format=yuv420p")
+        _ff.run(["-ss", f"{max(1.0, (_ff.duration(out) or 60) * 0.4):.1f}", "-i", str(out),
+                 "-map", "0:v:0", "-vf", _tm, "-frames:v", "1", str(ffimg)], timeout=120)
+        specs.append(dict(text=txt, image=str(ffimg) if ffimg.exists() else None,
+                          box_fill=box, sharpen=0.6))
+    thumb = None
     try:
-        thumbnail.build_thumbnail(meta["thumbnail"], thumb, image=str(img) if img else None)
+        variants = thumbnail.build_variants(tdir, specs[:nvar])
+        thumb = variants[0] if variants else None     # variant_1 = the chosen/live one
+        log(f"{len(variants)} thumbnail variant(s) -> {tdir}"
+            + (f" (live: {thumb.name})" if thumb else ""))
     except Exception as e:
-        log(f"thumbnail failed ({e!r}) — uploading without a custom thumbnail")
-        thumb = None
+        log(f"thumbnail variants failed ({e!r}) — no custom thumbnail")
 
     result: dict[str, Any] = {
         "kind": "youtube_longform", "game": game, "title": title,
