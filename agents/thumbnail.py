@@ -292,43 +292,64 @@ def build_thumbnail(
                         max(0.0, float(g.get("spotlight", 0.18))))
     draw = ImageDraw.Draw(base)
 
-    # PROMINENT foreground CHARACTER cutout (transparent PNG) — the #1 CTR lever.
-    # Large, bottom-anchored on one side, so the other side stays clear for the logo
-    # + headline box. Rendered UNDER the logo/badge/text (added below) so those stay
-    # readable. Sits over the graded scene with a soft contact shadow to separate it.
+    # PROMINENT foreground CHARACTER cutout — the #1 CTR lever (one clear subject).
+    # Scaled BIG so it BLEEDS off the bottom edge (never a floating chest/waist cut
+    # line), head near the top, on one side. The background is darkened + desaturated
+    # so the full-colour character pops. Logo/badge/text layer on top.
     if character and Path(str(character)).exists():
         try:
+            dk = float(g.get("character_bg_darken", 0.6))
+            if dk < 1.0:                                  # subdue the bg -> character pops
+                base = ImageEnhance.Brightness(base).enhance(dk)
+                base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.85)))
             ch = _autocrop_alpha(Image.open(str(character)).convert("RGBA"))
-            th = int(H * max(0.5, min(1.0, float(g.get("character_scale", 0.92)))))
+            th = int(H * max(0.6, float(g.get("character_scale", 1.14))))   # >1 => off the bottom
             ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
-            maxw = int(W * float(g.get("character_max_w", 0.72)))
+            maxw = int(W * float(g.get("character_max_w", 0.6)))
             if ch.width > maxw:
                 ch = ch.resize((maxw, max(1, int(ch.height * maxw / ch.width))), Image.LANCZOS)
             side = str(g.get("character_side", "right"))
-            cx = (W - ch.width - 20) if side == "right" else 20
-            cy = H - ch.height + int(H * 0.02)             # feet just past the bottom edge
+            xc = float(g.get("character_x", 0.63))         # horizontal CENTRE (face clears the badge)
+            cx = int(W * (xc if side == "right" else 1.0 - xc) - ch.width / 2)
+            cy = int(H * float(g.get("character_top", 0.0)))   # head near the top; body bleeds off bottom
             if float(g.get("character_shadow", 1)):
-                base = _place_shadowed(base, ch, (cx, cy), blur=24, dark=0.5, offset=(0, 0))
+                base = _place_shadowed(base, ch, (cx, cy), blur=26, dark=0.45, offset=(0, 0))
             else:
                 c = base.convert("RGBA"); c.alpha_composite(ch, (cx, cy)); base = c.convert("RGB")
             draw = ImageDraw.Draw(base)
         except Exception:
             pass
 
-    # game logo, top-left (with a SUBTLE drop shadow so it reads on any background —
-    # kept light so it never looks like a box behind a transparent logo)
+    # game logo, top-left. ADAPTIVE backing so it stays legible on ANY background: if
+    # the area behind it is DARK (a dark logo would vanish, as on the Midgar scene) add
+    # a soft WHITE halo; if it's bright, use a soft dark shadow. Never a hard box.
     if game_logo and Path(game_logo).exists():
         try:
+            import numpy as np
+            from PIL import ImageFilter
             lg = Image.open(game_logo).convert("RGBA")
             lh = int(g.get("logo_height", 168))
             lg = lg.resize((max(1, int(lg.width * (lh / lg.height))), lh), Image.LANCZOS)
-            if float(g.get("logo_glow", 1)):
-                base = _place_shadowed(base, lg, (44, 34),
+            lx, ly = 44, 34
+            reg = np.asarray(base.convert("RGB"))[ly:ly + lg.height, lx:lx + lg.width]
+            bglum = float(reg.mean()) if reg.size else 128.0
+            if not float(g.get("logo_glow", 1)):
+                base.paste(lg, (lx, ly), lg)
+            elif bglum < float(g.get("logo_halo_lum", 115)):
+                halo = Image.new("RGBA", lg.size, (255, 255, 255, 0))
+                halo.putalpha(lg.split()[-1])
+                halo = halo.filter(ImageFilter.GaussianBlur(float(g.get("logo_halo_blur", 16))))
+                c = base.convert("RGBA")
+                for _ in range(int(g.get("logo_halo_passes", 3))):   # stack to actually lift a dark logo
+                    c.alpha_composite(halo, (lx, ly))
+                c.alpha_composite(lg, (lx, ly))
+                base = c.convert("RGB")
+                draw = ImageDraw.Draw(base)
+            else:
+                base = _place_shadowed(base, lg, (lx, ly),
                                        blur=float(g.get("logo_shadow_blur", 10)),
                                        dark=float(g.get("logo_shadow_dark", 0.42)), offset=(0, 4))
                 draw = ImageDraw.Draw(base)   # base replaced -> refresh the draw handle
-            else:
-                base.paste(lg, (44, 34), lg)
         except Exception:
             pass
 
