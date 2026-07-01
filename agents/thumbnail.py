@@ -320,36 +320,38 @@ def build_thumbnail(
         except Exception:
             pass
 
-    # game logo, top-left. ADAPTIVE backing so it stays legible on ANY background: if
-    # the area behind it is DARK (a dark logo would vanish, as on the Midgar scene) add
-    # a soft WHITE halo; if it's bright, use a soft dark shadow. Never a hard box.
+    # game logo, top-left. SEAMLESS legibility (no visible backing box): a tight
+    # OUTLINE that follows the logo's own shape (emblem + letters) — WHITE on dark
+    # backgrounds (so a dark logo like FF7's stays legible on the Midgar scene), dark
+    # on bright ones. The alpha is cleaned so faint anti-alias pixels can't form a box.
     if game_logo and Path(game_logo).exists():
         try:
             import numpy as np
             from PIL import ImageFilter
             lg = Image.open(game_logo).convert("RGBA")
+            r, gg, bb, aa = lg.split()
+            aa = aa.point(lambda v: 0 if v < 24 else v)      # kill faint matte -> transparent
+            lg = Image.merge("RGBA", (r, gg, bb, aa))
             lh = int(g.get("logo_height", 168))
             lg = lg.resize((max(1, int(lg.width * (lh / lg.height))), lh), Image.LANCZOS)
             lx, ly = 44, 34
-            reg = np.asarray(base.convert("RGB"))[ly:ly + lg.height, lx:lx + lg.width]
-            bglum = float(reg.mean()) if reg.size else 128.0
             if not float(g.get("logo_glow", 1)):
                 base.paste(lg, (lx, ly), lg)
-            elif bglum < float(g.get("logo_halo_lum", 115)):
-                halo = Image.new("RGBA", lg.size, (255, 255, 255, 0))
-                halo.putalpha(lg.split()[-1])
-                halo = halo.filter(ImageFilter.GaussianBlur(float(g.get("logo_halo_blur", 16))))
+            else:
+                reg = np.asarray(base.convert("RGB"))[ly:ly + lg.height, lx:lx + lg.width]
+                bglum = float(reg.mean()) if reg.size else 128.0
+                col = (255, 255, 255) if bglum < float(g.get("logo_dark_lum", 120)) else (0, 0, 0)
+                grow = int(g.get("logo_outline_px", 6)) | 1        # odd for MaxFilter
+                m = lg.split()[-1].filter(ImageFilter.MaxFilter(grow))
+                m = m.filter(ImageFilter.GaussianBlur(float(g.get("logo_outline_blur", 2.5))))
+                outline = Image.new("RGBA", lg.size, col + (0,))
+                outline.putalpha(m)
                 c = base.convert("RGBA")
-                for _ in range(int(g.get("logo_halo_passes", 3))):   # stack to actually lift a dark logo
-                    c.alpha_composite(halo, (lx, ly))
+                for _ in range(int(g.get("logo_outline_passes", 2))):
+                    c.alpha_composite(outline, (lx, ly))
                 c.alpha_composite(lg, (lx, ly))
                 base = c.convert("RGB")
-                draw = ImageDraw.Draw(base)
-            else:
-                base = _place_shadowed(base, lg, (lx, ly),
-                                       blur=float(g.get("logo_shadow_blur", 10)),
-                                       dark=float(g.get("logo_shadow_dark", 0.42)), offset=(0, 4))
-                draw = ImageDraw.Draw(base)   # base replaced -> refresh the draw handle
+            draw = ImageDraw.Draw(base)   # base replaced -> refresh the draw handle
         except Exception:
             pass
 

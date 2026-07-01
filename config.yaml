@@ -356,9 +356,10 @@ reels:
     logo_glow: true    # adaptive backing behind the game logo (halo on dark bg, shadow on light)
     logo_shadow_blur: 10   # (bright bg) game-logo shadow softness
     logo_shadow_dark: 0.42 # (bright bg) game-logo shadow strength (subtle; never a 'box')
-    logo_halo_lum: 115 # bg luminance below this -> use a white halo so a dark logo pops
-    logo_halo_blur: 16 # softness of the white halo behind the logo on dark scenes
-    logo_halo_passes: 3    # how many times the halo is stacked (higher = brighter lift)
+    logo_dark_lum: 120 # bg luminance below this -> white outline (else dark); keeps a dark logo legible
+    logo_outline_px: 6     # thickness of the seamless logo outline (follows the shape, not a box)
+    logo_outline_blur: 2.5 # soften the outline edge slightly
+    logo_outline_passes: 2 # stack the outline (higher = stronger separation)
     text_glow: true    # soft glow/shadow behind the PART/FULL GAME box (pop)
     badge_opacity: 0.6 # 4K/HDR badge box: 0 = fully see-through, 1 = solid black
     # PROMINENT foreground character cutout (the #1 CTR lever). Drop transparent hero
