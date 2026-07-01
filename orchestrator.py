@@ -1452,7 +1452,9 @@ def run_youtube_longform(
         from core import cutout as _cut
         if _cut.available():
             cp = _cut.best_cutout([b[0] for b in bgs], run_dir / "cutout",
-                                  model=str(tcfg.get("cutout_model", "isnet-general-use")),
+                                  model=str(tcfg.get("cutout_model", "u2net_human_seg")),
+                                  fallback_model=str(tcfg.get("cutout_fallback_model",
+                                                              "isnet-general-use")),
                                   limit=nvar + 2)
             if cp:
                 char_png = str(cp)

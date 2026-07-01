@@ -77,20 +77,9 @@ def cutout(image_path, out_path, *, model: str = "isnet-general-use") -> Optiona
         return None
 
 
-def best_cutout(image_paths: Sequence, out_dir, *, model: str = "isnet-general-use",
-                limit: int = 6) -> Optional[Path]:
-    """Cut the subject from several candidate stills and keep the cleanest one (best
-    alpha-mask score). Free + local — no vision call needed to choose. Returns the
-    winning transparent PNG, or None if rembg is missing / nothing cut cleanly."""
-    if not available():
-        return None
-    try:
-        from PIL import Image
-        from rembg import remove
-    except Exception:
-        return None
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
+def _best_with_model(image_paths, out_dir, model: str, limit: int):
+    from PIL import Image
+    from rembg import remove
     best, best_sc, best_meta = None, -1.0, {}
     for i, p in enumerate(list(image_paths)[: max(1, int(limit))]):
         try:
@@ -100,9 +89,35 @@ def best_cutout(image_paths: Sequence, out_dir, *, model: str = "isnet-general-u
             continue
         sc, meta = _score_alpha(res)
         if sc > best_sc:
-            dest = out_dir / f"cut_{i}.png"
+            dest = Path(out_dir) / f"cut_{i}.png"
             res.convert("RGBA").save(dest)
             best, best_sc, best_meta = dest, sc, meta
+    return best, best_sc, best_meta
+
+
+def best_cutout(image_paths: Sequence, out_dir, *, model: str = "u2net_human_seg",
+                fallback_model: Optional[str] = "isnet-general-use",
+                floor: float = 1.2, limit: int = 6) -> Optional[Path]:
+    """Cut the subject from several candidate stills and keep the cleanest one (best
+    alpha-mask score). Tries `model` first (default u2net_human_seg — isolates the
+    PERSON and ignores HUD/scenery, ideal for game heroes); if the best result is
+    still weak (< floor, e.g. a non-human subject the human model can't find) it
+    retries with `fallback_model` (general segmentation). Free + local, no vision call.
+    Returns the winning transparent PNG, or None if rembg is missing / nothing clean."""
+    if not available():
+        return None
+    try:
+        import rembg  # noqa: F401
+    except Exception:
+        return None
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    best, best_sc, best_meta = _best_with_model(image_paths, out_dir, model, limit)
+    if (best is None or best_sc < floor) and fallback_model and fallback_model != model:
+        print(f"[cutout] {model} weak (score {best_sc}); retrying with {fallback_model}", flush=True)
+        fb, fb_sc, fb_meta = _best_with_model(image_paths, out_dir, fallback_model, limit)
+        if fb is not None and fb_sc > best_sc:
+            best, best_sc, best_meta = fb, fb_sc, fb_meta
     if best is not None:
         print(f"[cutout] best subject: {best.name} score={best_sc} {best_meta}", flush=True)
     return best
