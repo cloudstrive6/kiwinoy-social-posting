@@ -132,6 +132,76 @@ def _game_character(game: Optional[str]) -> Optional[Any]:
     return None
 
 
+def _curated_renders(game: Optional[str]) -> list:
+    from core import game_quotes
+    if not game:
+        return []
+    base = ROOT / (CONFIG.reels.get("thumbnail", {}) or {}).get(
+        "character_dir", "reels/assets/game-character")
+    for key in (str(game), game_quotes.universe_for_game(game) or ""):
+        d = base / key if key else None
+        if d and d.is_dir():
+            r = [p for p in sorted(d.iterdir())
+                 if p.is_file() and p.suffix.lower() in (".png", ".webp")]
+            if r:
+                return r
+    return []
+
+
+def _best_curated_character(game: Optional[str]) -> Optional[Any]:
+    """The BEST curated hero render (highest vision score), not a random one — rate each
+    render in the game/universe folder for is-this-character / front-facing / quality /
+    clean-cutout and return the top. Scores are cached by file mtime (one Haiku call per
+    NEW render, then free). Fails open to the first render / random on any error."""
+    renders = _curated_renders(game)
+    if not renders:
+        return None
+    if len(renders) == 1:
+        return renders[0]
+    try:
+        import json as _json
+
+        from PIL import Image
+
+        from core import vision
+        cache_f = ROOT / "thumbnails" / ".render_scores.json"
+        cache = {}
+        if cache_f.exists():
+            try:
+                cache = _json.loads(cache_f.read_text())
+            except Exception:
+                cache = {}
+        disp = str((CONFIG.reels.get("game_names", {}) or {}).get(str(game), game))
+        subject = f"{disp} — the main playable character"
+        tmp = ROOT / "output" / ".render_judge"
+        tmp.mkdir(parents=True, exist_ok=True)
+        best, best_sc = None, -1.0
+        for p in renders:
+            ckey = f"{game}/{p.name}:{int(p.stat().st_mtime)}"
+            sc = cache.get(ckey)
+            if sc is None:                         # flatten onto grey so the jpeg judge sees it
+                im = Image.open(p).convert("RGBA")
+                card = Image.new("RGBA", im.size, (128, 128, 128, 255))
+                card.alpha_composite(im)
+                jp = tmp / (p.stem + ".jpg")
+                card.convert("RGB").save(jp, "JPEG", quality=90)
+                r = vision.rate_character_render(jp, subject=subject)
+                sc = r["score"] if r else 0.5      # no vision -> neutral, keep deterministic order
+                cache[ckey] = sc
+            if sc > best_sc:
+                best, best_sc = p, sc
+        try:
+            cache_f.write_text(_json.dumps(cache))
+        except Exception:
+            pass
+        if best:
+            print(f"[youtube] best curated render: {best.name} (score {best_sc})", flush=True)
+        return best or renders[0]
+    except Exception as e:
+        print(f"[youtube] render ranking failed ({e!r}) — random pick.", flush=True)
+        return random.choice(renders)
+
+
 def _game_screenshot(game: Optional[str]) -> Optional[Any]:
     """A real game screenshot for the triptych TOP panel, pulled from the cloud
     image library (the assets/images uploaded to the qimg pool), matched to the
@@ -1443,7 +1513,7 @@ def run_youtube_longform(
     # PROMINENT FOREGROUND CHARACTER (#1 CTR lever). Priority: a hand-curated hero
     # render (cleanest) > else AUTO-CUT the best subject out of the candidate stills
     # with rembg (core/cutout.py) so every game gets a hero with no manual curation.
-    curated = _game_character(game) if game else None
+    curated = _best_curated_character(game) if game else None   # highest-judged render, not random
     char_png = str(curated) if curated else None
     cut_idx = None    # which bg frame the auto-cut came from (so we don't reuse it as its own backdrop)
     if char_png:

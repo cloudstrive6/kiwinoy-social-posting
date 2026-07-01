@@ -189,7 +189,7 @@ def main() -> int:
         r = vision.rate_character_render(_judge_jpeg(clean, work, i), subject=args.character)
         score = r["score"] if r else 0.0
         tag = (f"subj={r['is_subject']:.0f} front={r['front_facing']:.0f} q={r['quality']:.0f} "
-               f"cut={r['clean_cutout']:.0f}" if r else "no-vision")
+               f"frame={r['thumbnail_framing']:.0f}" if r else "no-vision")
         print(f"  cand_{i} {score} {tag} | {r['verdict'] if r else ''} | {u[:60]}")
         ranked.append((score, clean_path, u, r))
 

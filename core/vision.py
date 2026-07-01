@@ -27,14 +27,17 @@ _THUMB_PROMPT = (
 
 _PORTRAIT_PROMPT = (
     "You are choosing a CHARACTER RENDER to use as the bold foreground subject of a "
-    "YouTube gaming thumbnail.\n\nCHARACTER: {subject}\n\nRate THIS image. Return ONLY "
+    "YouTube gaming thumbnail. The FACE is the click magnet, so a bust / head-and-"
+    "shoulders portrait (big, clear face) is ideal; a full-body render where the face "
+    "ends up tiny is much worse.\n\nCHARACTER: {subject}\n\nRate THIS image. Return ONLY "
     "minified JSON, no prose:\n"
     '{{"is_subject": <0-10: clearly this exact character, ONE character, not a group / '
     'scene / logo / text>, "front_facing": <0-10: faces the camera or 3/4 view — a pure '
     'side-profile or back view scores low>, "quality": <0-10: sharp, hi-res, clean '
     'official-looking render, not blurry / tiny / artifacted / a screenshot with HUD>, '
-    '"clean_cutout": <0-10: isolated on a plain/transparent background with clean edges, '
-    'head + upper body visible>, "issues": ["<=4 short problems"], "verdict": "<one line>"}}'
+    '"thumbnail_framing": <0-10: how BIG + clear the face reads — a bust/portrait scores '
+    'high, a full-body render with a small face scores low>, "issues": ["<=4 short '
+    'problems"], "verdict": "<one line>"}}'
 )
 
 
@@ -55,9 +58,10 @@ def _norm_thumb(d: dict, model: str) -> dict:
 
 def _norm_portrait(d: dict, model: str) -> dict:
     su, ff = _clamp10(d.get("is_subject", 0)), _clamp10(d.get("front_facing", 0))
-    q, cc = _clamp10(d.get("quality", 0)), _clamp10(d.get("clean_cutout", 0))
-    return {"is_subject": su, "front_facing": ff, "quality": q, "clean_cutout": cc,
-            "score": round((su * 0.30 + ff * 0.25 + q * 0.25 + cc * 0.20) / 10.0, 3),
+    q = _clamp10(d.get("quality", 0))
+    tf = _clamp10(d.get("thumbnail_framing", d.get("clean_cutout", 0)))
+    return {"is_subject": su, "front_facing": ff, "quality": q, "thumbnail_framing": tf,
+            "score": round((su * 0.28 + ff * 0.24 + q * 0.20 + tf * 0.28) / 10.0, 3),
             "issues": [str(x) for x in (d.get("issues") or [])][:4],
             "verdict": str(d.get("verdict", "")).strip()[:120], "model": model}
 
