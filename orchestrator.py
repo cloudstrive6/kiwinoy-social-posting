@@ -71,10 +71,14 @@ def _game_logo(game: Optional[str]) -> Optional[Any]:
     norm = lambda s: "".join(c for c in s.lower() if c.isalnum())
     pngs = [(p, norm(p.stem)) for p in sorted(folder.iterdir())
             if p.suffix.lower() == ".png"]
-    # Prefer a logo matching the SPECIFIC game (e.g. a Miles Morales logo for Miles
-    # footage), then fall back to the broader universe logo (e.g. Marvel Spider-Man).
-    for key in (norm(game), norm(game_quotes.universe_for_game(game) or "")):
-        if not key:
+    # Match most-specific first: the game KEY (e.g. 'spidermanmilesmorales'), then its
+    # DISPLAY name (so a short key like 'ff7' still finds a 'Final Fantasy VII Remake'
+    # logo), then the broader universe logo. Keys <3 chars are skipped so 're' doesn't
+    # match everything with 're' in it (its 'Resident Evil' display name is used instead).
+    gnames = CONFIG.reels.get("game_names", {}) or {}
+    for key in (norm(game), norm(gnames.get(game, "")),
+                norm(game_quotes.universe_for_game(game) or "")):
+        if len(key) < 3:
             continue
         for p, nm in pngs:
             if key in nm:
