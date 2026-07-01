@@ -52,6 +52,60 @@ def _tsize(draw, text: str, font) -> tuple[int, int]:
     return r - l, b - t
 
 
+def _auto_focus(base) -> tuple[float, float]:
+    """Best-effort subject point (fx, fy in 0..1): where DETAIL + COLOUR is densest
+    (characters have both; flat backgrounds don't), with a mild centre bias."""
+    import numpy as np
+
+    sm = np.asarray(base.convert("RGB").resize((160, 90)), dtype=np.float32)
+    lum = sm.mean(axis=2)
+    detail = np.abs(np.diff(lum, axis=1, prepend=lum[:, :1])) + \
+        np.abs(np.diff(lum, axis=0, prepend=lum[:1, :]))
+    sat = sm.max(axis=2) - sm.min(axis=2)
+    score = detail + 0.6 * sat
+    h, w = score.shape
+    yy, xx = np.mgrid[0:h, 0:w]
+    cbias = 1.0 - 0.5 * (((xx - w / 2) / (w / 2)) ** 2 + ((yy - h / 2) / (h / 2)) ** 2)
+    score *= np.clip(cbias, 0.3, 1.0)
+    # centroid of the top-scoring cells (robust vs a single hot pixel)
+    thr = np.quantile(score, 0.90)
+    m = score >= thr
+    fx = float((xx[m]).mean()) / w
+    fy = float((yy[m]).mean()) / h
+    return (min(0.85, max(0.15, fx)), min(0.8, max(0.2, fy)))
+
+
+def _bloom(base, strength: float):
+    """Soft glow on the highlights -> cinematic/premium feel."""
+    import numpy as np
+    from PIL import Image, ImageChops, ImageFilter
+
+    arr = np.asarray(base.convert("RGB"), dtype=np.float32)
+    mask = np.clip((arr.mean(axis=2) - 175.0) / 80.0, 0, 1)[..., None]
+    glow = Image.fromarray((arr * mask).astype("uint8")).filter(ImageFilter.GaussianBlur(18))
+    return ImageChops.screen(base.convert("RGB"), glow.point(lambda v: int(v * strength)))
+
+
+def _focus_grade(base, focus, vignette: float, spotlight: float):
+    """Darken AWAY from the focus point (vignette) and brighten AT it (spotlight),
+    so the viewer's eye is pulled straight to the subject."""
+    import numpy as np
+    from PIL import Image
+
+    w, h = base.size
+    fx = (focus[0] if focus else 0.5) * w
+    fy = (focus[1] if focus else 0.45) * h
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    d = np.sqrt((xx - fx) ** 2 + (yy - fy) ** 2)
+    d /= (d.max() + 1e-6)                       # 0 at focus -> 1 at the far corner
+    arr = np.asarray(base.convert("RGB"), dtype=np.float32)
+    if spotlight > 0:
+        arr *= (1.0 + spotlight * (1.0 - d) ** 2)[..., None]
+    if vignette > 0:
+        arr *= (1.0 - vignette * (d ** 1.5))[..., None]
+    return Image.fromarray(arr.clip(0, 255).astype("uint8"))
+
+
 def build_thumbnail(
     text: str = "FULL GAME",
     out_path=None,
@@ -60,6 +114,7 @@ def build_thumbnail(
     badge_lines: Sequence[str] = ("4K", "HDR"),
     box_fill: tuple = (214, 18, 18),     # YouTube-red "FULL GAME" box
     font_path: Optional[str] = None,     # override the headline font
+    focus: Optional[tuple] = None,       # subject point (fx, fy in 0..1); None = auto
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -85,10 +140,16 @@ def build_thumbnail(
     base = ImageEnhance.Contrast(base).enhance(float(g.get("contrast", 1.16)))
     base = ImageEnhance.Brightness(base).enhance(float(g.get("brightness", 1.04)))
     base = ImageEnhance.Sharpness(base).enhance(float(g.get("clarity", 1.6)))
-    vstr = max(0.0, min(0.9, float(g.get("vignette", 0.35))))
-    if vstr > 0:
-        vig = Image.radial_gradient("L").resize((W, H)).point(lambda v: int(v * vstr))
-        base = Image.composite(Image.new("RGB", (W, H), (0, 0, 0)), base, vig)
+    if float(g.get("bloom", 0.45)) > 0:
+        base = _bloom(base, float(g.get("bloom", 0.45)))
+    try:
+        if focus is None and float(g.get("auto_focus", 1)):
+            focus = _auto_focus(base)
+    except Exception:
+        focus = None
+    base = _focus_grade(base, focus,
+                        max(0.0, min(0.9, float(g.get("vignette", 0.38)))),
+                        max(0.0, float(g.get("spotlight", 0.18))))
     draw = ImageDraw.Draw(base)
 
     # game logo, top-left

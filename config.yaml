@@ -345,7 +345,10 @@ reels:
     contrast: 1.16
     brightness: 1.04
     clarity: 1.6       # sharpening / crispness
-    vignette: 0.35     # darken the edges (0 = off, ~0.5 = strong)
+    bloom: 0.45        # soft glow on highlights (cinematic/premium; 0 = off)
+    vignette: 0.38     # darken AWAY from the subject (pull the eye in)
+    spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
+    auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080
