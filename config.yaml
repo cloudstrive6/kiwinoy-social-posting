@@ -355,6 +355,7 @@ reels:
     logo_height: 168   # game-logo height on the 1280x720 thumbnail
     logo_glow: true    # soft drop shadow behind the game logo (reads on any bg)
     text_glow: true    # soft glow/shadow behind the PART/FULL GAME box (pop)
+    badge_opacity: 0.6 # 4K/HDR badge box: 0 = fully see-through, 1 = solid black
     vignette: 0.38     # darken AWAY from the subject (pull the eye in)
     spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
     auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus

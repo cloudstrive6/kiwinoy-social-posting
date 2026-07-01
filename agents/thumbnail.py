@@ -258,7 +258,8 @@ def build_thumbnail(
         except Exception:
             pass
 
-    # 4K / HDR badge, top-right (dark rounded box, white bold lines)
+    # 4K / HDR badge, top-right: a SEMI-TRANSPARENT dark rounded box (image shows
+    # through) with a crisp white outline + white lines — the MKIceAndFire look.
     blines = [str(x).upper() for x in (badge_lines or []) if str(x).strip()]
     if blines:
         bf = _font(60)
@@ -267,13 +268,21 @@ def build_thumbnail(
         padx, pady = 24, 14
         boxw, boxh = line_w + padx * 2, line_h * len(blines) + pady * 2
         x1, y0 = W - 32, 32
-        x0, y1 = x1 - boxw, y0 + boxh
-        draw.rounded_rectangle([x0, y0, x1, y1], radius=16, fill=(0, 0, 0),
-                               outline=(255, 255, 255), width=4)
-        cy = y0 + pady + line_h // 2
+        x0 = x1 - boxw
+        op = max(0.0, min(1.0, float(g.get("badge_opacity", 0.6))))
+        blayer = Image.new("RGBA", (boxw + 8, boxh + 8), (0, 0, 0, 0))
+        bd = ImageDraw.Draw(blayer)
+        bd.rounded_rectangle([4, 4, 4 + boxw, 4 + boxh], radius=16,
+                             fill=(0, 0, 0, int(255 * op)),
+                             outline=(255, 255, 255, 255), width=4)
+        cy = 4 + pady + line_h // 2
         for l in blines:
-            draw.text(((x0 + x1) // 2, cy), l, font=bf, fill=(255, 255, 255), anchor="mm")
+            bd.text((4 + boxw // 2, cy), l, font=bf, fill=(255, 255, 255, 255), anchor="mm")
             cy += line_h
+        c = base.convert("RGBA")
+        c.alpha_composite(blayer, (x0 - 4, y0 - 4))
+        base = c.convert("RGB")
+        draw = ImageDraw.Draw(base)   # base replaced -> refresh for the headline below
 
     # "FULL GAME" red box, bottom-left (font shrinks if the text is long)
     txt = (text or "FULL GAME").upper().strip()

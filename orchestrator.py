@@ -1343,8 +1343,11 @@ def run_youtube_longform(
     tcfg = CONFIG.reels.get("thumbnail", {}) or {}
     pcrop = float(tcfg.get("pool_crop_bottom", 0.045))
     nvar = max(1, int(tcfg.get("variants", 3)))
-    # Red PART box (MKIceAndFire style) for a single part; gold FULL GAME otherwise.
-    box = (214, 18, 18) if part_n is not None else (255, 196, 0)
+    # All-RED box (MKIceAndFire) for walkthrough content — the Part N clips AND the
+    # full-game concat. GOLD only for a single titled STORY-MOMENT clip (e.g. "The
+    # Opening"): part-less single file.
+    story = part_n is None and len(files) == 1
+    box = (255, 196, 0) if story else (214, 18, 18)   # gold = story clip; red = part / full game
     txt = meta["thumbnail"]
     glogo = _game_logo(game) if game else None       # official game logo (top-left) if we have one
     gl = str(glogo) if glogo else None
