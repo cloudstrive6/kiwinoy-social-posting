@@ -333,6 +333,13 @@ reels:
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
   brand_logo_size: 116     # top-right logo diameter (px)
+  # YouTube thumbnail fonts (headline box + 4K/HDR badge). Montserrat Black is the
+  # default (biggest/boldest/most legible); long headlines auto-switch to condensed
+  # Anton so they stay large. Both are the actual thumbnail text font.
+  thumbnail:
+    headline_font: assets/fonts/montserrat/Montserrat.ttf   # variable -> heaviest weight
+    long_font: assets/fonts/anton/Anton-Regular.ttf         # condensed, for long titles
+    long_threshold: 14                                      # chars over which to use the condensed font
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

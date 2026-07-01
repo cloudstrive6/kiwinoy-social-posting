@@ -152,6 +152,16 @@ def upload_video(
     return resp
 
 
+def set_thumbnail(video_id: str, image) -> None:
+    """Set/replace the custom thumbnail on an existing video."""
+    from googleapiclient.http import MediaFileUpload
+
+    _service().thumbnails().set(
+        videoId=video_id, media_body=MediaFileUpload(str(image))
+    ).execute()
+    print(f"[youtube] thumbnail updated on {video_id}", flush=True)
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "login":
         login()

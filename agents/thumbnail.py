@@ -14,20 +14,37 @@ from core.config import ROOT
 W, H = 1280, 720
 
 
-def _font(size: int):
+def _font(size: int, font_path: Optional[str] = None):
     from PIL import ImageFont
 
-    for c in [
-        ROOT / "assets/fonts/tarrget-font/TarrgetRegular-WEOz.otf",
+    cands = ([font_path] if font_path else []) + [
+        str(ROOT / (_CFG().get("headline_font") or "")) if _CFG().get("headline_font") else "",
+        str(ROOT / "assets/fonts/tarrget-font/TarrgetRegular-WEOz.otf"),
         "C:/Windows/Fonts/arialbd.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "arialbd.ttf",
-    ]:
+    ]
+    for c in cands:
+        if not c:
+            continue
         try:
-            return ImageFont.truetype(str(c), size)
+            f = ImageFont.truetype(str(c), size)
+            # variable fonts -> use the heaviest weight for thumbnail punch
+            for setter in ("Black", "ExtraBold"):
+                try:
+                    f.set_variation_by_name(setter)
+                    break
+                except Exception:
+                    continue
+            return f
         except Exception:
             continue
     return ImageFont.load_default()
+
+
+def _CFG() -> dict:
+    from core.config import CONFIG
+    return (CONFIG.reels.get("thumbnail", {}) or {}) if hasattr(CONFIG, "reels") else {}
 
 
 def _tsize(draw, text: str, font) -> tuple[int, int]:
@@ -42,6 +59,7 @@ def build_thumbnail(
     game_logo: Optional[str] = None,
     badge_lines: Sequence[str] = ("4K", "HDR"),
     box_fill: tuple = (214, 18, 18),     # YouTube-red "FULL GAME" box
+    font_path: Optional[str] = None,     # override the headline font
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -92,14 +110,22 @@ def build_thumbnail(
 
     # "FULL GAME" red box, bottom-left (font shrinks if the text is long)
     txt = (text or "FULL GAME").upper().strip()
+    # Headline font: caller override, else the config default (Montserrat Black),
+    # auto-switching to a CONDENSED font (Anton) for long headlines so they stay big.
+    hl = font_path
+    if not hl:
+        cfg = _CFG()
+        lf, thr = cfg.get("long_font"), int(cfg.get("long_threshold", 14) or 14)
+        if lf and len(txt) > thr:
+            hl = str(ROOT / lf)
     fsize = 96
     while fsize > 44:
-        f = _font(fsize)
+        f = _font(fsize, hl)
         tw, th = _tsize(draw, txt, f)
         if tw <= int(W * 0.74):
             break
         fsize -= 6
-    f = _font(fsize)
+    f = _font(fsize, hl)
     tw, th = _tsize(draw, txt, f)
     padx, pady = 34, 20
     x0, y1 = 46, H - 46
