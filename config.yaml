@@ -374,6 +374,7 @@ reels:
     character_side: right  # which side the character stands on (logo+text take the other)
     character_bg_darken: 0.7   # darken the background (0-1) so the character pops (keep the bg vibrant)
     character_bg_sat: 0.9      # slightly desaturate the background too
+    character_bg_blur: 2.5     # soften bg clutter (2nd character/HUD) -> subject in focus, bg recedes
     character_shadow: true # soft contact shadow so the cutout separates from the bg
     # SUBJECT grade — bright, vibrant + crisp like the MKIceAndFire samples. The cutout
     # is graded on its OWN (a dark gameplay-frame subject gets lifted), separate from the bg.

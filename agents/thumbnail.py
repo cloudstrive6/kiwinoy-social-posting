@@ -332,6 +332,9 @@ def build_thumbnail(
             if dk < 1.0:                                  # subdue the bg -> character pops
                 base = ImageEnhance.Brightness(base).enhance(dk)
                 base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.9)))
+            bl = float(g.get("character_bg_blur", 0))     # soften bg clutter (2nd character/HUD)
+            if bl > 0:                                     # -> subject in focus, bg recedes (depth)
+                base = base.filter(ImageFilter.GaussianBlur(bl))
             ch = _autocrop_alpha(Image.open(str(character)).convert("RGBA"))
             th = int(H * max(0.6, float(g.get("character_scale", 1.14))))   # >1 => off the bottom
             ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
