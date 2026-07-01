@@ -52,9 +52,9 @@ def _tsize(draw, text: str, font) -> tuple[int, int]:
     return r - l, b - t
 
 
-def _auto_focus(base) -> tuple[float, float]:
-    """Best-effort subject point (fx, fy in 0..1): where DETAIL + COLOUR is densest
-    (characters have both; flat backgrounds don't), with a mild centre bias."""
+def _saliency(base):
+    """Low-res saliency map (DETAIL + COLOUR, mild centre bias): characters/effects
+    score high, flat backgrounds low. Returned as a 90x160 float array."""
     import numpy as np
 
     sm = np.asarray(base.convert("RGB").resize((160, 90)), dtype=np.float32)
@@ -66,13 +66,53 @@ def _auto_focus(base) -> tuple[float, float]:
     h, w = score.shape
     yy, xx = np.mgrid[0:h, 0:w]
     cbias = 1.0 - 0.5 * (((xx - w / 2) / (w / 2)) ** 2 + ((yy - h / 2) / (h / 2)) ** 2)
-    score *= np.clip(cbias, 0.3, 1.0)
-    # centroid of the top-scoring cells (robust vs a single hot pixel)
+    return score * np.clip(cbias, 0.3, 1.0)
+
+
+def _subject(base) -> tuple[float, float, float]:
+    """(fx, fy, span): subject centroid (0..1) + how much of the frame the salient
+    subject spans (0..1, the larger of its width/height). A small span = a compact or
+    far subject a thumbnail should zoom into; a large span = it already fills the
+    frame, so leave it. Robust to a few hot pixels (10-90 pct bbox)."""
+    import numpy as np
+
+    score = _saliency(base)
+    h, w = score.shape
+    yy, xx = np.mgrid[0:h, 0:w]
     thr = np.quantile(score, 0.90)
     m = score >= thr
-    fx = float((xx[m]).mean()) / w
-    fy = float((yy[m]).mean()) / h
-    return (min(0.85, max(0.15, fx)), min(0.8, max(0.2, fy)))
+    fx = float(xx[m].mean()) / w
+    fy = float(yy[m].mean()) / h
+    strong = score >= max(float(thr), 0.5 * float(score.max()))
+    if int(strong.sum()) >= 3:
+        xs, ys = xx[strong], yy[strong]
+        wf = (np.percentile(xs, 90) - np.percentile(xs, 10)) / w
+        hf = (np.percentile(ys, 90) - np.percentile(ys, 10)) / h
+        span = max(0.2, min(1.0, float(max(wf, hf))))
+    else:
+        span = 1.0
+    return (min(0.85, max(0.15, fx)), min(0.8, max(0.2, fy)), span)
+
+
+def _auto_focus(base) -> tuple[float, float]:
+    """Best-effort subject point (fx, fy in 0..1) for the spotlight/vignette grade."""
+    fx, fy, _ = _subject(base)
+    return (fx, fy)
+
+
+def _auto_compose(base) -> tuple[tuple[float, float], float]:
+    """Analyze an (already cover-cropped 1280x720) image and DECIDE the CTR crop: the
+    subject point + how hard to zoom toward it. A small/far subject is zoomed so it
+    fills ~`auto_fill` of the frame; a subject that already fills gets ~no zoom. Focus
+    is nudged slightly up so faces (usually upper) stay in frame."""
+    g = _CFG()
+    fx, fy, span = _subject(base)
+    fy = max(0.2, fy - 0.04)
+    fill = float(g.get("auto_fill", 0.82))
+    zmin = float(g.get("auto_zoom_min", 1.0))
+    zmax = float(g.get("auto_zoom_max", 1.7))
+    zoom = max(zmin, min(zmax, fill / max(0.2, span)))
+    return (fx, fy), zoom
 
 
 def _bloom(base, strength: float):
@@ -118,6 +158,7 @@ def build_thumbnail(
     zoom: float = 1.0,                   # >1 crops toward the subject (emotion face-zoom)
     sharpen: float = 0.0,                # extra crispening for soft footage frames (0..1)
     crop_bottom: float = 0.0,            # trim this fraction off the source bottom (copyright strip)
+    auto_compose: Optional[bool] = None,  # analyze + auto-crop toward the subject (None = config default, on)
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -132,12 +173,26 @@ def build_thumbnail(
     if float(crop_bottom) > 0:            # trim the copyright strip off pool stills
         bw, bh = base.size
         base = base.crop((0, 0, bw, int(bh * (1 - min(0.15, float(crop_bottom))))))
+    auto = _CFG().get("auto_compose", True) if auto_compose is None else bool(auto_compose)
     bw, bh = base.size
     s = max(W / bw, H / bh)
     base = base.resize((max(W, int(bw * s)), max(H, int(bh * s))), Image.LANCZOS)
     bw, bh = base.size
-    base = base.crop(((bw - W) // 2, (bh - H) // 2, (bw - W) // 2 + W, (bh - H) // 2 + H))
+    # Cover-crop to 1280x720. Normally centre; when auto-composing, slide the crop
+    # window toward the subject so an off-centre character isn't chopped off.
+    if auto and (bw > W or bh > H):
+        sfx, sfy, _ = _subject(base)
+        ox = int(min(bw - W, max(0, sfx * bw - W / 2)))
+        oy = int(min(bh - H, max(0, sfy * bh - H / 2)))
+    else:
+        ox, oy = (bw - W) // 2, (bh - H) // 2
+    base = base.crop((ox, oy, ox + W, oy + H))
 
+    # Decide the crop: when auto-composing and the caller didn't force a zoom/focus,
+    # analyze THIS frame and zoom toward the subject so it fills the thumbnail (small
+    # or far subjects get pulled in; an already-full shot is left alone).
+    if auto and focus is None and abs(float(zoom) - 1.0) < 1e-6:
+        focus, zoom = _auto_compose(base)
     # Emotion face-zoom: crop tighter TOWARD the subject, then scale back up.
     z = max(1.0, min(2.2, float(zoom)))
     if z > 1.01:

@@ -353,6 +353,14 @@ reels:
     vignette: 0.38     # darken AWAY from the subject (pull the eye in)
     spotlight: 0.18    # brighten AT the subject (make it pop; 0 = off)
     auto_focus: true   # auto-find the subject (detail+colour); overridden by an explicit focus
+    # Auto-composition: analyze each candidate + DECIDE the crop for max CTR — a
+    # subject-aware cover-crop (off-centre characters aren't chopped) + a computed
+    # zoom that pulls a small/far subject in to fill the frame (an already-full shot
+    # is left alone). Overridden by an explicit focus/zoom on a variant spec.
+    auto_compose: true
+    auto_fill: 0.82    # zoom so the subject spans ~this fraction of the frame
+    auto_zoom_min: 1.0 # never zoom out
+    auto_zoom_max: 1.7 # cap the zoom-in so the subject is never cropped too tight
     pool_crop_bottom: 0.045   # trim the copyright strip off the bottom of cloud-pool stills
     variants: 3        # thumbnail variants generated per upload (for A/B Test & Compare)
   duration_seconds: 14
