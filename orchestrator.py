@@ -64,10 +64,14 @@ def _game_logo(game: Optional[str]) -> Optional[Any]:
     from core import game_quotes
     if not game:
         return None
-    folder = ROOT / (CONFIG.reels.get("game_logo", {}) or {}).get(
-        "dir", "reels/assets/game-logo")
+    gcfg = CONFIG.reels.get("game_logo", {}) or {}
+    folder = ROOT / gcfg.get("dir", "reels/assets/game-logo")
     if not folder.exists():
         return None
+    # Explicit game-key -> filename map wins (unambiguous for FF7 original vs Remake).
+    mapped = (gcfg.get("map", {}) or {}).get(game)
+    if mapped and (folder / mapped).exists():
+        return folder / mapped
     norm = lambda s: "".join(c for c in s.lower() if c.isalnum())
     pngs = [(p, norm(p.stem)) for p in sorted(folder.iterdir())
             if p.suffix.lower() == ".png"]

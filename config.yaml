@@ -450,7 +450,8 @@ reels:
     genshin: 'Genshin Impact'
     hsr: 'Honkai: Star Rail'
     nte: 'Neverness to Everness'
-    ff7: 'Final Fantasy VII'
+    ff7: 'Final Fantasy VII'          # the ORIGINAL PS1 game
+    ff7remake: 'Final Fantasy VII Remake'
     re: 'Resident Evil'
     halo: 'Halo'
     thelastofus2: 'The Last of Us Part II'
@@ -579,6 +580,13 @@ reels:
     scale_w: 0.5          # max width as a fraction of the frame
     max_h: 160            # max height (clamped to stay above the hook)
     top_margin: 36        # px from the top edge
+    # Explicit game-key -> logo filename. Wins over filename-keyword matching, which
+    # can't disambiguate cases like FF7 ORIGINAL (PS1) vs FF7 REMAKE (the logos say
+    # "7" vs "VII", so no keyword overlaps). Add an entry whenever two games share a
+    # name root. Unmapped games still fall back to keyword matching.
+    map:
+      ff7: "Final Fantasy VII Original PS1 Logo.png"
+      ff7remake: "Final-Fantasy-VII-Remake-Game-PNG-HD-Quality.png"
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
