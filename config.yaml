@@ -396,7 +396,8 @@ reels:
     # stopping and PICKS the best (~half a cent/thumbnail). Needs ANTHROPIC_API_KEY;
     # fails open to the free heuristic inspector on any error / no key.
     vision_judge: true
-    vision_model: claude-haiku-4-5
+    vision_model: claude-haiku-4-5   # 1st choice (Anthropic)
+    vision_openai_model: gpt-4o-mini # fallback if Anthropic errors/unfunded (OpenAI)
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080

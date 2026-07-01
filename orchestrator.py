@@ -1458,12 +1458,13 @@ def run_youtube_longform(
         # when enabled + the key is funded; else the free heuristic. Publish the best.
         vcfg = bool(tcfg.get("vision_judge", False))
         vmodel = str(tcfg.get("vision_model", "claude-haiku-4-5"))
+        vopenai = str(tcfg.get("vision_openai_model", "gpt-4o-mini"))
         best, how = -1.0, "heuristic"
         for i, v in enumerate(variants):
             vj = None
             if vcfg:
                 from core import vision
-                vj = vision.judge_thumbnail(v, topic=title, model=vmodel)
+                vj = vision.judge_thumbnail(v, topic=title, model=vmodel, openai_model=vopenai)
             if vj is not None:
                 how = "vision"
                 log(f"  {v.name}: vision rel={vj['relevant']:.0f}/10 ss={vj['scroll_stopping']:.0f}/10 "
