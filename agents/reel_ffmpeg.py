@@ -264,6 +264,7 @@ def build_gameplay(
     anim_logo: Optional[tuple] = None,
     game_logo: Optional[Path] = None,
     fill: bool = True,
+    hi_bitrate: bool = False,
 ) -> bytes:
     """Single standalone gameplay clip in a w x h frame, with the footage
     crop-filled to a w x foot_h region CENTRED in it (black band above for the
@@ -344,7 +345,8 @@ def build_gameplay(
             args += ["-map", "0:a"]
         elif music_idx is not None:
             args += ["-map", f"{music_idx}:a"]
-        args += _v_encode() + _a_encode(bool(keep_audio or music_idx is not None))
+        _has_a = bool(keep_audio or music_idx is not None)
+        args += _v_encode(hi_bitrate) + _a_encode(_has_a, hi_bitrate)
         args += ["-shortest", str(out_path)]
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -685,6 +687,7 @@ def build_gameplay_triptych(
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
+    hi_bitrate: bool = False,
 ) -> bytes:
     """3-PANEL gameplay reel (the meme/TikTok layout). The w x h frame is split into
     three equal horizontal bands; a 16:9 element is centred in each:
@@ -846,8 +849,8 @@ def build_gameplay_triptych(
             args += ["-map", "0:a"]
         elif music_idx is not None:
             args += ["-map", f"{music_idx}:a"]
-        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
-        args += _a_encode(bool(keep_audio or music_idx is not None))
+        args += _v_encode(hi_bitrate) + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(bool(keep_audio or music_idx is not None), hi_bitrate)
         args += ["-shortest", str(out_path)]
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1113,29 +1116,31 @@ def build_quote_short(
         return out_path.read_bytes()
 
 
-def _v_encode() -> list[str]:
-    # 1080p60 reels. TikTok's ingest transcoder DROPS the framerate to 30fps and softens
-    # detail hard when the source bitrate is modest (our old CRF 21 / veryfast ~12 Mbps sat
-    # under its 60fps threshold). Encode with real headroom — CRF 18 + a 24 Mbps ceiling on
-    # a better preset — so the source is beefy enough that TikTok keeps 60fps + sharpness.
-    # Tag bt709 (was untagged -> 'unknown', which let TikTok guess the colorspace) and
-    # faststart so playback starts before the whole file downloads.
+def _v_encode(hi: bool = False) -> list[str]:
+    """Reel video encoder. Default = the ORIGINAL proven feed encode (IG/YT/FB reels,
+    smooth 60fps). hi=True = TikTok's recommended upload spec, applied ONLY to the
+    TikTok track: ~30 Mbps (VBR, 45 Mbps ceiling) + bt709 tags so TikTok's ingest
+    transcoder keeps 60fps + sharpness instead of halving to 30fps."""
+    if not hi:
+        return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+                "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
     return ["-c:v", "libx264", "-preset", "fast",
-            # Target ~30 Mbps (ABR/VBR with a 45 Mbps ceiling) — squarely inside TikTok's
-            # own recommended upload spec (20-50 Mbps H.264 1080x1920 @ 60fps). This is
-            # deterministic, unlike CRF which dipped under TikTok's threshold on calmer
-            # scenes and let its transcoder halve the reel to 30fps + soften it.
+            # ~30 Mbps (VBR, 45 Mbps ceiling) — inside TikTok's spec (20-50 Mbps H.264
+            # 1080x1920 @ 60fps). Deterministic, unlike CRF which dipped under TikTok's
+            # threshold on calm scenes and let its transcoder halve the reel to 30fps.
             "-b:v", "30M", "-maxrate", "45M", "-bufsize", "90M",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
-            # write the primaries/transfer/matrix into the H.264 SPS VUI too — the -color_*
+            # write primaries/transfer/matrix into the H.264 SPS VUI too — the -color_*
             # muxer flags alone left transfer/primaries 'unknown' on transcode.
             "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
             "-movflags", "+faststart"]
 
 
-def _a_encode(has: bool) -> list[str]:
+def _a_encode(has: bool, hi: bool = False) -> list[str]:
     if not has:
         return ["-an"]
-    return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec: AAC 48kHz stereo 320kbps
+    if hi:
+        return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec
+    return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
