@@ -529,22 +529,32 @@ def run_gameplay_reel(
     slot_id: int,
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
+    game: Optional[str] = None,        # force this game (dedicated track, e.g. TikTok TLOU2)
+    tiktok_only: bool = False,         # publish ONLY to TikTok via Zernio (not the PfM platforms)
 ) -> dict[str, Any]:
-    """Gameplay-only reel: one standalone clip + a static hook caption (no VO)."""
+    """Gameplay-only reel: one standalone clip + a static hook caption (no VO).
+
+    Dedicated-track mode (game=<key>, tiktok_only=True): force the game, alternate
+    classic<->triptych on THAT game's used-clip count, and post only to TikTok."""
     taglish = bool(CONFIG.reels.get("taglish", True))
     gcfg = CONFIG.reels.get("gameplay", {}) or {}
     run_dir = OUTPUT_DIR / f"{_stamp()}_reel{slot_id}_gameplay"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[reel {slot_id} | gameplay] {m}", flush=True)
 
-    games = reel_composer.list_games()
-    if not games:
-        log("No gameplay footage available — skipping.")
-        return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
-    log(f"Footage available: {games}")
-    # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
-    # itself is written from the actual clip + lore below, so it fits the footage.
-    brief = reel_topics.run("gameplay", games, taglish=False)
+    if game:                                   # dedicated track — this game only
+        disp = str((CONFIG.reels.get("game_names", {}) or {}).get(game, game))
+        brief = {"game": game, "subject": disp, "category": "gameplay"}
+        log(f"Forced game (dedicated track): {disp}")
+    else:
+        games = reel_composer.list_games()
+        if not games:
+            log("No gameplay footage available — skipping.")
+            return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
+        log(f"Footage available: {games}")
+        # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
+        # itself is written from the actual clip + lore below, so it fits the footage.
+        brief = reel_topics.run("gameplay", games, taglish=False)
     # Prefer footage we HAVEN'T used for a gameplay reel yet (tracked on the
     # footage release); clips are kept for future commentary reels, not deleted.
     clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
@@ -578,12 +588,15 @@ def run_gameplay_reel(
     layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
     try:
         from core import gh_release as _ghr
-        n = len(_ghr.used_clips())
+        used = _ghr.used_clips()
+        # A dedicated (forced-game) track alternates on THAT game's own used count.
+        n = len([u for u in used if str(u).startswith(f"{game}__")]) if game else len(used)
     except Exception:
         n = 0
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
     layout = main_layouts[n % len(main_layouts)]          # classic/triptych: FB/Threads/YT (+IG usually)
-    ig_rotated = ("rotated" in layouts) and (n % 3 == 2)  # IG-only rotated turn
+    # IG-only rotated turn — never on the TikTok-only track (TikTok gets the main layout).
+    ig_rotated = (not tiktok_only) and ("rotated" in layouts) and (n % 3 == 2)
     art = _game_art(brief.get("game")) if layout == "triptych" else None
     if layout == "triptych" and art:
         top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
@@ -635,6 +648,15 @@ def run_gameplay_reel(
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
+    elif tiktok_only:
+        # Dedicated TikTok track (TLOU2): post ONLY to TikTok via Zernio.
+        from core import zernio
+        log("Publishing to TikTok via Zernio...")
+        res = zernio.publish_reel(video_bytes, caption)
+        result["published"] = bool(res)
+        result["zernio_result"] = res
+        if res and reel_composer.mark_clip_used(clip_id):
+            log(f"Marked clip used: {clip_id}")
     else:
         # YouTube is gated separately (reels.youtube). RESUMED 2026-07-01: 3 reels/day
         # = 3 Shorts/day (the spam-safe cap), so when enabled EVERY gameplay reel also
@@ -659,13 +681,9 @@ def run_gameplay_reel(
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
-
-        # TikTok via Zernio (our own TikTok app was rejected for self-posting). Separate
-        # from the Post-for-Me platforms; best-effort, never sinks the main post.
-        from core import zernio
-        if zernio.enabled():
-            log("Posting to TikTok via Zernio...")
-            result["zernio_result"] = zernio.publish_reel(video_bytes, caption)
+        # NOTE: TikTok is NOT posted here — it's a SEPARATE dedicated track
+        # (run_tiktok_reel: TLOU2-only, 4x/day) so the general multi-game reels don't
+        # land on TikTok. See core/zernio.py.
 
         # Instagram-exclusive rotated reel: its own IG-only post with full hashtags.
         ig_video = video_bytes                      # the video IG received (for the Story)

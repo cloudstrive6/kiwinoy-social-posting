@@ -531,6 +531,12 @@ reels:
     vo_gain: 1.0          # narrator volume (kept full; raise slightly if needed)
   # GAMEPLAY-ONLY reels: one standalone gameplay clip with a static hook caption
   # on top, the game's own audio kept, NO voiceover. Short Reel.
+  # Dedicated TikTok track (separate from the multi-game FB/IG/Threads/YT reels):
+  # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
+  # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
+  tiktok:
+    game: thelastofus2   # The Last of Us Part II only, for now (game-canon captions via core/lore.py)
+    posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
   gameplay:
     enabled: true
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same

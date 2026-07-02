@@ -27,6 +27,7 @@ from datetime import datetime, timezone
 from core.config import CONFIG
 from orchestrator import (
     run_commentary_reel,
+    run_gameplay_reel,
     run_quote_card,
     run_ready_reel,
     run_carousel_slot,
@@ -109,6 +110,11 @@ def main() -> int:
         "--youtube",
         action="store_true",
         help="LOCAL: concat the --parts 4K/60 HDR files into a full-game video + upload to YouTube",
+    )
+    g.add_argument(
+        "--tiktok",
+        action="store_true",
+        help="dedicated TikTok reel: one TLOU2 gameplay clip (classic<->triptych), posts ONLY to TikTok via Zernio",
     )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument(
@@ -206,6 +212,19 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[commentary] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    # Dedicated TikTok track: TLOU2-only gameplay reel, posts ONLY to TikTok (Zernio).
+    if args.tiktok:
+        try:
+            from core.config import CONFIG as _C
+            tk = (_C.reels.get("tiktok", {}) or {})
+            run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
+                              scheduled_at=args.schedule_at,
+                              game=str(tk.get("game", "thelastofus2")), tiktok_only=True)
+            return 0
+        except Exception as e:
+            print(f"[tiktok] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]
