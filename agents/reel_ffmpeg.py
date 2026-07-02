@@ -1124,8 +1124,13 @@ def _v_encode(hi: bool = False) -> list[str]:
     if not hi:
         return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
                 "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
+    # TikTok track. 40 Mbps did NOT survive TikTok's public transcode, so try the
+    # OPPOSITE per TikTok's own guidance: 1080x1920 H.264, a MODEST fixed ~12 Mbps.
+    # The theory is a high-bitrate source makes TikTok's ingester compress MORE
+    # aggressively; ~12-15 Mbps is the reported sweet spot. Deterministic ABR (not CRF)
+    # + bt709 tags + faststart.
     return ["-c:v", "libx264", "-preset", "fast",
-            "-b:v", "40M", "-maxrate", "55M", "-bufsize", "110M",
+            "-b:v", "12M", "-maxrate", "15M", "-bufsize", "24M",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
