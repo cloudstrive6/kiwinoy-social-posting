@@ -639,6 +639,7 @@ reels:
     map:
       ff7: "Final Fantasy VII Original PS1 Logo.png"
       ff7remake: "Final-Fantasy-VII-Remake-Game-PNG-HD-Quality.png"
+      thelastofus2: "The Last of Us Part 2 Remastered Game Logo.png"  # keyword match couldn't link the key to the filename
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
