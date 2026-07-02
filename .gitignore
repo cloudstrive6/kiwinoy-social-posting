@@ -56,3 +56,14 @@ Thumbs.db
 
 # Local Claude Code settings (machine-specific)
 .claude/
+
+# Long-form 4K HDR source parts (huge, local-only inputs)
+reels/assets/longform/*
+!reels/assets/longform/.gitkeep
+
+# Generated YouTube thumbnail variants (per upload)
+thumbnails/
+
+# local one-off longform batch runners (hardcoded paths)
+/process_ff7_fullgame.py
+/run_ff7_fullgame.bat

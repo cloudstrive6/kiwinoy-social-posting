@@ -1532,7 +1532,8 @@ def run_youtube_longform(
         graphics_pct=float(yl.get("graphics_pct", 0.58)),
         bitrate=str(yl.get("bitrate", "63M")),
         logo_size=int(yl.get("logo_size", 480)),
-        audio_lufs=yl.get("audio_lufs", -14.0))
+        audio_lufs=yl.get("audio_lufs", -14.0),
+        copy=bool(yl.get("stream_copy", False)))
 
     log("Generating thumbnail variants...")
     import re as _re

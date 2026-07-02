@@ -526,6 +526,7 @@ def build_longform_hdr(
     fps: str = "60000/1001",   # 59.94
     logo_size: int = 480,
     audio_lufs: Optional[float] = -14.0,
+    copy: bool = False,
     timeout: int = 36000,
 ) -> Path:
     """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video and
@@ -546,6 +547,25 @@ def build_longform_hdr(
     missing = [str(p) for p in parts if not p.exists()]
     if not parts or missing:
         raise ReelFfmpegError(f"longform parts missing: {missing or 'none provided'}")
+
+    if copy:
+        # STREAM-COPY concat (no re-encode): near-instant + byte-perfect HDR preserved.
+        # Requires identical codec/res/fps/colour across parts (same capture export).
+        # Overlays + loudnorm are skipped (they'd force a decode+re-encode). No
+        # +faststart — it would rewrite the whole (tens-of-GB) file; YouTube doesn't
+        # need it.
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            lst = Path(tmp) / "concat.txt"
+            # ABSOLUTE paths — the concat demuxer resolves relative paths against the
+            # list file's own dir (the temp dir), not the CWD.
+            lst.write_text("".join(f"file '{p.resolve().as_posix()}'\n" for p in parts),
+                           encoding="utf-8")
+            rc, err = ffmpeg.run(["-f", "concat", "-safe", "0", "-i", str(lst),
+                                  "-c", "copy", str(out_path)], timeout=timeout)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"longform stream-copy concat failed (rc={rc}):\n{err[-2000:]}")
+        return out_path
 
     with tempfile.TemporaryDirectory() as tmp:
         n = len(parts)

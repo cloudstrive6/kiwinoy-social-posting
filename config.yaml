@@ -876,6 +876,12 @@ threads_posts:
 #   python run.py --youtube --parts "D:\Vids\The Last of Us 1 (Rendered)"
 youtube_longform:
   enabled: true
+  # STREAM-COPY concat (no re-encode): the source parts are ALREADY 4K/60 HDR10 H.264
+  # High10 from the capture, so byte-copy them together — near-instant + zero quality
+  # loss + HDR preserved. Re-encoding 10-bit H.264 on CPU (x264) is infeasible for a
+  # multi-hour 4K/60 video (days per part). Trade-off: no lower-third overlay / audio
+  # loudnorm (both need a decode+re-encode). Set false to go back to the HDR re-encode.
+  stream_copy: true
   privacy: private            # 'private'+publish_at = scheduled; or 'public'/'unlisted'
   category_id: "20"           # 20 = Gaming
   made_for_kids: false
