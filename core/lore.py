@@ -141,6 +141,61 @@ GAME_LORE["ff7"] = (
 )
 
 
+GAME_LORE["thelastofus2"] = (
+    "THE LAST OF US PART II (2020, Naughty Dog) — GAME CANON ONLY. This is the VIDEO "
+    "GAME, NOT the HBO TV show — the show reorders/changes events, names and timing, so "
+    "ignore the series and describe only the game's story. Set ~5 years after Part I. "
+    "TWO playable protagonists: ELLIE (first half) and ABBY (second half, same days "
+    "retold from her side).\n"
+    "KEY PEOPLE:\n"
+    "- Ellie: late-teens, brown hair, a MOTH/fern tattoo on her right forearm; immune "
+    "to the Cordyceps infection; plays guitar. Joel's surrogate daughter. Drives the "
+    "revenge story.\n"
+    "- Joel Miller: Ellie's father figure. At the START of the game he is beaten to "
+    "death with a golf club by ABBY in Jackson — her revenge because Joel killed her "
+    "father (the Firefly surgeon) at the end of Part I to save Ellie. His death sets "
+    "the whole plot in motion.\n"
+    "- Abby Anderson: tall, muscular, blonde ponytail; a soldier of the WLF. Daughter "
+    "of the surgeon Joel killed. The SECOND playable protagonist (not a plain villain "
+    "— the game makes you play as her).\n"
+    "- Dina: Ellie's girlfriend; PREGNANT (with Jesse's baby, JJ); travels with Ellie "
+    "to Seattle.\n"
+    "- Jesse: Ellie & Dina's friend from Jackson (Dina's ex); comes to help; killed by "
+    "Abby at the theater.\n"
+    "- Tommy: Joel's younger brother, lives in Jackson; also hunts Abby.\n"
+    "- Abby's WLF crew (present at Joel's death, hunted by Ellie): Owen, Mel (who is "
+    "PREGNANT), Manny, Nora, Jordan, Leah.\n"
+    "- Lev & Yara: siblings who DEFECT from the Seraphites. Lev is a young trans boy "
+    "Abby protects; the Abby half is about her bond with Lev.\n"
+    "- Isaac: hardened leader of the WLF.\n"
+    "FACTIONS in Seattle: the WLF / 'WOLVES' (a large ex-military militia — soldiers, "
+    "guard DOGS, guns, the old stadium as their base) vs the SERAPHITES / 'SCARS' (a "
+    "religious cult — robed, scarred faces, use bows & melee, and WHISTLE to signal "
+    "each other; live on an island).\n"
+    "INFECTED (fungal, not zombies): Runners, Stalkers, CLICKERS (blind, fungus-headed, "
+    "echolocate by clicking), Bloaters, and the new SHAMBLERS (spray acid). The RAT "
+    "KING is a huge fused boss in the Seattle hospital basement.\n"
+    "PLACES: JACKSON, Wyoming (snowy mountain town, Ellie & Dina's home) -> SEATTLE, "
+    "Washington (rain-soaked, overgrown, flooded ruins: downtown, the WLF stadium, the "
+    "hospital, the aquarium, the Seraphite island, a theater hideout) -> a farmhouse -> "
+    "SANTA BARBARA, California (the Rattlers, a slaver group, at the end).\n"
+    "STORY BEATS: Abby kills Joel in Jackson -> Ellie & Dina hunt Abby's crew across "
+    "Seattle (Ellie kills Nora at the hospital, Owen & the pregnant Mel on a boat) -> "
+    "perspective SWITCHES to Abby's 3 days (her WLF life, saving Lev/Yara) -> they "
+    "collide at the theater (Abby beats Ellie & kills Jesse, spares her) -> months "
+    "later at the farm (Ellie, Dina, baby JJ) Ellie leaves for revenge -> SANTA BARBARA: "
+    "the Rattlers have enslaved Abby & Lev; Ellie frees then fights a starved Abby, and "
+    "in the end LETS HER GO -> Ellie returns to an empty farm, unable to play guitar "
+    "(two fingers bitten off in the fight).\n"
+    "DON'T CONFUSE: it's the GAME, not the HBO show (don't cite show-only changes). "
+    "Ellie = lean, brown-haired, arm tattoo; Abby = muscular, blonde ponytail — don't "
+    "swap them. WLF 'Wolves' (military + dogs) are NOT the Seraphite 'Scars' (robed "
+    "cultists who whistle). Clickers are blind and echolocate (not generic zombies). "
+    "Joel dies EARLY (this is the inciting event, not a late twist). Abby is a "
+    "PROTAGONIST you play, not just an enemy."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
@@ -154,6 +209,8 @@ _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
     ("ff7", ("final fantasy vii", "final fantasy 7", "ff7", "ffvii", "ff vii",
              "rebirth", "crisis core", "sephiroth", "cloud strife")),
+    ("thelastofus2", ("the last of us part ii", "the last of us part 2", "tlou2",
+                      "tlou part ii", "the last of us 2", "ellie and abby", "abby anderson")),
 ]
 
 
