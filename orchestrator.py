@@ -718,6 +718,19 @@ def run_gameplay_reel(
             except Exception as e:  # Stories are ephemeral bonus reach — never fatal
                 log(f"IG Story repost skipped ({e!r})")
                 result["ig_story_error"] = repr(e)
+
+        # Same reach-booster on the FACEBOOK Page Story (whatever FB received).
+        if gcfg.get("fb_stories", False) and "facebook" in targets:
+            try:
+                log("Reposting reel to Facebook Story...")
+                story_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
+                result["fb_story_result"] = publisher.run_fb_story(
+                    caption=story_cap, media_bytes=video_bytes, is_video=True,
+                    scheduled_at=scheduled_at)
+                log("Facebook Story reposted.")
+            except Exception as e:  # ephemeral bonus reach — never fatal
+                log(f"Facebook Story repost skipped ({e!r})")
+                result["fb_story_error"] = repr(e)
     _save(run_dir, result)
     return result
 
@@ -1214,6 +1227,21 @@ def run_quote_card(
         for p in posts:
             log(f"Published. Post id: {p.get('id', '(see result.json)')}")
 
+        # Reach-booster: also share the card to the FACEBOOK Page Story (reuse the
+        # already-uploaded image). Best-effort — never sinks the main post.
+        if qcfg.get("fb_stories", False) and "facebook" in img_targets:
+            try:
+                log("Sharing quote card to Facebook Story...")
+                cap = f"{caption}\n\n{tags}".strip() if tags else caption
+                result["fb_story_result"] = postforme.create_post(
+                    caption=cap, social_accounts=CONFIG.account_ids(["facebook"]),
+                    media_urls=[media_url], scheduled_at=scheduled_at,
+                    platform_configurations={"facebook": {"placement": "stories"}})
+                log("Quote card shared to Facebook Story.")
+            except Exception as e:
+                log(f"Facebook Story (quote) skipped ({e!r})")
+                result["fb_story_error"] = repr(e)
+
     # The quote also goes out as a short, loop-friendly REEL (quote over spliced
     # gameplay b-roll) to YouTube AND Instagram (IG gets the reel instead of the
     # static card, per user). IG Reels like hashtags, so the reel caption carries
@@ -1338,6 +1366,19 @@ def run_threads_footage(
             except Exception as e:  # IG is a bonus — never sink the Threads post
                 log(f"Instagram rotated post skipped ({e!r})")
                 result["ig_error"] = repr(e)
+
+        # Reach-booster: also share the footage to the FACEBOOK Page Story (as-is
+        # landscape -> letterboxed in the vertical Story). Best-effort.
+        if tf.get("fb_stories", False) and "facebook" in (tf.get("post_to", []) or []):
+            try:
+                log("Reposting footage to Facebook Story...")
+                result["fb_story_result"] = publisher.run_fb_story(
+                    caption=caption, media_bytes=video_bytes, is_video=True,
+                    scheduled_at=scheduled_at)
+                log("Footage reposted to Facebook Story.")
+            except Exception as e:  # ephemeral bonus reach — never fatal
+                log(f"Facebook Story (footage) skipped ({e!r})")
+                result["fb_story_error"] = repr(e)
     _save(run_dir, result)
     return result
 

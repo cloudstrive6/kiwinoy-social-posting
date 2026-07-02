@@ -222,6 +222,31 @@ def run_ig_story(
     )
 
 
+def run_fb_story(
+    caption: str,
+    media_bytes: bytes,
+    *,
+    is_video: bool = True,
+    content_type: Optional[str] = None,
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Repost media to the Facebook PAGE STORY (placement=stories) as a reach-booster.
+    Facebook-only, best-effort. Handles both video (reels/footage) and image (quote
+    cards). Like run_ig_story it does NOT fall back to a no-placement post, so a
+    rejected 'stories' placement can never accidentally publish to the FB feed."""
+    account_ids = CONFIG.account_ids(["facebook"])
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_url = (postforme.upload_video(media_bytes) if is_video
+                 else postforme.upload_image(media_bytes, content_type=content_type or "image/png"))
+    return postforme.create_post(
+        caption=caption, social_accounts=account_ids, media_urls=[media_url],
+        scheduled_at=scheduled_at, is_draft=is_draft,
+        platform_configurations={"facebook": {"placement": "stories"}},
+    )
+
+
 def run_threads(
     text: str,
     scheduled_at: Optional[str] = None,

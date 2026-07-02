@@ -555,6 +555,7 @@ reels:
     # Also repost every gameplay reel to the Instagram STORY (placement=stories) as a
     # reach-booster (2026-07-01, per user). Best-effort: never sinks the main post.
     ig_stories: true
+    fb_stories: true   # also repost the reel to the Facebook Page Story (2026-07-02)
     art_dir: reels/assets/game-art
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
@@ -774,6 +775,7 @@ quotes:
   # IG quote REEL is STOPPED (IG now gets the 3 gameplay reels + Story instead) and X
   # is dropped from quotes. FB gets hashtags; Threads does not. youtube_short stays off.
   post_to: [facebook, threads]
+  fb_stories: true   # also share the quote card to the Facebook Page Story (2026-07-02)
   hashtag_platforms: [facebook]                # FB card gets hashtags (not Threads)
   hashtags: ["#spiderman", "#gaming", "#marvel"]
   vision_pick: true                 # Claude vision picks the most cinematic photo
@@ -910,6 +912,7 @@ threads_footage:
   # instead. Set instagram: true to bring the footage-track IG version back.
   instagram: false
   post_to: [threads, facebook]
+  fb_stories: true   # also share the landscape footage to the Facebook Page Story (2026-07-02, letterboxed)
   # Reference times for the EXTERNAL cron-job.org footage job (it runs
   # `run.py --threads-footage`). 2x/day, every 12h, interleaved with the reels
   # (00/08/16) + quote cards (06/18) so FB/Threads posts stay ~2h+ apart:
