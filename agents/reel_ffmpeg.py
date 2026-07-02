@@ -1114,8 +1114,21 @@ def build_quote_short(
 
 
 def _v_encode() -> list[str]:
-    return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
-            "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
+    # 1080p60 reels. TikTok's ingest transcoder DROPS the framerate to 30fps and softens
+    # detail hard when the source bitrate is modest (our old CRF 21 / veryfast ~12 Mbps sat
+    # under its 60fps threshold). Encode with real headroom — CRF 18 + a 24 Mbps ceiling on
+    # a better preset — so the source is beefy enough that TikTok keeps 60fps + sharpness.
+    # Tag bt709 (was untagged -> 'unknown', which let TikTok guess the colorspace) and
+    # faststart so playback starts before the whole file downloads.
+    return ["-c:v", "libx264", "-preset", "fast", "-crf", "18",
+            "-maxrate", "24M", "-bufsize", "48M",
+            "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
+            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+            "-color_range", "tv",
+            # write the primaries/transfer/matrix into the H.264 SPS VUI too — the -color_*
+            # muxer flags alone left transfer/primaries 'unknown' on transcode.
+            "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
+            "-movflags", "+faststart"]
 
 
 def _a_encode(has: bool) -> list[str]:
