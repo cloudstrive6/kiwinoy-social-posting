@@ -48,15 +48,22 @@ def _grade_filter(hi: bool = False) -> str:
     g = CONFIG.reels.get("grade", {}) or {}
     if not g.get("enabled", True):
         return ""
+    if hi:
+        # Replicate the user's Premiere Lumetri LIGHT panel for the TikTok track:
+        # Exposure +0.1 (slight overall lift) + Shadows +15.9 (lift the darks), with neutral
+        # Saturation (100) & Contrast (0). Approximated with a gamma lift (raises shadows +
+        # mids like the Shadows slider) plus a small brightness bump (the +0.1 exposure).
+        gl = g.get("tiktok_lumetri", {}) or {}
+        return (f"eq=gamma={float(gl.get('gamma', 1.12))}:"
+                f"brightness={float(gl.get('brightness', 0.02))}:"
+                f"saturation={float(gl.get('saturation', 1.0))}:"
+                f"contrast={float(gl.get('contrast', 1.0))},")
     contrast = float(g.get("contrast", 1.06))
     brightness = float(g.get("brightness", 0.0))
     saturation = float(g.get("saturation", 1.12))
     gamma = float(g.get("gamma", 1.0))
     sharpen = float(g.get("sharpen", 0.8))
     denoise = float(g.get("denoise", 0))
-    if hi:
-        sharpen = max(sharpen, 0.8) * 1.2          # +20% crispness for TikTok
-        denoise = max(denoise, 1.5)                # light denoise so shadows don't block up
     parts = [
         f"eq=contrast={contrast}:brightness={brightness}:"
         f"saturation={saturation}:gamma={gamma}"
@@ -1131,45 +1138,27 @@ def _v_encode(hi: bool = False) -> list[str]:
     if not hi:
         return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
                 "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
-    # TikTok track — full quality spec for the browser-upload path (TikTok Studio web),
-    # which is NOT the Content-Posting-API and should preserve much more than Zernio's
-    # public API transcode. H.264 High@4.2, 2-PASS VBR ~20 Mbps (25-30 max), 2s keyframe
-    # interval (120 frames @ 60fps), Rec.709 SDR. The `-pass`/`-passlogfile` are added by
-    # _encode_final; these are the shared video opts for BOTH passes.
+    # TikTok track — replicates the user's Premiere Pro export: H.264 High@4.2, 1080x1920,
+    # 60fps, Rec.709 SDR, VBR 1-PASS @ 30 Mbps target, keyframe distance = auto (Premiere's
+    # box unchecked), AAC 320k. -sws_flags in _encode_final = "Use Maximum Render Quality".
     return ["-c:v", "libx264", "-preset", "slow",
-            "-b:v", "20M", "-maxrate", "30M", "-bufsize", "60M",
+            "-b:v", "30M",                                # VBR, 1-pass, target 30 Mbps
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
-            "-x264-params",
-            "keyint=120:min-keyint=120:colorprim=bt709:transfer=bt709:colormatrix=bt709",
+            "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
             "-movflags", "+faststart"]
 
 
 def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
                   hi: bool, timeout: int) -> tuple:
-    """Run the final reel encode. hi=True (TikTok track) => 2-PASS VBR: pass 1 analyses
-    the footage (video only, discarded), pass 2 spends bits where the motion is. Also
-    turns on high-quality scaling. Non-hi => the original single pass. prefix = inputs +
-    filter_complex + stream maps; vtail = video codec opts (+ any fps flags); aopts = audio."""
-    import glob
-    import os
+    """Run the final reel encode (single pass — the user's Premiere export is VBR 1-pass).
+    hi=True (TikTok track) turns on high-quality scaling (= Premiere's "Use Maximum Render
+    Quality"). prefix = inputs + filter_complex + stream maps; vtail = video codec opts
+    (+ any fps flags); aopts = audio."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    if not hi:
-        return ffmpeg.run(prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
-    sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"]   # "maximum render quality"
-    plog = str(out_path.with_suffix(".x264pass"))
-    rc, err = ffmpeg.run(sws + prefix + vtail
-                         + ["-pass", "1", "-passlogfile", plog, "-an", "-f", "null", os.devnull],
-                         timeout=timeout)
-    if rc != 0:
-        return rc, err
-    rc, err = ffmpeg.run(sws + prefix + vtail + ["-pass", "2", "-passlogfile", plog]
-                         + aopts + ["-shortest", str(out_path)], timeout=timeout)
-    for f in glob.glob(plog + "*"):          # x264 leaves foo.x264pass-0.log[.mbtree]
-        try: os.unlink(f)
-        except Exception: pass
-    return rc, err
+    sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"] if hi else []
+    return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
 def _a_encode(has: bool, hi: bool = False) -> list[str]:
