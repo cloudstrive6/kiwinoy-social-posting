@@ -1456,6 +1456,7 @@ def run_youtube_longform(
     thumb_image: Optional[str] = None,
     publish_at: Optional[str] = None,
     privacy: Optional[str] = None,
+    reuse_concat: Optional[str] = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """LOCAL long-form YouTube: concat the labelled 4K/60 HDR10 PART files into one
@@ -1511,29 +1512,35 @@ def run_youtube_longform(
         log(f"Single-part upload -> Part {part_n}")
     log(f"Title: {title}")
 
-    out = run_dir / "fullgame.mp4"
+    # REUSE an already-built concat (e.g. a prior run whose upload failed) — skip the
+    # multi-hour re-encode/stream-copy entirely and upload the existing file as-is.
+    reuse = Path(reuse_concat) if reuse_concat else None
+    out = reuse if (reuse and reuse.exists()) else run_dir / "fullgame.mp4"
     use_logo = bool(yl.get("logo", False))   # YouTube's own watermark covers it -> default off
     lt = yl.get("lower_third")
     lt_path = None
     if lt:
         lt_path = Path(lt) if Path(lt).is_absolute() else (ROOT / lt)
         lt_path = lt_path if lt_path.exists() else None
-    log(f"Rendering full-game (concat + HDR10 encode"
-        f"{' + logo' if use_logo else ''}"
-        f"{' + lower-third' if lt_path else ''}) — this takes a while...")
-    reel_ffmpeg.build_longform_hdr(
-        files, out,
-        logo=_reel_logo() if use_logo else None,
-        lower_third=lt_path,
-        lower_third_start=float(yl.get("lower_third_start", 7.0)),
-        lower_third_fade=float(yl.get("lower_third_fade", 1.0)),
-        lower_third_scale=float(yl.get("lower_third_scale", 1.0)),
-        lower_third_pos=str(yl.get("lower_third_pos", "full")),
-        graphics_pct=float(yl.get("graphics_pct", 0.58)),
-        bitrate=str(yl.get("bitrate", "63M")),
-        logo_size=int(yl.get("logo_size", 480)),
-        audio_lufs=yl.get("audio_lufs", -14.0),
-        copy=bool(yl.get("stream_copy", False)))
+    if reuse and reuse.exists():
+        log(f"Reusing existing concat: {out} ({out.stat().st_size / 1e9:.2f} GB) — skipping build.")
+    else:
+        log(f"Rendering full-game (concat + HDR10 encode"
+            f"{' + logo' if use_logo else ''}"
+            f"{' + lower-third' if lt_path else ''}) — this takes a while...")
+        reel_ffmpeg.build_longform_hdr(
+            files, out,
+            logo=_reel_logo() if use_logo else None,
+            lower_third=lt_path,
+            lower_third_start=float(yl.get("lower_third_start", 7.0)),
+            lower_third_fade=float(yl.get("lower_third_fade", 1.0)),
+            lower_third_scale=float(yl.get("lower_third_scale", 1.0)),
+            lower_third_pos=str(yl.get("lower_third_pos", "full")),
+            graphics_pct=float(yl.get("graphics_pct", 0.58)),
+            bitrate=str(yl.get("bitrate", "63M")),
+            logo_size=int(yl.get("logo_size", 480)),
+            audio_lufs=yl.get("audio_lufs", -14.0),
+            copy=bool(yl.get("stream_copy", False)))
 
     log("Generating thumbnail variants...")
     import re as _re
