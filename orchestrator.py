@@ -202,11 +202,23 @@ def _best_curated_character(game: Optional[str]) -> Optional[Any]:
         return random.choice(renders)
 
 
+def _pool_key(game: Optional[str]) -> Optional[str]:
+    """Map a footage/game key to its cloud image-pool FOLDER key when they differ
+    (the pool is keyed by the assets/images/<folder> name, which isn't always the
+    game key — e.g. game 'thelastofus2' but images live under 'thelastofuspart2').
+    Config: reels.image_pool_map. Falls back to the game key unchanged."""
+    if not game:
+        return None
+    m = (CONFIG.reels.get("image_pool_map", {}) or {})
+    return str(m.get(str(game), game))
+
+
 def _game_screenshot(game: Optional[str]) -> Optional[Any]:
     """A real game screenshot for the triptych TOP panel, pulled from the cloud
-    image library (the assets/images uploaded to the qimg pool), matched to the
-    game's universe. Does NOT touch the quote-card image ledger. Returns None so
-    the renderer falls back to a still frame from the clip."""
+    image library (the assets/images uploaded to the qimg pool), matched to THIS
+    game (or its universe). Does NOT touch the quote-card image ledger. Returns None
+    so the renderer falls back to a still frame from the clip — which is ALWAYS the
+    right game — rather than ever showing a screenshot from a different game."""
     from core import gh_release, game_quotes
     if not game:
         return None
@@ -214,15 +226,14 @@ def _game_screenshot(game: Optional[str]) -> Optional[Any]:
         pool = gh_release.quote_image_pool()
         if not pool:
             return None
+        key = _pool_key(game)
         universe = game_quotes.universe_for_game(game)
-        games = list(pool)
-        if str(game) in pool:                 # exact game folder first (SM1 -> SM1 shots)
-            games = [str(game)]
-        elif universe:                        # else any image from the same universe
-            matched = [g for g in games
-                       if game_quotes.universe_for_game(g) == universe]
-            if matched:
-                games = matched
+        if key in pool:                       # exact game folder first (SM1 -> SM1 shots)
+            games = [key]
+        elif universe and [g for g in pool if game_quotes.universe_for_game(g) == universe]:
+            games = [g for g in pool if game_quotes.universe_for_game(g) == universe]
+        else:
+            return None                       # no match -> clip frame, NEVER a random other game
         names = [n for g in games for n in (pool.get(g, []) or [])]
         if not names:
             return None
@@ -243,7 +254,7 @@ def _pool_samples(game: Optional[str], n: int = 3) -> list[str]:
     try:
         from core import game_quotes, gh_release
         pool = gh_release.quote_image_pool() or {}
-        names = list(pool.get(str(game), []) or [])
+        names = list(pool.get(_pool_key(game), []) or [])
         if not names:
             uni = game_quotes.universe_for_game(game)
             if uni:

@@ -504,6 +504,12 @@ reels:
     spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
     spider-man2: "Marvel's Spider-Man 2"
     general: 'this game'
+  # Footage/game key -> cloud image-pool FOLDER key, when they differ (the pool is
+  # keyed by the assets/images/<folder> name). Without this the triptych top panel +
+  # thumbnail stills can't find the game's images and fall back to a clip frame.
+  image_pool_map:
+    thelastofus2: thelastofuspart2        # game key 'thelastofus2' -> images under 'thelastofuspart2'
+    thelastofus1: thelastofusremastered
   # 2-3 super-relevant hashtags per game for SHORT reel/video captions (content
   # .run_short). Keep it tight - never a wall of tags.
   game_hashtags:
