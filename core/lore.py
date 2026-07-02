@@ -196,6 +196,39 @@ GAME_LORE["thelastofus2"] = (
 )
 
 
+GAME_LORE["thelastofus1"] = (
+    "THE LAST OF US PART I (the 2013 game; remade 2022) — GAME CANON, the STORY THAT "
+    "SETS UP PART II. A Cordyceps fungal pandemic collapsed civilization; the game is "
+    "set ~20 years after the outbreak.\n"
+    "KEY PEOPLE:\n"
+    "- Joel Miller: a hardened smuggler in the Boston quarantine zone (QZ). His young "
+    "daughter Sarah was shot dead on the first night of the outbreak — the wound he "
+    "carries all game.\n"
+    "- Ellie: a 14-year-old girl who is IMMUNE (bitten but never turned) — humanity's "
+    "one hope for a vaccine. Joel is hired to smuggle her across the country.\n"
+    "- Tess: Joel's smuggling partner; dies (infected) early on.\n"
+    "- Tommy: Joel's younger brother; runs a settlement at a hydro dam in Jackson, "
+    "Wyoming.\n"
+    "- The FIREFLIES: a rebel militia (vs the military dictatorship FEDRA) trying to "
+    "cure the infection. Marlene is their leader.\n"
+    "- Bill (paranoid survivor in Lincoln), Henry & Sam (brothers; Sam turns, Henry "
+    "kills Sam then himself), and DAVID (a cannibal-cult leader Ellie kills in winter).\n"
+    "PLACES: Boston QZ -> Pittsburgh -> Jackson/Tommy's dam -> University of Eastern "
+    "Colorado -> Salt Lake City (the Firefly hospital). Famous quiet beat: the GIRAFFE "
+    "in Salt Lake.\n"
+    "STORY BEATS / THE ENDING THAT DRIVES PART II: at the Firefly hospital the surgeons "
+    "conclude they must REMOVE Ellie's brain (where the immune Cordyceps grows) to make "
+    "the cure — which would KILL her. Joel refuses, storms the hospital and kills the "
+    "Fireflies — including the lead SURGEON (Jerry Anderson) — carries Ellie out, and "
+    "LIES to her that they stopped looking for a cure. (In PART II, that surgeon's "
+    "daughter ABBY comes for revenge — this is why Part II happens.)\n"
+    "INFECTED: Runners, Stalkers, Clickers (blind, echolocate), Bloaters — same fungal "
+    "enemies as Part II.\n"
+    "NOTE: this is BACKGROUND/context. Our TikTok footage is PART II; only caption a "
+    "clip as Part I if it's clearly a Part I flashback/reference."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
@@ -209,6 +242,8 @@ _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
     ("ff7", ("final fantasy vii", "final fantasy 7", "ff7", "ffvii", "ff vii",
              "rebirth", "crisis core", "sephiroth", "cloud strife")),
+    ("thelastofus1", ("the last of us part i", "the last of us part 1", "tlou1",
+                      "tlou part i", "the last of us remastered", "the last of us (2013")),
     ("thelastofus2", ("the last of us part ii", "the last of us part 2", "tlou2",
                       "tlou part ii", "the last of us 2", "ellie and abby", "abby anderson")),
 ]

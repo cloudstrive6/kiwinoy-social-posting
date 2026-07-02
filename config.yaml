@@ -511,7 +511,7 @@ reels:
     spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan"]
     spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#PS5"]
     ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth"]
-    thelastofus2: ["#TheLastofUs", "#TLOU2", "#PS5"]
+    thelastofus2: ["#thelastofuspart2", "#thelastofus", "#gaming"]
     halo: ["#Halo", "#Xbox"]
     re: ["#ResidentEvil", "#RE"]
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
