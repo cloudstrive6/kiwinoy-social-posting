@@ -541,8 +541,8 @@ reels:
   # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
-    game: spider-man1    # Spider-Man (Remastered) — good ~35 Mbps source. TLOU2 footage was
-                         # all ~20 Mbps (deleted 2026-07-02), so the TikTok track moved to SM.
+    game: thelastofus2   # TLOU2. Re-recorded 2026-07-02 at ~50 Mbps (the old ~20 Mbps batch was
+                         # deleted as trash), so the dedicated TikTok track is back on TLOU2.
     posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
   gameplay:
     enabled: true
