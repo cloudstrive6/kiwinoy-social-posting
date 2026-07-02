@@ -818,8 +818,13 @@ def build_gameplay_triptych(
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}[bg]",
             f"[0:v]scale={w}:-2,{grade}setsar=1,fps={fps}[mid]",
-            f"[1:v]scale={w}:-2,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},"
-            f"setsar=1[top]",
+            # TOP panel: scale+crop to EXACTLY the same 16:9 tile as the middle/bottom
+            # (force_original_aspect_ratio=increase + crop) so a source image of ANY
+            # aspect ratio can't change the panel height -> the black gaps between the
+            # three panels stay uniform. (Was scale=w:-2, whose auto height varied with
+            # the image's aspect ratio and made the spacing uneven.)
+            f"[1:v]scale={w}:{arth}:force_original_aspect_ratio=increase,crop={w}:{arth},"
+            f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim},setsar=1[top]",
             *bot_lines,
             f"[bg][top]overlay=(W-w)/2:({band}-h)/2[b1]",
             f"[b1][mid]overlay=(W-w)/2:{band}+({band}-h)/2[b2]",
