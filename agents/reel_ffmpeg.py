@@ -264,6 +264,7 @@ def build_gameplay(
     anim_logo: Optional[tuple] = None,
     game_logo: Optional[Path] = None,
     fill: bool = True,
+    hi_bitrate: bool = False,
 ) -> bytes:
     """Single standalone gameplay clip in a w x h frame, with the footage
     crop-filled to a w x foot_h region CENTRED in it (black band above for the
@@ -344,7 +345,7 @@ def build_gameplay(
             args += ["-map", "0:a"]
         elif music_idx is not None:
             args += ["-map", f"{music_idx}:a"]
-        args += _v_encode() + _a_encode(bool(keep_audio or music_idx is not None))
+        args += _v_encode(hi_bitrate) + _a_encode(bool(keep_audio or music_idx is not None), hi_bitrate)
         args += ["-shortest", str(out_path)]
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -685,6 +686,7 @@ def build_gameplay_triptych(
     target_seconds: float = 75.0,
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
+    hi_bitrate: bool = False,
 ) -> bytes:
     """3-PANEL gameplay reel (the meme/TikTok layout). The w x h frame is split into
     three equal horizontal bands; a 16:9 element is centred in each:
@@ -846,8 +848,8 @@ def build_gameplay_triptych(
             args += ["-map", "0:a"]
         elif music_idx is not None:
             args += ["-map", f"{music_idx}:a"]
-        args += _v_encode() + ["-fps_mode", "cfr", "-r", str(fps)]
-        args += _a_encode(bool(keep_audio or music_idx is not None))
+        args += _v_encode(hi_bitrate) + ["-fps_mode", "cfr", "-r", str(fps)]
+        args += _a_encode(bool(keep_audio or music_idx is not None), hi_bitrate)
         args += ["-shortest", str(out_path)]
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1113,15 +1115,27 @@ def build_quote_short(
         return out_path.read_bytes()
 
 
-def _v_encode() -> list[str]:
-    # The original proven reel encode — smooth 60fps on IG/YT/FB AND TikTok (verified via
-    # the Spider-Man test post). TikTok problems trace to the SOURCE footage bitrate, not
-    # this encode, so ALL platforms (incl. TikTok) use these same settings.
-    return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
-            "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
+def _v_encode(hi: bool = False) -> list[str]:
+    """Reel video encoder. Default = the original proven feed encode (IG/YT/FB, smooth
+    60fps). hi=True = a high-bitrate source for the TikTok track ONLY: ~40 Mbps (TikTok's
+    20-50 spec). Proven necessary because TikTok's PUBLIC transcode crushes low-bitrate
+    sources (a private 10 Mbps reel looked great, degraded the instant it went public);
+    handing TikTok ~40 Mbps leaves far more detail for its public re-encode to preserve."""
+    if not hi:
+        return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+                "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
+    return ["-c:v", "libx264", "-preset", "fast",
+            "-b:v", "40M", "-maxrate", "55M", "-bufsize", "110M",
+            "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
+            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+            "-color_range", "tv",
+            "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
+            "-movflags", "+faststart"]
 
 
-def _a_encode(has: bool) -> list[str]:
+def _a_encode(has: bool, hi: bool = False) -> list[str]:
     if not has:
         return ["-an"]
+    if hi:
+        return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec
     return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
