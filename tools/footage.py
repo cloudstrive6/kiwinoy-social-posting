@@ -37,6 +37,14 @@ import requests  # noqa: E402
 
 from core.config import CONFIG, ROOT  # noqa: E402
 
+# Use the OS trust store so HTTPS verifies behind Avast's TLS interception on the
+# local machine (no-op / skipped in CI where truststore isn't installed).
+try:
+    import truststore as _truststore
+    _truststore.inject_into_ssl()
+except Exception:
+    _truststore = None
+
 API = "https://api.github.com"
 VIDEO_EXTS = {".mp4", ".mov", ".webm", ".m4v", ".mkv"}
 SIZE_LIMIT = 95 * 1024 * 1024       # ~just under GitHub's 100MB repo file limit
