@@ -109,6 +109,9 @@ def upload_video(
     privacy is forced to 'private' until then. Returns the API response (incl.
     'id'); the watch URL is https://youtu.be/<id>.
     """
+    import time
+
+    from googleapiclient.errors import HttpError
     from googleapiclient.http import MediaFileUpload
 
     path = Path(path)
@@ -137,10 +140,34 @@ def upload_video(
                             resumable=True, mimetype="video/*")
     req = yt.videos().insert(part="snippet,status", body=body, media_body=media)
     resp = None
+    errs = 0
     while resp is None:
-        prog, resp = req.next_chunk()
-        if prog:
-            print(f"[youtube] upload {int(prog.progress() * 100)}%", flush=True)
+        try:
+            # num_retries makes googleapiclient retry transient 5xx/socket errors on the
+            # CURRENT chunk with backoff; the outer try adds a longer backoff on top so a
+            # server hiccup mid-upload doesn't discard hours of progress. next_chunk() on a
+            # resumable upload continues from the last CONFIRMED byte, so we resume, not restart.
+            prog, resp = req.next_chunk(num_retries=6)
+            if prog:
+                print(f"[youtube] upload {int(prog.progress() * 100)}%", flush=True)
+            errs = 0
+        except HttpError as e:
+            if getattr(e, "resp", None) is not None and e.resp.status in (500, 502, 503, 504) and errs < 12:
+                errs += 1
+                wait = min(120, 2 ** errs)
+                print(f"[youtube] transient {e.resp.status} — retry {errs}/12 in {wait}s "
+                      f"(resumes from last byte)", flush=True)
+                time.sleep(wait)
+                continue
+            raise
+        except (ConnectionError, TimeoutError, OSError) as e:
+            if errs < 12:
+                errs += 1
+                wait = min(120, 2 ** errs)
+                print(f"[youtube] connection error ({e!r}) — retry {errs}/12 in {wait}s", flush=True)
+                time.sleep(wait)
+                continue
+            raise
     vid = resp.get("id", "")
     print(f"[youtube] uploaded id={vid}  https://youtu.be/{vid}", flush=True)
 
