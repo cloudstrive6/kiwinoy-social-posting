@@ -541,7 +541,8 @@ reels:
   # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
-    game: thelastofus2   # The Last of Us Part II only, for now (game-canon captions via core/lore.py)
+    game: spider-man1    # Spider-Man (Remastered) — good ~35 Mbps source. TLOU2 footage was
+                         # all ~20 Mbps (deleted 2026-07-02), so the TikTok track moved to SM.
     posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
   gameplay:
     enabled: true
