@@ -1120,8 +1120,12 @@ def _v_encode() -> list[str]:
     # a better preset — so the source is beefy enough that TikTok keeps 60fps + sharpness.
     # Tag bt709 (was untagged -> 'unknown', which let TikTok guess the colorspace) and
     # faststart so playback starts before the whole file downloads.
-    return ["-c:v", "libx264", "-preset", "fast", "-crf", "18",
-            "-maxrate", "24M", "-bufsize", "48M",
+    return ["-c:v", "libx264", "-preset", "fast",
+            # Target ~30 Mbps (ABR/VBR with a 45 Mbps ceiling) — squarely inside TikTok's
+            # own recommended upload spec (20-50 Mbps H.264 1080x1920 @ 60fps). This is
+            # deterministic, unlike CRF which dipped under TikTok's threshold on calmer
+            # scenes and let its transcoder halve the reel to 30fps + soften it.
+            "-b:v", "30M", "-maxrate", "45M", "-bufsize", "90M",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
@@ -1134,4 +1138,4 @@ def _v_encode() -> list[str]:
 def _a_encode(has: bool) -> list[str]:
     if not has:
         return ["-an"]
-    return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
+    return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec: AAC 48kHz stereo 320kbps
