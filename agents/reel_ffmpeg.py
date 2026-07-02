@@ -38,10 +38,12 @@ def _caption_cfg() -> dict[str, Any]:
     return (CONFIG.reels.get("caption", {}) or {})
 
 
-def _grade_filter() -> str:
+def _grade_filter(hi: bool = False) -> str:
     """A tasteful colour/clarity grade for the gameplay footage so it looks its
     crisp best (subtle contrast + saturation + sharpening). Config-driven via
     reels.grade; returns a comma-terminated filter snippet, or '' when disabled.
+    hi=True (TikTok track) adds ~20% more sharpening + a light denoise so TikTok's
+    transcode doesn't turn low-light grain into blocks.
     """
     g = CONFIG.reels.get("grade", {}) or {}
     if not g.get("enabled", True):
@@ -51,16 +53,19 @@ def _grade_filter() -> str:
     saturation = float(g.get("saturation", 1.12))
     gamma = float(g.get("gamma", 1.0))
     sharpen = float(g.get("sharpen", 0.8))
+    denoise = float(g.get("denoise", 0))
+    if hi:
+        sharpen = max(sharpen, 0.8) * 1.2          # +20% crispness for TikTok
+        denoise = max(denoise, 1.5)                # light denoise so shadows don't block up
     parts = [
         f"eq=contrast={contrast}:brightness={brightness}:"
         f"saturation={saturation}:gamma={gamma}"
     ]
     if sharpen > 0:
         # luma-only unsharp: crisp edges without amplifying chroma noise.
-        parts.append(f"unsharp=5:5:{sharpen}:5:5:0.0")
-    if float(g.get("denoise", 0)) > 0:
-        d = float(g.get("denoise"))
-        parts.insert(0, f"hqdn3d={d}:{d}:6:6")
+        parts.append(f"unsharp=5:5:{sharpen:.2f}:5:5:0.0")
+    if denoise > 0:
+        parts.insert(0, f"hqdn3d={denoise}:{denoise}:6:6")
     return ",".join(parts) + ","
 
 
@@ -319,7 +324,7 @@ def build_gameplay(
         foot_h = min(int(foot_h or h), h)
         pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
         pad_y = max(0, min(pad_y, h - foot_h))
-        grade = _grade_filter()  # subtle contrast/saturation/sharpen on the footage
+        grade = _grade_filter(hi_bitrate)  # subtle contrast/saturation/sharpen on the footage
         fc = [
             f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
             f"crop={w}:{foot_h},{grade}pad={w}:{h}:0:{pad_y}:color=black,"
@@ -339,17 +344,15 @@ def build_gameplay(
             vlabel = "ova"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
-        args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
-                         "-map", "[v]"]
+        prefix = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                           "-map", "[v]"]
         if keep_audio:
-            args += ["-map", "0:a"]
+            prefix += ["-map", "0:a"]
         elif music_idx is not None:
-            args += ["-map", f"{music_idx}:a"]
-        args += _v_encode(hi_bitrate) + _a_encode(bool(keep_audio or music_idx is not None), hi_bitrate)
-        args += ["-shortest", str(out_path)]
-
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        rc, err = ffmpeg.run(args, timeout=1800)
+            prefix += ["-map", f"{music_idx}:a"]
+        _has_a = bool(keep_audio or music_idx is not None)
+        rc, err = _encode_final(prefix, _v_encode(hi_bitrate),
+                                _a_encode(_has_a, hi_bitrate), out_path, hi_bitrate, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -767,7 +770,7 @@ def build_gameplay_triptych(
             music_idx = next_idx
             next_idx += 1
 
-        grade = _grade_filter()  # enhance the gameplay AND the game art (like classic)
+        grade = _grade_filter(hi_bitrate)  # enhance the gameplay AND the game art (like classic)
         # Darken the top still (like the quote cards) so the white hook stays the
         # dominant element. rr/gg/bb<1 multiplies brightness -> 0.55 ~= a 45% black
         # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
@@ -844,16 +847,15 @@ def build_gameplay_triptych(
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
                          "-map", "[v]"]
+        prefix = args
         if keep_audio:
-            args += ["-map", "0:a"]
+            prefix += ["-map", "0:a"]
         elif music_idx is not None:
-            args += ["-map", f"{music_idx}:a"]
-        args += _v_encode(hi_bitrate) + ["-fps_mode", "cfr", "-r", str(fps)]
-        args += _a_encode(bool(keep_audio or music_idx is not None), hi_bitrate)
-        args += ["-shortest", str(out_path)]
-
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        rc, err = ffmpeg.run(args, timeout=1800)
+            prefix += ["-map", f"{music_idx}:a"]
+        _has_a = bool(keep_audio or music_idx is not None)
+        vtail = _v_encode(hi_bitrate) + ["-fps_mode", "cfr", "-r", str(fps)]
+        rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate),
+                                out_path, hi_bitrate, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"triptych render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -1124,17 +1126,45 @@ def _v_encode(hi: bool = False) -> list[str]:
     if not hi:
         return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
                 "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
-    # TikTok track. CONFIRMED: a MODEST bitrate survives TikTok's public transcode while
-    # a high one (40 Mbps) triggered aggressive compression. 12 Mbps tested visibly better
-    # + kept 60fps; 14 Mbps sits in TikTok's 12-15 sweet spot for a touch more detail.
-    # 1080x1920 H.264, deterministic ABR (not CRF) + bt709 tags + faststart.
-    return ["-c:v", "libx264", "-preset", "fast",
-            "-b:v", "14M", "-maxrate", "16M", "-bufsize", "28M",
+    # TikTok track — full quality spec for the browser-upload path (TikTok Studio web),
+    # which is NOT the Content-Posting-API and should preserve much more than Zernio's
+    # public API transcode. H.264 High@4.2, 2-PASS VBR ~20 Mbps (25-30 max), 2s keyframe
+    # interval (120 frames @ 60fps), Rec.709 SDR. The `-pass`/`-passlogfile` are added by
+    # _encode_final; these are the shared video opts for BOTH passes.
+    return ["-c:v", "libx264", "-preset", "slow",
+            "-b:v", "20M", "-maxrate", "30M", "-bufsize", "60M",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
-            "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
+            "-x264-params",
+            "keyint=120:min-keyint=120:colorprim=bt709:transfer=bt709:colormatrix=bt709",
             "-movflags", "+faststart"]
+
+
+def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
+                  hi: bool, timeout: int) -> tuple:
+    """Run the final reel encode. hi=True (TikTok track) => 2-PASS VBR: pass 1 analyses
+    the footage (video only, discarded), pass 2 spends bits where the motion is. Also
+    turns on high-quality scaling. Non-hi => the original single pass. prefix = inputs +
+    filter_complex + stream maps; vtail = video codec opts (+ any fps flags); aopts = audio."""
+    import glob
+    import os
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    if not hi:
+        return ffmpeg.run(prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
+    sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"]   # "maximum render quality"
+    plog = str(out_path.with_suffix(".x264pass"))
+    rc, err = ffmpeg.run(sws + prefix + vtail
+                         + ["-pass", "1", "-passlogfile", plog, "-an", "-f", "null", os.devnull],
+                         timeout=timeout)
+    if rc != 0:
+        return rc, err
+    rc, err = ffmpeg.run(sws + prefix + vtail + ["-pass", "2", "-passlogfile", plog]
+                         + aopts + ["-shortest", str(out_path)], timeout=timeout)
+    for f in glob.glob(plog + "*"):          # x264 leaves foo.x264pass-0.log[.mbtree]
+        try: os.unlink(f)
+        except Exception: pass
+    return rc, err
 
 
 def _a_encode(has: bool, hi: bool = False) -> list[str]:
