@@ -38,7 +38,7 @@ def _caption_cfg() -> dict[str, Any]:
     return (CONFIG.reels.get("caption", {}) or {})
 
 
-def _grade_filter(hi: bool = False, denoise: float = 0.0) -> str:
+def _grade_filter(hi: bool = False) -> str:
     """A tasteful colour/clarity grade for the gameplay footage so it looks its
     crisp best (subtle contrast + saturation + sharpening). Config-driven via
     reels.grade; returns a comma-terminated filter snippet, or '' when disabled.
@@ -54,10 +54,7 @@ def _grade_filter(hi: bool = False, denoise: float = 0.0) -> str:
         # Saturation (100) & Contrast (0). Approximated with a gamma lift (raises shadows +
         # mids like the Shadows slider) plus a small brightness bump (the +0.1 exposure).
         gl = g.get("tiktok_lumetri", {}) or {}
-        # optional denoiser (Neat-Video-style) BEFORE the grade — cleans low-light noise so
-        # compression doesn't turn shadows into blocks. hqdn3d is ffmpeg's fast spatial+temporal.
-        dn = f"hqdn3d={denoise:.1f}:{max(1.0, denoise * 0.7):.1f}:6:6," if denoise > 0 else ""
-        return (dn + f"eq=gamma={float(gl.get('gamma', 1.12))}:"
+        return (f"eq=gamma={float(gl.get('gamma', 1.12))}:"
                 f"brightness={float(gl.get('brightness', 0.02))}:"
                 f"saturation={float(gl.get('saturation', 1.0))}:"
                 f"contrast={float(gl.get('contrast', 1.0))},")
@@ -289,7 +286,6 @@ def build_gameplay(
     fill: bool = True,
     hi_bitrate: bool = False,
     hdr: bool = False,
-    yt4k: bool = False,
 ) -> bytes:
     """Single standalone gameplay clip in a w x h frame, with the footage
     crop-filled to a w x foot_h region CENTRED in it (black band above for the
@@ -346,15 +342,9 @@ def build_gameplay(
         foot_h = min(int(foot_h or h), h)
         pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
         pad_y = max(0, min(pad_y, h - foot_h))
-        # HDR: keep the footage native (no SDR grade). yt4k: Lumetri LIGHT grade + a denoiser
-        # (YouTube Shorts, HDR already tonemapped to SDR upstream). Else: the normal grade.
-        if hdr:
-            grade = ""
-        elif yt4k:
-            grade = _grade_filter(hi=True, denoise=float(
-                (CONFIG.reels.get("gameplay", {}) or {}).get("yt4k_denoise", 3.0)))
-        else:
-            grade = _grade_filter(hi_bitrate)
+        # HDR: keep the footage native (no SDR grade — grading PQ with eq would distort it,
+        # same as our 4K HDR longform which stays native); force the chain to 10-bit.
+        grade = "" if hdr else _grade_filter(hi_bitrate)  # subtle contrast/saturation/sharpen
         fmt10 = "format=yuv420p10le," if hdr else ""
         fc = [
             f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
@@ -382,10 +372,9 @@ def build_gameplay(
         elif music_idx is not None:
             prefix += ["-map", f"{music_idx}:a"]
         _has_a = bool(keep_audio or music_idx is not None)
-        vtail = _v_encode_hdr() if hdr else (_v_encode_yt4k() if yt4k else _v_encode(hi_bitrate))
+        vtail = _v_encode_hdr() if hdr else _v_encode(hi_bitrate)
         rc, err = _encode_final(prefix, vtail,
-                                _a_encode(_has_a, hi_bitrate or yt4k), out_path,
-                                hi_bitrate or hdr or yt4k, 3600, two_pass=yt4k)
+                                _a_encode(_has_a, hi_bitrate), out_path, hi_bitrate or hdr, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -1177,28 +1166,14 @@ def _v_encode(hi: bool = False) -> list[str]:
 
 
 def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
-                  hi: bool, timeout: int, two_pass: bool = False) -> tuple:
-    """Run the final reel encode. hi=True turns on Max-Render-Quality scaling. two_pass=True
-    (YouTube 4K Shorts) does VBR 2-pass: pass 1 analyses, pass 2 spends bits on the motion.
-    prefix = inputs + filter_complex + maps; vtail = video codec opts (+ fps flags); aopts = audio."""
-    import glob
-    import os
+                  hi: bool, timeout: int) -> tuple:
+    """Run the final reel encode (single pass — the user's Premiere export is VBR 1-pass).
+    hi=True (TikTok track) turns on high-quality scaling (= Premiere's "Use Maximum Render
+    Quality"). prefix = inputs + filter_complex + stream maps; vtail = video codec opts
+    (+ any fps flags); aopts = audio."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"] if hi else []
-    if not two_pass:
-        return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
-    plog = str(out_path.with_suffix(".x264pass"))
-    rc, err = ffmpeg.run(sws + prefix + vtail
-                         + ["-pass", "1", "-passlogfile", plog, "-an", "-f", "null", os.devnull],
-                         timeout=timeout)
-    if rc != 0:
-        return rc, err
-    rc, err = ffmpeg.run(sws + prefix + vtail + ["-pass", "2", "-passlogfile", plog]
-                         + aopts + ["-shortest", str(out_path)], timeout=timeout)
-    for f in glob.glob(plog + "*"):
-        try: os.unlink(f)
-        except Exception: pass
-    return rc, err
+    return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
 def _v_encode_hdr() -> list[str]:
@@ -1208,19 +1183,6 @@ def _v_encode_hdr() -> list[str]:
             "-rc", "vbr", "-b:v", "40M", "-maxrate", "55M", "-tag:v", "hvc1",
             "-color_primaries", "bt2020", "-color_trc", "smpte2084",
             "-colorspace", "bt2020nc", "-color_range", "tv", "-movflags", "+faststart"]
-
-
-def _v_encode_yt4k() -> list[str]:
-    # YouTube Shorts 4K SDR (YT strips HDR, so tonemap to SDR upstream). User's Premiere
-    # export: H.264 High@5.2, VBR 2-PASS, 68 Mbps target / 85 max, Rec.709. 2-pass is run
-    # by _encode_final; Max Render Quality via its -sws_flags.
-    return ["-c:v", "libx264", "-preset", "medium",   # 68 Mbps is bitrate-limited; slow wastes time
-            "-b:v", "68M", "-maxrate", "85M", "-bufsize", "170M",
-            "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "5.2",
-            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
-            "-color_range", "tv",
-            "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
-            "-movflags", "+faststart"]
 
 
 def _a_encode(has: bool, hi: bool = False) -> list[str]:
