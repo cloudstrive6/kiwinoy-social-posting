@@ -327,12 +327,12 @@ reels:
   # On resume, set enabled=true and (#1) YouTube only posts on `slots` (2 of the 6
   # daily reel slots ~= 2/day) instead of every slot, to look less bulk/automated.
   youtube:
-    # RESUMED 2026-07-01 (per user): 3 Shorts/day = the 3 daily gameplay reels (the
-    # spam-safe max). The reels cron fires 3x/day and always sends slot 1, so YouTube
-    # posts on EVERY gameplay reel when enabled (the old per-slot gate never matched
-    # slot 1). All Shorts are gameplay reels (classic / triptych / rotated rotation).
-    enabled: true
-    slots: [1, 2, 3]       # legacy/reference only — enabled now posts on every reel
+    # STOPPED 2026-07-03 (per user): the 1080p feed reels no longer go to YouTube via
+    # Post for Me. YouTube Shorts move to a DEDICATED 4K/60 HDR track (classic <-> triptych
+    # alternating) uploaded via the YouTube Data API (core/youtube.py) — see the
+    # youtube_shorts section below. enabled=false = this PfM path is off.
+    enabled: false
+    slots: [1, 2, 3]       # legacy/reference only
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
