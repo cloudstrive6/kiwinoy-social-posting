@@ -1181,20 +1181,17 @@ def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
-def _v_encode_hdr(fps: int = 60, bitrate: str = "63M") -> list[str]:
-    # 4K HDR reel — EXACTLY the longform 4K/60 HDR export (build_longform_hdr): libx264
-    # High10 (10-bit), Level 5.2, CBR, + HDR10 STATIC METADATA (mastering-display + CLL) so
-    # YouTube gets proper HDR10 signaling. Matches the longform pillar so Shorts + longform
-    # look identical (YouTube preserves the HDR).
-    keyint = int(fps) * 2
-    master = "G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L(10000000,100)"
-    x264p = (f"keyint={keyint}:min-keyint={keyint}:colorprim=bt2020:transfer=smpte2084:"
-             f"colormatrix=bt2020nc:mastering-display={master}:cll=1000,200")
-    return ["-c:v", "libx264", "-profile:v", "high10", "-level", "5.2", "-pix_fmt", "yuv420p10le",
-            "-color_primaries", "bt2020", "-color_trc", "smpte2084", "-colorspace", "bt2020nc",
-            "-color_range", "tv",
-            "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate, "-bufsize", "126M",
-            "-x264-params", x264p, "-movflags", "+faststart"]
+def _v_encode_hdr(fps: int = 60, bitrate: str = "55M") -> list[str]:
+    # 4K HDR reel: HEVC Main10 (HDR10, PQ/bt2020) via NVENC on the RTX 3080. This matches the
+    # longform's REAL output — the full game is stream-copied HEVC Main10; its libx264 High10
+    # path is the CPU fallback that's infeasible (OOMs at 4K). NVENC re-encodes the cropped/
+    # captioned reel to the same HEVC HDR10 (+ mastering-display/CLL). YouTube keeps the HDR.
+    # (NVENC has no -master_display/-max_cll option; the bt2020/PQ color tags are what YouTube
+    # reads for HDR — verified: the first tag-only 4K HDR Short played back in HDR.)
+    return ["-c:v", "hevc_nvenc", "-profile:v", "main10", "-pix_fmt", "p010le",
+            "-rc", "vbr", "-b:v", bitrate, "-maxrate", "75M", "-tag:v", "hvc1",
+            "-color_primaries", "bt2020", "-color_trc", "smpte2084",
+            "-colorspace", "bt2020nc", "-color_range", "tv", "-movflags", "+faststart"]
 
 
 def _a_encode(has: bool, hi: bool = False, hdr: bool = False) -> list[str]:
