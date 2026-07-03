@@ -197,12 +197,60 @@ python run.py --threads --type poll --dry-run     # force a poll
 python run.py --threads --type prediction --dry-run
 ```
 
+## YouTube (4K/60 HDR) — LOCAL track
+
+YouTube is an **HDR channel**: everything published there is native **4K/60 HDR10**
+(Rec.2020 PQ). Because the source is multi-GB and encoding uses the local GPU
+(`hevc_nvenc`), this track runs **on your PC, not in CI**.
+
+**Long-form** (`run.py --youtube`) — concat the labelled 4K/60 HDR part files into a
+full-game upload (stream-copy, HDR untouched) with an auto clickbait thumbnail. See
+`config.yaml -> youtube_longform`.
+
+**Shorts** (`run.py --youtube-short`) — the channel's Shorts are a dedicated 4K/60 HDR
+track (the 1080p-via-Post-for-Me path was stopped 2026-07-03). Each Short is rendered
+from the **4K HDR footage pool** and **alternates classic <-> triptych**, using the
+**exact same edit/export as the long-form** (HDR10 + `loudnorm` audio + darkened HDR
+text), then uploaded via the **YouTube Data API**. See `config.yaml -> youtube_shorts`.
+
+Pipeline per Short: pick a fresh 4K HDR clip -> review it for a lore-grounded hook +
+caption -> render `build_gameplay`/`build_gameplay_triptych` at 2160x3840 HDR -> upload
+as a `#Shorts` via `core/youtube.py`. A tiny per-game ledger
+(`footage-4k/<game>/.used_shorts.json`) tracks used clips + drives the alternation.
+
+### Build the 4K HDR footage pool
+Extract HDR clips from the long-form parts (keeps HDR10, unlike `hdr_to_reel.py` which
+tonemaps to 1080p SDR for the feed reels):
+```powershell
+python tools/pool_4k.py "reels\assets\longform\final-fantasy-7-remake\...Part 5.mp4" ff7remake --at 00:12:30 --len 40 --name sephiroth-reveal
+python tools/pool_4k.py --list ff7remake        # show the pool + used ledger
+```
+Clips land in `reels/assets/footage-4k/<game>/` (git-ignored — local only).
+
+### Run / schedule a Short
+```powershell
+python run.py --youtube-short --dry-run         # render only, no upload
+python run.py --youtube-short                   # render + upload (auto layout)
+python run.py --youtube-short --layout triptych --privacy unlisted
+```
+**Cadence (Windows Task Scheduler):** YouTube throttled bulk Shorts, so keep it **low +
+varied** — e.g. 2/day at different hours. `run_youtube_short.bat` is the runner; create
+the schedule yourself (system-settings change) with, e.g.:
+```cmd
+schtasks /Create /TN "KG YouTube Short AM" /TR "\"Z:\Video Production Files\Kiwinoy Gaming\kiwinoy-social-posting\run_youtube_short.bat\"" /SC DAILY /ST 09:30
+schtasks /Create /TN "KG YouTube Short PM" /TR "\"Z:\Video Production Files\Kiwinoy Gaming\kiwinoy-social-posting\run_youtube_short.bat\"" /SC DAILY /ST 20:00
+```
+The PC must be awake at those times; logs go to `output\.youtube_short.log`.
+
 ## CLI reference
 ```
 python run.py --slot N [--dry-run]   # run a specific slot
 python run.py --auto                 # run the image slot closest to now
 python run.py --reel --slot N        # render + publish a reel
 python run.py --threads              # research + write + publish a Threads post
+python run.py --youtube --parts <dir> [--game K]   # LOCAL 4K HDR full-game upload
+python run.py --youtube-short [--layout L] [--dry-run]  # LOCAL 4K HDR Short (auto classic/triptych)
 python run.py --all --dry-run        # test all image slots, no publish
+python tools/pool_4k.py --list <game># show the 4K HDR Shorts footage pool
 python tools/list_accounts.py --save # discover + save account IDs
 ```

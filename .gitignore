@@ -61,6 +61,10 @@ Thumbs.db
 reels/assets/longform/*
 !reels/assets/longform/.gitkeep
 
+# 4K/60 HDR YouTube Shorts footage pool (large, local-only; nvenc runs locally)
+reels/assets/footage-4k/*
+!reels/assets/footage-4k/.gitkeep
+
 # Generated YouTube thumbnail variants (per upload)
 thumbnails/
 

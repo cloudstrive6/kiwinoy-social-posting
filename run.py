@@ -37,6 +37,7 @@ from orchestrator import (
     run_threads_footage,
     run_threads_image,
     run_youtube_longform,
+    run_youtube_short,
 )
 
 
@@ -112,6 +113,12 @@ def main() -> int:
         help="LOCAL: concat the --parts 4K/60 HDR files into a full-game video + upload to YouTube",
     )
     g.add_argument(
+        "--youtube-short",
+        dest="youtube_short",
+        action="store_true",
+        help="LOCAL: render one 4K/60 HDR Short (classic<->triptych alternating) from the pool + upload via the Data API",
+    )
+    g.add_argument(
         "--tiktok",
         action="store_true",
         help="dedicated TikTok reel: one TLOU2 gameplay clip (classic<->triptych), posts ONLY to TikTok via Zernio",
@@ -143,7 +150,11 @@ def main() -> int:
         "--parts",
         help="(with --youtube) folder of, or path to, the labelled 4K/60 HDR PART files",
     )
-    p.add_argument("--game", help="(with --youtube) game key for the thumbnail image")
+    p.add_argument("--game", help="(with --youtube/--youtube-short) game key")
+    p.add_argument("--layout", default=None,
+                   help="(with --youtube-short) force 'classic' or 'triptych' (else alternates)")
+    p.add_argument("--clip", default=None,
+                   help="(with --youtube-short) explicit 4K HDR clip file (else fresh-first from the pool)")
     p.add_argument("--title", help="(with --youtube) explicit video title (overrides the auto title)")
     p.add_argument("--description", help="(with --youtube) explicit description (overrides the auto one)")
     p.add_argument("--thumb-text", help="(with --youtube) thumbnail overlay words, e.g. 'SEPHIROTH BOSS' (default FULL GAME)")
@@ -244,6 +255,18 @@ def main() -> int:
             return 0
         except Exception as e:
             print(f"[youtube] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+
+    # LOCAL 4K/60 HDR YouTube Short (classic<->triptych alternating) via the Data API.
+    if args.youtube_short:
+        try:
+            privacy = args.privacy or ("public" if args.public else None)
+            run_youtube_short(game=args.game, clip=args.clip, layout=args.layout,
+                              privacy=privacy, publish_at=args.publish_at,
+                              dry_run=args.dry_run)
+            return 0
+        except Exception as e:
+            print(f"[yt-short] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
 
     # Motivational quote card -> Facebook.

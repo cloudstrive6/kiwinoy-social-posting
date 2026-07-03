@@ -1705,6 +1705,179 @@ def run_youtube_longform(
     return result
 
 
+# ---- 4K/60 HDR YouTube Shorts track -------------------------------------------------
+# LOCAL, like the long-form pillar: nvenc (RTX GPU) + multi-GB HDR footage can't run in
+# CI. A tiny per-game ledger tracks which 4K clips have been used for a Short (so we
+# post fresh footage first) AND a monotonic post counter (so classic<->triptych keeps
+# alternating even after the pool is exhausted and clips start getting reused).
+
+_SHORT_VID_EXTS = {".mp4", ".mov", ".mkv", ".m4v"}
+
+
+def _short_ledger(fdir) -> dict[str, Any]:
+    """Read the per-game Shorts ledger: {"used": [names...], "posts": N}."""
+    from pathlib import Path
+    p = Path(fdir) / ".used_shorts.json"
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {"used": list(d.get("used", [])), "posts": int(d.get("posts", 0))}
+    except Exception:
+        return {"used": [], "posts": 0}
+
+
+def _short_post_count(fdir) -> int:
+    """Monotonic count of Shorts posted for this game (drives layout alternation)."""
+    return _short_ledger(fdir)["posts"]
+
+
+def _mark_short_used(fdir, clip_id: str) -> None:
+    from pathlib import Path
+    d = _short_ledger(fdir)
+    if clip_id and clip_id not in d["used"]:
+        d["used"].append(clip_id)
+    d["posts"] = int(d["posts"]) + 1
+    try:
+        (Path(fdir) / ".used_shorts.json").write_text(
+            json.dumps(d, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _pick_short_clip(fdir):
+    """Fresh-first pick from the 4K HDR pool: a clip not yet used for a Short; once
+    the pool is exhausted, reuse the one used longest ago. Returns (path, name)."""
+    from pathlib import Path
+    fdir = Path(fdir)
+    if not fdir.exists():
+        return None, None
+    clips = sorted(p for p in fdir.iterdir()
+                   if p.is_file() and p.suffix.lower() in _SHORT_VID_EXTS)
+    if not clips:
+        return None, None
+    used = _short_ledger(fdir)["used"]
+    fresh = [c for c in clips if c.name not in used]
+    if fresh:
+        choice = random.choice(fresh)
+    else:                                    # exhausted -> reuse least-recently-used
+        order = {name: i for i, name in enumerate(used)}
+        choice = sorted(clips, key=lambda c: order.get(c.name, -1))[0]
+    return choice, choice.name
+
+
+def run_youtube_short(
+    game: Optional[str] = None,
+    clip: Optional[str] = None,
+    layout: Optional[str] = None,
+    privacy: Optional[str] = None,
+    publish_at: Optional[str] = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """LOCAL 4K/60 HDR YouTube Short: pick a fresh 4K HDR clip from the pool, render
+    the CLASSIC or TRIPTYCH HDR reel (alternating per post) matching the long-form's
+    HDR10 (Rec.2020 PQ) + loudnorm export, and upload as a Short via the Data API.
+    HEAVY (nvenc + multi-GB HDR) — run on your own machine, not CI."""
+    from pathlib import Path
+
+    from core import youtube
+
+    ys = CONFIG.youtube_shorts or {}
+    if not ys.get("enabled", True):
+        print("[yt-short] disabled (youtube_shorts.enabled=false) — skipping.", flush=True)
+        return {"kind": "youtube_short", "published": False, "skipped": "disabled"}
+
+    game = game or str(ys.get("game", "ff7remake"))
+    fps = int(ys.get("fps", 60))
+    rw, rh = int(ys.get("width", 2160)), int(ys.get("height", 3840))
+    run_dir = OUTPUT_DIR / f"{_stamp()}_youtube_short"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log = lambda m: print(f"[yt-short] {m}", flush=True)
+
+    # 1) fresh-first 4K HDR clip (explicit --clip wins). Clips are kept + reused.
+    fdir = ROOT / str(ys.get("footage_dir", "reels/assets/footage-4k")) / game
+    if clip:
+        clip_path, clip_id = Path(clip), Path(clip).name
+    else:
+        clip_path, clip_id = _pick_short_clip(fdir)
+    if not clip_path or not Path(clip_path).exists():
+        log(f"No 4K HDR clip available in {fdir} — skipping. "
+            f"(Add clips with tools/name_parts.py captures or trim the long-form parts.)")
+        return _skip(run_dir, {"kind": "youtube_short", "game": game}, "no_media")
+    log(f"Clip (fresh-first): {clip_id}")
+
+    # 2) layout: alternate classic <-> triptych on the persistent post counter.
+    layouts = [str(x) for x in (ys.get("layouts") or ["classic", "triptych"])]
+    n = _short_post_count(fdir)
+    layout = (layout or layouts[n % len(layouts)]).lower()
+    art = _game_art(game) if layout == "triptych" else None
+    if layout == "triptych" and not art:
+        log("No game art for this game — using the classic layout this post.")
+        layout = "classic"
+
+    # 3) on-screen hook + caption, grounded in the clip + game lore (English).
+    log("Reviewing the clip to write the on-screen hook + caption...")
+    hook, caption = content.hook_and_caption_from_video(clip_path, game, taglish=False)
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+    log(f"Game: {game} | Layout: {layout} | Hook: {hook}")
+
+    # 4) render at 4K/60 HDR — same edit/export as the long-form (HDR10 + loudnorm).
+    choices = [float(x) for x in (ys.get("target_seconds_choices") or [])]
+    target = random.choice(choices) if choices else float(ys.get("target_seconds", 35))
+    reel_path = run_dir / "short.mp4"
+    gcfg = CONFIG.reels.get("gameplay", {}) or {}
+    if layout == "triptych":
+        top = _game_screenshot(game)
+        log(f"Rendering 4K HDR triptych (art: {art.name}, "
+            f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
+        reel_ffmpeg.build_gameplay_triptych(
+            clip_path, reel_path, hook=hook, game_art=art, top_image=top,
+            logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
+            music=_reel_music(), anim_logo=_anim_logo(), hdr=True)
+    else:
+        log(f"Rendering 4K HDR classic (<={int(target)}s)...")
+        reel_ffmpeg.build_gameplay(
+            clip_path, reel_path, hook=hook, logo=_reel_logo(), fps=fps, w=rw, h=rh,
+            foot_h=int(gcfg.get("footage_height", 1320)) * 2,
+            top_band=int(gcfg.get("top_band", 360)) * 2,
+            target_seconds=target, music=_reel_music(), anim_logo=_anim_logo(),
+            game_logo=_game_logo(game), hdr=True)
+    actual = ffmpeg.duration(reel_path) or target
+    log(f"Rendered ({layout}) -> {reel_path} ({actual:.0f}s)")
+
+    # 5) upload as a Short via the YouTube Data API (#Shorts in title + description).
+    gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
+    title = f"{hook} - {gname.upper()} [4K HDR] #Shorts"[:100]
+    gtags = " ".join(content._reel_hashtags({"game": game}))
+    desc = f"{caption}\n\n#Shorts {gtags}".strip()
+    result: dict[str, Any] = {
+        "kind": "youtube_short", "game": game, "clip_id": clip_id, "layout": layout,
+        "hook": hook, "caption": caption, "target_seconds": target,
+        "actual_seconds": round(actual, 1), "reel_path": str(reel_path), "dry_run": dry_run}
+    if dry_run:
+        log("DRY RUN — skipping upload.")
+        result["published"] = False
+        _save(run_dir, result)
+        return result
+
+    priv = str(privacy or ys.get("privacy", "public")).lower()
+    log(f"Uploading Short via the YouTube Data API (privacy={priv}"
+        f"{', scheduled ' + publish_at if publish_at else ''})...")
+    api = youtube.upload_video(
+        str(reel_path), title=title, description=desc,
+        tags=[str(t) for t in (ys.get("tags") or [])],
+        privacy=priv, publish_at=publish_at,
+        category_id=str(ys.get("category_id", "20")),
+        made_for_kids=bool(ys.get("made_for_kids", False)))
+    vid = api.get("id", "")
+    result["published"] = bool(vid)
+    result["video_id"] = vid
+    result["url"] = f"https://youtu.be/{vid}" if vid else ""
+    log(f"Done ({layout}): {result['url']}")
+    if vid and not clip:                     # only advance the ledger for a real pool pick
+        _mark_short_used(fdir, clip_id)
+    _save(run_dir, result)
+    return result
+
+
 def run_threads_image(
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,

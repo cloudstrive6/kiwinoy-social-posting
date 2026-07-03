@@ -905,6 +905,31 @@ youtube_longform:
   logo_size: 480              # circular KG logo diameter on the 4K frame (only if logo: true)
   default_tags: [gaming, walkthrough, playthrough, "4K", HDR, "60fps"]
 
+# LOCAL 4K/60 HDR YouTube SHORTS track (new 2026-07-03). The channel's Shorts move
+# from 1080p-via-Post-for-Me to a dedicated 4K/60 HDR track, CLASSIC <-> TRIPTYCH
+# alternating, matching the long-form's HDR10 (Rec.2020 PQ) + loudnorm export exactly,
+# uploaded via the YouTube Data API (core/youtube.py). HEAVY: nvenc + multi-GB HDR
+# footage -> runs on YOUR machine (like --youtube long-form), NOT in CI. Footage =
+# pre-extracted 4K/60 HDR reel clips per game under footage_dir/<game>/ (make them with
+# tools/name_parts.py-labelled captures or by trimming the long-form parts). YouTube
+# THROTTLED bulk Shorts (2026-06-26), so keep the LOCAL scheduler LOW + varied.
+#   python run.py --youtube-short                 # render + upload one Short (auto layout)
+#   python run.py --youtube-short --dry-run       # render only, no upload
+#   python run.py --youtube-short --layout triptych --clip <file>
+youtube_shorts:
+  enabled: true
+  game: ff7remake                         # default game for the track
+  footage_dir: reels/assets/footage-4k    # <game> subfolders of 4K/60 HDR reel clips
+  layouts: [classic, triptych]            # alternate per post (persistent counter)
+  fps: 60
+  width: 2160                             # 4K vertical (2160x3840)
+  height: 3840
+  target_seconds_choices: [30, 35, 40]    # vary the length per Short
+  privacy: public                         # public | unlisted | private
+  category_id: "20"                       # 20 = Gaming
+  made_for_kids: false
+  tags: [ff7 remake, final fantasy vii remake, final fantasy, ff7, gaming, "4K", HDR, "60fps", ps5]
+
 # Long-form 4K HDR source archive -> Backblaze B2 (frees local disk). Uses rclone.
 # Push a finished game to the cloud + delete local; pull it back for more clips.
 #   python tools/archive_longform.py push final-fantasy-7-remake
