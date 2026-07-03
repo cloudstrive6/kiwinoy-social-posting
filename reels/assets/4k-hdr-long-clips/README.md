@@ -1,19 +1,23 @@
-# 4K/60 HDR source intake — paste here
+# 4K/60 HDR long-form shorter clips — paste here
 
-This is the **one place** to drop raw **4K/60 HDR** captures. Everything here feeds
-**both** YouTube pillars:
+Drop **discrete 4K/60 HDR scene clips** here — these are the **source for the CLASSIC +
+TRIPTYCH YouTube Shorts**. Each clip becomes **one Short** (a ~35s window + a lore hook),
+so keep them tight (a highlight moment, not a whole session).
 
-- **Long-form** — `python run.py --youtube --parts reels/assets/4k-hdr/<game>`
-- **Shorts** — curate reel clips from these files with `python tools/pool_4k.py`
+> **Other folders:** full **game** recordings → `reels/assets/longform-fullgame/<game>/`
+> (long-form pillar; also a *fallback* Short source, used only while a game is still
+> local). Raw **landscape** clips for the full-bleed **fill** Shorts →
+> `reels/assets/footage-4k/<game>-vertical/`.
 
 ## How to use it
 
-1. **Paste** your 4K/60 HDR files into the folder named after the game, e.g.
-   `reels/assets/4k-hdr/ff7remake/`. (No folder for your game yet? Just make one —
-   name it the game key, like `thelastofus2`, `spider-man1`, `halo`.)
-2. That's it. A scheduled job (`run_4k_sync.bat`, ~every 30 min) uploads each file to
-   Backblaze B2, verifies it, then **deletes the local copy once it's safely on the
-   cloud** (after a short grace window) so your drive stays lean.
+1. **Paste** your 4K/60 HDR clips into the folder named after the game, e.g.
+   `reels/assets/4k-hdr-long-clips/ff7remake/`. (No folder yet? Make one — name it the
+   game key, like `thelastofus2`, `spider-man1`, `halo`.)
+2. That's it. A scheduled job (`run_4k_sync.bat`, ~every 30 min) uploads each clip to
+   Backblaze B2, verifies it, then **deletes the local copy** (after a short grace
+   window) so your drive stays lean. `run.py --youtube-short` pulls a clip back on
+   demand when it needs one that was freed.
 
 ## While you're still editing a game
 

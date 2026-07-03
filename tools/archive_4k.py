@@ -1,8 +1,9 @@
 r"""Auto-archive the unified 4K/60 HDR SOURCE intake to Backblaze B2, then free local
 disk. This is the "paste and forget" companion to the 4K HDR source folders:
 
-  reels/assets/4k-hdr/<game>/   <- paste raw 4K/60 HDR captures here (feeds BOTH the
-                                   long-form pillar AND the YouTube Shorts source)
+  reels/assets/4k-hdr-long-clips/<game>/   <- discrete 4K HDR scene clips (classic +
+                                              triptych Shorts source)
+  reels/assets/footage-4k/<game>-vertical/ <- raw landscape clips (fill Shorts) [also synced]
 
 `sync` uploads every settled file to B2, VERIFIES it, then DELETES the local copy once
 it's verified AND older than the grace window (config source_4k.free_after_hours), so
@@ -77,6 +78,25 @@ def _source_root() -> Path:
 def _vertical_root():
     d = _scfg().get("vertical_pool_dir")
     return (ROOT / str(d)) if d else None
+
+
+def ensure_source_local(game: str) -> None:
+    """Pull the long-clips source pool (4k-hdr-long-clips/<game>/) back from B2 if it's
+    been freed, so the classic/triptych Shorts can render from it. No-op if it already
+    has clips or B2/rclone isn't set up. Best-effort — never raises into the caller."""
+    local = _source_root() / game
+    try:
+        if local.is_dir() and _media(local):
+            return
+        env, remote = _rclone_env()
+        if not _acfg().get("bucket") or not shutil.which("rclone"):
+            return
+        local.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["rclone", "copy", _dst(game, remote), str(local),
+                        "--transfers", str(_scfg().get("transfers", 4)),
+                        "--contimeout", "30s", "--timeout", "120s"], env=env)
+    except (Exception, SystemExit):
+        pass
 
 
 def ensure_vertical_local(key: str) -> None:

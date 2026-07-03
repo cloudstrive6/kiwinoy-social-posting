@@ -240,27 +240,24 @@ caption -> render `build_gameplay`/`build_gameplay_triptych` at 2160x3840 HDR ->
 as a `#Shorts` via `core/youtube.py`. A tiny per-game ledger
 (`footage-4k/<game>/.used_shorts.json`) tracks used clips + drives the alternation.
 
-### Paste 4K HDR source once, use it for both
-Drop raw **4K/60 HDR** captures into **`reels/assets/4k-hdr/<game>/`** — one intake that
-feeds **both** the long-form pillar and the Shorts source. A scheduled job
-(`run_4k_sync.bat`, ~every 30 min) uploads each file to Backblaze B2, verifies it, then
-**frees the local copy** to save disk. Full guide: `reels/assets/4k-hdr/README.md`;
-settings in `config.yaml -> source_4k`. Pin a game you're still editing:
+### The 4K HDR folders (what goes where)
+| Folder | What you paste | Feeds |
+|---|---|---|
+| `reels/assets/longform-fullgame/<game>/` | full **game** recordings | long-form pillar (`run.py --youtube`); *fallback* Short source when still local |
+| `reels/assets/4k-hdr-long-clips/<game>/` | discrete **scene clips** (each → 1 Short) | **classic + triptych** Shorts (primary source) |
+| `reels/assets/footage-4k/<game>-vertical/` | raw **landscape** clips (≤3 min) | **fill** (full-bleed) Shorts |
+
+All three auto-archive to **Backblaze B2** and free local disk via the scheduled
+`run_4k_sync.bat` (~every 30 min); `run.py --youtube-short` pulls a clip back on demand
+when it needs one that was freed. Guide: `reels/assets/4k-hdr-long-clips/README.md`;
+settings in `config.yaml -> source_4k` / `youtube_shorts.clip_source_dirs`.
 ```powershell
-python tools/archive_4k.py sync            # upload new files + free verified (what the job runs)
-python tools/archive_4k.py pull ff7remake  # bring a game's source back local
+python tools/archive_4k.py sync            # upload new clips + free verified (what the job runs)
+python tools/archive_4k.py pull ff7remake  # bring a game's clips back local
 python tools/archive_4k.py pin ff7remake   # pause auto-free while you work on it
 ```
-
-### Build the 4K HDR footage pool (Shorts)
-Extract Short-length HDR clips from the source (keeps HDR10, unlike `hdr_to_reel.py`
-which tonemaps to 1080p SDR for the feed reels):
-```powershell
-python tools/pool_4k.py "reels\assets\4k-hdr\ff7remake\<file>.mp4" ff7remake --at 00:12:30 --len 40 --name sephiroth-reveal
-python tools/pool_4k.py --list ff7remake        # show the pool + used ledger
-```
-Clips land in `reels/assets/footage-4k/<game>/` (git-ignored — local only). These small
-clips stay local (so Shorts render instantly) even after the big source is freed.
+(`tools/pool_4k.py` can still cut Short-length HDR clips out of a longer file if you
+want to prep them, but the normal flow is just pasting discrete clips.)
 
 ### Run / schedule a Short
 ```powershell

@@ -936,11 +936,17 @@ youtube_longform:
 youtube_shorts:
   enabled: true
   game: ff7remake                         # default game for the track
-  footage_dir: reels/assets/footage-4k    # <game> subfolders of 4K/60 HDR reel clips
+  footage_dir: reels/assets/footage-4k    # holds the FILL pool: <game>-vertical/ subfolders
+  # classic + triptych footage = discrete "long-form shorter clips" (each -> ONE Short, a
+  # ~35s window + a lore hook). Priority-ordered; the full-game recordings are a LOCAL-ONLY
+  # fallback (huge + auto-archived, so only used when a game is still on disk):
+  clip_source_dirs:
+    - reels/assets/4k-hdr-long-clips      # paste discrete scene clips here (primary source)
+    - reels/assets/longform-fullgame      # full games (fallback, only when still local)
   # classic <-> triptych <-> fill (full-bleed vertical), alternating per post. FILL =
   # raw 4K HDR LANDSCAPE clips scaled to COVER 9:16 (pure footage, no overlay), SAME HDR
-  # process as the other Shorts (loudnorm -14/384k) — the only difference is the fill
-  # scale. Paste those into footage_dir/<game>-vertical/ (its own fresh-first ledger).
+  # process as the other Shorts (loudnorm -14/384k) — only the scale differs. Paste those
+  # into footage_dir/<game>-vertical/. One per-game ledger drives freshness + rotation.
   layouts: [classic, triptych, fill]
   fps: 60
   width: 2160                             # 4K vertical (2160x3840)
@@ -963,7 +969,7 @@ youtube_shorts:
 #   python tools/archive_4k.py free <game>     # free NOW (skip the grace window)
 source_4k:
   enabled: true
-  source_dir: reels/assets/4k-hdr     # paste per game: reels/assets/4k-hdr/<game>/
+  source_dir: reels/assets/4k-hdr-long-clips   # paste long-form SHORTER clips per game here
   bucket_path: 4k-hdr                  # B2 path prefix (under the longform_archive bucket)
   free_after_hours: 12                 # delete a verified-local file this long after its last change (0 = as soon as verified). A .keep file in the game folder pauses freeing.
   min_settle_minutes: 2               # ignore files changed in the last N min (still copying)

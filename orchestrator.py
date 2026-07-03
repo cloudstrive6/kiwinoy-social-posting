@@ -1740,67 +1740,68 @@ def run_youtube_longform(
 _SHORT_VID_EXTS = {".mp4", ".mov", ".mkv", ".m4v"}
 
 
-def _short_ledger(fdir) -> dict[str, Any]:
-    """Read the per-game Shorts ledger: {"used": [names...], "posts": N}."""
+def _short_ledger_path(game: str):
     from pathlib import Path
-    p = Path(fdir) / ".used_shorts.json"
+    d = ROOT / "reels" / "assets" / ".shorts_ledgers"
+    d.mkdir(parents=True, exist_ok=True)
+    return d / f"{game}.json"
+
+
+def _short_ledger(game: str) -> dict[str, Any]:
+    """Read the per-GAME Shorts ledger: {"used": [names...], "posts": N}. One ledger per
+    game, at a stable location (not inside the auto-archived footage folders), shared by
+    every layout (classic/triptych/fill) so freshness + rotation hold across pools."""
     try:
-        d = json.loads(p.read_text(encoding="utf-8"))
+        d = json.loads(_short_ledger_path(game).read_text(encoding="utf-8"))
         return {"used": list(d.get("used", [])), "posts": int(d.get("posts", 0))}
     except Exception:
         return {"used": [], "posts": 0}
 
 
-def _short_post_count(fdir) -> int:
+def _short_post_count(game: str) -> int:
     """Monotonic count of Shorts posted for this game (drives layout alternation)."""
-    return _short_ledger(fdir)["posts"]
+    return _short_ledger(game)["posts"]
 
 
-def _short_write_ledger(fdir, d: dict) -> None:
-    from pathlib import Path
+def _short_write_ledger(game: str, d: dict) -> None:
     try:
-        (Path(fdir) / ".used_shorts.json").write_text(
+        _short_ledger_path(game).write_text(
             json.dumps({"used": d["used"], "posts": d["posts"]}, indent=2), encoding="utf-8")
     except Exception:
         pass
 
 
-def _mark_short_used(fdir, clip_id: str) -> None:
-    """Mark a clip used (freshness) AND bump this pool's post counter."""
-    d = _short_ledger(fdir)
+def _mark_short_used(game: str, clip_id: str) -> None:
+    """Mark a clip used (freshness) AND bump the game's Short post counter."""
+    d = _short_ledger(game)
     if clip_id and clip_id not in d["used"]:
         d["used"].append(clip_id)
     d["posts"] = int(d["posts"]) + 1
-    _short_write_ledger(fdir, d)
+    _short_write_ledger(game, d)
 
 
-def _short_bump_posts(fdir) -> None:
-    """Advance ONLY the rotation counter (used when the clip came from another pool,
-    e.g. the fill layout pulls from '<game>-vertical' but the rotation lives on the
-    main pool's ledger)."""
-    d = _short_ledger(fdir)
-    d["posts"] = int(d["posts"]) + 1
-    _short_write_ledger(fdir, d)
-
-
-def _pick_short_clip(fdir):
-    """Fresh-first pick from the 4K HDR pool: a clip not yet used for a Short; once
-    the pool is exhausted, reuse the one used longest ago. Returns (path, name)."""
+def _pick_short_clip(dirs, game: str):
+    """Fresh-first pick across an ORDERED list of pool dirs for `game`: return a clip not
+    yet used for a Short, preferring earlier dirs (so long-clips win over the full-game
+    fallback). When every clip has been used, reset + reuse the least-recently-used.
+    Returns (path, name)."""
     from pathlib import Path
-    fdir = Path(fdir)
-    if not fdir.exists():
+    dirs = [Path(d) for d in ([dirs] if isinstance(dirs, (str, Path)) else dirs)]
+    all_clips: list = []
+    for d in dirs:
+        if d.exists():
+            all_clips += sorted(p for p in d.iterdir()
+                                if p.is_file() and p.suffix.lower() in _SHORT_VID_EXTS)
+    if not all_clips:
         return None, None
-    clips = sorted(p for p in fdir.iterdir()
-                   if p.is_file() and p.suffix.lower() in _SHORT_VID_EXTS)
-    if not clips:
-        return None, None
-    used = _short_ledger(fdir)["used"]
-    fresh = [c for c in clips if c.name not in used]
-    if fresh:
-        choice = random.choice(fresh)
-    else:                                    # exhausted -> reuse least-recently-used
-        order = {name: i for i, name in enumerate(used)}
-        choice = sorted(clips, key=lambda c: order.get(c.name, -1))[0]
+    used = _short_ledger(game)["used"]
+    for d in dirs:                                   # priority: earliest dir with a fresh clip
+        fresh = [c for c in all_clips if c.parent == d and c.name not in used]
+        if fresh:
+            choice = random.choice(fresh)
+            return choice, choice.name
+    order = {name: i for i, name in enumerate(used)}  # all used -> least-recently-used
+    choice = sorted(all_clips, key=lambda c: order.get(c.name, -1))[0]
     return choice, choice.name
 
 
@@ -1832,35 +1833,46 @@ def run_youtube_short(
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[yt-short] {m}", flush=True)
 
-    # 1) layout first: classic <-> triptych <-> fill on the persistent post counter.
+    # 1) layout first: classic <-> triptych <-> fill on the game's Short post counter.
     base = ROOT / str(ys.get("footage_dir", "reels/assets/footage-4k"))
-    main_fdir = base / game
     layouts = [str(x) for x in (ys.get("layouts") or ["classic", "triptych"])]
-    n = _short_post_count(main_fdir)
+    n = _short_post_count(game)
     layout = (layout or layouts[n % len(layouts)]).lower()
     vcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("vertical", {}) or {}
+    # classic/triptych footage = discrete long-form shorter clips (each -> one Short),
+    # with the full-game recordings as a local-only fallback (priority order in config).
+    clip_dirs = [ROOT / str(d) / game for d in (ys.get("clip_source_dirs")
+                 or ["reels/assets/4k-hdr-long-clips", "reels/assets/longform-fullgame"])]
 
     # 2) fresh-first clip from the layout's pool. FILL pulls raw 4K LANDSCAPE from the
-    # dedicated '<game>-vertical' folder; classic/triptych use the main 4K pool.
-    pool_fdir = base / f"{game}{vcfg.get('key_suffix', '-vertical')}" if layout == "fill" else main_fdir
-    if layout == "fill" and not clip:
-        # The fill pool auto-archives to B2 + frees local (like the 4k-hdr intake) — pull
-        # it back if it was freed, so we can render from it.
-        try:
-            from tools import archive_4k
-            archive_4k.ensure_vertical_local(pool_fdir.name)
-        except Exception:
-            pass
+    # dedicated '<game>-vertical' folder; classic/triptych use the long-clip pool(s).
+    if layout == "fill":
+        vkey = f"{game}{vcfg.get('key_suffix', '-vertical')}"
+        pool_dirs = [base / vkey]
+        if not clip:
+            try:                                        # pull the fill pool back if freed
+                from tools import archive_4k
+                archive_4k.ensure_vertical_local(vkey)
+            except Exception:
+                pass
+    else:
+        pool_dirs = clip_dirs
+        if not clip:
+            try:                                        # pull the long-clip pool if freed
+                from tools import archive_4k
+                archive_4k.ensure_source_local(game)
+            except Exception:
+                pass
     if clip:
         clip_path, clip_id = Path(clip), Path(clip).name
     else:
-        clip_path, clip_id = _pick_short_clip(pool_fdir)
+        clip_path, clip_id = _pick_short_clip(pool_dirs, game)
     if layout == "fill" and (not clip_path or not Path(clip_path).exists()):
-        log(f"No 4K vertical clip in {pool_fdir} — falling back to classic.")
-        layout, pool_fdir = "classic", main_fdir
-        clip_path, clip_id = _pick_short_clip(pool_fdir)
+        log("No 4K vertical clip — falling back to the classic/long-clip pool.")
+        layout, pool_dirs = "classic", clip_dirs
+        clip_path, clip_id = _pick_short_clip(pool_dirs, game)
     if not clip_path or not Path(clip_path).exists():
-        log(f"No 4K HDR clip available in {pool_fdir} — skipping.")
+        log(f"No 4K HDR clip available for {game} — skipping.")
         return _skip(run_dir, {"kind": "youtube_short", "game": game}, "no_media")
     log(f"Clip (fresh-first): {clip_id}")
 
@@ -1941,9 +1953,7 @@ def run_youtube_short(
     result["url"] = f"https://youtu.be/{vid}" if vid else ""
     log(f"Done ({layout}): {result['url']}")
     if vid and not clip:                     # only advance the ledger for a real pool pick
-        _mark_short_used(pool_fdir, clip_id)              # freshness in this pool + its posts
-        if str(pool_fdir) != str(main_fdir):             # fill pulled from another pool ->
-            _short_bump_posts(main_fdir)                 # still advance the rotation counter
+        _mark_short_used(game, clip_id)      # one game ledger: freshness + rotation counter
     _save(run_dir, result)
     return result
 

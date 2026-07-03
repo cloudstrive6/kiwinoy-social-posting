@@ -65,15 +65,18 @@ reels/assets/longform/*
 reels/assets/footage-4k/*
 !reels/assets/footage-4k/.gitkeep
 
-# Unified 4K/60 HDR source intake (huge raw captures; auto-archived to B2, then freed).
+# Per-game YouTube Shorts ledger (local state: which clips were used + post counter).
+reels/assets/.shorts_ledgers/
+
+# 4K/60 HDR long-form shorter clips intake (auto-archived to B2, then freed).
 # Ignore the pasted media + pin markers; keep the README + .gitkeep skeleton in git.
-reels/assets/4k-hdr/**/*.mp4
-reels/assets/4k-hdr/**/*.mov
-reels/assets/4k-hdr/**/*.mkv
-reels/assets/4k-hdr/**/*.m4v
-reels/assets/4k-hdr/**/*.avi
-reels/assets/4k-hdr/**/*.ts
-reels/assets/4k-hdr/**/.keep
+reels/assets/4k-hdr-long-clips/**/*.mp4
+reels/assets/4k-hdr-long-clips/**/*.mov
+reels/assets/4k-hdr-long-clips/**/*.mkv
+reels/assets/4k-hdr-long-clips/**/*.m4v
+reels/assets/4k-hdr-long-clips/**/*.avi
+reels/assets/4k-hdr-long-clips/**/*.ts
+reels/assets/4k-hdr-long-clips/**/.keep
 
 # Generated YouTube thumbnail variants (per upload)
 thumbnails/
