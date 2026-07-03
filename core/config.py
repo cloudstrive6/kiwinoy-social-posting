@@ -161,6 +161,10 @@ class _Config:
         return self._data.get("youtube_shorts", {})
 
     @property
+    def source_4k(self) -> dict[str, Any]:
+        return self._data.get("source_4k", {})
+
+    @property
     def carousels(self) -> dict[str, Any]:
         return self._data.get("carousels", {})
 

@@ -930,6 +930,24 @@ youtube_shorts:
   made_for_kids: false
   tags: [ff7 remake, final fantasy vii remake, final fantasy, ff7, gaming, "4K", HDR, "60fps", ps5]
 
+# Unified 4K/60 HDR SOURCE intake (new 2026-07-03). ONE place to paste raw 4K/60 HDR
+# captures: source_dir/<game>/. These feed BOTH the long-form pillar (run.py --youtube
+# --parts <folder>) AND the YouTube Shorts source (curate clips with tools/pool_4k.py).
+# A SCHEDULED auto-sync (tools/archive_4k.py sync, via Windows Task Scheduler) uploads
+# new files to B2 then FREES local disk (auto-delete once VERIFIED + past the grace
+# window). Pin a game you're still editing with a .keep file in its folder to pause the
+# auto-free. Reuses the longform_archive B2 bucket + rclone remote + .env creds below.
+#   python tools/archive_4k.py sync            # upload new files (all games) + free verified
+#   python tools/archive_4k.py pull <game>     # bring a game's source back local
+#   python tools/archive_4k.py free <game>     # free NOW (skip the grace window)
+source_4k:
+  enabled: true
+  source_dir: reels/assets/4k-hdr     # paste per game: reels/assets/4k-hdr/<game>/
+  bucket_path: 4k-hdr                  # B2 path prefix (under the longform_archive bucket)
+  free_after_hours: 12                 # delete a verified-local file this long after its last change (0 = as soon as verified). A .keep file in the game folder pauses freeing.
+  min_settle_minutes: 2               # ignore files changed in the last N min (still copying)
+  transfers: 4                        # rclone parallel transfers
+
 # Long-form 4K HDR source archive -> Backblaze B2 (frees local disk). Uses rclone.
 # Push a finished game to the cloud + delete local; pull it back for more clips.
 #   python tools/archive_longform.py push final-fantasy-7-remake

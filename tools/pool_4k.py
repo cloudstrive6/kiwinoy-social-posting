@@ -1,5 +1,6 @@
-"""Extract 4K/60 HDR reel clips from long-form source parts into the YouTube Shorts
-footage pool (reels/assets/footage-4k/<game>/), keeping HDR10 (Rec.2020 PQ) intact.
+"""Extract 4K/60 HDR reel clips from the 4K HDR source (reels/assets/4k-hdr/<game>/, or
+any file/folder) into the YouTube Shorts footage pool (reels/assets/footage-4k/<game>/),
+keeping HDR10 (Rec.2020 PQ) intact.
 
 This is the HDR sibling of tools/hdr_to_reel.py: that tool TONE-MAPS 4K HDR down to
 1080p SDR for the Post-for-Me feed reels; THIS one keeps the clip at native 4K HDR so
