@@ -757,7 +757,8 @@ def build_gameplay_triptych(
         # WANDERS (sin-based, non-repeating path) so the art's own highlights/edges/
         # text/subject shimmer as it passes — a moving reflection, not a band. The
         # light is a soft radial blob; the glow only lifts the art where the light is.
-        arth = round(w * 9 / 16)
+        arth = round(w * 9 / 16 / 2) * 2            # 16:9 panel height, forced EVEN (yuv420p /
+        #                                             blend need even dims; was odd 1215 at 4K)
         ts = w / 1080.0                             # scale abs graphic sizes with resolution
         gl = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_glow", {}) or {}
         glow_on, blob_idx = bool(gl.get("enabled", True)), None
