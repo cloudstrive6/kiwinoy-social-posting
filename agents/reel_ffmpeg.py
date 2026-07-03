@@ -78,15 +78,22 @@ def _grade_filter(hi: bool = False) -> str:
 
 def _ass_header(w: int, h: int) -> str:
     cap = _caption_cfg()
+    # All sizes below are tuned for a 1920px-tall frame (PlayResY = h). Scale them by
+    # s = h/1920 so the hook stays the SAME relative size at any resolution (e.g. 2x at
+    # 4K). s == 1.0 at 1080p, so this is a no-op for the existing reels.
+    s = h / 1920.0
     font = str(cap.get("font", "DejaVu Sans"))
-    hook_size = int(cap.get("hook_size", 64))
-    sub_size = int(cap.get("sub_size", 52))
+    hook_size = int(cap.get("hook_size", 64) * s)
+    sub_size = int(cap.get("sub_size", 52) * s)
     # Distance of the top hook bar from the top edge. ~250 sits a 2-line caption
     # centred in the top third of the 1920px frame.
-    hook_mv = int(cap.get("hook_margin_v", 250))
+    hook_mv = int(cap.get("hook_margin_v", 250) * s)
     # Commentary subtitles sit in the footage lower-third but ABOVE the animated
     # logo lower-third (which plays at the bottom early on), so they never collide.
-    sub_mv = int(cap.get("sub_margin_v", 430))
+    sub_mv = int(cap.get("sub_margin_v", 430) * s)
+    ho, hsh = round(7 * s), round(4 * s)        # hook outline / shadow
+    so, ssh = round(5 * s), round(2 * s)        # sub outline / shadow
+    hm, sm = round(90 * s), round(120 * s)      # hook / sub L+R margins
     # ASS colours are &HAABBGGRR. White text, black box/outline.
     return (
         "[Script Info]\n"
@@ -105,10 +112,10 @@ def _ass_header(w: int, h: int) -> str:
         # bleed its shadow onto the footage below. Outline keeps it readable on the
         # rare line that dips a touch past the band onto the gameplay.
         f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
-        f"&H00000000,-1,0,0,0,100,100,0,0,1,7,4,8,90,90,{hook_mv},1\n"
+        f"&H00000000,-1,0,0,0,100,100,0,0,1,{ho},{hsh},8,{hm},{hm},{hook_mv},1\n"
         # Sub: bottom-centre, white text with a thick black outline (Gameranx).
         f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
-        f"&H64000000,-1,0,0,0,100,100,0,0,1,5,2,2,120,120,{sub_mv},1\n\n"
+        f"&H64000000,-1,0,0,0,100,100,0,0,1,{so},{ssh},2,{sm},{sm},{sub_mv},1\n\n"
         "[Events]\n"
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, "
         "Effect, Text\n"
@@ -251,10 +258,11 @@ def _game_logo_overlay(idx: int, vlabel: str, w: int, out_label: str) -> list[st
     so it never overlaps the on-screen caption (which starts at hook_margin_v)."""
     g = CONFIG.reels.get("game_logo", {}) or {}
     cap = CONFIG.reels.get("caption", {}) or {}
-    hook_mv = int(cap.get("hook_margin_v", 250))
-    top = int(g.get("top_margin", 36))
+    s = w / 1080.0                                          # scale abs sizes with resolution
+    hook_mv = int(cap.get("hook_margin_v", 250) * s)
+    top = int(g.get("top_margin", 36) * s)
     bw = int(w * float(g.get("scale_w", 0.5)))
-    max_h = min(int(g.get("max_h", 160)), max(60, hook_mv - top - 24))  # keep above hook
+    max_h = min(int(g.get("max_h", 160) * s), max(int(60 * s), hook_mv - top - int(24 * s)))
     return [
         f"[{idx}:v]format=rgba,scale={bw}:{max_h}:force_original_aspect_ratio=decrease[glogo]",
         f"[{vlabel}][glogo]overlay=(W-w)/2:{top}[{out_label}]",
@@ -294,8 +302,10 @@ def build_gameplay(
     show = min(float(target_seconds), dur) if dur else float(target_seconds)
 
     with tempfile.TemporaryDirectory() as tmp:
+        gs = w / 1080.0                                  # scale abs graphic sizes to resolution
         ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
-        logo = _brand_logo(logo, Path(tmp) / "kglogo.png")  # circular + opacity
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png",
+                           size=int(CONFIG.reels.get("brand_logo_size", 140) * gs))  # circular
 
         inputs: list[str] = ["-i", str(clip)]
         next_idx = 1
@@ -345,7 +355,7 @@ def build_gameplay(
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")  # pre-sized circular logo
             # top-right of the FOOTAGE (just below the hook band), not the frame.
-            fc.append(f"[{vlabel}][lg]overlay=W-w-30:{pad_y + 26}[ovk]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-{int(30 * gs)}:{pad_y + int(26 * gs)}[ovk]")
             vlabel = "ovk"
         if game_logo_idx is not None:                    # game logo: top-centre, above the hook
             fc += _game_logo_overlay(game_logo_idx, vlabel, w, "ovg")
