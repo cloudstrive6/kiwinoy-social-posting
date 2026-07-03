@@ -277,6 +277,7 @@ def build_gameplay(
     game_logo: Optional[Path] = None,
     fill: bool = True,
     hi_bitrate: bool = False,
+    hdr: bool = False,
 ) -> bytes:
     """Single standalone gameplay clip in a w x h frame, with the footage
     crop-filled to a w x foot_h region CENTRED in it (black band above for the
@@ -331,11 +332,14 @@ def build_gameplay(
         foot_h = min(int(foot_h or h), h)
         pad_y = int(top_band) if top_band is not None else (h - foot_h) // 2
         pad_y = max(0, min(pad_y, h - foot_h))
-        grade = _grade_filter(hi_bitrate)  # subtle contrast/saturation/sharpen on the footage
+        # HDR: keep the footage native (no SDR grade — grading PQ with eq would distort it,
+        # same as our 4K HDR longform which stays native); force the chain to 10-bit.
+        grade = "" if hdr else _grade_filter(hi_bitrate)  # subtle contrast/saturation/sharpen
+        fmt10 = "format=yuv420p10le," if hdr else ""
         fc = [
             f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
             f"crop={w}:{foot_h},{grade}pad={w}:{h}:0:{pad_y}:color=black,"
-            f"setsar=1,fps={fps}[base]"
+            f"{fmt10}setsar=1,fps={fps}[base]"
         ]
         vlabel = "base"
         if logo_idx is not None:
@@ -358,8 +362,9 @@ def build_gameplay(
         elif music_idx is not None:
             prefix += ["-map", f"{music_idx}:a"]
         _has_a = bool(keep_audio or music_idx is not None)
-        rc, err = _encode_final(prefix, _v_encode(hi_bitrate),
-                                _a_encode(_has_a, hi_bitrate), out_path, hi_bitrate, 1800)
+        vtail = _v_encode_hdr() if hdr else _v_encode(hi_bitrate)
+        rc, err = _encode_final(prefix, vtail,
+                                _a_encode(_has_a, hi_bitrate), out_path, hi_bitrate or hdr, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -1159,6 +1164,15 @@ def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
     out_path.parent.mkdir(parents=True, exist_ok=True)
     sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"] if hi else []
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
+
+
+def _v_encode_hdr() -> list[str]:
+    # 4K HDR reel: HEVC Main 10 (HDR10, PQ/bt2020) on the RTX 3080 via NVENC. Re-asserts
+    # the HDR color tags on the encoder since ffmpeg filters drop the metadata. VBR ~40 Mbps.
+    return ["-c:v", "hevc_nvenc", "-profile:v", "main10", "-pix_fmt", "p010le",
+            "-rc", "vbr", "-b:v", "40M", "-maxrate", "55M", "-tag:v", "hvc1",
+            "-color_primaries", "bt2020", "-color_trc", "smpte2084",
+            "-colorspace", "bt2020nc", "-color_range", "tv", "-movflags", "+faststart"]
 
 
 def _a_encode(has: bool, hi: bool = False) -> list[str]:
