@@ -392,10 +392,21 @@ def build_thumbnail(
             else:
                 # CAST LINEUP: evenly spread across the frame; fewer characters => taller.
                 # Slight overlap reads as a group; the logo + title box layer on top.
+                # These are studio-lit RENDERS, so use a GENTLE subject grade (the strong
+                # brightness lift is meant for dark auto-cut gameplay frames) -> not blown out.
+                # rim OFF: the separation halo traces the STRAIGHT crop edges of a bust
+                # render (where the body is cut by the render canvas) -> faint rectangles.
+                gm = dict(g,
+                          subject_target_lum=float(g.get("subject_lineup_target_lum", 112)),
+                          subject_brightness_max=float(g.get("subject_lineup_bmax", 1.1)),
+                          subject_saturation=float(g.get("subject_lineup_saturation", 1.05)),
+                          subject_contrast=float(g.get("subject_lineup_contrast", 1.05)),
+                          subject_clarity=float(g.get("subject_lineup_clarity", 1.18)),
+                          subject_rim=float(g.get("subject_lineup_rim", 0.0)))
                 hf = max(0.72, min(1.12, 1.16 - 0.07 * (n - 1)))
                 mw = min(0.58, 1.25 / n)
                 for i, cp in enumerate(chars):
-                    _composite_character(c, cp, g, xc=(i + 0.5) / n,
+                    _composite_character(c, cp, gm, xc=(i + 0.5) / n,
                                          height_frac=hf, max_w_frac=mw,
                                          top=max(0.0, float(g.get("character_top", 0.0))))
             base = c.convert("RGB")
