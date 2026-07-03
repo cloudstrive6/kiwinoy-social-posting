@@ -372,15 +372,18 @@ def build_thumbnail(
     if chars:
         try:
             from PIL import ImageFilter
-            dk = float(g.get("character_bg_darken", 0.7))
+            n = len(chars)
+            lineup = n > 1
+            # A cast lineup dissolves the backdrop to dark bokeh (like the reference cast
+            # thumbnails) so scene structure can't read as faint rectangles behind them.
+            dk = float(g.get("subject_lineup_bg_darken", 0.5)) if lineup else float(g.get("character_bg_darken", 0.7))
             if dk < 1.0:                                  # subdue the bg -> character(s) pop
                 base = ImageEnhance.Brightness(base).enhance(dk)
                 base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.9)))
-            bl = float(g.get("character_bg_blur", 0))     # soften bg clutter (HUD etc.)
-            if bl > 0:
+            bl = float(g.get("subject_lineup_bg_blur", 12)) if lineup else float(g.get("character_bg_blur", 0))
+            if bl > 0:                                     # soften bg clutter (HUD / scene edges)
                 base = base.filter(ImageFilter.GaussianBlur(bl))
             c = base.convert("RGBA")
-            n = len(chars)
             if n == 1:
                 side = str(g.get("character_side", "right"))
                 xc1 = float(g.get("character_x", 0.63))    # face clears the badge
@@ -394,15 +397,16 @@ def build_thumbnail(
                 # Slight overlap reads as a group; the logo + title box layer on top.
                 # These are studio-lit RENDERS, so use a GENTLE subject grade (the strong
                 # brightness lift is meant for dark auto-cut gameplay frames) -> not blown out.
-                # rim OFF: the separation halo traces the STRAIGHT crop edges of a bust
-                # render (where the body is cut by the render canvas) -> faint rectangles.
+                # rim AND shadow OFF: both trace the STRAIGHT crop edges of a bust render
+                # (where the body is cut by the render canvas) -> faint rectangle lines.
                 gm = dict(g,
                           subject_target_lum=float(g.get("subject_lineup_target_lum", 112)),
                           subject_brightness_max=float(g.get("subject_lineup_bmax", 1.1)),
                           subject_saturation=float(g.get("subject_lineup_saturation", 1.05)),
                           subject_contrast=float(g.get("subject_lineup_contrast", 1.05)),
                           subject_clarity=float(g.get("subject_lineup_clarity", 1.18)),
-                          subject_rim=float(g.get("subject_lineup_rim", 0.0)))
+                          subject_rim=float(g.get("subject_lineup_rim", 0.0)),
+                          character_shadow=float(g.get("subject_lineup_shadow", 0.0)))
                 hf = max(0.72, min(1.12, 1.16 - 0.07 * (n - 1)))
                 mw = min(0.58, 1.25 / n)
                 for i, cp in enumerate(chars):
