@@ -38,3 +38,9 @@ python tools/archive_4k.py free ff7remake                 # free now (skip the g
 
 Settings live in `config.yaml -> source_4k`. Files here are **git-ignored** (huge,
 local-only). The cloud copy lives in your B2 bucket under `4k-hdr/<game>/`.
+
+> **If `pull` stalls at 0 B:** uploads work but a download that hangs at 0 bytes means
+> your security suite (**Avast Web Shield**) is intercepting the B2 *download*
+> connection — the same thing that once killed a YouTube upload. Add an exception for
+> `%LOCALAPPDATA%\rclone\rclone.exe` (and the B2 hosts) in Avast, then `pull` works.
+> Uploading + auto-freeing are unaffected, so your paste-and-archive flow still runs.

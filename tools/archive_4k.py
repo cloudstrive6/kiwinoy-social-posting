@@ -193,12 +193,17 @@ def pull(game: str, name: str | None) -> None:
     gdir.mkdir(parents=True, exist_ok=True)
     dst = _dst(game, remote)
     args = ["copy", dst, str(gdir), "--progress", "--transfers",
-            str(_scfg().get("transfers", 4))]
+            str(_scfg().get("transfers", 4)),
+            # Fail fast instead of hanging forever if the B2 DOWNLOAD connection is
+            # blocked (e.g. Avast Web Shield intercepting it — uploads use a different
+            # endpoint and are unaffected). Whitelist rclone.exe in Avast if this trips.
+            "--contimeout", "30s", "--timeout", "120s", "--low-level-retries", "3"]
     if name:
         args += ["--include", f"/{name}"]
     print(f"Downloading {dst}{('/' + name) if name else ''}  ->  {gdir}", flush=True)
     if _rclone(args, env) != 0:
-        sys.exit("download failed.")
+        sys.exit("download failed. If it stalled at 0 B, your security suite (Avast Web "
+                 "Shield) is likely blocking the B2 download — whitelist rclone.exe.")
     print("Done.")
 
 
