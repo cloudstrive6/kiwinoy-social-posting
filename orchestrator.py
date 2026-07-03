@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import random
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from agents import (
     carousel,
@@ -1492,6 +1492,37 @@ def _part_meta(gname: str, n: int, yl: dict) -> dict[str, Any]:
     }
 
 
+def _resolve_characters(game: Optional[str], names) -> list[str]:
+    """Map requested character NAMES (e.g. ['aerith','tifa']) to their best transparent
+    render file in reels/assets/game-character/<game>/. Prefers cutout renders
+    (render > bust > promo), Remake over Rebirth, and PNG/WEBP (transparent) over AVIF."""
+    if not game or not names:
+        return []
+    base = (ROOT / (CONFIG.reels.get("thumbnail", {}) or {}).get(
+        "character_dir", "reels/assets/game-character") / game)
+    if not base.is_dir():
+        return []
+    exts = {".png", ".webp", ".avif"}
+    files = [f for f in base.iterdir() if f.is_file() and f.suffix.lower() in exts]
+
+    def score(f):
+        n = f.name.lower()
+        return ((4 if "render" in n else 0) + (3 if "bust" in n else 0)
+                + (2 if "promo" in n else 0) + (2 if "remake" in n else 0)
+                + (1 if f.suffix.lower() in (".png", ".webp") else -1))
+    out: list[str] = []
+    for name in names:
+        toks = [t for t in str(name).lower().replace("_", " ").split() if t]
+        key = str(name).lower().replace(" ", "").replace("_", "")
+        cands = [f for f in files
+                 if all(t in f.name.lower() for t in toks)
+                 or key in f.name.lower().replace(" ", "").replace("_", "")]
+        cands.sort(key=score, reverse=True)
+        if cands:
+            out.append(str(cands[0]))
+    return out
+
+
 def run_youtube_longform(
     parts,
     game: Optional[str] = None,
@@ -1503,6 +1534,7 @@ def run_youtube_longform(
     publish_at: Optional[str] = None,
     privacy: Optional[str] = None,
     reuse_concat: Optional[str] = None,
+    thumb_characters: Optional[Sequence[str]] = None,  # names -> a cast-lineup thumbnail
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """LOCAL long-form YouTube: concat the labelled 4K/60 HDR10 PART files into one
@@ -1633,10 +1665,17 @@ def run_youtube_longform(
     # PROMINENT FOREGROUND CHARACTER (#1 CTR lever). Priority: a hand-curated hero
     # render (cleanest) > else AUTO-CUT the best subject out of the candidate stills
     # with rembg (core/cutout.py) so every game gets a hero with no manual curation.
-    curated = _best_curated_character(game) if game else None   # highest-judged render, not random
+    # Explicit CAST LINEUP (thumb_characters=['aerith','tifa']) wins — resolves each name
+    # to its best render + composites them side by side; else the single-hero logic below.
+    multi_chars = _resolve_characters(game, thumb_characters) if thumb_characters else []
+    if multi_chars:
+        log(f"Cast lineup thumbnail: {[Path(c).name for c in multi_chars]}")
+    curated = _best_curated_character(game) if (game and not multi_chars) else None
     char_png = str(curated) if curated else None
     cut_idx = None    # which bg frame the auto-cut came from (so we don't reuse it as its own backdrop)
-    if char_png:
+    if multi_chars:
+        pass                                          # explicit lineup; skip single-hero cutout
+    elif char_png:
         log(f"Curated character render: {Path(char_png).name} — compositing in the foreground.")
     elif bool(tcfg.get("cutout_auto", True)) and bgs:
         from core import cutout as _cut
@@ -1664,9 +1703,10 @@ def run_youtube_longform(
         bg_order = [b for k, b in enumerate(bgs) if k != cut_idx] + [bgs[cut_idx]]
     specs: list[dict] = [
         dict(text=txt, image=img, box_fill=box, crop_bottom=cb, sharpen=sh,
-             game_logo=gl, character=char_png)
+             game_logo=gl, character=char_png, characters=(multi_chars or None))
         for img, cb, sh in bg_order[:nvar]] or [
-        dict(text=txt, image=None, box_fill=box, game_logo=gl, character=char_png)]
+        dict(text=txt, image=None, box_fill=box, game_logo=gl, character=char_png,
+             characters=(multi_chars or None))]
 
     thumb = None
     try:

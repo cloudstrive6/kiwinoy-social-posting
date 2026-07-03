@@ -236,6 +236,47 @@ def inspect_thumbnail(path, *, has_character: bool = False,
             "issues": issues}
 
 
+def _composite_character(canvas, char_path, g, *, xc: float, height_frac: float,
+                         max_w_frac: float, top: float = 0.0):
+    """Grade + scale ONE transparent character render and alpha-composite it onto `canvas`
+    (RGBA): horizontal centre `xc` (0..1), scaled to height_frac*H tall (>1 bleeds off the
+    bottom), capped at max_w_frac*W wide, with the soft drop shadow + bright separation rim.
+    Shared by the single-character and multi-character (cast lineup) paths."""
+    from PIL import Image, ImageFilter
+    ch = Image.open(str(char_path)).convert("RGBA")
+    r_, g_, b_, a_ = ch.split()                       # kill a faint semi-transparent matte
+    a_ = a_.point(lambda v: 0 if v < 28 else v)        # (some promo renders ship a soft box)
+    ch = _autocrop_alpha(Image.merge("RGBA", (r_, g_, b_, a_)))
+    th = int(H * max(0.5, height_frac))
+    ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
+    maxw = int(W * max_w_frac)
+    if ch.width > maxw:
+        ch = ch.resize((maxw, max(1, int(ch.height * maxw / ch.width))), Image.LANCZOS)
+    if float(g.get("subject_grade", 1)):
+        ch = _grade_subject(
+            ch, target_lum=float(g.get("subject_target_lum", 140)),
+            bmin=float(g.get("subject_brightness_min", 0.9)),
+            bmax=float(g.get("subject_brightness_max", 1.7)),
+            contrast=float(g.get("subject_contrast", 1.14)),
+            saturation=float(g.get("subject_saturation", 1.22)),
+            clarity=float(g.get("subject_clarity", 1.35)))
+    cx = int(W * xc - ch.width / 2)
+    cy = int(H * top)
+    if float(g.get("character_shadow", 1)):
+        sh = Image.new("RGBA", ch.size, (0, 0, 0, 0))
+        sh.putalpha(ch.split()[-1].point(lambda v: int(v * 0.45)))
+        canvas.alpha_composite(sh.filter(ImageFilter.GaussianBlur(26)), (cx, cy + 6))
+    rim = max(0.0, min(1.0, float(g.get("subject_rim", 0.45))))
+    if rim > 0:
+        m = ch.split()[-1].filter(ImageFilter.MaxFilter(int(g.get("subject_rim_px", 10)) | 1))
+        m = m.filter(ImageFilter.GaussianBlur(float(g.get("subject_rim_blur", 7))))
+        halo = Image.new("RGBA", ch.size, (255, 255, 255, 0))
+        halo.putalpha(m.point(lambda v: int(v * rim)))
+        canvas.alpha_composite(halo, (cx, cy))
+    canvas.alpha_composite(ch, (cx, cy))
+    return canvas
+
+
 def build_thumbnail(
     text: str = "FULL GAME",
     out_path=None,
@@ -250,6 +291,7 @@ def build_thumbnail(
     crop_bottom: float = 0.0,            # trim this fraction off the source bottom (copyright strip)
     auto_compose: Optional[bool] = None,  # analyze + auto-crop toward the subject (None = config default, on)
     character: Optional[str] = None,     # transparent character PNG composited big in the foreground
+    characters: Optional[Sequence[str]] = None,  # MULTIPLE character PNGs -> a cast lineup
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -325,49 +367,37 @@ def build_thumbnail(
     # Scaled BIG so it BLEEDS off the bottom edge (never a floating chest/waist cut
     # line), head near the top, on one side. The background is darkened + desaturated
     # so the full-colour character pops. Logo/badge/text layer on top.
-    if character and Path(str(character)).exists():
+    chars = [p for p in (list(characters) if characters else ([character] if character else []))
+             if p and Path(str(p)).exists()]
+    if chars:
         try:
             from PIL import ImageFilter
             dk = float(g.get("character_bg_darken", 0.7))
-            if dk < 1.0:                                  # subdue the bg -> character pops
+            if dk < 1.0:                                  # subdue the bg -> character(s) pop
                 base = ImageEnhance.Brightness(base).enhance(dk)
                 base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.9)))
-            bl = float(g.get("character_bg_blur", 0))     # soften bg clutter (2nd character/HUD)
-            if bl > 0:                                     # -> subject in focus, bg recedes (depth)
+            bl = float(g.get("character_bg_blur", 0))     # soften bg clutter (HUD etc.)
+            if bl > 0:
                 base = base.filter(ImageFilter.GaussianBlur(bl))
-            ch = _autocrop_alpha(Image.open(str(character)).convert("RGBA"))
-            th = int(H * max(0.6, float(g.get("character_scale", 1.14))))   # >1 => off the bottom
-            ch = ch.resize((max(1, int(ch.width * th / ch.height)), th), Image.LANCZOS)
-            maxw = int(W * float(g.get("character_max_w", 0.6)))
-            if ch.width > maxw:
-                ch = ch.resize((maxw, max(1, int(ch.height * maxw / ch.width))), Image.LANCZOS)
-            # GRADE THE SUBJECT independently: bright, vibrant + crisp like the samples
-            # (a dark cutout from a gameplay frame gets lifted; a bright render is left).
-            if float(g.get("subject_grade", 1)):
-                ch = _grade_subject(
-                    ch, target_lum=float(g.get("subject_target_lum", 140)),
-                    bmin=float(g.get("subject_brightness_min", 0.9)),
-                    bmax=float(g.get("subject_brightness_max", 1.7)),
-                    contrast=float(g.get("subject_contrast", 1.14)),
-                    saturation=float(g.get("subject_saturation", 1.22)),
-                    clarity=float(g.get("subject_clarity", 1.35)))
-            side = str(g.get("character_side", "right"))
-            xc = float(g.get("character_x", 0.63))         # horizontal CENTRE (face clears the badge)
-            cx = int(W * (xc if side == "right" else 1.0 - xc) - ch.width / 2)
-            cy = int(H * float(g.get("character_top", 0.0)))   # head near the top; body bleeds off bottom
             c = base.convert("RGBA")
-            if float(g.get("character_shadow", 1)):        # soft dark aura -> depth / grounding
-                sh = Image.new("RGBA", ch.size, (0, 0, 0, 0))
-                sh.putalpha(ch.split()[-1].point(lambda v: int(v * 0.45)))
-                c.alpha_composite(sh.filter(ImageFilter.GaussianBlur(26)), (cx, cy + 6))
-            rim = max(0.0, min(1.0, float(g.get("subject_rim", 0.45))))
-            if rim > 0:                                    # tight bright edge -> subject/bg separation
-                m = ch.split()[-1].filter(ImageFilter.MaxFilter(int(g.get("subject_rim_px", 10)) | 1))
-                m = m.filter(ImageFilter.GaussianBlur(float(g.get("subject_rim_blur", 7))))
-                halo = Image.new("RGBA", ch.size, (255, 255, 255, 0))
-                halo.putalpha(m.point(lambda v: int(v * rim)))
-                c.alpha_composite(halo, (cx, cy))
-            c.alpha_composite(ch, (cx, cy))
+            n = len(chars)
+            if n == 1:
+                side = str(g.get("character_side", "right"))
+                xc1 = float(g.get("character_x", 0.63))    # face clears the badge
+                _composite_character(c, chars[0], g,
+                    xc=(xc1 if side == "right" else 1.0 - xc1),
+                    height_frac=float(g.get("character_scale", 1.14)),
+                    max_w_frac=float(g.get("character_max_w", 0.6)),
+                    top=float(g.get("character_top", 0.0)))
+            else:
+                # CAST LINEUP: evenly spread across the frame; fewer characters => taller.
+                # Slight overlap reads as a group; the logo + title box layer on top.
+                hf = max(0.72, min(1.12, 1.16 - 0.07 * (n - 1)))
+                mw = min(0.58, 1.25 / n)
+                for i, cp in enumerate(chars):
+                    _composite_character(c, cp, g, xc=(i + 0.5) / n,
+                                         height_frac=hf, max_w_frac=mw,
+                                         top=max(0.0, float(g.get("character_top", 0.0))))
             base = c.convert("RGB")
             draw = ImageDraw.Draw(base)
         except Exception:
