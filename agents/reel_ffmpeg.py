@@ -76,8 +76,13 @@ def _grade_filter(hi: bool = False) -> str:
     return ",".join(parts) + ","
 
 
-def _ass_header(w: int, h: int) -> str:
+def _ass_header(w: int, h: int, hdr: bool = False) -> str:
     cap = _caption_cfg()
+    # HDR: pure white text = ~10000 nits in PQ (eye-searing). Render text at HDR graphics
+    # white (~203 nits ≈ a light gray in code value) instead — reads as clean white on HDR,
+    # maps to normal white when YouTube tonemaps to SDR. SDR reels keep pure white.
+    gray = str(cap.get("hdr_text_gray", "A6"))         # ~65% code ≈ ~203-260 nits
+    white = f"&H00{gray}{gray}{gray}" if hdr else "&H00FFFFFF"
     # All sizes below are tuned for a 1920px-tall frame (PlayResY = h). Scale them by
     # s = h/1920 so the hook stays the SAME relative size at any resolution (e.g. 2x at
     # 4K). s == 1.0 at 1080p, so this is a no-op for the existing reels.
@@ -111,10 +116,10 @@ def _ass_header(w: int, h: int) -> str:
         # filled box — the black top band is already the backdrop, and a box would
         # bleed its shadow onto the footage below. Outline keeps it readable on the
         # rare line that dips a touch past the band onto the gameplay.
-        f"Style: Hook,{font},{hook_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
+        f"Style: Hook,{font},{hook_size},{white},&H00FFFFFF,&H00000000,"
         f"&H00000000,-1,0,0,0,100,100,0,0,1,{ho},{hsh},8,{hm},{hm},{hook_mv},1\n"
         # Sub: bottom-centre, white text with a thick black outline (Gameranx).
-        f"Style: Sub,{font},{sub_size},&H00FFFFFF,&H00FFFFFF,&H00000000,"
+        f"Style: Sub,{font},{sub_size},{white},&H00FFFFFF,&H00000000,"
         f"&H64000000,-1,0,0,0,100,100,0,0,1,{so},{ssh},2,{sm},{sm},{sub_mv},1\n\n"
         "[Events]\n"
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, "
@@ -130,6 +135,7 @@ def build_ass(
     hook_end: float = 0.0,
     subtitles: Optional[list[dict[str, Any]]] = None,
     hook_center: Optional[tuple[int, int]] = None,
+    hdr: bool = False,
 ) -> Path:
     """Write an ASS subtitle file: a persistent hook + timed subtitle events.
 
@@ -139,7 +145,7 @@ def build_ass(
                    of the default top-anchored Hook style — used to centre the hook
                    in the top 1/3 band of the triptych regardless of line count.
     """
-    lines = [_ass_header(w, h)]
+    lines = [_ass_header(w, h, hdr)]
     if hook:
         htext = ffmpeg.ass_escape(hook.upper())
         if hook_center:
@@ -303,7 +309,7 @@ def build_gameplay(
 
     with tempfile.TemporaryDirectory() as tmp:
         gs = w / 1080.0                                  # scale abs graphic sizes to resolution
-        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show)
+        ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show, hdr=hdr)
         logo = _brand_logo(logo, Path(tmp) / "kglogo.png",
                            size=int(CONFIG.reels.get("brand_logo_size", 140) * gs))  # circular
 
@@ -748,7 +754,7 @@ def build_gameplay_triptych(
         # Hook centred in the top 1/3 band (per user) — vertical centre of band 0.
         # No circle KG logo on the triptych anymore (per user).
         ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show,
-                        hook_center=(w // 2, band // 2))
+                        hook_center=(w // 2, band // 2), hdr=hdr)
 
         inputs: list[str] = ["-i", str(clip),
                              "-loop", "1", "-i", str(shot),
@@ -869,8 +875,10 @@ def build_gameplay_triptych(
             size = int(wm.get("size", 42) * ts)
             opac = float(wm.get("opacity", 0.85))
             off = int(wm.get("bottom_offset", 22) * ts)
+            g = str((CONFIG.reels.get("caption", {}) or {}).get("hdr_text_gray", "A6"))
+            wmcol = f"0x{g}{g}{g}" if hdr else "white"     # HDR graphics white (~203 nits), not pure white
             fc.append(
-                f"[{vlabel}]drawtext=fontfile={font}:text={txt}:fontcolor=white@{opac}:"
+                f"[{vlabel}]drawtext=fontfile={font}:text={txt}:fontcolor={wmcol}@{opac}:"
                 f"fontsize={size}:x=(w-text_w)/2:y={band}-text_h-{off}:"
                 f"shadowcolor=black@0.5:shadowx={round(2 * ts)}:shadowy={round(2 * ts)}[ovw]")
             vlabel = "ovw"
