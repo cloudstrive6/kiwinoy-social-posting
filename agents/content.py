@@ -181,6 +181,36 @@ Return ONLY the line."""
     return f"{line}\n\n{' '.join(tags)}".strip()
 
 
+def generic_game_caption(game: str, max_tags: int = 5) -> str:
+    """GENERIC (game-level, NOT clip-specific) caption for the full-bleed 'fill'
+    vertical reels — the raw footage isn't reviewed, so the caption hypes the GAME in
+    the sample style: a punchy title line + 1-2 vibe lines + the game name, then 3-5
+    game hashtags. Threads uses #GamingThreads only (handled by the publisher)."""
+    gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
+    prompt = f"""Write a short, generic hype caption for a gameplay reel of the game
+"{gname}". It is NOT about a specific moment — it celebrates the game/its vibe overall.
+
+Match THIS style exactly (title line, 1-2 vibe lines, then the game name):
+---
+Spiderman Cinematic Parkour ✨
+Fluid movement, wall runs, and cinematic flow ✨
+Marvel's Spider-Man turns NYC into a parkour playground.
+Marvel's Spider-Man Remastered 💗
+---
+
+Rules:
+- 3-4 short lines total. First line = a punchy title (1 tasteful emoji ok).
+- 1-2 lines on the vibe/feel of the game (generic, not a specific scene).
+- Final line = the game's proper name (a heart or sparkle emoji ok).
+- NO hashtags (added separately), no quotes, no preamble. Return ONLY the caption."""
+    raw = _text(prompt)
+    body = "\n".join(l.strip() for l in sanitize(raw).strip().splitlines() if l.strip())[:400]
+    if not body:
+        body = f"{gname} gameplay\nPure vibes, edge to edge.\n{gname}"
+    tags = _reel_hashtags({"game": game}, max_tags=max_tags)
+    return f"{body}\n\n{' '.join(tags)}".strip()
+
+
 def _text(prompt: str, timeout: int = 120) -> str:
     """Claude text generation with an OpenAI fallback. Tries the Claude chain
     (Max OAuth -> Anthropic API key); if BOTH are unavailable (expired token, out

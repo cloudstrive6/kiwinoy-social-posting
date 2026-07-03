@@ -448,6 +448,64 @@ def build_threads_landscape(
         return out_path.read_bytes()
 
 
+def build_gameplay_fill(
+    clip: Path,
+    out_path: Path,
+    logo: Optional[Path] = None,
+    fps: int = 60,
+    w: int = 1080,
+    h: int = 1920,
+    target_seconds: float = 180.0,
+    vol_db: float = 0.0,
+    hdr: bool = False,
+    hi_bitrate: bool = False,
+) -> bytes:
+    """FILL format: raw landscape gameplay SCALED to COVER the whole 9:16 frame
+    (centre-crop, no bands, no black bars) — the footage fills the screen edge to edge.
+    PURE footage per user: no hook bar, no on-screen text, and no logo unless one is
+    passed. Keeps the clip's ORIGINAL game audio (no music); on the SDR feed path a
+    fixed +vol_db gain matches the 1080p reels, on the HDR path loudnorm -14 matches the
+    YouTube long-form (the ONLY difference from the other Shorts is the fill scale). Uses
+    the FULL clip up to target_seconds (default 3 min). Returns the rendered MP4 bytes."""
+    clip = Path(clip)
+    if not clip.exists():
+        raise ReelFfmpegError(f"clip missing: {clip}")
+    dur = ffmpeg.duration(clip) or target_seconds
+    show = min(float(target_seconds), dur) if dur else float(target_seconds)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        logo = _brand_logo(logo, Path(tmp) / "kglogo.png") if logo else None
+        inputs: list[str] = ["-i", str(clip)]
+        next_idx, logo_idx = 1, None
+        if logo and Path(logo).exists():
+            inputs += ["-loop", "1", "-i", str(logo)]
+            logo_idx = next_idx
+            next_idx += 1
+        keep_audio = ffmpeg.has_audio(clip)
+        # HDR stays native (no SDR grade, force 10-bit); SDR gets the usual subtle grade.
+        grade = "" if hdr else _grade_filter(hi_bitrate)
+        fmt10 = "format=yuv420p10le," if hdr else ""
+        # scale-to-COVER wxh then crop = the footage fills the entire vertical frame.
+        fc = [f"[0:v]scale={w}:{h}:force_original_aspect_ratio=increase,"
+              f"crop={w}:{h},{grade}{fmt10}setsar=1,fps={fps}[base]"]
+        vlabel = "base"
+        if logo_idx is not None:
+            fc.append(f"[{logo_idx}:v]format=rgba[lg]")
+            fc.append(f"[{vlabel}][lg]overlay=W-w-{int(w * 0.02)}:{int(h * 0.03)}[v]")
+            vlabel = "v"
+        prefix = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
+                           "-map", f"[{vlabel}]"]
+        if keep_audio:
+            prefix += ["-map", "0:a"]
+        vtail = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
+        aopts = _a_encode(keep_audio, hi_bitrate, hdr=hdr, vol_db=vol_db)
+        rc, err = _encode_final(prefix, vtail + ["-fps_mode", "cfr", "-r", str(fps)],
+                                aopts, out_path, hi_bitrate or hdr, 3600)
+        if rc != 0 or not out_path.exists():
+            raise ReelFfmpegError(f"fill render failed (rc={rc}):\n{err}")
+        return out_path.read_bytes()
+
+
 def build_footage_rotated(
     clip: Path,
     out_path: Path,
@@ -1211,14 +1269,17 @@ def _v_encode_hdr(fps: int = 60, bitrate: str = "55M") -> list[str]:
             "-colorspace", "bt2020nc", "-color_range", "tv", "-movflags", "+faststart"]
 
 
-def _a_encode(has: bool, hi: bool = False, hdr: bool = False) -> list[str]:
+def _a_encode(has: bool, hi: bool = False, hdr: bool = False, vol_db: float = 0.0) -> list[str]:
     if not has:
         return ["-an"]
     if hdr:
         # Match the longform: loudness-normalise to -14 LUFS (YouTube's target) + AAC 384k,
         # so reel volume == longform volume (single-pass loudnorm is fine for a short clip).
+        # (loudnorm sets the level, so vol_db is intentionally ignored on the HDR path.)
         return ["-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "384k",
                 "-ar", "48000", "-ac", "2"]
+    # SDR feed reels: optional fixed gain (e.g. the +8.26 dB the 1080p reels use).
+    vol = ["-af", f"volume={vol_db}dB"] if vol_db else []
     if hi:
-        return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec
-    return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
+        return vol + ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec
+    return vol + ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]

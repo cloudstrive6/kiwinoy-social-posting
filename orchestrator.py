@@ -574,36 +574,10 @@ def run_gameplay_reel(
         # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
         # itself is written from the actual clip + lore below, so it fits the footage.
         brief = reel_topics.run("gameplay", games, taglish=False)
-    # Prefer footage we HAVEN'T used for a gameplay reel yet (tracked on the
-    # footage release); clips are kept for future commentary reels, not deleted.
-    clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
-    if not clip_path:
-        log("Could not resolve a clip — skipping.")
-        return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
-    log(f"Clip (fresh-first): {clip_id}")
-
-    log("Reviewing the clip to write the on-screen hook + caption...")
-    # The hook (top of frame) and caption are BOTH grounded in what this clip
-    # shows + the game lore, by a viewer-psychology writer. ENGLISH per user.
-    hook, caption = content.hook_and_caption_from_video(
-        clip_path, brief.get("game", ""), taglish=False)
-    brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
-    (run_dir / "brief.json").write_text(
-        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
-    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-    log(f"Game: {brief.get('subject')} | Hook: {hook}")
-
-    # Vary the reel length: pick one of the configured targets at random.
-    choices = [float(x) for x in (gcfg.get("target_seconds_choices") or [])]
-    target = random.choice(choices) if choices else float(gcfg.get("target_seconds", 75))
-    reel_path = run_dir / "reel.mp4"
-    fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
-    rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
-    # Format variety per reel (helps avoid platform spam-detection). FB / Threads /
-    # YouTube alternate the NON-rotated layouts (classic <-> triptych); the sideways
-    # "rotated" look is INSTAGRAM-EXCLUSIVE (per user), shown on IG ~every 3rd reel.
-    # The reels cron always sends slot 1, so we can't key off slot_id — alternate on
-    # the persistent used-clip counter (grows by 1 each gameplay reel).
+    # --- Decide the LAYOUT first: it selects the footage pool + caption style.
+    # Format variety per reel (helps avoid platform spam-detection). Alternate the
+    # NON-rotated layouts (classic <-> triptych <-> fill) on the persistent used-clip
+    # counter; the sideways "rotated" look is INSTAGRAM-EXCLUSIVE (~every 3rd reel).
     layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
     try:
         from core import gh_release as _ghr
@@ -613,11 +587,58 @@ def run_gameplay_reel(
     except Exception:
         n = 0
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
-    layout = main_layouts[n % len(main_layouts)]          # classic/triptych: FB/Threads/YT (+IG usually)
-    # IG-only rotated turn — never on the TikTok-only track (TikTok gets the main layout).
-    ig_rotated = (not tiktok_only) and ("rotated" in layouts) and (n % 3 == 2)
+    layout = main_layouts[n % len(main_layouts)]
+    reel_path = run_dir / "reel.mp4"
+    fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
+    rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
+    vcfg = gcfg.get("vertical", {}) or {}
+
+    if layout == "fill":
+        # FILL: full-bleed vertical from the DEDICATED vertical pool ('<game>-vertical'),
+        # the raw landscape scaled to COVER 9:16. Falls back to classic if none exist.
+        vkey = f"{brief['game']}{vcfg.get('key_suffix', '-vertical')}"
+        clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+        if not clip_path:
+            log(f"No vertical footage ({vkey}) — using the classic layout this slot.")
+            layout = "classic"
+    if layout == "fill":
+        # Generic GAME caption (the raw footage isn't reviewed); no on-screen hook.
+        caption = content.generic_game_caption(brief["game"])
+        hook = ""
+        brief["hook"] = ""
+        target = float(vcfg.get("max_seconds", 180))     # use the FULL clip (up to 3 min)
+        log(f"Game: {brief.get('subject')} | FILL vertical | clip {clip_id}")
+    else:
+        # Landscape-composited layouts: pick from the normal pool + review the clip for
+        # a lore-grounded on-screen hook + caption (ENGLISH per user).
+        clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+        if not clip_path:
+            log("Could not resolve a clip — skipping.")
+            return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+        log(f"Clip (fresh-first): {clip_id}")
+        log("Reviewing the clip to write the on-screen hook + caption...")
+        hook, caption = content.hook_and_caption_from_video(
+            clip_path, brief.get("game", ""), taglish=False)
+        brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
+        choices = [float(x) for x in (gcfg.get("target_seconds_choices") or [])]
+        target = random.choice(choices) if choices else float(gcfg.get("target_seconds", 75))
+        log(f"Game: {brief.get('subject')} | Hook: {hook}")
+    (run_dir / "brief.json").write_text(
+        json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+
+    # IG-only rotated turn — never on the TikTok track or a fill turn (IG gets the fill).
+    ig_rotated = ((not tiktok_only) and ("rotated" in layouts)
+                  and (n % 3 == 2) and layout != "fill")
     art = _game_art(brief.get("game")) if layout == "triptych" else None
-    if layout == "triptych" and art:
+    if layout == "fill":
+        # Full-bleed: raw landscape scaled to COVER 9:16, pure footage (no overlay),
+        # original game audio + the 1080p reels' +vol_db boost, FULL clip.
+        log(f"Rendering FULL-BLEED vertical reel (full clip, <={int(target)}s)...")
+        video_bytes = reel_ffmpeg.build_gameplay_fill(
+            clip_path, reel_path, fps=fps, w=rw, h=rh, target_seconds=target,
+            vol_db=float(vcfg.get("volume_db", 8.26)), hi_bitrate=tiktok_only)
+    elif layout == "triptych" and art:
         top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
         log(f"Rendering 3-panel gameplay reel (art: {art.name}, "
             f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
@@ -688,9 +709,14 @@ def run_gameplay_reel(
         if ycfg.get("enabled", False):
             targets = targets + ["youtube"]
         # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
-        # full caption + their fuller hashtags.
-        gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
-        threads_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
+        # full caption + their fuller hashtags. The FILL format follows the Threads
+        # LANDSCAPE rule instead: caption body + #GamingThreads only (no game tags).
+        if layout == "fill":
+            body = caption.split("\n\n#")[0].rstrip()   # drop the trailing game-tag block
+            threads_cap = publisher._with_threads_tag(body)
+        else:
+            gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
+            threads_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
         # On IG's rotated turn, IG gets its OWN rotated reel (below) — so drop IG from
         # the main classic/triptych post; otherwise IG shares the main reel.
         main_targets = [t for t in targets if t != "instagram"] if ig_rotated else targets
@@ -1730,17 +1756,31 @@ def _short_post_count(fdir) -> int:
     return _short_ledger(fdir)["posts"]
 
 
-def _mark_short_used(fdir, clip_id: str) -> None:
+def _short_write_ledger(fdir, d: dict) -> None:
     from pathlib import Path
+    try:
+        (Path(fdir) / ".used_shorts.json").write_text(
+            json.dumps({"used": d["used"], "posts": d["posts"]}, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _mark_short_used(fdir, clip_id: str) -> None:
+    """Mark a clip used (freshness) AND bump this pool's post counter."""
     d = _short_ledger(fdir)
     if clip_id and clip_id not in d["used"]:
         d["used"].append(clip_id)
     d["posts"] = int(d["posts"]) + 1
-    try:
-        (Path(fdir) / ".used_shorts.json").write_text(
-            json.dumps(d, indent=2), encoding="utf-8")
-    except Exception:
-        pass
+    _short_write_ledger(fdir, d)
+
+
+def _short_bump_posts(fdir) -> None:
+    """Advance ONLY the rotation counter (used when the clip came from another pool,
+    e.g. the fill layout pulls from '<game>-vertical' but the rotation lives on the
+    main pool's ledger)."""
+    d = _short_ledger(fdir)
+    d["posts"] = int(d["posts"]) + 1
+    _short_write_ledger(fdir, d)
 
 
 def _pick_short_clip(fdir):
@@ -1792,62 +1832,82 @@ def run_youtube_short(
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[yt-short] {m}", flush=True)
 
-    # 1) fresh-first 4K HDR clip (explicit --clip wins). Clips are kept + reused.
-    fdir = ROOT / str(ys.get("footage_dir", "reels/assets/footage-4k")) / game
+    # 1) layout first: classic <-> triptych <-> fill on the persistent post counter.
+    base = ROOT / str(ys.get("footage_dir", "reels/assets/footage-4k"))
+    main_fdir = base / game
+    layouts = [str(x) for x in (ys.get("layouts") or ["classic", "triptych"])]
+    n = _short_post_count(main_fdir)
+    layout = (layout or layouts[n % len(layouts)]).lower()
+    vcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("vertical", {}) or {}
+
+    # 2) fresh-first clip from the layout's pool. FILL pulls raw 4K LANDSCAPE from the
+    # dedicated '<game>-vertical' folder; classic/triptych use the main 4K pool.
+    pool_fdir = base / f"{game}{vcfg.get('key_suffix', '-vertical')}" if layout == "fill" else main_fdir
     if clip:
         clip_path, clip_id = Path(clip), Path(clip).name
     else:
-        clip_path, clip_id = _pick_short_clip(fdir)
+        clip_path, clip_id = _pick_short_clip(pool_fdir)
+    if layout == "fill" and (not clip_path or not Path(clip_path).exists()):
+        log(f"No 4K vertical clip in {pool_fdir} — falling back to classic.")
+        layout, pool_fdir = "classic", main_fdir
+        clip_path, clip_id = _pick_short_clip(pool_fdir)
     if not clip_path or not Path(clip_path).exists():
-        log(f"No 4K HDR clip available in {fdir} — skipping. "
-            f"(Add clips with tools/name_parts.py captures or trim the long-form parts.)")
+        log(f"No 4K HDR clip available in {pool_fdir} — skipping.")
         return _skip(run_dir, {"kind": "youtube_short", "game": game}, "no_media")
     log(f"Clip (fresh-first): {clip_id}")
 
-    # 2) layout: alternate classic <-> triptych on the persistent post counter.
-    layouts = [str(x) for x in (ys.get("layouts") or ["classic", "triptych"])]
-    n = _short_post_count(fdir)
-    layout = (layout or layouts[n % len(layouts)]).lower()
     art = _game_art(game) if layout == "triptych" else None
     if layout == "triptych" and not art:
         log("No game art for this game — using the classic layout this post.")
         layout = "classic"
 
-    # 3) on-screen hook + caption, grounded in the clip + game lore (English).
-    log("Reviewing the clip to write the on-screen hook + caption...")
-    hook, caption = content.hook_and_caption_from_video(clip_path, game, taglish=False)
-    (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-    log(f"Game: {game} | Layout: {layout} | Hook: {hook}")
-
-    # 4) render at 4K/60 HDR — same edit/export as the long-form (HDR10 + loudnorm).
-    choices = [float(x) for x in (ys.get("target_seconds_choices") or [])]
-    target = random.choice(choices) if choices else float(ys.get("target_seconds", 35))
+    # 3) caption. FILL = generic GAME caption (pure footage, no on-screen hook); the
+    # composited layouts review the clip for a lore-grounded hook.
     reel_path = run_dir / "short.mp4"
     gcfg = CONFIG.reels.get("gameplay", {}) or {}
-    if layout == "triptych":
-        top = _game_screenshot(game)
-        log(f"Rendering 4K HDR triptych (art: {art.name}, "
-            f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
-        reel_ffmpeg.build_gameplay_triptych(
-            clip_path, reel_path, hook=hook, game_art=art, top_image=top,
-            logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
-            music=_reel_music(), anim_logo=_anim_logo(), hdr=True)
+    if layout == "fill":
+        caption = content.generic_game_caption(game)
+        hook = (caption.splitlines()[0].strip() if caption else game)
+        target = float(vcfg.get("max_seconds", 180))     # FULL clip up to 3 min
+        (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+        log(f"Game: {game} | FILL vertical | clip {clip_id}")
+        log(f"Rendering 4K HDR FULL-BLEED vertical (full clip, <={int(target)}s)...")
+        reel_ffmpeg.build_gameplay_fill(clip_path, reel_path, fps=fps, w=rw, h=rh,
+                                        target_seconds=target, hdr=True)
     else:
-        log(f"Rendering 4K HDR classic (<={int(target)}s)...")
-        reel_ffmpeg.build_gameplay(
-            clip_path, reel_path, hook=hook, logo=_reel_logo(), fps=fps, w=rw, h=rh,
-            foot_h=int(gcfg.get("footage_height", 1320)) * 2,
-            top_band=int(gcfg.get("top_band", 360)) * 2,
-            target_seconds=target, music=_reel_music(), anim_logo=_anim_logo(),
-            game_logo=_game_logo(game), hdr=True)
+        log("Reviewing the clip to write the on-screen hook + caption...")
+        hook, caption = content.hook_and_caption_from_video(clip_path, game, taglish=False)
+        (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+        choices = [float(x) for x in (ys.get("target_seconds_choices") or [])]
+        target = random.choice(choices) if choices else float(ys.get("target_seconds", 35))
+        log(f"Game: {game} | Layout: {layout} | Hook: {hook}")
+        if layout == "triptych":
+            top = _game_screenshot(game)
+            log(f"Rendering 4K HDR triptych (art: {art.name}, "
+                f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
+            reel_ffmpeg.build_gameplay_triptych(
+                clip_path, reel_path, hook=hook, game_art=art, top_image=top,
+                logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
+                music=_reel_music(), anim_logo=_anim_logo(), hdr=True)
+        else:
+            log(f"Rendering 4K HDR classic (<={int(target)}s)...")
+            reel_ffmpeg.build_gameplay(
+                clip_path, reel_path, hook=hook, logo=_reel_logo(), fps=fps, w=rw, h=rh,
+                foot_h=int(gcfg.get("footage_height", 1320)) * 2,
+                top_band=int(gcfg.get("top_band", 360)) * 2,
+                target_seconds=target, music=_reel_music(), anim_logo=_anim_logo(),
+                game_logo=_game_logo(game), hdr=True)
     actual = ffmpeg.duration(reel_path) or target
     log(f"Rendered ({layout}) -> {reel_path} ({actual:.0f}s)")
 
     # 5) upload as a Short via the YouTube Data API (#Shorts in title + description).
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
     title = f"{hook} - {gname.upper()} [4K HDR] #Shorts"[:100]
-    gtags = " ".join(content._reel_hashtags({"game": game}))
-    desc = f"{caption}\n\n#Shorts {gtags}".strip()
+    if layout == "fill":                         # caption already carries its hashtags
+        desc = f"{caption}\n\n#Shorts".strip()
+    else:
+        gtags = " ".join(content._reel_hashtags({"game": game}))
+        desc = f"{caption}\n\n#Shorts {gtags}".strip()
     result: dict[str, Any] = {
         "kind": "youtube_short", "game": game, "clip_id": clip_id, "layout": layout,
         "hook": hook, "caption": caption, "target_seconds": target,
@@ -1873,7 +1933,9 @@ def run_youtube_short(
     result["url"] = f"https://youtu.be/{vid}" if vid else ""
     log(f"Done ({layout}): {result['url']}")
     if vid and not clip:                     # only advance the ledger for a real pool pick
-        _mark_short_used(fdir, clip_id)
+        _mark_short_used(pool_fdir, clip_id)              # freshness in this pool + its posts
+        if str(pool_fdir) != str(main_fdir):             # fill pulled from another pool ->
+            _short_bump_posts(main_fdir)                 # still advance the rotation counter
     _save(run_dir, result)
     return result
 

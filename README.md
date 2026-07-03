@@ -145,6 +145,25 @@ New pieces:
 
 Tune in `config.yaml -> reels` (duration, fps, shots, beats, schedule, styles).
 
+### Gameplay reel layouts (classic / triptych / fill / rotated)
+The gameplay reels rotate layouts per post (`reels.gameplay.layouts`):
+- **classic** — footage in a 3:4 band + on-screen hook (KG logo).
+- **triptych** — 3-panel (top image + game art + gameplay), on-screen hook.
+- **fill** — *full-bleed vertical* (new): raw **LANDSCAPE** clips **scaled to COVER** the
+  whole 9:16 frame — pure footage, no bands/logo/text. Original game audio (+8.26 dB like
+  the 1080p reels). Caption is a **generic game** hype line + 3-5 hashtags; Threads gets
+  **#GamingThreads only**. Uses the **full clip** (paste ≤3 min).
+- **rotated** — Instagram-only, landscape rotated 90°.
+
+**Fill footage (dedicated pool):** paste raw landscape clips (≤3 min) into
+`reels/assets/footage/<game>-vertical/`, then push them to the CI release:
+```powershell
+python tools/footage.py sync <game>-vertical      # e.g. spider-man1-vertical
+```
+It's a normal footage key (`<game>-vertical`), so it never mixes with the short
+composited clips. (The same **fill** layout exists for the 4K HDR YouTube Shorts — see
+the YouTube section; those clips go in `reels/assets/footage-4k/<game>-vertical/`.)
+
 ### Music (optional but recommended)
 Drop **royalty-free** `.mp3`/`.m4a` files in `reels/assets/music/`. The composer
 picks one at random per reel; if the folder is empty, reels render silent. Never
@@ -209,9 +228,12 @@ full-game upload (stream-copy, HDR untouched) with an auto clickbait thumbnail. 
 
 **Shorts** (`run.py --youtube-short`) — the channel's Shorts are a dedicated 4K/60 HDR
 track (the 1080p-via-Post-for-Me path was stopped 2026-07-03). Each Short is rendered
-from the **4K HDR footage pool** and **alternates classic <-> triptych**, using the
-**exact same edit/export as the long-form** (HDR10 + `loudnorm` audio + darkened HDR
+from the **4K HDR footage pool** and **alternates classic <-> triptych <-> fill**, using
+the **exact same edit/export as the long-form** (HDR10 + `loudnorm` audio + darkened HDR
 text), then uploaded via the **YouTube Data API**. See `config.yaml -> youtube_shorts`.
+The **fill** layout is full-bleed vertical (raw 4K HDR **landscape** scaled to cover 9:16,
+pure footage) — same HDR process, only the scale differs; paste those clips into
+`reels/assets/footage-4k/<game>-vertical/` (local, no sync — Shorts run locally).
 
 Pipeline per Short: pick a fresh 4K HDR clip -> review it for a lore-grounded hook +
 caption -> render `build_gameplay`/`build_gameplay_triptych` at 2160x3840 HDR -> upload

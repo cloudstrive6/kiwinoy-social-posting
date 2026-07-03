@@ -513,13 +513,18 @@ reels:
   # 2-3 super-relevant hashtags per game for SHORT reel/video captions (content
   # .run_short). Keep it tight - never a wall of tags.
   game_hashtags:
-    spider-man1: ["#MarvelsSpiderManRemastered", "#spiderman"]
-    spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan"]
-    spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#PS5"]
-    ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth"]
-    thelastofus2: ["#thelastofuspart2", "#thelastofus", "#gaming"]
-    halo: ["#Halo", "#Xbox"]
-    re: ["#ResidentEvil", "#RE"]
+    spider-man1: ["#MarvelsSpiderManRemastered", "#SpiderMan", "#SpiderManPS5", "#marvel", "#gamingreels"]
+    spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan", "#PS5", "#gamingreels"]
+    spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#SpiderMan", "#PS5", "#gamingreels"]
+    ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth", "#FinalFantasy", "#gaming"]
+    ff7remake: ["#FF7Remake", "#FinalFantasyVIIRemake", "#FinalFantasy", "#FF7", "#gaming"]
+    thelastofus2: ["#thelastofuspart2", "#thelastofus", "#TLOU2", "#PS5", "#gaming"]
+    thelastofus1: ["#thelastofus", "#TLOU", "#thelastofusremastered", "#PS5", "#gaming"]
+    halo: ["#Halo", "#MasterChief", "#Xbox", "#gaming", "#gamingreels"]
+    re: ["#ResidentEvil", "#RE", "#survivalhorror", "#gaming", "#PS5"]
+    genshin: ["#GenshinImpact", "#Genshin", "#gaming", "#gachagame", "#gamingreels"]
+    hsr: ["#HonkaiStarRail", "#StarRail", "#HSR", "#gaming", "#gachagame"]
+    mlbb: ["#MobileLegends", "#MLBB", "#MobileLegendsBangBang", "#gaming", "#esports"]
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
   caption:
@@ -558,7 +563,19 @@ reels:
     # ~every 3rd reel as its own IG-only post, so IG's daily posts cycle all three
     # while the other platforms never get the sideways look. A game with no art falls
     # back to classic for its triptych turn.
-    layouts: [classic, triptych, rotated]
+    layouts: [classic, triptych, fill, rotated]
+    # FILL = full-bleed vertical (new 2026-07-03): raw LANDSCAPE clips you paste into a
+    # DEDICATED per-game folder, scaled to COVER the whole 9:16 frame (centre-crop, no
+    # bands/logo/text — pure footage). Original game audio + the 1080p reels' volume
+    # boost. Generic GAME caption + 3-5 hashtags; Threads = #GamingThreads only. Uses the
+    # FULL clip (paste <=3 min). Footage lives under its own key '<game>-vertical' so it
+    # never mixes with the short composited clips:
+    #   paste raw landscape ->  reels/assets/footage/<game>-vertical/
+    #   then sync to CI     ->  python tools/footage.py sync <game>-vertical
+    vertical:
+      key_suffix: "-vertical"   # footage key/folder suffix for the fill pool
+      max_seconds: 180          # use the FULL clip up to this (IG/YT Shorts cap = 3 min)
+      volume_db: 8.26           # +dB gain on the original audio, matching the 1080p reels
     # Also repost every gameplay reel to the Instagram STORY (placement=stories) as a
     # reach-booster (2026-07-01, per user). Best-effort: never sinks the main post.
     ig_stories: true
@@ -920,7 +937,11 @@ youtube_shorts:
   enabled: true
   game: ff7remake                         # default game for the track
   footage_dir: reels/assets/footage-4k    # <game> subfolders of 4K/60 HDR reel clips
-  layouts: [classic, triptych]            # alternate per post (persistent counter)
+  # classic <-> triptych <-> fill (full-bleed vertical), alternating per post. FILL =
+  # raw 4K HDR LANDSCAPE clips scaled to COVER 9:16 (pure footage, no overlay), SAME HDR
+  # process as the other Shorts (loudnorm -14/384k) — the only difference is the fill
+  # scale. Paste those into footage_dir/<game>-vertical/ (its own fresh-first ledger).
+  layouts: [classic, triptych, fill]
   fps: 60
   width: 2160                             # 4K vertical (2160x3840)
   height: 3840
