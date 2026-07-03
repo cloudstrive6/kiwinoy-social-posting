@@ -222,11 +222,19 @@ def _game_screenshot(game: Optional[str]) -> Optional[Any]:
     from core import gh_release, game_quotes
     if not game:
         return None
+    key = _pool_key(game)
+    # LOCAL curated images first (assets/images/<key>) — prioritized over the cloud pool,
+    # e.g. the user's hand-picked FF7 Remake shots for the triptych top panel.
+    ldir = ROOT / "assets" / "images" / key
+    if ldir.is_dir():
+        imgs = [p for p in sorted(ldir.iterdir())
+                if p.is_file() and p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}]
+        if imgs:
+            return random.choice(imgs)
     try:
         pool = gh_release.quote_image_pool()
         if not pool:
             return None
-        key = _pool_key(game)
         universe = game_quotes.universe_for_game(game)
         if key in pool:                       # exact game folder first (SM1 -> SM1 shots)
             games = [key]

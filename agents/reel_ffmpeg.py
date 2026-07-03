@@ -372,9 +372,10 @@ def build_gameplay(
         elif music_idx is not None:
             prefix += ["-map", f"{music_idx}:a"]
         _has_a = bool(keep_audio or music_idx is not None)
-        vtail = _v_encode_hdr() if hdr else _v_encode(hi_bitrate)
+        vtail = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
         rc, err = _encode_final(prefix, vtail,
-                                _a_encode(_has_a, hi_bitrate), out_path, hi_bitrate or hdr, 1800)
+                                _a_encode(_has_a, hi_bitrate, hdr=hdr), out_path,
+                                hi_bitrate or hdr, 3600)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -883,9 +884,9 @@ def build_gameplay_triptych(
         elif music_idx is not None:
             prefix += ["-map", f"{music_idx}:a"]
         _has_a = bool(keep_audio or music_idx is not None)
-        venc = _v_encode_hdr() if hdr else _v_encode(hi_bitrate)
+        venc = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
         vtail = venc + ["-fps_mode", "cfr", "-r", str(fps)]
-        rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate or hdr),
+        rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate, hdr=hdr),
                                 out_path, hi_bitrate or hdr, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"triptych render failed (rc={rc}):\n{err}")
@@ -1180,18 +1181,30 @@ def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
-def _v_encode_hdr() -> list[str]:
-    # 4K HDR reel: HEVC Main 10 (HDR10, PQ/bt2020) on the RTX 3080 via NVENC. Re-asserts
-    # the HDR color tags on the encoder since ffmpeg filters drop the metadata. VBR ~40 Mbps.
-    return ["-c:v", "hevc_nvenc", "-profile:v", "main10", "-pix_fmt", "p010le",
-            "-rc", "vbr", "-b:v", "40M", "-maxrate", "55M", "-tag:v", "hvc1",
-            "-color_primaries", "bt2020", "-color_trc", "smpte2084",
-            "-colorspace", "bt2020nc", "-color_range", "tv", "-movflags", "+faststart"]
+def _v_encode_hdr(fps: int = 60, bitrate: str = "63M") -> list[str]:
+    # 4K HDR reel — EXACTLY the longform 4K/60 HDR export (build_longform_hdr): libx264
+    # High10 (10-bit), Level 5.2, CBR, + HDR10 STATIC METADATA (mastering-display + CLL) so
+    # YouTube gets proper HDR10 signaling. Matches the longform pillar so Shorts + longform
+    # look identical (YouTube preserves the HDR).
+    keyint = int(fps) * 2
+    master = "G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L(10000000,100)"
+    x264p = (f"keyint={keyint}:min-keyint={keyint}:colorprim=bt2020:transfer=smpte2084:"
+             f"colormatrix=bt2020nc:mastering-display={master}:cll=1000,200")
+    return ["-c:v", "libx264", "-profile:v", "high10", "-level", "5.2", "-pix_fmt", "yuv420p10le",
+            "-color_primaries", "bt2020", "-color_trc", "smpte2084", "-colorspace", "bt2020nc",
+            "-color_range", "tv",
+            "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate, "-bufsize", "126M",
+            "-x264-params", x264p, "-movflags", "+faststart"]
 
 
-def _a_encode(has: bool, hi: bool = False) -> list[str]:
+def _a_encode(has: bool, hi: bool = False, hdr: bool = False) -> list[str]:
     if not has:
         return ["-an"]
+    if hdr:
+        # Match the longform: loudness-normalise to -14 LUFS (YouTube's target) + AAC 384k,
+        # so reel volume == longform volume (single-pass loudnorm is fine for a short clip).
+        return ["-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "384k",
+                "-ar", "48000", "-ac", "2"]
     if hi:
         return ["-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2"]  # TikTok spec
     return ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
