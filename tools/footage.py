@@ -29,6 +29,7 @@ import re
 import subprocess
 import sys
 import time
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -274,6 +275,10 @@ def sync(delete_local: bool = True, only_game: str | None = None) -> None:
             continue
         for f in sorted(sub.iterdir()):
             if not f.is_file() or f.suffix.lower() not in VIDEO_EXTS:
+                continue
+            # Skip files changed in the last ~2 min — they may still be copying, and a
+            # scheduled sync could otherwise upload a partial clip then delete it locally.
+            if delete_local and (time.time() - f.stat().st_mtime) < 120:
                 continue
             name = _gh_name(game, f.name)
             if name in done:

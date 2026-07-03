@@ -1843,6 +1843,14 @@ def run_youtube_short(
     # 2) fresh-first clip from the layout's pool. FILL pulls raw 4K LANDSCAPE from the
     # dedicated '<game>-vertical' folder; classic/triptych use the main 4K pool.
     pool_fdir = base / f"{game}{vcfg.get('key_suffix', '-vertical')}" if layout == "fill" else main_fdir
+    if layout == "fill" and not clip:
+        # The fill pool auto-archives to B2 + frees local (like the 4k-hdr intake) — pull
+        # it back if it was freed, so we can render from it.
+        try:
+            from tools import archive_4k
+            archive_4k.ensure_vertical_local(pool_fdir.name)
+        except Exception:
+            pass
     if clip:
         clip_path, clip_id = Path(clip), Path(clip).name
     else:

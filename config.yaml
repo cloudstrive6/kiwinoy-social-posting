@@ -968,6 +968,11 @@ source_4k:
   free_after_hours: 12                 # delete a verified-local file this long after its last change (0 = as soon as verified). A .keep file in the game folder pauses freeing.
   min_settle_minutes: 2               # ignore files changed in the last N min (still copying)
   transfers: 4                        # rclone parallel transfers
+  # ALSO auto-archive the YouTube FILL pool (4K HDR landscape clips for the full-bleed
+  # Shorts) to B2 + free local — same grace/pin rules. run_youtube_short pulls a clip
+  # back on demand if it was freed. Scans the '<game>-vertical' subfolders of this dir.
+  vertical_pool_dir: reels/assets/footage-4k
+  vertical_bucket_path: 4k-vertical
 
 # Long-form 4K HDR source archive -> Backblaze B2 (frees local disk). Uses rclone.
 # Push a finished game to the cloud + delete local; pull it back for more clips.

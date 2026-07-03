@@ -74,6 +74,36 @@ def _source_root() -> Path:
     return ROOT / str(_scfg().get("source_dir", "reels/assets/4k-hdr"))
 
 
+def _vertical_root():
+    d = _scfg().get("vertical_pool_dir")
+    return (ROOT / str(d)) if d else None
+
+
+def ensure_vertical_local(key: str) -> None:
+    """Pull a YouTube FILL pool (footage-4k/<key>) back from B2 if it's been freed, so
+    run_youtube_short can render from it. No-op if it already has clips locally (the
+    common case: pasted within the grace window) or if B2/rclone isn't set up. Fully
+    best-effort — never raises into the caller."""
+    vroot = _vertical_root()
+    if not vroot:
+        return
+    local = vroot / key
+    try:
+        if local.is_dir() and _media(local):
+            return                                      # already have clips locally
+        env, remote = _rclone_env()
+        bucket = _acfg().get("bucket")
+        if not bucket or not shutil.which("rclone"):
+            return
+        vprefix = str(_scfg().get("vertical_bucket_path", "4k-vertical")).strip("/")
+        local.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["rclone", "copy", f"{remote}:{bucket}/{vprefix}/{key}", str(local),
+                        "--transfers", str(_scfg().get("transfers", 4)),
+                        "--contimeout", "30s", "--timeout", "120s"], env=env)
+    except (Exception, SystemExit):
+        pass
+
+
 def _dst(game: str, remote: str) -> str:
     bucket = _acfg().get("bucket")
     if not bucket:
@@ -100,67 +130,76 @@ def _media(game_dir: Path) -> list[Path]:
                   if p.is_file() and p.suffix.lower() in VIDEO_EXTS)
 
 
+def _sync_folder(env, gdir, dst, label, settle, grace_h, transfers, now, dry, pinned) -> int:
+    """Upload a folder's settled media to B2, verify, then free (past grace, unless
+    pinned). Returns bytes freed."""
+    files = _media(gdir)
+    if not files:
+        return 0
+    settled = [f for f in files if (now - f.stat().st_mtime) >= settle * 60]
+    skipped = len(files) - len(settled)
+    print(f"[{label}] {len(files)} file(s)"
+          + (f", {skipped} still settling (skipped)" if skipped else "")
+          + (" [PINNED: no auto-free]" if pinned else ""), flush=True)
+    if not settled:
+        return 0
+    if dry:
+        print(f"  would upload {len(settled)} settled file(s) -> {dst}")
+    else:
+        rc = _rclone(["copy", str(gdir), dst, "--min-age", f"{settle}m",
+                      "--progress", "--transfers", transfers, "--b2-hard-delete"], env)
+        if rc != 0:
+            print(f"  upload FAILED (rc={rc}) — nothing freed for {label}.")
+            return 0
+    if _rclone(["check", str(gdir), dst, "--one-way", "--min-age", f"{settle}m"], env) != 0:
+        print(f"  verify FAILED for {label} — NOT freeing (will retry next sync).")
+        return 0
+    if pinned:
+        return 0                                        # verified backup, keep local
+    freed = 0
+    for f in settled:
+        age_h = (now - f.stat().st_mtime) / 3600.0
+        if age_h < grace_h:
+            continue
+        if dry:
+            print(f"  would free {f.name} ({f.stat().st_size / 1024**3:.1f} GB, {age_h:.1f}h old)")
+        else:
+            sz = f.stat().st_size
+            f.unlink()
+            freed += sz
+            print(f"  freed {f.name} ({sz / 1024**3:.1f} GB) — on B2, {age_h:.1f}h old", flush=True)
+    return freed
+
+
 def sync(one: str | None, dry: bool = False) -> None:
     env, remote = _rclone_env()
     settle = float(_scfg().get("min_settle_minutes", 2))
     grace_h = float(_scfg().get("free_after_hours", 12))
     transfers = str(_scfg().get("transfers", 4))
     now = time.time()
-    games = _games(one)
-    if not games:
-        print(f"No game folders under {_source_root()} — paste files into "
-              f"{_source_root()}\\<game>\\ first.")
-        return
     freed_total = 0
-    for game in games:
+    # 1) the raw 4K HDR source intake (4k-hdr/<game>/).
+    for game in _games(one):
         gdir = _source_root() / game
-        files = _media(gdir)
-        if not files:
-            continue
-        settled = [f for f in files if (now - f.stat().st_mtime) >= settle * 60]
-        skipped = len(files) - len(settled)
-        print(f"[{game}] {len(files)} file(s)"
-              + (f", {skipped} still settling (skipped)" if skipped else "")
-              + (" [PINNED: no auto-free]" if _pinned(game) else ""), flush=True)
-        if not settled:
-            continue
-        dst = _dst(game, remote)
-        if dry:
-            print(f"  would upload {len(settled)} settled file(s) -> {dst}")
-        else:
-            # Upload settled files (copy = add/update, never deletes the remote).
-            rc = _rclone(["copy", str(gdir), dst, "--min-age", f"{settle}m",
-                          "--progress", "--transfers", transfers,
-                          "--b2-hard-delete"], env)
-            if rc != 0:
-                print(f"  upload FAILED (rc={rc}) — nothing freed for {game}.")
+        freed_total += _sync_folder(env, gdir, _dst(game, remote), game, settle,
+                                    grace_h, transfers, now, dry, _pinned(game))
+    # 2) the YouTube FILL pools (footage-4k/<game>-vertical/) -> B2 under 4k-vertical/.
+    vroot = _vertical_root()
+    vprefix = str(_scfg().get("vertical_bucket_path", "4k-vertical")).strip("/")
+    bucket = _acfg().get("bucket")
+    if vroot and vroot.is_dir() and bucket:
+        for vdir in sorted(p for p in vroot.iterdir()
+                           if p.is_dir() and p.name.endswith("-vertical")):
+            key = vdir.name
+            if one and one not in (key, key.replace("-vertical", "")):
                 continue
-        # Verify the settled files are all on B2 before freeing anything.
-        chk = _rclone(["check", str(gdir), dst, "--one-way", "--min-age", f"{settle}m"], env)
-        if chk != 0:
-            print(f"  verify FAILED for {game} — NOT freeing (will retry next sync).")
-            continue
-        if _pinned(game):
-            continue                                   # pinned: verified backup, keep local
-        # Free files verified on B2 + older than the grace window.
-        for f in settled:
-            age_h = (now - f.stat().st_mtime) / 3600.0
-            if age_h < grace_h:
-                continue
-            if dry:
-                print(f"  would free {f.name} ({f.stat().st_size / 1024**3:.1f} GB, "
-                      f"{age_h:.1f}h old)")
-            else:
-                sz = f.stat().st_size
-                f.unlink()
-                freed_total += sz
-                print(f"  freed {f.name} ({sz / 1024**3:.1f} GB) — on B2, {age_h:.1f}h old",
-                      flush=True)
+            dst = f"{remote}:{bucket}/{vprefix}/{key}"
+            freed_total += _sync_folder(env, vdir, dst, key, settle, grace_h,
+                                        transfers, now, dry, (vdir / PIN).exists())
     if not dry and freed_total:
         print(f"Done. Local disk freed this run: {freed_total / 1024**3:.1f} GB.")
     elif not dry:
-        print("Done. (Nothing eligible to free yet — files still within the grace window "
-              "or pinned.)")
+        print("Done. (Nothing eligible to free yet — within the grace window or pinned.)")
 
 
 def free(game: str) -> None:
