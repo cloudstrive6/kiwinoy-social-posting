@@ -510,10 +510,16 @@ def build_thumbnail(
                          outline=(255, 255, 255), width=8)
     ld.text((10 + bw2 // 2, 10 + bh2 // 2), txt, font=f, fill=(255, 255, 255),
             anchor="mm", stroke_width=2, stroke_fill=(0, 0, 0))
-    # A cast lineup uses the clean, shadow-free look (like the rim/shadow-off characters),
-    # so the PART box drops FLAT — no soft drop shadow behind it.
+    # Drop shadow derived from the box's OWN alpha, so it follows the box's ROUNDED
+    # corners exactly. Lineups use a TIGHT, proportional shadow (small offset -> it hugs
+    # the box, not a detached band); single-character keeps the bigger 'pop' shadow.
     lineup_clean = bool(chars) and len(chars) > 1
-    if float(g.get("text_glow", 1)) and not lineup_clean:
+    if lineup_clean:
+        base = _place_shadowed(base, layer, (x0 - 10, y0 - 10),
+                               blur=float(g.get("box_shadow_blur", 10)),
+                               dark=float(g.get("box_shadow_dark", 0.5)),
+                               offset=(int(g.get("box_shadow_dx", 0)), int(g.get("box_shadow_dy", 4))))
+    elif float(g.get("text_glow", 1)):
         base = _place_shadowed(base, layer, (x0 - 10, y0 - 10), blur=18, dark=0.75, offset=(0, 8))
     else:
         c = base.convert("RGBA")
