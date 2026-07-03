@@ -712,6 +712,7 @@ def build_gameplay_triptych(
     music: Optional[Path] = None,
     anim_logo: Optional[tuple] = None,
     hi_bitrate: bool = False,
+    hdr: bool = False,
 ) -> bytes:
     """3-PANEL gameplay reel (the meme/TikTok layout). The w x h frame is split into
     three equal horizontal bands; a 16:9 element is centred in each:
@@ -757,9 +758,10 @@ def build_gameplay_triptych(
         # text/subject shimmer as it passes — a moving reflection, not a band. The
         # light is a soft radial blob; the glow only lifts the art where the light is.
         arth = round(w * 9 / 16)
+        ts = w / 1080.0                             # scale abs graphic sizes with resolution
         gl = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_glow", {}) or {}
         glow_on, blob_idx = bool(gl.get("enabled", True)), None
-        bd = int(gl.get("size", 640))               # soft light diameter (px)
+        bd = int(gl.get("size", 640) * ts)          # soft light diameter (px)
         if glow_on:
             # feather: higher -> the gaussian fades fully to 0 well inside the tile,
             # so there's NO hard ring/edge (the moving shape stays invisible).
@@ -792,7 +794,7 @@ def build_gameplay_triptych(
             music_idx = next_idx
             next_idx += 1
 
-        grade = _grade_filter(hi_bitrate)  # enhance the gameplay AND the game art (like classic)
+        grade = "" if hdr else _grade_filter(hi_bitrate)  # enhance gameplay + art (SDR only)
         # Darken the top still (like the quote cards) so the white hook stays the
         # dominant element. rr/gg/bb<1 multiplies brightness -> 0.55 ~= a 45% black
         # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
@@ -862,13 +864,13 @@ def build_gameplay_triptych(
         if wm.get("enabled", True) and wm.get("text"):
             font = str(wm.get("font", "assets/fonts/tarrget-font/TarrgetRegular-WEOz.otf"))
             txt = str(wm.get("text", "KIWINOYGAMING"))
-            size = int(wm.get("size", 42))
+            size = int(wm.get("size", 42) * ts)
             opac = float(wm.get("opacity", 0.85))
-            off = int(wm.get("bottom_offset", 22))
+            off = int(wm.get("bottom_offset", 22) * ts)
             fc.append(
                 f"[{vlabel}]drawtext=fontfile={font}:text={txt}:fontcolor=white@{opac}:"
                 f"fontsize={size}:x=(w-text_w)/2:y={band}-text_h-{off}:"
-                f"shadowcolor=black@0.5:shadowx=2:shadowy=2[ovw]")
+                f"shadowcolor=black@0.5:shadowx={round(2 * ts)}:shadowy={round(2 * ts)}[ovw]")
             vlabel = "ovw"
         fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
 
@@ -880,9 +882,10 @@ def build_gameplay_triptych(
         elif music_idx is not None:
             prefix += ["-map", f"{music_idx}:a"]
         _has_a = bool(keep_audio or music_idx is not None)
-        vtail = _v_encode(hi_bitrate) + ["-fps_mode", "cfr", "-r", str(fps)]
-        rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate),
-                                out_path, hi_bitrate, 1800)
+        venc = _v_encode_hdr() if hdr else _v_encode(hi_bitrate)
+        vtail = venc + ["-fps_mode", "cfr", "-r", str(fps)]
+        rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate or hdr),
+                                out_path, hi_bitrate or hdr, 1800)
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"triptych render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
