@@ -908,6 +908,10 @@ youtube_longform:
   # loudnorm (both need a decode+re-encode). Set false to go back to the HDR re-encode.
   stream_copy: true
   privacy: private            # 'private'+publish_at = scheduled; or 'public'/'unlisted'
+  # Resumable-upload chunk size (MB). YouTube ACKs each chunk before the next sends, so
+  # SMALL chunks pin throughput to chunk/ack-latency: 50 MB capped a 500 Mbps line at
+  # ~19 Mbps. 512 MB (~10x per ACK) should be much faster; raise to 1024 if still slow.
+  upload_chunk_mb: 512
   category_id: "20"           # 20 = Gaming
   made_for_kids: false
   logo: false                 # circular KG logo overlay — OFF (YouTube's own channel watermark covers it)

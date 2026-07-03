@@ -1722,7 +1722,8 @@ def run_youtube_longform(
         privacy=priv, publish_at=publish_at,
         category_id=str(yl.get("category_id", "20")),
         made_for_kids=bool(yl.get("made_for_kids", False)),
-        thumbnail=str(thumb) if thumb else None)
+        thumbnail=str(thumb) if thumb else None,
+        chunk_mb=int(yl.get("upload_chunk_mb", 512)))   # big chunks -> fast upload on fast lines
     result["published"] = True
     result["video_id"] = api.get("id")
     result["url"] = f"https://youtu.be/{api.get('id', '')}"

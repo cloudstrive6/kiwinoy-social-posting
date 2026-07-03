@@ -101,7 +101,11 @@ def upload_video(
     category_id: str = "20",          # 20 = Gaming
     made_for_kids: bool = False,
     thumbnail: Optional[str] = None,
-    chunk_mb: int = 50,
+    # Resumable-upload chunk size. YouTube ACKs each chunk server-side before the next is
+    # sent, so SMALL chunks pin throughput to (chunk / ack-latency) regardless of your line
+    # speed — 50 MB chunks capped a 500 Mbps connection at ~19 Mbps. BIG chunks amortise the
+    # per-chunk ACK wait: 512 MB is ~10x the data per ACK. Must be a multiple of 256 KB.
+    chunk_mb: int = 512,
 ) -> dict[str, Any]:
     """Resumable-upload a video; optionally schedule it + set a custom thumbnail.
 
