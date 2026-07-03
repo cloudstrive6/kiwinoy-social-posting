@@ -767,6 +767,11 @@ def build_gameplay_triptych(
         arth = round(w * 9 / 16 / 2) * 2            # 16:9 panel height, forced EVEN (yuv420p /
         #                                             blend need even dims; was odd 1215 at 4K)
         ts = w / 1080.0                             # scale abs graphic sizes with resolution
+        # HDR: convert the SDR panels (top image, art+glow) to PQ at ~203-nit graphics white
+        # so they look correct on HDR; the gameplay panel stays real PQ. f10 = force 10-bit.
+        hdrfy = (",format=yuv420p,zscale=tin=bt709:min=bt709:pin=bt709:rin=full:"
+                 "t=smpte2084:m=bt2020nc:p=bt2020:npl=203,format=yuv420p10le") if hdr else ""
+        f10 = ",format=yuv420p10le" if hdr else ""
         gl = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_glow", {}) or {}
         glow_on, blob_idx = bool(gl.get("enabled", True)), None
         bd = int(gl.get("size", 640) * ts)          # soft light diameter (px)
@@ -842,21 +847,21 @@ def build_gameplay_triptych(
             # art so highlights/edges/text glow where each light is.
             bot_lines += [
                 f"[artB][light]blend=all_mode=multiply[lit]",
-                f"[artA][lit]blend=all_mode=screen,format=yuv420p[bot]",
+                f"[artA][lit]blend=all_mode=screen{hdrfy or ',format=yuv420p'}[bot]",
             ]
         else:
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
-                         f"crop={w}:{arth},{grade}setsar=1[bot]"]
+                         f"crop={w}:{arth},{grade}setsar=1{hdrfy}[bot]"]
         fc = [
-            f"color=c=black:s={w}x{h}:r={fps}[bg]",
-            f"[0:v]scale={w}:-2,{grade}setsar=1,fps={fps}[mid]",
+            f"color=c=black:s={w}x{h}:r={fps}{f10}[bg]",
+            f"[0:v]scale={w}:-2,{grade}setsar=1{f10},fps={fps}[mid]",
             # TOP panel: scale+crop to EXACTLY the same 16:9 tile as the middle/bottom
             # (force_original_aspect_ratio=increase + crop) so a source image of ANY
             # aspect ratio can't change the panel height -> the black gaps between the
             # three panels stay uniform. (Was scale=w:-2, whose auto height varied with
             # the image's aspect ratio and made the spacing uneven.)
             f"[1:v]scale={w}:{arth}:force_original_aspect_ratio=increase,crop={w}:{arth},"
-            f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim},setsar=1[top]",
+            f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim}{hdrfy},setsar=1[top]",
             *bot_lines,
             f"[bg][top]overlay=(W-w)/2:({band}-h)/2[b1]",
             f"[b1][mid]overlay=(W-w)/2:{band}+({band}-h)/2[b2]",
@@ -882,7 +887,11 @@ def build_gameplay_triptych(
                 f"fontsize={size}:x=(w-text_w)/2:y={band}-text_h-{off}:"
                 f"shadowcolor=black@0.5:shadowx={round(2 * ts)}:shadowy={round(2 * ts)}[ovw]")
             vlabel = "ovw"
-        fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'[v]")
+        # HDR: re-assert the PQ/bt2020 tags — the panel blends/overlays drop the metadata,
+        # so the output would otherwise be 'unknown' and YouTube wouldn't treat it as HDR.
+        tag = (",setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc"
+               if hdr else "")
+        fc.append(f"[{vlabel}]ass='{_ass_path_for_filter(ass)}'{tag}[v]")
 
         args = inputs + ["-t", f"{show:.2f}", "-filter_complex", ";".join(fc),
                          "-map", "[v]"]
