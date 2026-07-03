@@ -515,13 +515,10 @@ def build_thumbnail(
     # the box, not a detached band); single-character keeps the bigger 'pop' shadow.
     lineup_clean = bool(chars) and len(chars) > 1
     if lineup_clean:
-        # Physically-lit drop shadow: light from the TOP-LEFT casts ONE shadow down and to
-        # the RIGHT (positive dx + dy), softened, so it reads as a real cast shadow (rounded,
-        # following the box) rather than a flat symmetric band.
-        base = _place_shadowed(base, layer, (x0 - 10, y0 - 10),
-                               blur=float(g.get("box_shadow_blur", 12)),
-                               dark=float(g.get("box_shadow_dark", 0.5)),
-                               offset=(int(g.get("box_shadow_dx", 9)), int(g.get("box_shadow_dy", 10))))
+        # Lineup: FLAT box, no drop shadow (per user).
+        c = base.convert("RGBA")
+        c.alpha_composite(layer, (x0 - 10, y0 - 10))
+        base = c.convert("RGB")
     elif float(g.get("text_glow", 1)):
         base = _place_shadowed(base, layer, (x0 - 10, y0 - 10), blur=18, dark=0.75, offset=(0, 8))
     else:
