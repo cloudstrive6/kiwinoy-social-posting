@@ -90,11 +90,14 @@ def _game_logo(game: Optional[str]) -> Optional[Any]:
     return None
 
 
-def _game_art(game: Optional[str]) -> Optional[Any]:
-    """A random key-art image for the 3-panel reel's bottom band. Drop image files
-    in reels/assets/game-art/<game>/ (named by the footage folder key, e.g.
-    spider-man1 / spider-man-miles-morales; the game's universe is also tried).
-    Returns None if none exist so the reel falls back to the classic layout."""
+def _game_art(game: Optional[str], alt: Optional[int] = None) -> Optional[Any]:
+    """A key-art image for the 3-panel reel's bottom band. Drop image files in
+    reels/assets/game-art/<game>/ (named by the footage folder key, e.g. spider-man1 /
+    spider-man-miles-morales; the game's universe is also tried). Returns None if none
+    exist so the reel falls back to the classic layout.
+
+    `alt` = deterministically CYCLE the (sorted) art files instead of random — pass an
+    incrementing index so successive triptychs ALTERNATE the art (e.g. main <-> art 1)."""
     from core import game_quotes
     if not game:
         return None
@@ -107,7 +110,7 @@ def _game_art(game: Optional[str]) -> Optional[Any]:
             arts = [p for p in sorted(d.iterdir())
                     if p.is_file() and p.suffix.lower() in exts]
             if arts:
-                return random.choice(arts)
+                return arts[alt % len(arts)] if alt is not None else random.choice(arts)
     return None
 
 
@@ -1917,7 +1920,9 @@ def run_youtube_short(
         return _skip(run_dir, {"kind": "youtube_short", "game": game}, "no_media")
     log(f"Clip (fresh-first): {clip_id}")
 
-    art = _game_art(game) if layout == "triptych" else None
+    # Triptych: ALTERNATE the game-art files deterministically (main <-> art 1 <-> ...)
+    # across successive triptychs, keyed off the post counter, per user.
+    art = _game_art(game, alt=n // len(layouts)) if layout == "triptych" else None
     if layout == "triptych" and not art:
         log("No game art for this game — using the classic layout this post.")
         layout = "classic"
