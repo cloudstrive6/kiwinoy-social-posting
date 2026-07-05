@@ -58,8 +58,8 @@ Thumbs.db
 .claude/
 
 # Long-form 4K HDR source parts (huge, local-only inputs)
-reels/assets/longform/*
-!reels/assets/longform/.gitkeep
+reels/assets/longform-fullgame/*
+!reels/assets/longform-fullgame/.gitkeep
 
 # 4K/60 HDR YouTube Shorts footage pool (large, local-only; nvenc runs locally)
 reels/assets/footage-4k/*
