@@ -452,7 +452,7 @@ reels:
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the
     # separate sports/esports channel). list_games() / the topic agent skip these.
-    exclude: [mlbb, dota2, cs2, lol]
+    exclude: [mlbb, dota2, cs2, lol, asphalt, reanimal]   # asphalt/reanimal: archive-only, not in circulation yet (2026-07-05)
     # DOUBLE DOWN on Marvel's Spider-Man (2026-06-14, user): when any of these have
     # footage, the topic agent picks from them first. Empty/none-present = any game.
     prefer: [spider-man1, spider-man-miles-morales, spider-man2]
