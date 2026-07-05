@@ -548,6 +548,7 @@ reels:
   tiktok:
     game: spider-man2    # Marvel's Spider-Man 2 (switched from TLOU2 2026-07-05 per user —
                          # TLOU2 gameplays paused on TikTok; SM2 footage synced to the release).
+    extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
     posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
   gameplay:
     enabled: true
@@ -664,6 +665,11 @@ reels:
       ff7: "Final Fantasy VII Original PS1 Logo.png"
       ff7remake: "Final-Fantasy-VII-Remake-Game-PNG-HD-Quality.png"
       thelastofus2: "The Last of Us Part 2 Remastered Game Logo.png"  # keyword match couldn't link the key to the filename
+      # Spider-Man games share the "spider-man" root, so keyword matching can't tell them
+      # apart (it grabbed the generic logo for SM2). Pin each explicitly (2026-07-06):
+      spider-man1: "HD Marvel Spider Man Logo PNG - 2200x2200.png"
+      spider-man-miles-morales: "spider-man-miles-morales logo.png"
+      spider-man2: "Marvel's_Spider-Man_2.png"
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:

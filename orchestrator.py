@@ -693,10 +693,18 @@ def run_gameplay_reel(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     elif tiktok_only:
-        # Dedicated TikTok track (TLOU2): post ONLY to TikTok via Zernio.
+        # Dedicated TikTok track: post ONLY to TikTok via Zernio.
         from core import zernio
+        # TikTok-only extra hashtags (per user, e.g. #gaming on the SM2 track) — appended
+        # to the caption on TikTok, NOT on the feed platforms.
+        tt_caption = caption
+        extra = [str(h).strip() for h in (CONFIG.reels.get("tiktok", {}) or {}).get("extra_hashtags", []) or []]
+        add = [(h if h.startswith("#") else "#" + h) for h in extra
+               if h and h.lower().lstrip("#") not in caption.lower()]
+        if add:
+            tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
         log("Publishing to TikTok via Zernio...")
-        res = zernio.publish_reel(video_bytes, caption)
+        res = zernio.publish_reel(video_bytes, tt_caption)
         result["published"] = bool(res)
         result["zernio_result"] = res
         if res and reel_composer.mark_clip_used(clip_id):
