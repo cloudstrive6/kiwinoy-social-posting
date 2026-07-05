@@ -1,6 +1,6 @@
 """Number raw long-form recordings in a game folder as '<Game> - Part N' by capture time.
 
-Point Elgato (4K Capture Utility) at reels/assets/longform/<game>/ so recordings land
+Point Elgato (4K Capture Utility) at reels/assets/longform-fullgame/<game>/ so recordings land
 there, then run this. It sorts the video files by CREATION time (earliest = Part 1 — on
 Windows os.stat().st_ctime IS the true file birth time), strips any timestamp/old part
 suffix, and renames them '<Game> - Part N' so build_longform_hdr concats them in play
@@ -16,7 +16,7 @@ Usage:
   python tools/name_parts.py <folder> --apply --name "Halo Infinite"
   python tools/name_parts.py <folder> --apply --by mtime    # order by modified time instead
 
-<folder> = a path, or a folder key under reels/assets/longform/ (e.g. tlou-part2).
+<folder> = a path, or a folder key under reels/assets/longform-fullgame/ (e.g. tlou-part2).
 """
 from __future__ import annotations
 

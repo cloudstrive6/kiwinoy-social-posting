@@ -17,7 +17,7 @@ Usage (run in the project folder):
   python tools/archive_longform.py pull <game-folder>          # download it back to local
   python tools/archive_longform.py list                        # what's archived
 
-<game-folder> is the subfolder name under reels/assets/longform/ (e.g. final-fantasy-7-remake).
+<game-folder> is the subfolder name under reels/assets/longform-fullgame/ (e.g. final-fantasy-7-remake).
 """
 from __future__ import annotations
 

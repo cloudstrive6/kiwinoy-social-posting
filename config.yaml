@@ -992,7 +992,7 @@ longform_archive:
   provider: b2
   remote: kgb2                        # rclone remote name (configured from .env at runtime)
   bucket: kiwinoygamer-longform       # your B2 bucket name
-  local_dir: reels/assets/longform
+  local_dir: reels/assets/longform-fullgame
 
 threads_footage:
   enabled: true

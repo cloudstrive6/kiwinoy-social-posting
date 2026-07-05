@@ -9,7 +9,7 @@ from core import ffmpeg                       # noqa: E402
 from orchestrator import run_youtube_short    # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
-PARTS = ROOT / "reels/assets/longform/final-fantasy-7-remake"
+PARTS = ROOT / "reels/assets/longform-fullgame/final-fantasy-7-remake"
 POOL = ROOT / "reels/assets/4k-hdr-long-clips/ff7remake"
 POOL.mkdir(parents=True, exist_ok=True)
 
