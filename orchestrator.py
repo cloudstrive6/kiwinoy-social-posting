@@ -634,13 +634,17 @@ def run_gameplay_reel(
     ig_rotated = ((not tiktok_only) and ("rotated" in layouts)
                   and (n % 3 == 2) and layout != "fill")
     art = _game_art(brief.get("game")) if layout == "triptych" else None
+    # TikTok export: MATCH the FB/IG/Threads feed encode by default (per user 2026-07-07).
+    # The 30 Mbps "hi" spec backfired on TikTok's PUBLIC API transcode (proven: high bitrate
+    # degrades worse). Set reels.tiktok.hi_bitrate: true to restore the 30M browser-upload spec.
+    tt_hi = tiktok_only and bool((CONFIG.reels.get("tiktok", {}) or {}).get("hi_bitrate", False))
     if layout == "fill":
         # Full-bleed: raw landscape scaled to COVER 9:16, pure footage (no overlay),
         # original game audio + the 1080p reels' +vol_db boost, FULL clip.
         log(f"Rendering FULL-BLEED vertical reel (full clip, <={int(target)}s)...")
         video_bytes = reel_ffmpeg.build_gameplay_fill(
             clip_path, reel_path, fps=fps, w=rw, h=rh, target_seconds=target,
-            vol_db=float(vcfg.get("volume_db", 8.26)), hi_bitrate=tiktok_only)
+            vol_db=float(vcfg.get("volume_db", 8.26)), hi_bitrate=tt_hi)
     elif layout == "triptych" and art:
         top = _game_screenshot(brief.get("game"))  # curated screenshot or None->clip frame
         log(f"Rendering 3-panel gameplay reel (art: {art.name}, "
@@ -648,7 +652,7 @@ def run_gameplay_reel(
         video_bytes = reel_ffmpeg.build_gameplay_triptych(
             clip_path, reel_path, hook=hook, game_art=art, top_image=top,
             logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
-            music=_reel_music(), anim_logo=_anim_logo(), hi_bitrate=tiktok_only)
+            music=_reel_music(), anim_logo=_anim_logo(), hi_bitrate=tt_hi)
     else:
         if layout == "triptych":
             log("No game art for this game — using the classic layout this slot.")
@@ -661,7 +665,7 @@ def run_gameplay_reel(
             target_seconds=target,
             music=_reel_music(), anim_logo=_anim_logo(),
             game_logo=_game_logo(brief.get("game")),
-            hi_bitrate=tiktok_only,
+            hi_bitrate=tt_hi,
         )
     # Actual length = min(target, clip length). FB Reels caps ~90s, so anything
     # longer publishes as a Reel on IG + Short on YouTube but a feed video on FB.
