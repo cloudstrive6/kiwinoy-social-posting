@@ -456,6 +456,13 @@ reels:
     # DOUBLE DOWN on Marvel's Spider-Man (2026-06-14, user): when any of these have
     # footage, the topic agent picks from them first. Empty/none-present = any game.
     prefer: [spider-man1, spider-man-miles-morales, spider-man2]
+    # TIME-BOXED campaign (user, 2026-07-06): push Spider-Man 2 ONLY on the FB/IG feed
+    # gameplay reel + Threads footage until end of Jul 13, then AUTO-REVERT to `prefer`
+    # above (no edit needed). Resolved by CONFIG.preferred_footage_games(). TikTok is a
+    # separate forced-game track (unaffected); YouTube unaffected.
+    prefer_override:
+      games: [spider-man2]
+      until: "2026-07-13T23:59:59Z"
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
     #   python tools/footage.py upload <game> <path-to-clip.mp4>

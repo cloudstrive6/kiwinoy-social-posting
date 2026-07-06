@@ -176,6 +176,32 @@ class _Config:
     def threads_posts(self) -> dict[str, Any]:
         return self._data.get("threads_posts", {})
 
+    def preferred_footage_games(self) -> list[str]:
+        """The games the footage tracks (FB/IG feed gameplay reel + Threads footage)
+        should prefer RIGHT NOW.
+
+        Normally `reels.footage.prefer`. A time-boxed campaign can temporarily narrow
+        it via `reels.footage.prefer_override: {games: [...], until: <ISO UTC>}` — while
+        now <= until, the override games win; after that it auto-reverts to `prefer`
+        (no config edit needed). Falls back to the base list on any parse error.
+        """
+        fc = self.reels.get("footage", {}) or {}
+        base = [str(g) for g in (fc.get("prefer") or [])]
+        ov = fc.get("prefer_override") or {}
+        games = [str(g) for g in (ov.get("games") or [])]
+        until = ov.get("until")
+        if games and until:
+            try:
+                from datetime import datetime, timezone
+                dt = datetime.fromisoformat(str(until).replace("Z", "+00:00"))
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                if datetime.now(timezone.utc) <= dt:
+                    return games
+            except Exception:
+                pass
+        return base
+
     def slot(self, slot_id: int) -> dict[str, Any]:
         for s in self.schedule["slots"]:
             if int(s["id"]) == int(slot_id):

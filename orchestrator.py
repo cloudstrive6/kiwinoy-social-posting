@@ -1359,7 +1359,7 @@ def run_threads_footage(
     games = reel_composer.list_games()
     if not games:
         return _skip(run_dir, {"kind": "threads_footage"}, "no_media")
-    prefer = [str(g) for g in (CONFIG.reels.get("footage", {}).get("prefer", []) or [])]
+    prefer = CONFIG.preferred_footage_games()   # honors a time-boxed prefer_override
     preferred = {k: v for k, v in games.items() if k in prefer} or games
     game = random.choice(list(preferred))
     # a RANDOM clip — deliberately does NOT touch the gameplay-reel used-clip ledger.

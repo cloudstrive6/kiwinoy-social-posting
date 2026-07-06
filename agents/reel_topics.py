@@ -72,7 +72,7 @@ def run(
     if not games:
         return {}
     # Double down on preferred games (e.g. Spider-Man) when they have footage.
-    prefer = [str(g) for g in (CONFIG.reels.get("footage", {}).get("prefer", []) or [])]
+    prefer = CONFIG.preferred_footage_games()   # honors a time-boxed prefer_override
     preferred = {k: v for k, v in games.items() if k in prefer}
     if preferred:
         games = preferred
