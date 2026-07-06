@@ -183,6 +183,54 @@ def upload_video(
     return resp
 
 
+def list_uploads(max_items: int = 300) -> list[dict[str, Any]]:
+    """List the channel's own uploads (incl. PRIVATE/scheduled) with status + publishAt.
+
+    Walks the uploads playlist, then batch-fetches snippet+status. Returns dicts:
+    {id, title, privacy, publishAt}. Uses youtube.force-ssl (read) — no extra scope.
+    """
+    yt = _service()
+    ch = yt.channels().list(part="contentDetails", mine=True).execute()
+    items = ch.get("items") or []
+    if not items:
+        return []
+    uploads = items[0]["contentDetails"]["relatedPlaylists"]["uploads"]
+    ids: list[str] = []
+    token = None
+    while len(ids) < max_items:
+        r = yt.playlistItems().list(part="contentDetails", playlistId=uploads,
+                                    maxResults=50, pageToken=token).execute()
+        ids += [it["contentDetails"]["videoId"] for it in r.get("items", [])]
+        token = r.get("nextPageToken")
+        if not token:
+            break
+    out: list[dict[str, Any]] = []
+    for i in range(0, len(ids), 50):
+        r = yt.videos().list(part="snippet,status", id=",".join(ids[i:i + 50])).execute()
+        for it in r.get("items", []):
+            st = it.get("status", {})
+            out.append({"id": it["id"], "title": it["snippet"]["title"],
+                        "privacy": st.get("privacyStatus"), "publishAt": st.get("publishAt")})
+    return out
+
+
+def reschedule(video_id: str, publish_at: str, made_for_kids: bool = False) -> None:
+    """Change a scheduled video's publish time (RFC3339 UTC). Keeps it private-until-then.
+    videos.update(part=status) REPLACES status, so we set the full scheduling triplet."""
+    _service().videos().update(part="status", body={
+        "id": video_id,
+        "status": {"privacyStatus": "private", "publishAt": publish_at,
+                   "selfDeclaredMadeForKids": bool(made_for_kids)},
+    }).execute()
+    print(f"[youtube] rescheduled {video_id} -> {publish_at}", flush=True)
+
+
+def delete_video(video_id: str) -> None:
+    """Delete one of the channel's own videos (youtube.force-ssl covers this)."""
+    _service().videos().delete(id=video_id).execute()
+    print(f"[youtube] deleted {video_id}", flush=True)
+
+
 def set_thumbnail(video_id: str, image) -> None:
     """Set/replace the custom thumbnail on an existing video."""
     from googleapiclient.http import MediaFileUpload

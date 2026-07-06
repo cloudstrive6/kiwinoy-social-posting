@@ -1996,12 +1996,25 @@ def run_youtube_short(
         _save(run_dir, result)
         return result
 
+    # GAME-AWARE tags (don't tag e.g. SM2 with the static FF7 tag list). Derive from the
+    # game's own hashtags (minus '#') + a generic gaming base; fall back to config tags.
+    ghash = [str(h).lstrip("#") for h in
+             (CONFIG.reels.get("game_hashtags", {}) or {}).get(game, []) if str(h).strip()]
+    generic = ["gaming", "4K", "HDR", "60fps", "PS5"]
+    if ghash:
+        seen, yt_tags = set(), []
+        for t in ghash + generic:
+            if t.lower() not in seen:
+                seen.add(t.lower()); yt_tags.append(t)
+    else:
+        yt_tags = [str(t) for t in (ys.get("tags") or [])]
+
     priv = str(privacy or ys.get("privacy", "public")).lower()
     log(f"Uploading Short via the YouTube Data API (privacy={priv}"
         f"{', scheduled ' + publish_at if publish_at else ''})...")
     api = youtube.upload_video(
         str(reel_path), title=title, description=desc,
-        tags=[str(t) for t in (ys.get("tags") or [])],
+        tags=yt_tags,
         privacy=priv, publish_at=publish_at,
         category_id=str(ys.get("category_id", "20")),
         made_for_kids=bool(ys.get("made_for_kids", False)))
