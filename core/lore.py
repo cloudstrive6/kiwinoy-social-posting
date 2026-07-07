@@ -76,6 +76,13 @@ GAME_LORE: dict[str, str] = {
     "spider-man2": (
         "MARVEL'S SPIDER-MAN 2 (2023) — BOTH Peter Parker and Miles Morales are "
         "playable Spider-Men across a bigger NYC (now incl. Brooklyn & Queens).\n"
+        "NAMING RULE (CRITICAL): because BOTH are playable and the game swaps between "
+        "them, you usually CANNOT tell which Spider-Man a given gameplay clip shows. "
+        "DEFAULT to the generic \"Spider-Man\" and do NOT guess 'Peter' or 'Miles'. "
+        "Name PETER only if the clip UNMISTAKABLY shows the black glossy SYMBIOTE suit "
+        "(white spider + living tendrils) or an explicit Peter story beat; name MILES "
+        "only if it UNMISTAKABLY shows his glowing YELLOW bio-electric 'Venom' zaps or "
+        "an explicit Miles story beat. In ANY doubt, write \"Spider-Man\" — never assume.\n"
         "KEY PEOPLE:\n"
         "- Peter Parker: bonds with the black alien SYMBIOTE suit (glossy black with "
         "white spider + tendrils), which makes him aggressive. Black-suit Peter = "
