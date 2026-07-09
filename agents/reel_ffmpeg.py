@@ -381,7 +381,8 @@ def build_gameplay(
         vtail = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
         rc, err = _encode_final(prefix, vtail,
                                 _a_encode(_has_a, hi_bitrate, hdr=hdr), out_path,
-                                hi_bitrate or hdr, 3600)
+                                hi_bitrate or hdr, 3600,
+                                two_pass=(hi_bitrate and not hdr))
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"gameplay render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -500,7 +501,8 @@ def build_gameplay_fill(
         vtail = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
         aopts = _a_encode(keep_audio, hi_bitrate, hdr=hdr, vol_db=vol_db)
         rc, err = _encode_final(prefix, vtail + ["-fps_mode", "cfr", "-r", str(fps)],
-                                aopts, out_path, hi_bitrate or hdr, 3600)
+                                aopts, out_path, hi_bitrate or hdr, 3600,
+                                two_pass=(hi_bitrate and not hdr))
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"fill render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -962,7 +964,8 @@ def build_gameplay_triptych(
         venc = _v_encode_hdr(fps) if hdr else _v_encode(hi_bitrate)
         vtail = venc + ["-fps_mode", "cfr", "-r", str(fps)]
         rc, err = _encode_final(prefix, vtail, _a_encode(_has_a, hi_bitrate, hdr=hdr),
-                                out_path, hi_bitrate or hdr, 1800)
+                                out_path, hi_bitrate or hdr, 1800,
+                                two_pass=(hi_bitrate and not hdr))
         if rc != 0 or not out_path.exists():
             raise ReelFfmpegError(f"triptych render failed (rc={rc}):\n{err}")
         return out_path.read_bytes()
@@ -1226,18 +1229,16 @@ def build_quote_short(
 
 def _v_encode(hi: bool = False) -> list[str]:
     """Reel video encoder. Default = the original proven feed encode (IG/YT/FB, smooth
-    60fps). hi=True = a high-bitrate source for the TikTok track ONLY: ~40 Mbps (TikTok's
-    20-50 spec). Proven necessary because TikTok's PUBLIC transcode crushes low-bitrate
-    sources (a private 10 Mbps reel looked great, degraded the instant it went public);
-    handing TikTok ~40 Mbps leaves far more detail for its public re-encode to preserve."""
+    60fps). hi=True = the TikTok track ONLY, replicating the user's exact Premiere Pro
+    export (2026-07-07): H.264 High@4.2, 1080x1920, 60fps, Rec.709 SDR, VBR **2-PASS**
+    target 15 / max 20 Mbps, AAC 320k. The 2-pass run is handled by _encode_final; the
+    -sws_flags there = Premiere's "Use Maximum Render Quality". 15-20 Mbps sits in
+    TikTok's proven sweet spot (higher bitrates backfired on its public transcode)."""
     if not hi:
         return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
                 "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
-    # TikTok track — replicates the user's Premiere Pro export: H.264 High@4.2, 1080x1920,
-    # 60fps, Rec.709 SDR, VBR 1-PASS @ 30 Mbps target, keyframe distance = auto (Premiere's
-    # box unchecked), AAC 320k. -sws_flags in _encode_final = "Use Maximum Render Quality".
     return ["-c:v", "libx264", "-preset", "slow",
-            "-b:v", "30M",                                # VBR, 1-pass, target 30 Mbps
+            "-b:v", "15M", "-maxrate", "20M", "-bufsize", "20M",   # VBR 2-pass: target 15 / max 20
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
             "-color_range", "tv",
@@ -1246,13 +1247,34 @@ def _v_encode(hi: bool = False) -> list[str]:
 
 
 def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
-                  hi: bool, timeout: int) -> tuple:
-    """Run the final reel encode (single pass — the user's Premiere export is VBR 1-pass).
-    hi=True (TikTok track) turns on high-quality scaling (= Premiere's "Use Maximum Render
-    Quality"). prefix = inputs + filter_complex + stream maps; vtail = video codec opts
-    (+ any fps flags); aopts = audio."""
+                  hi: bool, timeout: int, two_pass: bool = False) -> tuple:
+    """Run the final reel encode. hi=True turns on high-quality scaling (= Premiere's "Use
+    Maximum Render Quality"). two_pass=True runs libx264 VBR **2-pass** (the TikTok/Premiere
+    spec): an analysis pass to /dev/null then the real encode. prefix = inputs +
+    filter_complex + stream maps; vtail = video codec opts (+ any fps flags); aopts = audio."""
+    import os
     out_path.parent.mkdir(parents=True, exist_ok=True)
     sws = ["-sws_flags", "lanczos+accurate_rnd+full_chroma_int"] if hi else []
+    if two_pass:
+        passlog = str(out_path.with_suffix(".passlog"))
+        null = "NUL" if os.name == "nt" else "/dev/null"
+        # Pass 1: full filtergraph to the null muxer, writing x264 stats.
+        rc, err = ffmpeg.run(sws + prefix + vtail + aopts +
+                             ["-pass", "1", "-passlogfile", passlog, "-shortest",
+                              "-f", "null", null], timeout=timeout)
+        if rc != 0:
+            return rc, err
+        # Pass 2: the real encode using the collected stats.
+        rc, err = ffmpeg.run(sws + prefix + vtail + aopts +
+                             ["-pass", "2", "-passlogfile", passlog, "-shortest",
+                              str(out_path)], timeout=timeout)
+        for junk in (passlog, passlog + "-0.log", passlog + "-0.log.mbtree",
+                     passlog + ".log", passlog + ".log.mbtree", passlog + ".mbtree"):
+            try:
+                os.remove(junk)
+            except OSError:
+                pass
+        return rc, err
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 

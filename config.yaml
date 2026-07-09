@@ -557,10 +557,11 @@ reels:
                          # TLOU2 gameplays paused on TikTok; SM2 footage synced to the release).
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
     posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
-    # EXPORT/ENCODE: false = render TikTok with the SAME feed encode as FB/IG/Threads
-    # (CRF21 / veryfast / AAC 160k) — chosen 2026-07-07 because the 30 Mbps "hi" spec
-    # backfired on TikTok's public API transcode. true = restore the 30M browser-upload spec.
-    hi_bitrate: false
+    # EXPORT/ENCODE: true = render TikTok with the user's exact Premiere spec (2026-07-07):
+    # H.264 High@4.2, Rec.709 SDR, VBR 2-PASS target 15 / max 20 Mbps, Max Render Quality,
+    # AAC 320k (see _v_encode(hi)/_encode_final two_pass). false = same as the FB/IG/Threads
+    # feed encode (CRF21 / veryfast / AAC 160k).
+    hi_bitrate: true
   gameplay:
     enabled: true
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
