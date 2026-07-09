@@ -3,13 +3,19 @@
 > **Keep this file up to date.** Whenever the TikTok process changes (routing, encode,
 > captions, cadence, cron status), update this doc in the same change.
 
-_Last updated: 2026-07-09._
+_Last updated: 2026-07-10._
 
 ## TL;DR
-TikTok posts are **full-quality 4K/60 HDR drafts** delivered via **Post for Me**, which
-you **publish manually** in the TikTok app. Each draft's **caption + hashtags** are DMed to
-you on **Telegram** to copy-paste (TikTok's draft API ignores captions). It's a **local**
-workflow (4K HDR needs your GPU) — it does **not** run in CI.
+Everything TikTok goes to **Post for Me DRAFTS** (PfM's TikTok app is unaudited → can't
+auto-publish public), which you **publish manually** in the TikTok app. Each draft's
+**caption + hashtags** are DMed to you on **Telegram** to copy-paste. There are **two paths**:
+
+- **Automated 1080p (CI)** — the `tiktok.yml` cron renders a 1080p SDR gameplay reel 4×/day
+  and posts it as a PfM draft. Runs in GitHub Actions (no GPU needed for 1080p).
+- **Manual 4K/60 HDR (local)** — you ask for it; `process_tiktok_hd.py` renders 4K HDR on
+  your GPU and posts as a PfM draft (preserves 60fps HDR). Kept open for on-demand use.
+
+Both DM the caption to Telegram; both need manual publish in-app.
 
 ## Why this design
 | | Zernio (old) | Post for Me (current) |
@@ -23,7 +29,14 @@ TikTok's Content Posting API only lets **unaudited** apps push **drafts** (or `S
 Public + captioned + automated needs the app to pass TikTok's **audit** — out of our hands
 (PfM would have to get their TikTok app audited). Until then: HD drafts + manual publish.
 
-## The pipeline (local, needs GPU)
+## Automated 1080p (CI)
+`.github/workflows/tiktok.yml` runs `python run.py --tiktok` → `run_gameplay_reel(tiktok_only=True)`
+→ renders a 1080p SDR reel (classic/triptych/fill rotation, game = `reels.tiktok.game`) →
+`tiktok.via: postforme` → `publisher.run_tiktok_draft` (PfM draft) → Telegram caption.
+Fired by 4 cron-job.org jobs (KiwinoyGamer TikTok slots 1-4). Needs GH Secrets:
+`POSTFORME_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (+ the usual AI keys).
+
+## Manual 4K/60 HDR (local, needs GPU)
 ```
 python process_tiktok_hd.py <game> <count>      # e.g. spider-man2 6
 ```
@@ -50,13 +63,14 @@ suit / yellow bio-electric Venom makes it unmistakably Peter / Miles (`core/lore
 ## Config / toggles
 - `tiktok.via` (config.yaml): `postforme` (current) | `zernio` (auto-public, degraded).
 - `reels.tiktok.extra_hashtags`: appended to the TikTok caption only (e.g. `#gaming`).
-- `reels.tiktok.hi_bitrate`: TikTok 1080p CI encode spec (Premiere 2-pass 15/20 Mbps) —
-  only relevant to the `zernio`/CI path, which is superseded.
+- `reels.tiktok.hi_bitrate`: the CI 1080p encode. `true` = Premiere 2-pass VBR 15/20 Mbps
+  (current); `false` = the lighter CRF21 feed encode. (PfM re-encodes the draft either way.)
 
 ## Cron status
-The old **CI 4×/day TikTok cron** (Zernio, 1080p, `tiktok.yml`) is **superseded and
-DISABLED** on cron-job.org (all 4 KiwinoyGamer TikTok slots set Inactive, 2026-07-09). HD
-TikTok is a **local, on-demand** step (`process_tiktok_hd.py`) — it can't run in CI (no GPU).
+The **CI 4×/day TikTok cron** (`tiktok.yml`, now **PfM drafts** not Zernio) is **ENABLED** on
+cron-job.org (4 KiwinoyGamer TikTok slots, re-enabled 2026-07-10 — user wants automated 1080p
+drafts, drafts-only is fine). The **4K HDR** path is separate and **local/on-demand**
+(`process_tiktok_hd.py`) — it can't run in CI (no GPU); run it manually when you want HD.
 
 ## Manual step per post
 Open the TikTok draft → copy the caption from the Telegram DM → paste → publish.

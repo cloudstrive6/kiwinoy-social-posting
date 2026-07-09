@@ -33,13 +33,18 @@ jobs:
     timeout-minutes: 45
     env:
       # Caption/hook run on the Claude subscription token (free); ANTHROPIC is the
-      # fallback, OpenAI after that. TikTok publishes via Zernio.
+      # fallback, OpenAI after that. TikTok now publishes via Post for Me DRAFTS
+      # (config tiktok.via: postforme) — needs POSTFORME_API_KEY; ZERNIO kept as fallback.
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      # Required for TikTok — unset -> the run renders but SKIPS the TikTok post.
+      # Required for the TikTok DRAFT post (PfM) — unset -> renders but SKIPS the post.
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
       ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
-      # Lets the renderer pull the TLOU2 clips from the 'footage' GitHub Release.
+      # Telegram: DM the draft's caption+hashtags to the user (copy-paste on their phone).
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # Lets the renderer pull the clips from the 'footage' GitHub Release.
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
