@@ -54,11 +54,9 @@ def telegram(text: str) -> bool:
 
 
 def tiktok_draft_caption(caption: str, game: str = "") -> bool:
-    """Notify that a TikTok DRAFT is ready, with the exact caption to paste."""
-    head = "🎬 TikTok draft ready — copy-paste this caption:"
-    if game:
-        head = f"🎬 TikTok draft ready ({game}) — copy-paste this caption:"
-    return telegram(f"{head}\n\n{caption}")
+    """Send ONE message per TikTok draft = the caption + hashtags ONLY (no header/prefix),
+    so long-press -> Copy grabs exactly what to paste into TikTok. One post = one message."""
+    return telegram(caption)
 
 
 def _get_chat_id() -> None:
