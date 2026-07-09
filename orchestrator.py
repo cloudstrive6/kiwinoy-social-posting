@@ -711,7 +711,6 @@ def run_gameplay_reel(
             tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
         via = str((CONFIG.raw().get("tiktok", {}) or {}).get("via", "zernio")).lower()
         if via == "postforme":
-            from agents import publisher
             log("Publishing to TikTok via Post for Me (DRAFT — publish manually in-app; "
                 "paste the caption from PfM)...")
             res = publisher.run_tiktok_draft(tt_caption, video_bytes)
@@ -2062,7 +2061,6 @@ def run_youtube_short(
         # Cross-post the SAME 4K HDR render to TikTok via Post for Me (DRAFT — you publish
         # manually in-app; PfM preserves the 60fps HDR). TikTok caption = the reel caption
         # + the TikTok extra hashtags (e.g. #gaming). See [[tiktok-direct-integration]].
-        from agents import publisher
         tt_caption = caption
         extra = [str(h).strip() for h in (CONFIG.reels.get("tiktok", {}) or {}).get("extra_hashtags", []) or []]
         add = [(h if h.startswith("#") else "#" + h) for h in extra
