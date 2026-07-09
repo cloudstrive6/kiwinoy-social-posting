@@ -1278,6 +1278,36 @@ def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
+def reencode_facebook(in_path, out_path, fps: int = 60) -> bytes:
+    """Re-encode a finished 1080x1920 reel to FACEBOOK's Reels spec (FB docs + the user's
+    Premiere export, 2026-07-09): H.264 High@4.2, Rec.709 SDR, VBR ~15/20 Mbps, **CLOSED
+    GOP 2s** (keyint=fps*2, min-keyint equal, scenecut off, +cgop), 4:2:0, square pixels,
+    progressive/CFR, AAC 320k 48k stereo, +faststart. FB was downsampling our 60fps reels
+    to 30fps; the open GOP + low CRF bitrate are why — closed GOP + adequate bitrate are
+    what FB's ingester needs to keep 60fps. FB-ONLY (IG/Threads keep the CRF21 encode).
+    Returns the FB-spec bytes."""
+    out_path = Path(out_path)
+    gop = max(1, int(fps) * 2)
+    rc, err = ffmpeg.run([
+        "-i", str(in_path),
+        "-c:v", "libx264", "-preset", "slow",
+        "-b:v", "15M", "-maxrate", "20M", "-bufsize", "20M",     # VBR, target 15 / max 20
+        "-profile:v", "high", "-level", "4.2", "-pix_fmt", "yuv420p",
+        # fixed keyint = CLOSED GOP; colorprim written into the stream VUI (Rec.709 SDR)
+        "-x264-params", f"keyint={gop}:min-keyint={gop}:scenecut=0:"
+                        "colorprim=bt709:transfer=bt709:colormatrix=bt709",
+        "-flags", "+cgop",
+        "-fps_mode", "cfr", "-r", str(fps),
+        "-color_primaries", "bt709", "-color_trc", "bt709",
+        "-colorspace", "bt709", "-color_range", "tv",
+        "-c:a", "aac", "-b:a", "320k", "-ar", "48000", "-ac", "2",
+        "-movflags", "+faststart", str(out_path),
+    ], timeout=1800)
+    if rc != 0 or not out_path.exists():
+        raise ReelFfmpegError(f"facebook re-encode failed (rc={rc}):\n{err}")
+    return out_path.read_bytes()
+
+
 def _v_encode_hdr(fps: int = 60, bitrate: str = "55M") -> list[str]:
     # 4K HDR reel: HEVC Main10 (HDR10, PQ/bt2020) via NVENC on the RTX 3080. This matches the
     # longform's REAL output — the full game is stream-copied HEVC Main10; its libx264 High10

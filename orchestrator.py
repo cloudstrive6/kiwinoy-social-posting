@@ -746,13 +746,30 @@ def run_gameplay_reel(
         # On IG's rotated turn, IG gets its OWN rotated reel (below) — so drop IG from
         # the main classic/triptych post; otherwise IG shares the main reel.
         main_targets = [t for t in targets if t != "instagram"] if ig_rotated else targets
-        log(f"Publishing {layout} reel to {', '.join(main_targets)}...")
-        api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
-            caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
-            targets=main_targets, threads_caption=threads_cap)
+        # FACEBOOK gets its OWN render, re-encoded to FB's Reels spec (closed GOP + VBR
+        # 15/20 + High@4.2 + AAC 320k) so it plays at 60fps — FB was downsampling our CRF21
+        # 60fps reels to 30fps (open GOP + low bitrate). IG/Threads/YouTube keep the
+        # standard render. Per user 2026-07-09. Fail-open: FB falls back to the shared file.
+        rest_targets = [t for t in main_targets if t != "facebook"]
+        if "facebook" in main_targets:
+            try:
+                fb_bytes = reel_ffmpeg.reencode_facebook(reel_path, run_dir / "reel_fb.mp4", fps=fps)
+                log("Publishing Facebook (FB-spec: 60fps, closed GOP, VBR 15/20)...")
+                result["facebook_result"] = (publisher.run_reel if is_short else publisher.run_video_post)(
+                    caption=caption, video_bytes=fb_bytes, scheduled_at=scheduled_at,
+                    targets=["facebook"])
+            except Exception as e:
+                log(f"FB-spec re-encode failed ({e!r}) — posting FB with the shared render.")
+                rest_targets = main_targets
+        api_result = None
+        if rest_targets:
+            log(f"Publishing {layout} reel to {', '.join(rest_targets)}...")
+            api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
+                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
+                targets=rest_targets, threads_caption=threads_cap)
         result["published"] = True
         result["postforme_result"] = api_result
-        log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
+        log(f"Published. Post id: {(api_result or {}).get('id', '(see result.json)')}")
         # NOTE: TikTok is NOT posted here — it's a SEPARATE dedicated track
         # (run_tiktok_reel: TLOU2-only, 4x/day) so the general multi-game reels don't
         # land on TikTok. See core/zernio.py.
