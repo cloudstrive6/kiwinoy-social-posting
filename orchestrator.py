@@ -1879,11 +1879,15 @@ def run_youtube_short(
     privacy: Optional[str] = None,
     publish_at: Optional[str] = None,
     dry_run: bool = False,
+    youtube: bool = True,     # upload the rendered 4K HDR reel to YouTube as a Short
+    tiktok: bool = False,     # ALSO cross-post the SAME 4K HDR render to TikTok (PfM DRAFT)
 ) -> dict[str, Any]:
-    """LOCAL 4K/60 HDR YouTube Short: pick a fresh 4K HDR clip from the pool, render
-    the CLASSIC or TRIPTYCH HDR reel (alternating per post) matching the long-form's
-    HDR10 (Rec.2020 PQ) + loudnorm export, and upload as a Short via the Data API.
-    HEAVY (nvenc + multi-GB HDR) — run on your own machine, not CI."""
+    """LOCAL 4K/60 HDR reel: pick a fresh 4K HDR clip from the pool, render the CLASSIC /
+    TRIPTYCH / FILL HDR reel (matching the long-form's HDR10 Rec.2020 PQ + loudnorm), then
+    publish. youtube=True -> upload as a YouTube Short (Data API). tiktok=True -> ALSO push
+    the same HD render to TikTok as a Post-for-Me DRAFT (preserves 60fps HDR; publish
+    manually in-app). Set youtube=False, tiktok=True to render a TikTok-only HD reel from
+    the 4K pool. HEAVY (nvenc + multi-GB HDR) — run on your own machine, not CI."""
     from pathlib import Path
 
     from core import youtube
@@ -2020,22 +2024,42 @@ def run_youtube_short(
     else:
         yt_tags = [str(t) for t in (ys.get("tags") or [])]
 
-    priv = str(privacy or ys.get("privacy", "public")).lower()
-    log(f"Uploading Short via the YouTube Data API (privacy={priv}"
-        f"{', scheduled ' + publish_at if publish_at else ''})...")
-    api = youtube.upload_video(
-        str(reel_path), title=title, description=desc,
-        tags=yt_tags,
-        privacy=priv, publish_at=publish_at,
-        category_id=str(ys.get("category_id", "20")),
-        made_for_kids=bool(ys.get("made_for_kids", False)))
-    vid = api.get("id", "")
-    result["published"] = bool(vid)
-    result["video_id"] = vid
-    result["url"] = f"https://youtu.be/{vid}" if vid else ""
-    log(f"Done ({layout}): {result['url']}")
-    if vid and not clip:                     # only advance the ledger for a real pool pick
-        _mark_short_used(game, clip_id)      # one game ledger: freshness + rotation counter
+    published_any = False
+    if youtube:
+        priv = str(privacy or ys.get("privacy", "public")).lower()
+        log(f"Uploading Short via the YouTube Data API (privacy={priv}"
+            f"{', scheduled ' + publish_at if publish_at else ''})...")
+        api = youtube.upload_video(
+            str(reel_path), title=title, description=desc, tags=yt_tags,
+            privacy=priv, publish_at=publish_at,
+            category_id=str(ys.get("category_id", "20")),
+            made_for_kids=bool(ys.get("made_for_kids", False)))
+        vid = api.get("id", "")
+        result["published"] = bool(vid)
+        result["video_id"] = vid
+        result["url"] = f"https://youtu.be/{vid}" if vid else ""
+        log(f"Done ({layout}): {result['url']}")
+        published_any = published_any or bool(vid)
+
+    if tiktok:
+        # Cross-post the SAME 4K HDR render to TikTok via Post for Me (DRAFT — you publish
+        # manually in-app; PfM preserves the 60fps HDR). TikTok caption = the reel caption
+        # + the TikTok extra hashtags (e.g. #gaming). See [[tiktok-direct-integration]].
+        from agents import publisher
+        tt_caption = caption
+        extra = [str(h).strip() for h in (CONFIG.reels.get("tiktok", {}) or {}).get("extra_hashtags", []) or []]
+        add = [(h if h.startswith("#") else "#" + h) for h in extra
+               if h and h.lower().lstrip("#") not in caption.lower()]
+        if add:
+            tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
+        log("Cross-posting to TikTok via Post for Me (DRAFT — publish manually in-app)...")
+        tt = publisher.run_tiktok_draft(tt_caption, reel_path.read_bytes())
+        result["tiktok_result"] = tt
+        result["published"] = bool(result.get("published")) or bool(tt)
+        published_any = published_any or bool(tt)
+
+    if published_any and not clip:           # advance the ledger for a real pool pick
+        _mark_short_used(game, clip_id)       # one game ledger: freshness + rotation counter
     _save(run_dir, result)
     return result
 
