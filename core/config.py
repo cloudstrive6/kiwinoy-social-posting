@@ -106,6 +106,16 @@ class _Config:
     def youtube_refresh_token(self) -> str:
         return self._key("YOUTUBE_REFRESH_TOKEN")
 
+    # Telegram bot (push TikTok draft captions to the user's phone; see core/notify.py).
+    # Env-only. TELEGRAM_BOT_TOKEN from @BotFather; TELEGRAM_CHAT_ID from `python -m core.notify chatid`.
+    @property
+    def telegram_bot_token(self) -> str:
+        return self._key("TELEGRAM_BOT_TOKEN")
+
+    @property
+    def telegram_chat_id(self) -> str:
+        return self._key("TELEGRAM_CHAT_ID")
+
     # Backblaze B2 (long-form 4K HDR source archive, via rclone). Env-only.
     @property
     def b2_key_id(self) -> str:

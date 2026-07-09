@@ -180,9 +180,18 @@ def run_tiktok_draft(caption: str, video_bytes: bytes) -> Optional[dict[str, Any
         print("[tiktok] no Post for Me TikTok account connected — skipping.", flush=True)
         return None
     media_url = postforme.upload_video(video_bytes)
-    return postforme.create_post(
+    res = postforme.create_post(
         caption=caption, social_accounts=ids, media_urls=[media_url],
         platform_configurations={"tiktok": {"is_draft": True, "caption": caption}})
+    # Push the caption to the user's phone (Telegram) so they can paste it when publishing
+    # the draft — TikTok's draft API ignores the caption. Fail-open (no-op if unconfigured).
+    if res:
+        try:
+            from core import notify
+            notify.tiktok_draft_caption(caption)
+        except Exception:
+            pass
+    return res
 
 
 def _threads_hashtag() -> Optional[str]:
