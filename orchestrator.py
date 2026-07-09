@@ -697,20 +697,31 @@ def run_gameplay_reel(
         log("DRY RUN — skipping publish.")
         result["published"] = False
     elif tiktok_only:
-        # Dedicated TikTok track: post ONLY to TikTok via Zernio.
-        from core import zernio
-        # TikTok-only extra hashtags (per user, e.g. #gaming on the SM2 track) — appended
-        # to the caption on TikTok, NOT on the feed platforms.
+        # Dedicated TikTok track. Route by top-level config `tiktok.via`:
+        #   postforme -> PfM DRAFT (full-quality HD/60fps HDR, but you PUBLISH MANUALLY
+        #                in-app + paste the caption — PfM's TikTok app is unaudited so
+        #                public direct-post 403s; per user 2026-07-09), else
+        #   zernio     -> auto-public (lower quality; Zernio re-compresses server-side).
+        # TikTok-only extra hashtags (e.g. #gaming) are appended to the TikTok caption only.
         tt_caption = caption
         extra = [str(h).strip() for h in (CONFIG.reels.get("tiktok", {}) or {}).get("extra_hashtags", []) or []]
         add = [(h if h.startswith("#") else "#" + h) for h in extra
                if h and h.lower().lstrip("#") not in caption.lower()]
         if add:
             tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
-        log("Publishing to TikTok via Zernio...")
-        res = zernio.publish_reel(video_bytes, tt_caption)
+        via = str((CONFIG.raw().get("tiktok", {}) or {}).get("via", "zernio")).lower()
+        if via == "postforme":
+            from agents import publisher
+            log("Publishing to TikTok via Post for Me (DRAFT — publish manually in-app; "
+                "paste the caption from PfM)...")
+            res = publisher.run_tiktok_draft(tt_caption, video_bytes)
+        else:
+            from core import zernio
+            log("Publishing to TikTok via Zernio...")
+            res = zernio.publish_reel(video_bytes, tt_caption)
         result["published"] = bool(res)
-        result["zernio_result"] = res
+        result["tiktok_result"] = res
+        result["tiktok_via"] = via
         if res and reel_composer.mark_clip_used(clip_id):
             log(f"Marked clip used: {clip_id}")
     else:

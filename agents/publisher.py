@@ -167,6 +167,24 @@ def run_video_post(
                          threads_caption=threads_caption)
 
 
+def run_tiktok_draft(caption: str, video_bytes: bytes) -> Optional[dict[str, Any]]:
+    """Post a video to TikTok via Post for Me as a DRAFT (per user 2026-07-09). PfM's
+    TikTok app is UNAUDITED, so a direct PUBLIC post 403s — the inbox/DRAFT flow is the
+    only working path, and it PRESERVES full quality (a 4K/60 HDR source plays as 60fps
+    HDR on TikTok, unlike Zernio's server-side re-compress). Trade-off: TikTok's draft API
+    IGNORES the caption, so the creator adds it in-app when publishing. We still pass the
+    caption (PfM stores it on the post, so it's copy-pasteable from the PfM dashboard).
+    Returns the PfM post JSON, or None if no TikTok account is connected."""
+    ids = CONFIG.account_ids(["tiktok"])
+    if not ids:
+        print("[tiktok] no Post for Me TikTok account connected — skipping.", flush=True)
+        return None
+    media_url = postforme.upload_video(video_bytes)
+    return postforme.create_post(
+        caption=caption, social_accounts=ids, media_urls=[media_url],
+        platform_configurations={"tiktok": {"is_draft": True, "caption": caption}})
+
+
 def _threads_hashtag() -> Optional[str]:
     """A hashtag appended to Threads captions (e.g. '#GamingThreads') — a workaround
     for Threads topics, which Post for Me doesn't expose. On Threads a hashtag is

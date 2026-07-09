@@ -1039,10 +1039,13 @@ threads_footage:
 # still handles IG/YT/FB/Threads. Secrets (client key/secret + refresh token) are
 # env-only (public repo). Toggle off to stop the TikTok cross-post.
 tiktok:
-  # TikTok posting route. Our OWN app (below) was REJECTED by TikTok for self-posting,
-  # so TikTok now goes through Zernio (an approved posting platform). Set via: direct
-  # only if TikTok ever approves our own app.
-  via: zernio
+  # TikTok posting route (read by orchestrator.run_gameplay_reel tiktok_only branch):
+  #   postforme -> Post for Me DRAFT: full quality (60fps HDR preserved), but you PUBLISH
+  #                MANUALLY in the TikTok app + paste the caption (PfM's TikTok app is
+  #                unaudited so public direct-post 403s; TikTok's draft API ignores the
+  #                caption). Chosen 2026-07-09 for the big quality win over Zernio.
+  #   zernio    -> auto-public, captioned, but Zernio re-compresses server-side (no HDR/60fps).
+  via: postforme
   zernio:
     account_id: "6a45a57f9d9472faae490d32"   # kiwinoygamer TikTok (via `python -m core.zernio accounts`)
     privacy_level: PUBLIC_TO_EVERYONE   # must be one of the account's creator-info options
