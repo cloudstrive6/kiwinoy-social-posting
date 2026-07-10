@@ -784,9 +784,10 @@ def run_gameplay_reel(
                     src = run_dir / "reel_fb_src.mp4"
                     reel_ffmpeg.trim_seconds(reel_path, src, fb_dur)
                 fb_bytes = reel_ffmpeg.reencode_facebook(src, run_dir / "reel_fb.mp4", fps=fps)
-                fb_short = (fb_dur or clip_dur) <= 90.0
                 log(f"Publishing Facebook (FB-spec 60fps, {fb_dur or clip_dur:.0f}s)...")
-                result["facebook_result"] = (publisher.run_reel if fb_short else publisher.run_video_post)(
+                # REELS placement regardless of length — FB Reels have no cap since June 2025
+                # (publish_video fail-opens to a feed video if the placement is ever rejected).
+                result["facebook_result"] = publisher.run_reel(
                     caption=caption, video_bytes=fb_bytes, scheduled_at=scheduled_at, targets=["facebook"])
             except Exception as e:
                 log(f"FB-spec re-encode failed ({e!r}) — posting FB with the shared render.")
@@ -797,10 +798,11 @@ def run_gameplay_reel(
         for plat in rest_targets:
             groups[_eff(plat)].append(plat)
         for dur, plats in sorted(groups.items(), reverse=True):
-            short = (dur or clip_dur) <= 90.0
             tcap = threads_cap if "threads" in plats else None
             log(f"Publishing {layout} to {', '.join(plats)} ({dur:.0f}s)...")
-            r = (publisher.run_reel if short else publisher.run_video_post)(
+            # REELS placement (IG up to 15 min, Threads up to 5) — fail-opens to a plain
+            # video if a platform rejects the reels placement for the length.
+            r = publisher.run_reel(
                 caption=caption, video_bytes=_cut(dur), scheduled_at=scheduled_at,
                 targets=plats, threads_caption=tcap)
             api_result = api_result or r
