@@ -67,10 +67,18 @@ suit / yellow bio-electric Venom makes it unmistakably Peter / Miles (`core/lore
   (current); `false` = the lighter CRF21 feed encode. (PfM re-encodes the draft either way.)
 
 ## Cron status
-The **CI 4×/day TikTok cron** (`tiktok.yml`, now **PfM drafts** not Zernio) is **ENABLED** on
-cron-job.org (4 KiwinoyGamer TikTok slots, re-enabled 2026-07-10 — user wants automated 1080p
-drafts, drafts-only is fine). The **4K HDR** path is separate and **local/on-demand**
-(`process_tiktok_hd.py`) — it can't run in CI (no GPU); run it manually when you want HD.
+The **CI TikTok cron** (`tiktok.yml`, **PfM drafts**) runs **2×/day** on cron-job.org —
+**slots 2 (11:00 NZ) + 4 (23:00 NZ) ENABLED**; slots 1 & 3 disabled (2026-07-10). Lowered
+from 4×/day because every draft is a **manual publish**: if drafts pile up unpublished,
+TikTok blocks new ones with **`spam_risk_too_many_pending_share`** (400). Keep the draft
+inbox reasonably clear. The **4K HDR** path is separate/**local/on-demand**
+(`process_tiktok_hd.py`) — can't run in CI (no GPU); run it manually when you want HD.
+
+## Gotcha: pending-draft cap
+TikTok limits how many **unpublished drafts** can sit in the inbox. Too many →
+`spam_risk_too_many_pending_share` on new drafts. Note the async gap: the Telegram DM +
+"clip marked used" fire when PfM ACCEPTS the post, but TikTok's rejection is async after —
+so a caption can DM even when the draft didn't actually land. Publish/clear drafts regularly.
 
 ## Manual step per post
 Open the TikTok draft → copy the caption from the Telegram DM → paste → publish.

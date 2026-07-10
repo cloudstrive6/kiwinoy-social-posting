@@ -556,7 +556,9 @@ reels:
     game: spider-man2    # Marvel's Spider-Man 2 (switched from TLOU2 2026-07-05 per user —
                          # TLOU2 gameplays paused on TikTok; SM2 footage synced to the release).
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
-    posts_per_day: 4     # reference (actual firing is set by the tiktok cron/workflow)
+    posts_per_day: 2     # reference; actual firing = cron-job.org (2/day: slots 2+4 at
+                         # 11:00 & 23:00 NZ). Lowered from 4 (2026-07-10) so manual-publish
+                         # drafts don't outpace publishing -> TikTok spam_risk_too_many_pending_share.
     # EXPORT/ENCODE: true = render TikTok with the user's exact Premiere spec (2026-07-07):
     # H.264 High@4.2, Rec.709 SDR, VBR 2-PASS target 15 / max 20 Mbps, Max Render Quality,
     # AAC 320k (see _v_encode(hi)/_encode_final two_pass). false = same as the FB/IG/Threads
