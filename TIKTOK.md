@@ -74,11 +74,14 @@ TikTok blocks new ones with **`spam_risk_too_many_pending_share`** (400). Keep t
 inbox reasonably clear. The **4K HDR** path is separate/**local/on-demand**
 (`process_tiktok_hd.py`) — can't run in CI (no GPU); run it manually when you want HD.
 
-## Gotcha: pending-draft cap
-TikTok limits how many **unpublished drafts** can sit in the inbox. Too many →
-`spam_risk_too_many_pending_share` on new drafts. Note the async gap: the Telegram DM +
-"clip marked used" fire when PfM ACCEPTS the post, but TikTok's rejection is async after —
-so a caption can DM even when the draft didn't actually land. Publish/clear drafts regularly.
+## Gotcha: pending-draft cap (max 5)
+TikTok's Content Posting API allows **at most 5 PENDING (unpublished) shares per 24h**. A 6th
+→ `spam_risk_too_many_pending_share` (400). Verified: 7 pending still failed. Keep the draft
+inbox at **≤4** — publish/clear regularly, or the 2/day drafts stop landing. Plan (user,
+2026-07-10): keep 2/day + publish daily to stay under the cap. Async gap: the Telegram DM +
+"clip marked used" fire when PfM ACCEPTS the post, but TikTok's rejection is async after (only
+in PfM "View Logs", not the post record) — so a caption can DM even when the draft didn't
+land. The only real fix for the cap is TikTok auditing PfM's app (public auto-post, no drafts).
 
 ## Manual step per post
 Open the TikTok draft → copy the caption from the Telegram DM → paste → publish.
