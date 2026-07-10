@@ -1278,6 +1278,20 @@ def _encode_final(prefix: list, vtail: list, aopts: list, out_path,
     return ffmpeg.run(sws + prefix + vtail + aopts + ["-shortest", str(out_path)], timeout=timeout)
 
 
+def trim_seconds(in_path, out_path, seconds: float) -> bytes:
+    """Fast stream-COPY trim of a finished reel to its first `seconds` (cuts at the nearest
+    keyframe <= that point, so a closed-GOP reel lands within ~1 GOP). No re-encode. Used to
+    make shorter per-platform cuts (e.g. Threads 5 min) from one full-length render. Returns
+    the trimmed bytes."""
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    rc, err = ffmpeg.run(["-i", str(in_path), "-t", f"{float(seconds):.2f}", "-c", "copy",
+                          "-movflags", "+faststart", str(out_path)], timeout=1800)
+    if rc != 0 or not out_path.exists():
+        raise ReelFfmpegError(f"trim failed (rc={rc}):\n{err}")
+    return out_path.read_bytes()
+
+
 def reencode_facebook(in_path, out_path, fps: int = 60) -> bytes:
     """Re-encode a finished 1080x1920 reel to FACEBOOK's Reels spec (FB docs + the user's
     Premiere export, 2026-07-09): H.264 High@4.2, Rec.709 SDR, VBR ~15/20 Mbps, **CLOSED

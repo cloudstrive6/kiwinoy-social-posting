@@ -609,7 +609,6 @@ def run_gameplay_reel(
         caption = content.generic_game_caption(brief["game"])
         hook = ""
         brief["hook"] = ""
-        target = float(vcfg.get("max_seconds", 180))     # use the FULL clip (up to 3 min)
         log(f"Game: {brief.get('subject')} | FILL vertical | clip {clip_id}")
     else:
         # Landscape-composited layouts: pick from the normal pool + review the clip for
@@ -623,12 +622,23 @@ def run_gameplay_reel(
         hook, caption = content.hook_and_caption_from_video(
             clip_path, brief.get("game", ""), taglish=False)
         brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
-        choices = [float(x) for x in (gcfg.get("target_seconds_choices") or [])]
-        target = random.choice(choices) if choices else float(gcfg.get("target_seconds", 75))
         log(f"Game: {brief.get('subject')} | Hook: {hook}")
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
+
+    # DURATION (per user 2026-07-11): post the WHOLE clip, capped at this track's platform
+    # max. TikTok = up to its cap; feed = render FULL (for FB, no cap) up to an absolute
+    # ceiling, then trim shorter per-platform cuts (IG 15 min / Threads 5 min) at publish.
+    pmax = (CONFIG.reels.get("platform_max_seconds", {}) or {})
+    clip_dur = float(ffmpeg.duration(clip_path) or 0.0)
+    if tiktok_only:
+        track_cap = float(pmax.get("tiktok", 3600)) or clip_dur or 3600.0
+    else:
+        track_cap = float(pmax.get("absolute_max", 3600))
+    target = min(clip_dur, track_cap) if clip_dur else track_cap
+    log(f"Clip {clip_dur:.0f}s -> render target {target:.0f}s "
+        f"({'tiktok' if tiktok_only else 'feed full'})")
 
     # IG-only rotated turn — never on the TikTok track or a fill turn (IG gets the fill).
     ig_rotated = ((not tiktok_only) and ("rotated" in layouts)
@@ -745,27 +755,55 @@ def run_gameplay_reel(
         # On IG's rotated turn, IG gets its OWN rotated reel (below) — so drop IG from
         # the main classic/triptych post; otherwise IG shares the main reel.
         main_targets = [t for t in targets if t != "instagram"] if ig_rotated else targets
-        # FACEBOOK gets its OWN render, re-encoded to FB's Reels spec (closed GOP + VBR
-        # 15/20 + High@4.2 + AAC 320k) so it plays at 60fps — FB was downsampling our CRF21
-        # 60fps reels to 30fps (open GOP + low bitrate). IG/Threads/YouTube keep the
-        # standard render. Per user 2026-07-09. Fail-open: FB falls back to the shared file.
+        # PER-PLATFORM DURATION (per user 2026-07-11): the whole clip capped at each
+        # platform's max — FB full (no cap), IG 15 min, Threads 5 min. ONE full render
+        # (reel_path); shorter platforms get a fast stream-COPY trim; platforms sharing a
+        # duration post together. FACEBOOK also gets the FB-spec re-encode (closed GOP +
+        # 15/20 + High@4.2, 2026-07-09) so it holds 60fps. Fail-open: FB -> shared render.
+        from collections import defaultdict as _dd
+        _trims: dict = {}
+
+        def _eff(plat):    # effective seconds for a platform: whole clip up to its cap (0 = full)
+            c = float(pmax.get(plat, 0) or 0)
+            return round(min(clip_dur, c) if (c and clip_dur) else (clip_dur or 0.0), 1)
+
+        def _cut(dur):     # bytes at a target duration: full render, or a cached fast trim
+            if not clip_dur or dur >= clip_dur - 1.0:
+                return video_bytes
+            if dur not in _trims:
+                _trims[dur] = reel_ffmpeg.trim_seconds(
+                    reel_path, run_dir / f"reel_{int(dur)}s.mp4", dur)
+            return _trims[dur]
+
         rest_targets = [t for t in main_targets if t != "facebook"]
         if "facebook" in main_targets:
             try:
-                fb_bytes = reel_ffmpeg.reencode_facebook(reel_path, run_dir / "reel_fb.mp4", fps=fps)
-                log("Publishing Facebook (FB-spec: 60fps, closed GOP, VBR 15/20)...")
-                result["facebook_result"] = (publisher.run_reel if is_short else publisher.run_video_post)(
-                    caption=caption, video_bytes=fb_bytes, scheduled_at=scheduled_at,
-                    targets=["facebook"])
+                fb_dur = _eff("facebook")                       # 0-cap -> full clip
+                src = reel_path
+                if clip_dur and fb_dur < clip_dur - 1.0:
+                    src = run_dir / "reel_fb_src.mp4"
+                    reel_ffmpeg.trim_seconds(reel_path, src, fb_dur)
+                fb_bytes = reel_ffmpeg.reencode_facebook(src, run_dir / "reel_fb.mp4", fps=fps)
+                fb_short = (fb_dur or clip_dur) <= 90.0
+                log(f"Publishing Facebook (FB-spec 60fps, {fb_dur or clip_dur:.0f}s)...")
+                result["facebook_result"] = (publisher.run_reel if fb_short else publisher.run_video_post)(
+                    caption=caption, video_bytes=fb_bytes, scheduled_at=scheduled_at, targets=["facebook"])
             except Exception as e:
                 log(f"FB-spec re-encode failed ({e!r}) — posting FB with the shared render.")
                 rest_targets = main_targets
+
         api_result = None
-        if rest_targets:
-            log(f"Publishing {layout} reel to {', '.join(rest_targets)}...")
-            api_result = (publisher.run_reel if is_short else publisher.run_video_post)(
-                caption=caption, video_bytes=video_bytes, scheduled_at=scheduled_at,
-                targets=rest_targets, threads_caption=threads_cap)
+        groups = _dd(list)
+        for plat in rest_targets:
+            groups[_eff(plat)].append(plat)
+        for dur, plats in sorted(groups.items(), reverse=True):
+            short = (dur or clip_dur) <= 90.0
+            tcap = threads_cap if "threads" in plats else None
+            log(f"Publishing {layout} to {', '.join(plats)} ({dur:.0f}s)...")
+            r = (publisher.run_reel if short else publisher.run_video_post)(
+                caption=caption, video_bytes=_cut(dur), scheduled_at=scheduled_at,
+                targets=plats, threads_caption=tcap)
+            api_result = api_result or r
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {(api_result or {}).get('id', '(see result.json)')}")
@@ -1928,14 +1966,18 @@ def run_youtube_short(
     vcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("vertical", {}) or {}
     # classic/triptych footage = discrete long-form shorter clips (each -> one Short),
     # with the full-game recordings as a local-only fallback (priority order in config).
-    clip_dirs = [ROOT / str(d) / game for d in (ys.get("clip_source_dirs")
+    # PRIMARY 4K gameplay source = footage-4k/<game> (user pastes fresh 4K recordings here
+    # for TikTok/YouTube); the 4k-hdr long-clip pool + full-games are the FALLBACK when it's
+    # empty (per user 2026-07-11). _pick_short_clip prefers earlier dirs.
+    fresh4k = ROOT / "reels/assets/footage-4k" / game
+    clip_dirs = [fresh4k] + [ROOT / str(d) / game for d in (ys.get("clip_source_dirs")
                  or ["reels/assets/4k-hdr-long-clips", "reels/assets/longform-fullgame"])]
 
     # 2) fresh-first clip from the layout's pool. FILL pulls raw 4K LANDSCAPE from the
     # dedicated '<game>-vertical' folder; classic/triptych use the long-clip pool(s).
     if layout == "fill":
         vkey = f"{game}{vcfg.get('key_suffix', '-vertical')}"
-        pool_dirs = [base / vkey]
+        pool_dirs = [fresh4k, base / vkey]    # prefer fresh footage-4k/<game>, else the vertical pool
         if not clip:
             try:                                        # pull the fill pool back if freed
                 from tools import archive_4k
@@ -1970,6 +2012,11 @@ def run_youtube_short(
         log("No game art for this game — using the classic layout this post.")
         layout = "classic"
 
+    # DURATION (per user 2026-07-11): whole clip up to YouTube Shorts' 3-min cap (longer than
+    # 3 min = a normal long-form video, not a Short).
+    yt_cap = float((CONFIG.reels.get("platform_max_seconds", {}) or {}).get("youtube", 180)) or 180.0
+    yt_target = (lambda d: min(d, yt_cap) if d else yt_cap)(float(ffmpeg.duration(clip_path) or 0.0))
+
     # 3) caption. FILL = generic GAME caption (pure footage, no on-screen hook); the
     # composited layouts review the clip for a lore-grounded hook.
     reel_path = run_dir / "short.mp4"
@@ -1977,7 +2024,7 @@ def run_youtube_short(
     if layout == "fill":
         caption = content.generic_game_caption(game)
         hook = (caption.splitlines()[0].strip() if caption else game)
-        target = float(vcfg.get("max_seconds", 180))     # FULL clip up to 3 min
+        target = yt_target     # whole clip up to 3 min
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
         log(f"Game: {game} | FILL vertical | clip {clip_id}")
         log(f"Rendering 4K HDR FULL-BLEED vertical (full clip, <={int(target)}s)...")
@@ -1987,8 +2034,7 @@ def run_youtube_short(
         log("Reviewing the clip to write the on-screen hook + caption...")
         hook, caption = content.hook_and_caption_from_video(clip_path, game, taglish=False)
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
-        choices = [float(x) for x in (ys.get("target_seconds_choices") or [])]
-        target = random.choice(choices) if choices else float(ys.get("target_seconds", 35))
+        target = yt_target     # whole clip up to 3 min
         log(f"Game: {game} | Layout: {layout} | Hook: {hook}")
         if layout == "triptych":
             top = _game_screenshot(game)

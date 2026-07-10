@@ -564,6 +564,17 @@ reels:
     # AAC 320k (see _v_encode(hi)/_encode_final two_pass). false = same as the FB/IG/Threads
     # feed encode (CRF21 / veryfast / AAC 160k).
     hi_bitrate: true
+  # Duration policy (per user 2026-07-11): post the WHOLE footage clip, capped at each
+  # platform's max. If the clip is longer than a platform's cap, trim to that cap. 0 = no
+  # cap (post the full clip). Feed logic: clip <= 5 min -> one shared render; > 5 min ->
+  # split (Threads 5-min / IG up-to-15 / FB full).
+  platform_max_seconds:
+    facebook: 0        # no hard cap since June 2025 -> full clip
+    instagram: 900     # 15 min (algorithm favours <=3 min, but this is the ceiling)
+    threads: 300       # 5 min
+    tiktok: 3600       # 60 min (effectively full)
+    youtube: 180       # 3 min (Shorts; longer = a normal long-form video, not a Short)
+    absolute_max: 3600 # hard ceiling on the main render so a bad file can't render for hours
   gameplay:
     enabled: true
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
