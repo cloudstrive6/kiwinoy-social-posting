@@ -226,35 +226,42 @@ def _game_screenshot(game: Optional[str]) -> Optional[Any]:
     if not game:
         return None
     key = _pool_key(game)
-    # LOCAL curated images first (assets/images/<key>) — prioritized over the cloud pool,
-    # e.g. the user's hand-picked FF7 Remake shots for the triptych top panel.
+    # ALWAYS pull the triptych top-panel screenshot from the CLOUD image pool (per user):
+    # local assets/images/<game> are synced to the qimg pool then DELETED to free disk
+    # (tools/quote_assets.py), so the cloud is the source of truth. A local curated image
+    # is only an offline/dev fallback for when the pool is unreachable.
+    try:
+        pool = gh_release.quote_image_pool()
+    except Exception as e:
+        print(f"[reel] game screenshot pool fetch failed ({e!r})", flush=True)
+        pool = None
+    if pool:
+        try:
+            universe = game_quotes.universe_for_game(game)
+            if key in pool:                   # exact game folder first (SM1 -> SM1 shots)
+                games = [key]
+            elif universe and [g for g in pool if game_quotes.universe_for_game(g) == universe]:
+                games = [g for g in pool if game_quotes.universe_for_game(g) == universe]
+            else:
+                games = []                    # no match -> clip frame, NEVER a random other game
+            names = [n for g in games for n in (pool.get(g, []) or [])]
+            if names:
+                got = gh_release.download(
+                    {"name": (name := random.choice(names)),
+                     "url": gh_release.asset_download_url(name)},
+                    ROOT / "output" / ".art_cache")
+                if got:
+                    return got
+        except Exception as e:
+            print(f"[reel] game screenshot fetch failed ({e!r})", flush=True)
+    # Offline/dev fallback ONLY: a local curated image if one happens to still be present.
     ldir = ROOT / "assets" / "images" / key
     if ldir.is_dir():
         imgs = [p for p in sorted(ldir.iterdir())
                 if p.is_file() and p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}]
         if imgs:
             return random.choice(imgs)
-    try:
-        pool = gh_release.quote_image_pool()
-        if not pool:
-            return None
-        universe = game_quotes.universe_for_game(game)
-        if key in pool:                       # exact game folder first (SM1 -> SM1 shots)
-            games = [key]
-        elif universe and [g for g in pool if game_quotes.universe_for_game(g) == universe]:
-            games = [g for g in pool if game_quotes.universe_for_game(g) == universe]
-        else:
-            return None                       # no match -> clip frame, NEVER a random other game
-        names = [n for g in games for n in (pool.get(g, []) or [])]
-        if not names:
-            return None
-        name = random.choice(names)
-        return gh_release.download(
-            {"name": name, "url": gh_release.asset_download_url(name)},
-            ROOT / "output" / ".art_cache")
-    except Exception as e:
-        print(f"[reel] game screenshot fetch failed ({e!r})", flush=True)
-        return None
+    return None
 
 
 def _pool_samples(game: Optional[str], n: int = 3) -> list[str]:
