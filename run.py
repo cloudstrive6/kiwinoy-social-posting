@@ -174,6 +174,14 @@ def main() -> int:
     )
     args = p.parse_args()
 
+    # Auto-prune stale video renders from output/ so local scratch never balloons
+    # (it once hit 184 GB). Fail-open + quiet — cleanup must never block a run.
+    try:
+        from tools.prune_output import prune as _prune_output
+        _prune_output(quiet=False)
+    except Exception:
+        pass
+
     # Threads track has no slots — one independent run per invocation.
     if args.threads:
         try:

@@ -1,3 +1,10 @@
+# Local scratch cleanup. output/ is gitignored: every render drops its MP4 there
+# and nothing auto-cleans it, so it grows unbounded (once hit 184 GB). run.py prunes
+# video files older than this at the start of every local invocation; metadata/logs
+# stay. Set to 0 to prune every video render; raise it to keep renders around longer.
+output:
+  video_retention_days: 7
+
 brand:
   name: KiwinoyGamer
   handle: '@kiwinoygaming'
