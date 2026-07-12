@@ -1953,7 +1953,8 @@ def run_youtube_short(
     the 4K pool. HEAVY (nvenc + multi-GB HDR) — run on your own machine, not CI."""
     from pathlib import Path
 
-    from core import youtube
+    from core import youtube as yt_api  # aliased: 'youtube' is a bool PARAM of this fn —
+    # importing the module as `youtube` would shadow the param so youtube=False never
 
     ys = CONFIG.youtube_shorts or {}
     if not ys.get("enabled", True):
@@ -2100,7 +2101,7 @@ def run_youtube_short(
         priv = str(privacy or ys.get("privacy", "public")).lower()
         log(f"Uploading Short via the YouTube Data API (privacy={priv}"
             f"{', scheduled ' + publish_at if publish_at else ''})...")
-        api = youtube.upload_video(
+        api = yt_api.upload_video(
             str(reel_path), title=title, description=desc, tags=yt_tags,
             privacy=priv, publish_at=publish_at,
             category_id=str(ys.get("category_id", "20")),
