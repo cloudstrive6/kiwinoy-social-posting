@@ -71,10 +71,14 @@ def push(game: str, keep: bool = False) -> None:
     print(f"Uploading {local}  ->  {dst}", flush=True)
     if _rclone(["sync", str(local), dst, "--progress", "--transfers", "4"], env) != 0:
         sys.exit("upload failed — local kept.")
-    print("Verifying (rclone check)...", flush=True)
-    if _rclone(["check", str(local), dst, "--one-way"], env) != 0:
+    print("Verifying (rclone check, size-only)...", flush=True)
+    # --size-only: B2 stores NO SHA1 for multi-thread/chunked large files (the 20-30 GB
+    # longform parts), so a hash `check` always reports errors even when the upload is
+    # byte-complete and would wrongly refuse to free local. Size match across every part
+    # is the reliable integrity signal for these big media files on B2.
+    if _rclone(["check", str(local), dst, "--one-way", "--size-only"], env) != 0:
         sys.exit("verify FAILED — local NOT deleted.")
-    print("Verified ✓", flush=True)
+    print("Verified OK", flush=True)
     if keep:
         print("Kept local (--keep).")
     else:
