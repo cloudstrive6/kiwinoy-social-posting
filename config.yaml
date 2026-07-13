@@ -584,6 +584,10 @@ reels:
     tiktok: 3600       # 60 min (effectively full)
     youtube: 180       # 3 min (Shorts; longer = a normal long-form video, not a Short)
     absolute_max: 3600 # hard ceiling on the main render so a bad file can't render for hours
+  # FB + IG STORY reach-booster cap: Stories reject video > 60s ("Duration ... is greater
+  # than the maximum allowed duration of 60 seconds", page-stories-api). The main reel is
+  # reposted to FB/IG Stories, so it's trimmed to this before the Story post (0 = no cap).
+  story_max_seconds: 60
   gameplay:
     enabled: true
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same

@@ -228,6 +228,16 @@ def run_threads_video(
                          threads_caption=_with_threads_tag(caption))
 
 
+def _story_cap() -> float:
+    """FB/IG Stories reject video longer than 60s. The reach-booster reposts the main
+    reel (which for FB is the FULL clip) to Stories, so it's trimmed to this first.
+    Configurable via reels.story_max_seconds (default 60); 0 disables the cap."""
+    try:
+        return float(CONFIG.reels.get("story_max_seconds", 60) or 0)
+    except Exception:
+        return 60.0
+
+
 def run_ig_story(
     caption: str,
     video_bytes: bytes,
@@ -241,6 +251,8 @@ def run_ig_story(
     account_ids = CONFIG.account_ids(["instagram"])
     if not account_ids:
         raise postforme.PostForMeError(_NO_ACCOUNTS)
+    from agents import reel_ffmpeg
+    video_bytes = reel_ffmpeg.cap_video_bytes(video_bytes, _story_cap())  # Stories <= 60s
     media_url = postforme.upload_video(video_bytes)
     return postforme.create_post(
         caption=caption, social_accounts=account_ids, media_urls=[media_url],
@@ -265,6 +277,9 @@ def run_fb_story(
     account_ids = CONFIG.account_ids(["facebook"])
     if not account_ids:
         raise postforme.PostForMeError(_NO_ACCOUNTS)
+    if is_video:
+        from agents import reel_ffmpeg
+        media_bytes = reel_ffmpeg.cap_video_bytes(media_bytes, _story_cap())  # Stories <= 60s
     media_url = (postforme.upload_video(media_bytes) if is_video
                  else postforme.upload_image(media_bytes, content_type=content_type or "image/png"))
     return postforme.create_post(

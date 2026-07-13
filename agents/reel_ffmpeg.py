@@ -1292,6 +1292,28 @@ def trim_seconds(in_path, out_path, seconds: float) -> bytes:
     return out_path.read_bytes()
 
 
+def cap_video_bytes(video_bytes: bytes, max_seconds: float) -> bytes:
+    """Trim video BYTES to at most `max_seconds` (stream-COPY; lands <= target at a keyframe).
+
+    For keeping Story reposts within a platform's Stories duration limit — FB/IG Stories
+    reject video longer than 60s ("Duration ... is greater than the maximum allowed duration
+    of 60 seconds"). Returns the bytes UNCHANGED when already within the cap, when
+    max_seconds <= 0, or on ANY error (fail-open — a reach-booster Story cap must never
+    block or crash the main post)."""
+    if not video_bytes or not max_seconds or max_seconds <= 0:
+        return video_bytes
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            src = Path(td) / "story_in.mp4"
+            src.write_bytes(video_bytes)
+            dur = ffmpeg.duration(src) or 0.0
+            if dur <= float(max_seconds) + 0.1:
+                return video_bytes
+            return trim_seconds(src, Path(td) / "story_capped.mp4", float(max_seconds))
+    except Exception:
+        return video_bytes
+
+
 def reencode_facebook(in_path, out_path, fps: int = 60) -> bytes:
     """Re-encode a finished 1080x1920 reel to FACEBOOK's Reels spec (FB docs + the user's
     Premiere export, 2026-07-09): H.264 High@4.2, Rec.709 SDR, VBR ~15/20 Mbps, **CLOSED
