@@ -577,8 +577,10 @@ reels:
   # split (Threads 5-min / IG up-to-15 / FB full).
   platform_max_seconds:
     facebook: 0        # no hard cap since June 2025 -> full clip
-    instagram: 900     # 15 min (algorithm favours <=3 min, but this is the ceiling)
-    threads: 300       # 5 min
+    instagram: 180     # 3 min. Meta's Reels ingestion FAILED to process a 3.5-min/517 MB
+                       # reel ("Failed to process video media"); 180s keeps files small enough
+                       # to ingest reliably + is IG's reach-favoured range. Lowered from 900.
+    threads: 180       # 3 min (same Meta processing limit; was 300)
     tiktok: 3600       # 60 min (effectively full)
     youtube: 180       # 3 min (Shorts; longer = a normal long-form video, not a Short)
     absolute_max: 3600 # hard ceiling on the main render so a bad file can't render for hours
