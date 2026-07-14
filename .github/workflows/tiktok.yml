@@ -1,15 +1,18 @@
 name: KiwinoyGamer TikTok (TLOU2)
 
-# Dedicated TikTok track: 4 gameplay reels/day (The Last of Us Part II only),
-# alternating classic <-> triptych, posted ONLY to TikTok via Zernio. Separate from
-# the multi-game FB/IG/Threads/YT reels.
+# Dedicated TikTok track: 3 gameplay reels/day (Spider-Man 2), alternating classic
+# <-> triptych, 1080p rendered on the CI runner, posted ONLY to TikTok as Post for Me
+# DRAFTS (config tiktok.via: postforme; publish manually in-app). Separate from the
+# multi-game FB/IG/Threads/YT reels.
 #
 # Triggered by an EXTERNAL scheduler (cron-job.org), same as the other tracks —
-# GitHub's native `schedule:` cron drops/delays runs. Set FOUR daily jobs in
+# GitHub's native `schedule:` cron drops/delays runs. Set THREE daily jobs in
 # cron-job.org (TIMEZONE = Pacific/Auckland so it tracks NZ DST) that POST to this
-# workflow's dispatch API, phased to the channel's active windows + off the midday
-# lull (analytics: peaks ~10pm-7am, dead ~12pm-4pm NZ):
-#   05:00 NZ   11:00 NZ   17:00 NZ   23:00 NZ   (every 6h, "equally spaced")
+# workflow's dispatch API, EQUALLY SPACED every 8h:
+#   07:00 NZ   15:00 NZ   23:00 NZ   (23:00 + 07:00 hit the ~10pm-7am peak; 15:00 is
+#   the compromise slot given equal spacing must land one near the midday lull).
+# Raised 2->3/day 2026-07-14. NOTE: each post is a MANUAL-publish PfM draft; TikTok
+# rejects a 6th PENDING share in 24h, so keep the draft inbox published down to <=4.
 on:
   workflow_dispatch:
     inputs:
