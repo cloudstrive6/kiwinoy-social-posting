@@ -67,18 +67,18 @@ suit / yellow bio-electric Venom makes it unmistakably Peter / Miles (`core/lore
   (current); `false` = the lighter CRF21 feed encode. (PfM re-encodes the draft either way.)
 
 ## Cron status
-The **CI TikTok cron** (`tiktok.yml`, **PfM drafts**) runs **2×/day** on cron-job.org —
-**slots 2 (11:00 NZ) + 4 (23:00 NZ) ENABLED**; slots 1 & 3 disabled (2026-07-10). Lowered
-from 4×/day because every draft is a **manual publish**: if drafts pile up unpublished,
-TikTok blocks new ones with **`spam_risk_too_many_pending_share`** (400). Keep the draft
-inbox reasonably clear. The **4K HDR** path is separate/**local/on-demand**
+The **CI TikTok cron** (`tiktok.yml`, **PfM drafts**) runs **3×/day** on cron-job.org,
+**EQUALLY SPACED every 8h: 07:00 / 15:00 / 23:00 NZ** (Pacific/Auckland). Raised 2→3/day
+2026-07-14 (user). Every draft is a **manual publish**, so if drafts pile up unpublished,
+TikTok blocks new ones with **`spam_risk_too_many_pending_share`** (400) — at 3/day the
+inbox fills faster, so publish daily to keep it **≤4**. The **4K HDR** path is separate/**local/on-demand**
 (`process_tiktok_hd.py`) — can't run in CI (no GPU); run it manually when you want HD.
 
 ## Gotcha: pending-draft cap (max 5)
 TikTok's Content Posting API allows **at most 5 PENDING (unpublished) shares per 24h**. A 6th
 → `spam_risk_too_many_pending_share` (400). Verified: 7 pending still failed. Keep the draft
-inbox at **≤4** — publish/clear regularly, or the 2/day drafts stop landing. Plan (user,
-2026-07-10): keep 2/day + publish daily to stay under the cap. Async gap: the Telegram DM +
+inbox at **≤4** — publish/clear regularly, or the drafts stop landing. Plan (user,
+2026-07-14): 3/day + publish daily to stay under the cap (tighter margin than 2/day). Async gap: the Telegram DM +
 "clip marked used" fire when PfM ACCEPTS the post, but TikTok's rejection is async after (only
 in PfM "View Logs", not the post record) — so a caption can DM even when the draft didn't
 land. The only real fix for the cap is TikTok auditing PfM's app (public auto-post, no drafts).
