@@ -1320,8 +1320,10 @@ def reencode_facebook(in_path, out_path, fps: int = 60) -> bytes:
     GOP 2s** (keyint=fps*2, min-keyint equal, scenecut off, +cgop), 4:2:0, square pixels,
     progressive/CFR, AAC 320k 48k stereo, +faststart. FB was downsampling our 60fps reels
     to 30fps; the open GOP + low CRF bitrate are why — closed GOP + adequate bitrate are
-    what FB's ingester needs to keep 60fps. FB-ONLY (IG/Threads keep the CRF21 encode).
-    Returns the FB-spec bytes."""
+    what FB's ingester needs to keep 60fps. Also used for the IG ROTATED reel — IG holds
+    60fps with this closed-GOP encode (confirmed 2026-07-14), unlike its downsample of the
+    open-GOP CRF21. IG's other formats + Threads keep CRF21 (Threads/FB cap 30 regardless).
+    Returns the closed-GOP 15/20 bytes."""
     out_path = Path(out_path)
     gop = max(1, int(fps) * 2)
     rc, err = ffmpeg.run([

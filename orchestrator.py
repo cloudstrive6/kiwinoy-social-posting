@@ -701,6 +701,18 @@ def run_gameplay_reel(
             ig_rotated_bytes = reel_ffmpeg.build_footage_rotated(
                 clip_path, run_dir / "reel_ig_rotated.mp4", logo=_reel_logo(),
                 fps=fps, target_seconds=target, music=_reel_music())
+            # IG downsampled the open-GOP CRF21 rotated reel to 30fps; a CLOSED-GOP 15/20
+            # re-encode makes IG HOLD 60fps (confirmed 2026-07-14 — same fix as the FB feed
+            # reel). This is IG-rotated-ONLY: Threads/FB cap 30fps server-side regardless of
+            # a perfect closed-GOP upload (tested), so their formats stay on CRF21. Fail-open
+            # to the CRF21 rotated bytes if the re-encode errors.
+            try:
+                ig_rotated_bytes = reel_ffmpeg.reencode_facebook(
+                    run_dir / "reel_ig_rotated.mp4", run_dir / "reel_ig_rotated_cg.mp4",
+                    fps=fps)
+                log("Rotated reel re-encoded to closed-GOP 15/20 (IG 60fps fix).")
+            except Exception as e2:
+                log(f"Rotated closed-GOP re-encode failed ({e2!r}) — using the CRF21 render.")
         except Exception as e:
             log(f"Rotated render failed ({e!r}) — IG will get the {layout} reel instead.")
             ig_rotated = False
