@@ -108,14 +108,15 @@ def publish_video(
     is_draft: bool = False,
     targets: Optional[list[str]] = None,
     threads_caption: Optional[str] = None,
+    instagram_caption: Optional[str] = None,
 ) -> dict[str, Any]:
     """Upload + publish a video. Defaults to every video platform (FB/IG/Threads/
     YouTube); pass `targets` to restrict (e.g. ["facebook"] for commentary). X is
     always excluded. short=True for Reels/Shorts; False for a long video. Falls
     back to a no-placement post if the placement config is rejected, so one
     platform's quirk can't sink the whole post. `threads_caption` overrides the
-    caption for Threads ONLY (e.g. a single game hashtag) while FB/IG/YT keep the
-    full caption."""
+    caption for Threads ONLY (e.g. a single game hashtag) and `instagram_caption`
+    for Instagram ONLY (e.g. + #gamingreels) while the rest keep the full caption."""
     targets = [t for t in (targets if targets is not None else _video_targets()) if t != "x"]
     account_ids = CONFIG.account_ids(targets)
     if not account_ids:
@@ -125,6 +126,9 @@ def publish_video(
     if "threads" in targets and threads_caption:
         placements = {**placements, "threads": {**placements.get("threads", {}),
                                                 "caption": threads_caption}}
+    if "instagram" in targets and instagram_caption:
+        placements = {**placements, "instagram": {**placements.get("instagram", {}),
+                                                  "caption": instagram_caption}}
     try:
         return postforme.create_post(
             caption=caption, social_accounts=account_ids, media_urls=[media_url],
@@ -145,12 +149,15 @@ def run_reel(
     is_draft: bool = False,
     targets: Optional[list[str]] = None,
     threads_caption: Optional[str] = None,
+    instagram_caption: Optional[str] = None,
 ) -> dict[str, Any]:
     """Publish a short reel to the video platforms (Reels/Shorts). Pass `targets`
-    to restrict; `threads_caption` overrides the caption on Threads only."""
+    to restrict; `threads_caption` overrides the caption on Threads only, and
+    `instagram_caption` on Instagram only (e.g. + #gamingreels)."""
     return publish_video(caption, video_bytes, short=True, targets=targets,
                          scheduled_at=scheduled_at, is_draft=is_draft,
-                         threads_caption=threads_caption)
+                         threads_caption=threads_caption,
+                         instagram_caption=instagram_caption)
 
 
 def run_video_post(

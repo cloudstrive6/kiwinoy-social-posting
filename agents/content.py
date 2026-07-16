@@ -342,8 +342,21 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) ->
     return hook[:90], caption[:90]
 
 
+def game_title_line(game: str) -> str:
+    """The '<Game Title> <emoji>' line that sits BETWEEN the caption body and the
+    hashtags on classic/triptych reel captions (per user 2026-07-14), e.g.
+    "Marvel's Spider-Man 2 🕸️". Name from reels.game_names, emoji from
+    reels.game_emoji (fallback 🎮). Empty string if the game has no real display
+    name, so the caller just omits the line."""
+    gname = str((CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "").strip()
+    if not gname or gname.lower() == "this game":
+        return ""
+    emo = str((CONFIG.reels.get("game_emoji", {}) or {}).get(game, "🎮") or "").strip()
+    return f"{gname} {emo}".strip()
+
+
 def hook_and_caption_from_video(
-    video_path, game: str = "", taglish: bool = False
+    video_path, game: str = "", taglish: bool = False, with_game_title: bool = False
 ) -> tuple[str, str]:
     """REVIEW a gameplay clip and write BOTH the on-screen hook and the caption,
     grounded in what the clip shows + the game's lore. One OBSERVER call shared
@@ -370,7 +383,17 @@ def hook_and_caption_from_video(
     if not line:
         line = "Watch this clip"
     tags = _reel_hashtags({"game": game})
-    return hook, f"{line}\n\n{' '.join(tags)}".strip()
+    # with_game_title=True (classic/triptych reels -> FB/IG/TikTok) inserts the game
+    # title + emoji between the body and the hashtags. Off by default so other callers
+    # (e.g. the YouTube Short description) keep the plain body+hashtags caption.
+    parts = [line]
+    if with_game_title:
+        gt = game_title_line(game)
+        if gt:
+            parts.append(gt)
+    if tags:
+        parts.append(" ".join(tags))
+    return hook, "\n\n".join(parts).strip()
 
 
 def youtube_longform_meta(game: str = "", gname: str = "") -> dict:

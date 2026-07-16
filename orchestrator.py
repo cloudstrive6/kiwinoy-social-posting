@@ -626,8 +626,11 @@ def run_gameplay_reel(
             return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
         log(f"Clip (fresh-first): {clip_id}")
         log("Reviewing the clip to write the on-screen hook + caption...")
+        # with_game_title: classic/triptych captions carry the game title + emoji between
+        # the body and the hashtags (FB/IG/TikTok, per user 2026-07-14). FILL keeps its
+        # generic caption; Threads gets its own hook + single game tag (below).
         hook, caption = content.hook_and_caption_from_video(
-            clip_path, brief.get("game", ""), taglish=False)
+            clip_path, brief.get("game", ""), taglish=False, with_game_title=True)
         brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
         log(f"Game: {brief.get('subject')} | Hook: {hook}")
     (run_dir / "brief.json").write_text(
@@ -816,14 +819,21 @@ def run_gameplay_reel(
         groups = _dd(list)
         for plat in rest_targets:
             groups[_eff(plat)].append(plat)
+        # INSTAGRAM-only extra tag on the classic/triptych reels (per user 2026-07-14):
+        # the game's #gamingreels sits past _reel_hashtags' 3-tag cut, so append it to
+        # IG's caption only (FB/TikTok keep the plain 3 tags; FILL is unaffected).
+        ig_cap = None
+        if layout in ("classic", "triptych") and "#gamingreels" not in caption.lower():
+            ig_cap = f"{caption} #gamingreels"
         for dur, plats in sorted(groups.items(), reverse=True):
             tcap = threads_cap if "threads" in plats else None
+            icap = ig_cap if "instagram" in plats else None
             log(f"Publishing {layout} to {', '.join(plats)} ({dur:.0f}s)...")
             # REELS placement (IG up to 15 min, Threads up to 5) — fail-opens to a plain
             # video if a platform rejects the reels placement for the length.
             r = publisher.run_reel(
                 caption=caption, video_bytes=_cut(dur), scheduled_at=scheduled_at,
-                targets=plats, threads_caption=tcap)
+                targets=plats, threads_caption=tcap, instagram_caption=icap)
             api_result = api_result or r
         result["published"] = True
         result["postforme_result"] = api_result

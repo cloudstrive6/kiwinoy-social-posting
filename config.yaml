@@ -520,6 +520,26 @@ reels:
     spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
     spider-man2: "Marvel's Spider-Man 2"
     general: 'this game'
+  # ONE fitting emoji per game. Used for the GAME-TITLE line that sits between the
+  # caption body and the hashtags on CLASSIC/TRIPTYCH reel captions (FB/IG/TikTok,
+  # per user 2026-07-14):  <caption>\n\n<Game Title> <emoji>\n\n<hashtags>
+  # Any game not listed falls back to the generic controller emoji.
+  game_emoji:
+    spider-man1: "🕸️"
+    spider-man-miles-morales: "🕸️"
+    spider-man2: "🕸️"
+    ff7: "⚔️"
+    ff7remake: "⚔️"
+    thelastofus2: "🍄"
+    re: "🧟"
+    halo: "🪖"
+    mlbb: "⚔️"
+    dota2: "⚔️"
+    cs2: "🔫"
+    lol: "⚔️"
+    genshin: "✨"
+    hsr: "🌌"
+    nte: "🌆"
   # Footage/game key -> cloud image-pool FOLDER key, when they differ (the pool is
   # keyed by the assets/images/<folder> name). Without this the triptych top panel +
   # thumbnail stills can't find the game's images and fall back to a clip frame.
