@@ -352,16 +352,64 @@ def build_gameplay(
         # same as our 4K HDR longform which stays native); force the chain to 10-bit.
         grade = "" if hdr else _grade_filter(hi_bitrate)  # subtle contrast/saturation/sharpen
         fmt10 = "format=yuv420p10le," if hdr else ""
-        fc = [
-            f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
-            f"crop={w}:{foot_h},{grade}pad={w}:{h}:0:{pad_y}:color=black,"
-            f"{fmt10}setsar=1,fps={fps}[base]"
-        ]
+        # BLURRED-FILL background (per user 2026-07-20): instead of black bands, DUPLICATE the
+        # footage as the bottom layer, STRETCH it to fill the whole w x h frame, BLUR it and
+        # DARKEN it (dim defaults to the triptych top-still level, 0.55) — so there are no black
+        # spaces yet the hook + game title stay readable. Then the crop-filled footage band sits
+        # centred on top. Tunable: reels.gameplay.classic_bg_blur (sigma@1080) / classic_bg_dim
+        # (lower = darker). Set classic_bg_blur: 0 to fall back to the old black bands.
+        _g = CONFIG.reels.get("gameplay", {}) or {}
+        bsig = float(_g.get("classic_bg_blur", 22)) * gs
+        bdim = float(_g.get("classic_bg_dim", _g.get("triptych_top_dim", 0.55)))
+        # FEATHER (per user 2026-07-20): soften the footage band's TOP + BOTTOM edges so the
+        # sharp layer fades into the blurred backdrop instead of a hard rectangle. A static
+        # vertical alpha-gradient mask (opaque middle -> transparent at the edges) is merged
+        # onto the footage — fast (no per-pixel geq). reels.gameplay.classic_feather = fade
+        # height in px @1080 (0 = hard edge). SDR only (keeps the 10-bit HDR path simple).
+        feather = float(_g.get("classic_feather", 40)) * gs
+        feather_on = (bsig > 0) and (not hdr) and (feather >= 2)
+        mask_idx = None
+        if feather_on:
+            from PIL import Image
+            mpth = Path(tmp) / "feather_mask.png"
+            fh = int(foot_h); fe = max(1.0, feather)
+            col = Image.new("L", (1, fh)); ld = col.load()
+            for y in range(fh):                      # 0 at top/bottom edges -> 255 in the middle
+                ld[0, y] = int(round(255 * max(0.0, min(1.0, min(y, fh - 1 - y) / fe))))
+            col.resize((int(w), fh)).save(mpth)       # stretch the 1-col gradient to full width
+            inputs += ["-loop", "1", "-i", str(mpth)]
+            mask_idx = next_idx; next_idx += 1
+        if bsig > 0:
+            fc = [
+                "[0:v]split[bgsrc][fgsrc]",
+                f"[bgsrc]scale={w}:{h},gblur=sigma={bsig:.1f},"
+                f"colorchannelmixer=rr={bdim}:gg={bdim}:bb={bdim},{fmt10}setsar=1,fps={fps}[bg]",
+            ]
+            if feather_on:
+                fc += [
+                    f"[fgsrc]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
+                    f"crop={w}:{foot_h},{grade}setsar=1,fps={fps}[fgc]",
+                    f"[{mask_idx}:v]format=gray,fps={fps}[fmask]",
+                    "[fgc][fmask]alphamerge[fg]",
+                ]
+            else:
+                fc.append(
+                    f"[fgsrc]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
+                    f"crop={w}:{foot_h},{grade}{fmt10}setsar=1,fps={fps}[fg]")
+            fc.append(f"[bg][fg]overlay=0:{pad_y}[base]")
+        else:  # legacy: solid black bands
+            fc = [
+                f"[0:v]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
+                f"crop={w}:{foot_h},{grade}pad={w}:{h}:0:{pad_y}:color=black,"
+                f"{fmt10}setsar=1,fps={fps}[base]"
+            ]
         vlabel = "base"
         if logo_idx is not None:
             fc.append(f"[{logo_idx}:v]format=rgba[lg]")  # pre-sized circular logo
-            # top-right of the FOOTAGE (just below the hook band), not the frame.
-            fc.append(f"[{vlabel}][lg]overlay=W-w-{int(30 * gs)}:{pad_y + int(26 * gs)}[ovk]")
+            # CENTRED in the BOTTOM blurred band (per user 2026-07-20): horizontally centred,
+            # vertically centred in the region below the footage (pad_y+foot_h .. H).
+            band_top = pad_y + foot_h
+            fc.append(f"[{vlabel}][lg]overlay=(W-w)/2:{band_top}+(H-{band_top}-h)/2[ovk]")
             vlabel = "ovk"
         if game_logo_idx is not None:                    # game logo: top-centre, above the hook
             fc += _game_logo_overlay(game_logo_idx, vlabel, w, "ovg")

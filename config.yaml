@@ -648,6 +648,16 @@ reels:
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
     triptych_top_dim: 0.55
+    # CLASSIC layout blurred-fill background (per user 2026-07-20): instead of black
+    # bands, the footage is duplicated as the bottom layer, stretched to fill the whole
+    # 9:16 frame, then blurred + darkened — no black spaces, hook + game title stay
+    # readable. classic_bg_blur = gblur sigma at 1080p (scaled to resolution; 0 = revert
+    # to solid black bands). classic_bg_dim = same darken as the triptych top still.
+    classic_bg_blur: 22
+    classic_bg_dim: 0.55
+    # Feather the footage band's top+bottom edges into the blur (fade height in px @1080p,
+    # scaled to resolution; 0 = hard edge). SDR feed reels only.
+    classic_feather: 40
     # Lowkey "KIWINOYGAMING" wordmark at the bottom-centre of the triptych TOP panel
     # (Tarrget font). Simple + understated so it doesn't fight the hook.
     triptych_wordmark:
