@@ -656,7 +656,7 @@ reels:
     classic_bg_blur: 22
     classic_bg_dim: 0.55
     # Feather the footage band's top+bottom edges into the blur (fade height in px @1080p,
-    # scaled to resolution; 0 = hard edge). SDR feed reels only.
+    # scaled to resolution; 0 = hard edge). Applies to SDR feed reels AND the 4K HDR shorts.
     classic_feather: 40
     # Lowkey "KIWINOYGAMING" wordmark at the bottom-centre of the triptych TOP panel
     # (Tarrget font). Simple + understated so it doesn't fight the hook.

@@ -365,9 +365,12 @@ def build_gameplay(
         # sharp layer fades into the blurred backdrop instead of a hard rectangle. A static
         # vertical alpha-gradient mask (opaque middle -> transparent at the edges) is merged
         # onto the footage — fast (no per-pixel geq). reels.gameplay.classic_feather = fade
-        # height in px @1080 (0 = hard edge). SDR only (keeps the 10-bit HDR path simple).
+        # height in px @1080 (0 = hard edge). Works on SDR AND HDR — the HDR path uses a
+        # 10-bit alpha mask + 10-bit footage so the 4K HDR YouTube Shorts get it too.
         feather = float(_g.get("classic_feather", 40)) * gs
-        feather_on = (bsig > 0) and (not hdr) and (feather >= 2)
+        feather_on = (bsig > 0) and (feather >= 2)
+        _mfmt = "gray10le" if hdr else "gray"          # 10-bit alpha mask on the HDR path
+        _ffmt = "format=yuv420p10le," if hdr else ""    # force footage to 10-bit before merge
         mask_idx = None
         if feather_on:
             from PIL import Image
@@ -388,8 +391,8 @@ def build_gameplay(
             if feather_on:
                 fc += [
                     f"[fgsrc]scale={w}:{foot_h}:force_original_aspect_ratio=increase,"
-                    f"crop={w}:{foot_h},{grade}setsar=1,fps={fps}[fgc]",
-                    f"[{mask_idx}:v]format=gray,fps={fps}[fmask]",
+                    f"crop={w}:{foot_h},{grade}{_ffmt}setsar=1,fps={fps}[fgc]",
+                    f"[{mask_idx}:v]format={_mfmt},fps={fps}[fmask]",
                     "[fgc][fmask]alphamerge[fg]",
                 ]
             else:
