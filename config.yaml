@@ -676,11 +676,11 @@ reels:
       enabled: true
       mode: ambient       # ambient (Hue-sync, DEFAULT) | immersive (wider glow) | neutral (white seam)
       # --- ambient (default) + neutral: seam-FORM knobs ---
-      reach: 0.35         # how far the seam line stretches toward the L/R edges (fraction of width; higher = reaches the edges more)
+      reach: 0.32         # how far the seam line stretches toward the L/R edges (fraction of width; higher = reaches the edges more)
       intensity: 1.0      # brightness of the neutral seam
       # --- ambient mode (Hue-sync) ---
       saturation: 1.5     # vividness of the sampled colour
-      brightness: 0.06    # overall lift of the ambient colour
+      brightness: 0.12    # overall lift of the ambient colour
       glow_floor: 0.28    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
       zones: 24           # horizontal colour zones sampled across the gameplay edge
       # --- immersive mode extras ---
