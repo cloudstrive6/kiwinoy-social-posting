@@ -1,0 +1,27 @@
+name: B2 footage check (manual)
+
+# One-off diagnostic: proves B2_KEY_ID / B2_APP_KEY authorize against Backblaze B2
+# from inside CI and that footage clips are listable. Manual-only; posts nothing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: B2 read test (list spider-man2 clips)
+        run: python -m core.b2_store spider-man2
