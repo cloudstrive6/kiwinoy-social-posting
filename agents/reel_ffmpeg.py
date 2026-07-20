@@ -995,9 +995,12 @@ def build_gameplay_triptych(
         else:
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
                          f"crop={w}:{arth},{grade}setsar=1{hdrfy}[bot]"]
+        # AMBIENT (Hue-sync) mode samples the gameplay panel colour -> split it off here.
+        ambient = div_idx is not None and str(dv.get("mode", "ambient")).lower() == "ambient"
+        mid_tail = ",split[mid][midsrc]" if ambient else "[mid]"
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}{f10}[bg]",
-            f"[0:v]scale={w}:-2,{grade}setsar=1{f10},fps={fps}[mid]",
+            f"[0:v]scale={w}:-2,{grade}setsar=1{f10},fps={fps}{mid_tail}",
             # TOP panel: scale+crop to EXACTLY the same 16:9 tile as the middle/bottom
             # (force_original_aspect_ratio=increase + crop) so a source image of ANY
             # aspect ratio can't change the panel height -> the black gaps between the
@@ -1011,19 +1014,42 @@ def build_gameplay_triptych(
             f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
         ]
         vlabel = "b3"
-        # Overlay the two breathing light seams centred on the panel gaps (y=band, 2*band).
+        # Light seams on the two panel gaps (y=band, 2*band), breathing subtly.
         if div_idx is not None:
             p_lo, p_hi = float(dv.get("pulse_min", 0.54)), float(dv.get("pulse_max", 0.90))
             p_mean, p_amp = (p_lo + p_hi) / 2.0, (p_hi - p_lo) / 2.0
             p_sec = max(0.3, float(dv.get("pulse_seconds", 3.5)))
             pulse = f"{p_mean:.3f}+{p_amp:.3f}*sin(2*PI*T/{p_sec:.2f})"
             y1, y2 = band - gh // 2, 2 * band - gh // 2
-            fc += [
-                f"[{div_idx}:v]format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':"
-                f"a='alpha(X,Y)*({pulse})',split[sm1][sm2]",
-                f"[{vlabel}][sm1]overlay=0:{y1}[b3s1]",
-                f"[b3s1][sm2]overlay=0:{y2}{f10}[b3d]",
-            ]
+            if ambient:
+                # AMBILIGHT / Hue-sync: the seam colour + brightness are sampled LIVE from
+                # the gameplay panel's top/bottom halves each frame, then shaped by the seam
+                # form (its alpha). A shadow lift (glow_floor) keeps a soft glow in dark beats.
+                zones = int(dv.get("zones", 24))
+                sat, bri = float(dv.get("saturation", 1.5)), float(dv.get("brightness", 0.06))
+                lift = float(dv.get("glow_floor", 0.28))
+                sig = max(6.0, 34.0 * ts)
+                amb = (f"scale={zones}:1,scale={w}:{gh},gblur=sigma={sig:.0f},"
+                       f"eq=saturation={sat}:brightness={bri},curves=all='0/{lift:.2f} 1/1'")
+                fc += [
+                    "[midsrc]split[msT][msB]",
+                    f"[msT]crop=iw:ih/2:0:0,{amb}[ambT]",
+                    f"[msB]crop=iw:ih/2:0:ih/2,{amb}[ambB]",
+                    f"[{div_idx}:v]alphaextract,format=gray,"
+                    f"geq=lum='clip(p(X,Y)*({pulse}),0,255)',split[shA][shB]",
+                    "[ambT][shA]alphamerge[seamT]",
+                    "[ambB][shB]alphamerge[seamB]",
+                    f"[{vlabel}][seamT]overlay=0:{y1}[b3s1]",
+                    f"[b3s1][seamB]overlay=0:{y2}{f10}[b3d]",
+                ]
+            else:
+                # NEUTRAL: overlay the white / graphics-grey seam directly.
+                fc += [
+                    f"[{div_idx}:v]format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':"
+                    f"a='alpha(X,Y)*({pulse})',split[sm1][sm2]",
+                    f"[{vlabel}][sm1]overlay=0:{y1}[b3s1]",
+                    f"[b3s1][sm2]overlay=0:{y2}{f10}[b3d]",
+                ]
             vlabel = "b3d"
         # NOTE: no circle KG logo (removed per user) and no game logo on the triptych.
         if anim_rgb_idx is not None:

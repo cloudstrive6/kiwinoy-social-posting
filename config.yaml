@@ -662,17 +662,27 @@ reels:
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
     triptych_top_dim: 0.55
-    # Light-seam DIVIDERS on the two panel gaps (per user 2026-07-20): a color-neutral
-    # white light — bright centre hotspot -> horizontal falloff to the edges -> soft
-    # vertical bloom, breathing subtly in/out. White so it reads over ANY footage/art/
-    # image colour; HDR uses the ~203-nit graphics grey (caption.hdr_text_gray) so it
-    # doesn't blow out. Applies to EVERY triptych reel (FB/IG/Threads/TikTok + the 4K
-    # HDR YouTube ones). Set enabled:false to revert to plain black gaps.
+    # Light-seam DIVIDERS on the two panel gaps (per user 2026-07-20). Two modes:
+    #   ambient (DEFAULT, Hue-sync): each seam samples the gameplay panel's colour +
+    #     brightness live and glows to match the action (like a Philips Hue TV sync) —
+    #     shaped by the seam form, with a shadow lift so dark beats keep a soft glow.
+    #   neutral: a color-neutral white light seam (bright centre hotspot -> falloff ->
+    #     bloom). White so it reads over any colour; HDR uses ~203-nit graphics grey.
+    # Applies to EVERY triptych reel (FB/IG/Threads/TikTok + the 4K HDR YouTube ones).
+    # Set enabled:false to revert to plain black gaps.
     triptych_divider:
       enabled: true
-      height: 48          # seam graphic height @1080p (scales w/ resolution); gap is ~32px, bloom spills a little
-      intensity: 1.0      # overall brightness (1.0 = as approved; lower = subtler)
-      reach: 0.28         # how far the line extends L/R before fading (fraction of width)
+      mode: ambient       # ambient (Hue-sync, DEFAULT) | neutral (white light seam)
+      # --- ambient mode (Hue-sync) ---
+      saturation: 1.5     # vividness of the sampled colour
+      brightness: 0.06    # overall lift of the ambient colour
+      glow_floor: 0.28    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
+      zones: 24           # horizontal colour zones sampled across the gameplay edge
+      # --- neutral mode ---
+      intensity: 1.0      # overall brightness of the neutral seam
+      reach: 0.28         # how far the neutral line extends L/R before fading (fraction of width)
+      # --- shared ---
+      height: 48          # seam graphic height @1080p (scales w/ resolution)
       bloom: 7            # vertical glow spread @1080p
       pulse_min: 0.54     # breathe: min opacity fraction
       pulse_max: 0.90     # breathe: max opacity fraction
