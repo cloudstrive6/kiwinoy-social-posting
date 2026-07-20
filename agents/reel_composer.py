@@ -167,14 +167,21 @@ def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
     if not fresh:
         gh_release.reset_used(key)   # all shown once -> restart this game's cycle
         fresh = pool
-    kind, item = random.choice(fresh)
-    cid = _clip_id(kind, item, key)
-    if kind == "local":
-        return Path(item), cid
+    # Try several fresh clips: a single transient download failure (a GitHub-Release
+    # 503, a B2 hiccup) must NOT skip the whole reel. Prefer the reliable sources
+    # (local, then B2 native API) over flaky GitHub Releases, shuffled for variety.
     cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
         "cache_dir", "reels/assets/footage/.cache")
-    p = _download_item(kind, item, cache)
-    return (p, cid) if p else (None, None)
+    random.shuffle(fresh)
+    fresh.sort(key=lambda ki: {"local": 0, "b2": 1, "remote": 2}.get(ki[0], 3))
+    for kind, item in fresh[:8]:
+        cid = _clip_id(kind, item, key)
+        if kind == "local":
+            return Path(item), cid
+        p = _download_item(kind, item, cache)
+        if p:
+            return p, cid
+    return None, None
 
 
 def mark_clip_used(clip_id: str) -> bool:
