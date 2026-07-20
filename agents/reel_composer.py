@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Optional
 
-from core import gh_release
+from core import b2_store, gh_release
 from core.config import CONFIG, ROOT
 
 REELS_DIR = ROOT / "reels"
@@ -38,15 +38,27 @@ def _footage_key_for(brief: dict[str, Any]) -> str:
 
 
 def _candidates(key: str) -> list[tuple[str, Any]]:
-    """Combined clip pool for a key: local files + GitHub Release assets."""
+    """Combined clip pool for a key: local files + B2 clips + GitHub Release assets.
+
+    B2 is the new home for gameplay clips; the GitHub Release is the legacy source
+    kept as a fallback during migration (the bulk migrator deletes a clip from the
+    Release once it's on B2, so steady-state has no duplicates)."""
     fcfg = CONFIG.reels.get("footage", {}) or {}
     base = ROOT / fcfg.get("dir", "reels/assets/footage")
     pool: list[tuple[str, Any]] = []
     d = base / key
     if d.exists():
         pool += [("local", p) for p in d.iterdir() if p.suffix.lower() in VIDEO_EXTS]
+    pool += [("b2", a) for a in b2_store.list_footage(key)]
     pool += [("remote", a) for a in gh_release.list_assets(key)]
     return pool
+
+
+def _download_item(kind: str, item: Any, cache: Path) -> Optional[Path]:
+    """Download a non-local clip to cache: B2 via native API, else GitHub Release."""
+    if kind == "b2":
+        return b2_store.download_footage(item, cache)
+    return gh_release.download(item, cache)
 
 
 def resolve_clips(brief: dict[str, Any]) -> list[Path]:
@@ -74,7 +86,7 @@ def resolve_clips(brief: dict[str, Any]) -> list[Path]:
         if kind == "local":
             out.append(item)
         else:
-            p = gh_release.download(item, cache)
+            p = _download_item(kind, item, cache)
             if p:
                 out.append(p)
     return out
@@ -93,6 +105,7 @@ def list_games() -> dict[str, int]:
     keys: set[str] = set()
     if base.exists():
         keys |= {d.name for d in base.iterdir() if d.is_dir() and not d.name.startswith(".")}
+    keys |= set(b2_store.list_games().keys())
     for entry in fcfg.get("map", []) or []:
         keys.add(str(entry.get("dir", "")))
     out: dict[str, int] = {}
@@ -120,7 +133,7 @@ def clips_for_game(key: str, n: Optional[int] = None) -> list[Path]:
         if kind == "local":
             out.append(item)
         else:
-            p = gh_release.download(item, cache)
+            p = _download_item(kind, item, cache)
             if p:
                 out.append(p)
     return out
@@ -128,10 +141,12 @@ def clips_for_game(key: str, n: Optional[int] = None) -> list[Path]:
 
 def _clip_id(kind: str, item: Any, key: str) -> str:
     """Stable id for a clip used by the gameplay 'already used' ledger. Remote
-    assets are already '<game>__...'; give local files the same prefix so ids
-    are globally unique and resettable per game."""
+    (GitHub) assets are already '<game>__...'; give local + B2 clips the same
+    prefix so ids are globally unique and resettable per game."""
     if kind == "remote":
         return str(item.get("name", ""))
+    if kind == "b2":
+        return f"{key}__{item['name']}"
     return f"{key}__{Path(item).name}"
 
 
@@ -158,7 +173,7 @@ def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
         return Path(item), cid
     cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
         "cache_dir", "reels/assets/footage/.cache")
-    p = gh_release.download(item, cache)
+    p = _download_item(kind, item, cache)
     return (p, cid) if p else (None, None)
 
 

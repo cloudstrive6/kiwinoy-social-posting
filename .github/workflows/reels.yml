@@ -54,6 +54,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read gameplay footage from Backblaze B2
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       # TikTok routes through Zernio (our own TikTok app was rejected). Unset -> TikTok skipped.
       ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
       # Optional: AI Taglish voiceover. Reels render music-only if this is unset.

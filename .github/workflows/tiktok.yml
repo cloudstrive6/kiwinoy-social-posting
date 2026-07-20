@@ -43,6 +43,8 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       # Required for the TikTok DRAFT post (PfM) — unset -> renders but SKIPS the post.
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read gameplay footage from Backblaze B2
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
       # Telegram: DM the draft's caption+hashtags to the user (copy-paste on their phone).
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

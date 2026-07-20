@@ -481,6 +481,14 @@ reels:
     use_releases: true
     release_repo: cloudstrive6/kiwinoy-social-posting
     release_tag: footage
+    # B2 media bucket (native API, requests-only) is the NEW home for gameplay
+    # clips: they live under <b2_prefix>/<game>/ inside longform_archive.bucket
+    # (that key is the single place the bucket name is defined). Read at render
+    # time in CI with just B2_KEY_ID / B2_APP_KEY -- no rclone/boto3 needed.
+    # use_releases above stays on so legacy clips still uploaded to the GitHub
+    # Release remain readable as a fallback until the migration is complete.
+    use_b2: true
+    b2_prefix: footage
     cache_dir: reels/assets/footage/.cache
     clip_seconds: 4         # each clip is trimmed to ~this many seconds
     min_clips: 3

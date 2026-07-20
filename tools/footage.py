@@ -1,19 +1,22 @@
-"""Manage large reel footage on the GitHub 'footage' release (>100MB clips).
+"""Manage large reel footage in the cloud (>100MB gameplay clips).
 
-Big gameplay clips can't be committed (GitHub caps repo files at 100MB), so they
-live as Release assets (up to 2GB each, free). The reel renderer auto-discovers
-them by their "<game>__" name prefix and downloads what it needs at render time.
+Big gameplay clips can't be committed (GitHub caps repo files at 100MB). They now
+live in **Backblaze B2** (bucket = longform_archive.bucket, under footage/<game>/)
+— real object storage with none of the GitHub-Release 503 / 1000-asset limits. The
+reel renderer reads them back at render time via core.b2_store (native B2 API, no
+rclone/boto3 needed in CI). The legacy GitHub-Release path is kept as a fallback.
 
 Usage:
-  python tools/footage.py sync                 # auto-upload every >100MB clip
-  python tools/footage.py upload <game> <file> [<file> ...]
+  python tools/footage.py sync                 # push clips to B2, free local once verified
+  python tools/footage.py sync --releases      # legacy: push to the GitHub Release instead
+  python tools/footage.py sync --keep-local    # upload but don't delete local copies
+  python tools/footage.py upload <game> <file> [<file> ...]   # (legacy GitHub Release)
   python tools/footage.py list
   python tools/footage.py delete <asset-name>
 
-`sync` scans the footage folders and uploads any clip over ~95MB to the release
-(named "<folder>__<file>"), skipping ones already there. Smaller clips are left
-for a normal git commit. Just paste clips into reels/assets/footage/<game>/ and
-run sync (or commit the small ones).
+`sync` scans reels/assets/footage/<game>/ and moves each clip to B2 (verified,
+then the local copy is freed), skipping files touched in the last ~2 min. Just
+paste clips into reels/assets/footage/<game>/ and run sync.
 
 <game> is one of the footage folders: mlbb, dota2, cs2, lol, genshin, hsr, nte,
 ff7, re, halo, general.
@@ -25,10 +28,10 @@ Examples:
 from __future__ import annotations
 
 import mimetypes
+import os
 import re
 import subprocess
 import sys
-import time
 import time
 from pathlib import Path
 
@@ -315,6 +318,48 @@ def sync(delete_local: bool = True, only_game: str | None = None) -> None:
           f"failed {failed}, too-big {toobig}; shards: {[s['tag'] for s in shards]}")
 
 
+def _b2_env(remote: str) -> dict:
+    """Configure a B2 rclone remote from .env via env vars (no interactive setup)."""
+    kid = CONFIG._key("B2_KEY_ID")
+    key = CONFIG._key("B2_APP_KEY")
+    if not (kid and key):
+        sys.exit("B2_KEY_ID / B2_APP_KEY missing in .env")
+    env = dict(os.environ)
+    env[f"RCLONE_CONFIG_{remote.upper()}_TYPE"] = "b2"
+    env[f"RCLONE_CONFIG_{remote.upper()}_ACCOUNT"] = kid
+    env[f"RCLONE_CONFIG_{remote.upper()}_KEY"] = key
+    return env
+
+
+def sync_b2(delete_local: bool = True, only_game: str | None = None) -> None:
+    """Push local footage clips to B2 under <b2_prefix>/<game>/ via rclone, then
+    (move) free the local copy once verified. Files modified in the last ~2 min are
+    skipped (--min-age) so an in-progress copy is never uploaded then deleted. B2 is
+    real object storage, so this has none of the GitHub-Release 503 / 1000-asset
+    limits; the render path reads it back via core.b2_store (native API)."""
+    base = ROOT / (_cfg().get("dir", "reels/assets/footage"))
+    if not base.exists():
+        sys.exit(f"Footage dir not found: {base}")
+    la = CONFIG.raw().get("longform_archive", {}) or {}
+    bucket = str(_cfg().get("b2_bucket") or la.get("bucket") or "")
+    remote = str(la.get("remote", "kgb2"))
+    prefix = str(_cfg().get("b2_prefix", "footage")).strip("/")
+    if not bucket:
+        sys.exit("No B2 bucket set (longform_archive.bucket)")
+    env = _b2_env(remote)
+    src = (base / only_game) if only_game else base
+    dst = f"{remote}:{bucket}/{prefix}" + (f"/{only_game}" if only_game else "")
+    verb = "move" if delete_local else "copy"   # move = verified copy + free local
+    args = ["rclone", verb, str(src), dst,
+            "--min-age", "2m", "--transfers", "4", "--b2-chunk-size", "100M",
+            "--exclude", ".cache/**", "--exclude", "*.part",
+            "-v", "--stats", "20s", "--stats-one-line"]
+    print(f"[b2 sync] {verb} {src} -> {dst}", flush=True)
+    rc = subprocess.run(args, env=env).returncode
+    print(f"[b2 sync] rclone {verb} rc={rc}"
+          + ("  (verified + local freed)" if delete_local and rc == 0 else ""), flush=True)
+
+
 def list_assets() -> None:
     rel = _release(_token())
     assets = rel.get("assets", [])
@@ -343,7 +388,13 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if args and args[0] == "sync":
         game = next((a for a in args[1:] if not a.startswith("-")), None)
-        sync(delete_local="--keep-local" not in args, only_game=game)
+        keep = "--keep-local" in args
+        # Default target is B2 (native object storage). --releases forces the legacy
+        # GitHub-Release path (kept only as a fallback during migration).
+        if _cfg().get("use_b2") and "--releases" not in args:
+            sync_b2(delete_local=not keep, only_game=game)
+        else:
+            sync(delete_local=not keep, only_game=game)
     elif len(args) >= 3 and args[0] == "upload":
         upload(args[1], args[2:])
     elif len(args) == 1 and args[0] == "list":

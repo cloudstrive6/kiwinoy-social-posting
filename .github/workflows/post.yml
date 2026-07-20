@@ -34,6 +34,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read gameplay footage from Backblaze B2
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       # Lets designed posts pull footage clips from the 'footage' GitHub Release.
       GH_TOKEN: ${{ github.token }}
     steps:

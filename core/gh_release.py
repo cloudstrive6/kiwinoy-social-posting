@@ -79,7 +79,8 @@ def list_release_assets(tag: str) -> list[dict[str, str]]:
         return []
     return [
         {"name": a.get("name", ""), "url": a.get("browser_download_url", ""),
-         "id": a.get("id"), "created_at": a.get("created_at", "")}
+         "id": a.get("id"), "created_at": a.get("created_at", ""),
+         "size": a.get("size", 0)}
         for a in assets if a.get("browser_download_url")
     ]
 
