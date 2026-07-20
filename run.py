@@ -124,6 +124,9 @@ def main() -> int:
         help="dedicated TikTok reel: one TLOU2 gameplay clip (classic<->triptych), posts ONLY to TikTok via Zernio",
     )
     p.add_argument("--reel", action="store_true", help="use the reels track")
+    p.add_argument("--backup", action="store_true",
+                   help="backup trigger: only post if the primary missed this slot "
+                        "(self-heals a dropped cron->GitHub trigger; Telegrams if it covers a miss)")
     p.add_argument(
         "--carousel", action="store_true",
         help="use the carousel track (3-5 image multi-photo post)",
@@ -308,13 +311,48 @@ def main() -> int:
     runner = {"reel": run_reel_slot, "carousel": run_carousel_slot}.get(track, run_slot)
     label = track if track != "post" else "slot"
 
+    # Backup-trigger self-heal (reels only): a 2nd cron fires ~15 min after each slot
+    # with --backup. If a reel already posted recently the primary trigger worked, so
+    # skip; otherwise the primary was dropped (cron->GitHub 503) — post the make-up and
+    # Telegram that a miss was covered. The marker is written on EVERY successful reel
+    # post (below), so the guard always has fresh data.
+    backup = bool(getattr(args, "backup", False)) and track == "reel" and not args.dry_run
+    if backup:
+        from core.config import CONFIG as _C
+        from core import gh_release as _ghr
+        window = int((_C.reels.get("backup", {}) or {}).get("window_minutes", 120))
+        mins = _ghr.minutes_since_post("reels_feed")
+        if mins is not None and mins < window:
+            print(f"[backup] a reel already posted {mins:.0f} min ago (< {window}m) — "
+                  f"primary trigger worked, backup skipping.", flush=True)
+            return 0
+        print(f"[backup] no recent reel post (last: "
+              f"{'never' if mins is None else f'{mins:.0f}m ago'}) — posting the make-up.",
+              flush=True)
+
     failures = 0
+    posted_any = False
     for sid in slot_ids:
         try:
-            runner(sid, dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            res = runner(sid, dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            if isinstance(res, dict) and res.get("published"):
+                posted_any = True
         except Exception as e:  # keep going on the other slots
             failures += 1
             print(f"[{label} {sid}] ERROR: {e}", file=sys.stderr, flush=True)
+
+    # Stamp the reel-post marker (feeds the backup guard) + notify on a backup catch.
+    if track == "reel" and posted_any and not args.dry_run:
+        try:
+            from core import gh_release as _ghr, notify as _notify
+            _ghr.mark_posted("reels_feed")
+            if backup:
+                _notify.telegram(
+                    "⚠️→✅ Backup trigger: the scheduled gameplay reel was "
+                    "MISSED by the primary (a cron→GitHub hiccup). I've posted the make-up "
+                    "reel just now — no post was lost, you're covered.")
+        except Exception as _e:
+            print(f"[backup] marker/notify step failed: {_e!r}", flush=True)
 
     return 1 if failures else 0
 

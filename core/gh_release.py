@@ -326,6 +326,32 @@ def _write_ledger(used: set[str]) -> bool:
         return False
 
 
+# ------------------------------------------------ last-posted markers (backup guard)
+# A tiny JSON asset recording, per track, when a post last succeeded. The BACKUP
+# cron trigger reads this to decide whether the primary already posted (skip) or a
+# slot was missed (post the make-up). Reuses the small-JSON-asset plumbing above.
+POST_MARKER_ASSET = "_post_markers.json"
+
+
+def mark_posted(track: str) -> bool:
+    """Record that `track` just posted successfully (epoch seconds)."""
+    cur = _read_json_asset(POST_MARKER_ASSET) or {}
+    cur[str(track)] = time.time()
+    return _write_json_asset(POST_MARKER_ASSET, cur)
+
+
+def minutes_since_post(track: str) -> Optional[float]:
+    """Minutes since `track` last posted, or None if never recorded / unknown."""
+    cur = _read_json_asset(POST_MARKER_ASSET) or {}
+    ts = cur.get(str(track))
+    if not ts:
+        return None
+    try:
+        return max(0.0, (time.time() - float(ts)) / 60.0)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------- quote assets (images/music)
 
 QIMAGE_MANIFEST = "_quote_images.json"

@@ -33,6 +33,10 @@ on:
         description: "Dry run (render but no publish)? true/false"
         required: false
         default: "false"
+      backup:
+        description: "Backup trigger? Only posts if the primary missed this slot"
+        required: false
+        default: "false"
 
 concurrency:
   group: kiwinoy-auto-reels
@@ -110,7 +114,9 @@ jobs:
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY
+          BACKUP=""
+          if [ "${{ github.event.inputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
+          python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY $BACKUP
 
       - name: Poster frames (dry-run layout preview)
         if: ${{ github.event.inputs.dry_run == 'true' }}

@@ -328,6 +328,12 @@ platforms:
 # storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
   enabled: true
+  # Backup-trigger self-heal: a 2nd cron-job.org job fires ~15 min after each reel
+  # slot hitting run.py --reel --backup. It posts a make-up ONLY if no reel posted
+  # within window_minutes (i.e. the primary cron->GitHub trigger was dropped by a
+  # transient 503), and Telegrams that it covered a miss. Otherwise it skips silently.
+  backup:
+    window_minutes: 120
   # YouTube Shorts control for gameplay reels (separate from video_post_to). YouTube
   # throttled the channel's new-Short reach (6 auto-Shorts/day flagged as repetitive),
   # so (#4) PAUSED 2026-06-26: enabled=false -> no reel posts to YouTube at all.
