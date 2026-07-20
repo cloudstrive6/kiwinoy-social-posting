@@ -251,6 +251,49 @@ GAME_LORE["thelastofus1"] = (
 )
 
 
+GAME_LORE["halo"] = (
+    "HALO: CAMPAIGN EVOLVED (2026) — a full REMAKE (Unreal Engine 5, Halo Studios) of "
+    "the campaign of HALO: COMBAT EVOLVED (2001), the FIRST Halo game. The story IS "
+    "Halo CE's; do NOT pull in later-Halo arcs (no Arbiter, no Banished, no 'the "
+    "Weapon', nothing from Halo 2/3/4/5/Infinite).\n"
+    "NEW CONTENT: adds 3 prequel missions — 'OPERATION METEORITE', set ONE YEAR BEFORE "
+    "the main story, led by Master Chief + Sgt. Avery Johnson (before Halo is found). So "
+    "a clip may be this prequel; still just the Chief + the UNSC vs the Covenant.\n"
+    "NAMING: single playable hero — the player is ALWAYS the MASTER CHIEF (Spartan "
+    "John-117), a tall super-soldier in the iconic green MJOLNIR armor with a gold "
+    "visor. Name him confidently. He barely speaks; CORTANA (his AI) does the talking.\n"
+    "TIMELINE RULE: the Chief is an ALREADY-established SPARTAN-II super-soldier the "
+    "whole game — NO origin story. Never write 'before he was a Spartan' or him "
+    "'becoming' the Master Chief.\n"
+    "KEY PEOPLE / AI:\n"
+    "- MASTER CHIEF (John-117): the green-armored Spartan you play. Stoic, silent.\n"
+    "- CORTANA: the AI companion — a blue/purple holographic woman in Chief's head; "
+    "snarky, brilliant. The ORIGINAL loyal Cortana (not the later corrupted arc).\n"
+    "- Sgt. Avery JOHNSON: tough, quippy UNSC Marine sergeant (co-leads Op METEORITE).\n"
+    "- Captain Jacob KEYES: commander of the UNSC warship Pillar of Autumn.\n"
+    "ENEMIES (two DISTINCT factions — never merge them):\n"
+    "- THE COVENANT: a theocratic alliance of ALIENS on a holy war to exterminate "
+    "humanity — Elites (tall, agile, energy swords), Grunts (small, squat, methane "
+    "tanks), Jackals (arm shields), Hunters (huge armored), led by the Prophets.\n"
+    "- THE FLOOD: a PARASITIC zombie-like infection released on the ring — turns humans "
+    "AND Covenant into shambling combat forms + spore pods. The horror twist. NOT the "
+    "Covenant.\n"
+    "- 343 GUILTY SPARK: 'the Monitor' — a small floating white robotic eye that speaks "
+    "politely, helps Chief, then turns on him. An AI, not the Covenant.\n"
+    "PLACES / BEATS: the PILLAR OF AUTUMN (UNSC warship); HALO / Installation 04 (the "
+    "giant ring-shaped Forerunner megastructure — the main setting); THE SILENT "
+    "CARTOGRAPHER (island level with a Forerunner map room); the Library; the Control "
+    "Room; the finale WARTHOG RUN escaping the self-destructing ship. The WARTHOG is the "
+    "iconic UNSC jeep.\n"
+    "TWIST: Halo isn't an anti-Covenant weapon — its TRUE purpose is a galaxy-wide "
+    "superweapon that kills ALL sentient life to starve the Flood; the Chief destroys "
+    "the ring to stop it.\n"
+    "DON'T CONFUSE: green armor = Master Chief (the only hero); floating white eye = "
+    "343 Guilty Spark; the zombies = the Flood; the alien army = the Covenant; Halo is "
+    "a RING (a place), not a handheld weapon."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
@@ -264,6 +307,8 @@ _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
     ("ff7", ("final fantasy vii", "final fantasy 7", "ff7", "ffvii", "ff vii",
              "rebirth", "crisis core", "sephiroth", "cloud strife")),
+    ("halo", ("halo", "master chief", "campaign evolved", "combat evolved", "spartan",
+              "john-117", "cortana", "covenant", "mjolnir", "unsc")),
     ("thelastofus1", ("the last of us part i", "the last of us part 1", "tlou1",
                       "tlou part i", "the last of us remastered", "the last of us (2013")),
     ("thelastofus2", ("the last of us part ii", "the last of us part 2", "tlou2",

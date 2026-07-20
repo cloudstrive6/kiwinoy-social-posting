@@ -528,7 +528,7 @@ reels:
     ff7: 'Final Fantasy VII'          # the ORIGINAL PS1 game
     ff7remake: 'Final Fantasy VII Remake'
     re: 'Resident Evil'
-    halo: 'Halo'
+    halo: 'Halo: Campaign Evolved'
     thelastofus2: 'The Last of Us Part II'
     spider-man1: "Marvel's Spider-Man"
     spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
@@ -751,6 +751,7 @@ reels:
     map:
       ff7: "Final Fantasy VII Original PS1 Logo.png"
       ff7remake: "Final-Fantasy-VII-Remake-Game-PNG-HD-Quality.png"
+      halo: "Halo Campaign Evolved.png"
       thelastofus2: "The Last of Us Part 2 Remastered Game Logo.png"  # keyword match couldn't link the key to the filename
       # Spider-Man games share the "spider-man" root, so keyword matching can't tell them
       # apart (it grabbed the generic logo for SM2). Pin each explicitly (2026-07-06):
