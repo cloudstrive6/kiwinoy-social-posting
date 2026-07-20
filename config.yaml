@@ -681,7 +681,7 @@ reels:
       # --- ambient mode (Hue-sync) ---
       saturation: 1.5     # vividness of the sampled colour
       brightness: 0.12    # overall lift of the ambient colour
-      glow_floor: 0.28    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
+      glow_floor: 0.50    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
       zones: 24           # horizontal colour zones sampled across the gameplay edge
       # --- immersive mode extras ---
       immersive_height: 100        # wider glow band that bleeds onto the panels
