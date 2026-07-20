@@ -276,7 +276,8 @@ def main() -> int:
             "tiktok", "TikTok draft", args.backup, args.dry_run,
             lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
                                       scheduled_at=args.schedule_at,
-                                      game=str(tk.get("game", "thelastofus2")), tiktok_only=True))
+                                      game=str(tk.get("game", "thelastofus2")), tiktok_only=True,
+                                      layout_override=args.layout))
 
     # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]
     if args.youtube:

@@ -560,6 +560,7 @@ def run_gameplay_reel(
     scheduled_at: Optional[str] = None,
     game: Optional[str] = None,        # force this game (dedicated track, e.g. TikTok TLOU2)
     tiktok_only: bool = False,         # publish ONLY to TikTok via Zernio (not the PfM platforms)
+    layout_override: Optional[str] = None,  # force a specific layout (classic/triptych/fill/rotated)
 ) -> dict[str, Any]:
     """Gameplay-only reel: one standalone clip + a static hook caption (no VO).
 
@@ -598,19 +599,37 @@ def run_gameplay_reel(
         n = 0
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
     layout = main_layouts[n % len(main_layouts)]
+    if layout_override:                         # manual override (e.g. --layout triptych)
+        layout = str(layout_override).strip().lower()
+        log(f"Layout forced by override: {layout}")
     reel_path = run_dir / "reel.mp4"
     fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
     vcfg = gcfg.get("vertical", {}) or {}
 
+    # Resolve the footage clip for the chosen layout, with a BIDIRECTIONAL fallback so a
+    # depleted OR unreachable pool switches format instead of skipping the post:
+    #   FILL needs the vertical pool ('<game>-vertical'); if none/unreachable -> classic.
+    #   classic/triptych/rotated need the landscape pool; if none/unreachable -> FILL.
+    vkey = f"{brief['game']}{vcfg.get('key_suffix', '-vertical')}"
     if layout == "fill":
-        # FILL: full-bleed vertical from the DEDICATED vertical pool ('<game>-vertical'),
-        # the raw landscape scaled to COVER 9:16. Falls back to classic if none exist.
-        vkey = f"{brief['game']}{vcfg.get('key_suffix', '-vertical')}"
         clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
         if not clip_path:
-            log(f"No vertical footage ({vkey}) — using the classic layout this slot.")
-            layout = "classic"
+            clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+            if clip_path:
+                log(f"No vertical footage ({vkey}) — falling back to the classic layout.")
+                layout = "classic"
+    else:  # classic / triptych / rotated -> landscape pool
+        clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+        if not clip_path:
+            clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+            if clip_path:
+                log(f"No landscape footage ({brief['game']}) — falling back to the FILL vertical layout.")
+                layout = "fill"
+    if not clip_path:
+        log("Could not resolve a clip from either pool — skipping.")
+        return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+
     if layout == "fill":
         # Generic GAME caption (the raw footage isn't reviewed); no on-screen hook.
         caption = content.generic_game_caption(brief["game"])
@@ -618,12 +637,8 @@ def run_gameplay_reel(
         brief["hook"] = ""
         log(f"Game: {brief.get('subject')} | FILL vertical | clip {clip_id}")
     else:
-        # Landscape-composited layouts: pick from the normal pool + review the clip for
-        # a lore-grounded on-screen hook + caption (ENGLISH per user).
-        clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
-        if not clip_path:
-            log("Could not resolve a clip — skipping.")
-            return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+        # Landscape-composited layouts: review the clip for a lore-grounded on-screen
+        # hook + caption (ENGLISH per user).
         log(f"Clip (fresh-first): {clip_id}")
         log("Reviewing the clip to write the on-screen hook + caption...")
         # with_game_title: classic/triptych captions carry the game title + emoji between
