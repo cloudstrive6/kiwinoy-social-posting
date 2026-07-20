@@ -15,10 +15,17 @@ B2 filename = the asset name with its '<game>__' prefix stripped.
 Resumable (re-run to continue).
 
 Usage:
-  python tools/migrate_footage_to_b2.py             # COPY all games (spider-man2 first)
-  python tools/migrate_footage_to_b2.py spider-man2   # COPY one game
-  python tools/migrate_footage_to_b2.py --purge      # delete GitHub copies already on B2
-  python tools/migrate_footage_to_b2.py --dry        # list what WOULD move, no changes
+  python tools/migrate_footage_to_b2.py                 # COPY all games (spider-man2 first)
+  python tools/migrate_footage_to_b2.py spider-man2       # COPY one game
+  python tools/migrate_footage_to_b2.py --then-finalize  # COPY, then auto retry+purge+cutover
+  python tools/migrate_footage_to_b2.py --purge          # delete GitHub copies already on B2
+  python tools/migrate_footage_to_b2.py --finalize       # retry+purge+cutover only (no copy)
+  python tools/migrate_footage_to_b2.py --dry            # list what WOULD move, no changes
+
+--then-finalize / --finalize: after everything is on B2, delete the GitHub copies and,
+if the GitHub footage is then empty, flip config use_releases -> false (B2 becomes the
+sole source) + git commit/push, and Telegram a summary. Reboot-resilient: just re-run
+the same --then-finalize command and it resumes where it left off.
 """
 from __future__ import annotations
 
@@ -96,10 +103,68 @@ def _game_of(asset_name: str) -> str | None:
     return m.group(1) if m else None
 
 
+def finalize() -> None:
+    """After the copy phase: retry stragglers, purge verified GitHub copies, and if
+    the GitHub footage is then empty, flip use_releases -> false (B2 becomes the sole
+    source) + commit/push. Telegrams a summary. Idempotent -- safe to re-run."""
+    from core import notify  # local import (only needed here)
+    here = [sys.executable, str(Path(__file__).resolve())]
+
+    print("\n[finalize] retry-copy pass (clear any transient failures)...", flush=True)
+    subprocess.run(here)                       # resumable copy; retries failures
+    print("[finalize] purge pass (delete GitHub copies verified on B2)...", flush=True)
+    subprocess.run(here + ["--purge"])
+    # count GitHub footage clips still present (i.e. NOT verified on B2)
+    r = subprocess.run(here + ["--dry"], capture_output=True, text=True)
+    m = re.search(r"\[migrate\] (\d+) clips across", r.stdout or "")
+    remaining = int(m.group(1)) if m else -1
+    print(f"[finalize] GitHub footage clips remaining: {remaining}", flush=True)
+
+    flipped = pushed = False
+    if remaining == 0:
+        cfg = ROOT / "config.yaml"
+        txt = cfg.read_text(encoding="utf-8")
+        if "\n    use_releases: true\n" in txt:
+            cfg.write_text(txt.replace("\n    use_releases: true\n",
+                                       "\n    use_releases: false\n", 1), encoding="utf-8")
+            flipped = True
+            subprocess.run(["git", "add", "config.yaml"], cwd=str(ROOT))
+            subprocess.run(["git", "commit", "-m",
+                            "footage(b2): all clips migrated -> use_releases: false "
+                            "(B2 is now the sole footage source)\n\n"
+                            "Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"],
+                           cwd=str(ROOT))
+            pushed = subprocess.run(["git", "push"], cwd=str(ROOT)).returncode == 0
+
+    if remaining == 0:
+        msg = ("✅ B2 footage migration COMPLETE. Every gameplay clip is on B2 and the "
+               "GitHub Release copies are purged."
+               + (" use_releases flipped to false -- B2 is now the sole source"
+                  + (" (pushed)." if pushed else " (LOCAL commit; push failed -- run 'git push').")
+                  if flipped else " (use_releases was already off)."))
+    elif remaining > 0:
+        msg = (f"⚠️ B2 footage migration finished, but {remaining} clip(s) are still "
+               "only on GitHub (failed to verify on B2). Their GitHub copies were KEPT and "
+               "use_releases stays ON as a fallback. Re-run "
+               "'python tools/migrate_footage_to_b2.py --then-finalize' to retry them.")
+    else:
+        msg = ("B2 footage finalize ran but couldn't count remaining clips -- "
+               "check output/.b2_migrate.log.")
+    try:
+        notify.telegram(msg)
+    except Exception:
+        pass
+    print("[finalize] " + msg, flush=True)
+
+
 def main() -> None:
     args = sys.argv[1:]
     dry = "--dry" in args
     purge = "--purge" in args
+    then_final = "--then-finalize" in args
+    if "--finalize" in args:
+        finalize()
+        return
     only = next((a for a in args if not a.startswith("-")), None)
     env, remote, bucket, prefix = _b2()
     repo = _fcfg().get("release_repo")
@@ -194,8 +259,12 @@ def main() -> None:
             pass
 
     print(f"\n[migrate] copy done: copied {moved}, already-on-B2 {already}, failed {failed}."
-          f"\n[migrate] GitHub copies still in place. After CI reads B2, run: "
-          f"python tools/migrate_footage_to_b2.py --purge", flush=True)
+          f"\n[migrate] GitHub copies still in place.", flush=True)
+    if then_final:
+        finalize()
+    else:
+        print("[migrate] After CI reads B2, run: "
+              "python tools/migrate_footage_to_b2.py --purge", flush=True)
 
 
 if __name__ == "__main__":
