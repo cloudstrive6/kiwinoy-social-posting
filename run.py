@@ -63,6 +63,42 @@ def _closest_slot_now(track: str) -> int:
     return best_id
 
 
+def _with_backup(track_key: str, label: str, backup: bool, dry_run: bool, fn) -> int:
+    """Run a single-post track with backup-trigger self-heal + Telegram-on-catch.
+
+    When backup=True (the native backup schedule fired): if a post for track_key
+    already happened within reels.backup.window_minutes, the primary trigger worked
+    -> SKIP silently. Otherwise the primary was dropped -> run fn() (the make-up) and
+    Telegram that a miss was covered. Any successful (non-dry) run stamps the
+    last-posted marker so the guard always has fresh data. Returns an exit code."""
+    from core import gh_release as _ghr
+    window = int((CONFIG.reels.get("backup", {}) or {}).get("window_minutes", 120))
+    if backup and not dry_run:
+        mins = _ghr.minutes_since_post(track_key)
+        if mins is not None and mins < window:
+            print(f"[backup] {label}: a post {mins:.0f} min ago (< {window}m) — "
+                  f"primary trigger worked, skipping.", flush=True)
+            return 0
+        print(f"[backup] {label}: no recent post — posting the make-up.", flush=True)
+    try:
+        fn()
+    except Exception as e:
+        print(f"[{label}] ERROR: {e}", file=sys.stderr, flush=True)
+        return 1
+    if not dry_run:
+        try:
+            _ghr.mark_posted(track_key)
+            if backup:
+                from core import notify as _n
+                _n.telegram(
+                    f"⚠️→✅ Backup trigger: the scheduled {label} was MISSED by the "
+                    f"primary (a cron→GitHub hiccup). I've posted the make-up now — "
+                    f"no post was lost, you're covered.")
+        except Exception as _e:
+            print(f"[backup] marker/notify step failed: {_e!r}", flush=True)
+    return 0
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="KiwinoyGamer social posting team")
     g = p.add_mutually_exclusive_group(required=True)
@@ -187,29 +223,26 @@ def main() -> int:
 
     # Threads track has no slots — one independent run per invocation.
     if args.threads:
-        try:
-            # One Threads cron fires 8x/day; route by UTC hour -> footage on the
-            # footage hours (default 3/9/15/21), caption otherwise (1/7/13/19).
-            import datetime as _dt
-            tf = CONFIG.raw().get("threads_footage", {}) or {}
-            foot_hours = {int(h) for h in (tf.get("hours") or [3, 9, 15, 21])}
-            if tf.get("enabled", True) and _dt.datetime.now(_dt.timezone.utc).hour in foot_hours:
-                run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at)
-            else:
-                run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at,
-                            post_type=args.type)
-            return 0
-        except Exception as e:
-            print(f"[threads] ERROR: {e}", file=sys.stderr, flush=True)
-            return 1
+        # One Threads cron fires per slot; route by UTC hour -> footage on the footage
+        # hours (default 3/9/15/21), caption otherwise. The backup guard checks the
+        # marker for whichever sub-track this hour maps to (text vs footage).
+        import datetime as _dt
+        tf = CONFIG.raw().get("threads_footage", {}) or {}
+        foot_hours = {int(h) for h in (tf.get("hours") or [3, 9, 15, 21])}
+        is_footage = tf.get("enabled", True) and _dt.datetime.now(_dt.timezone.utc).hour in foot_hours
+        if is_footage:
+            return _with_backup(
+                "threads_footage", "Threads footage post", args.backup, args.dry_run,
+                lambda: run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at))
+        return _with_backup(
+            "threads_text", "Threads text post", args.backup, args.dry_run,
+            lambda: run_threads(dry_run=args.dry_run, scheduled_at=args.schedule_at,
+                                post_type=args.type))
 
     if args.threads_footage:
-        try:
-            run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at)
-            return 0
-        except Exception as e:
-            print(f"[threads-footage] ERROR: {e}", file=sys.stderr, flush=True)
-            return 1
+        return _with_backup(
+            "threads_footage", "Threads footage post", args.backup, args.dry_run,
+            lambda: run_threads_footage(dry_run=args.dry_run, scheduled_at=args.schedule_at))
 
     if args.threads_image:
         try:
@@ -238,16 +271,12 @@ def main() -> int:
 
     # Dedicated TikTok track: TLOU2-only gameplay reel, posts ONLY to TikTok (Zernio).
     if args.tiktok:
-        try:
-            from core.config import CONFIG as _C
-            tk = (_C.reels.get("tiktok", {}) or {})
-            run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
-                              scheduled_at=args.schedule_at,
-                              game=str(tk.get("game", "thelastofus2")), tiktok_only=True)
-            return 0
-        except Exception as e:
-            print(f"[tiktok] ERROR: {e}", file=sys.stderr, flush=True)
-            return 1
+        tk = (CONFIG.reels.get("tiktok", {}) or {})
+        return _with_backup(
+            "tiktok", "TikTok draft", args.backup, args.dry_run,
+            lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
+                                      scheduled_at=args.schedule_at,
+                                      game=str(tk.get("game", "thelastofus2")), tiktok_only=True))
 
     # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]
     if args.youtube:
@@ -282,13 +311,10 @@ def main() -> int:
 
     # Motivational quote card -> Facebook.
     if args.quote:
-        try:
-            run_quote_card(dry_run=args.dry_run, scheduled_at=args.schedule_at,
-                           theme=args.quote_theme)
-            return 0
-        except Exception as e:
-            print(f"[quote] ERROR: {e}", file=sys.stderr, flush=True)
-            return 1
+        return _with_backup(
+            "quotes", "Quote card", args.backup, args.dry_run,
+            lambda: run_quote_card(dry_run=args.dry_run, scheduled_at=args.schedule_at,
+                                   theme=args.quote_theme))
 
     if args.photopost:
         from agents import photopost

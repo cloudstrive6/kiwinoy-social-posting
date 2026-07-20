@@ -7,6 +7,14 @@ on:
   # Triggered by an EXTERNAL scheduler (cron-job.org) hitting the workflow_dispatch
   # API every 2 hours at :25 UTC — GitHub's own `schedule:` cron dropped/delayed
   # runs, so it was removed in favour of the reliable external trigger.
+  #
+  # BACKUP safety-net (this ONE native schedule IS active): fires ~30 min after each
+  # cron-job.org primary slot (1/10/13/22 UTC) and runs run.py --threads --backup. It
+  # routes by hour (text on 1/13, footage on 10/22) and posts a make-up ONLY if that
+  # sub-track was dropped (idempotent via its marker) + Telegrams on a catch. GitHub's
+  # own scheduler is immune to the cron-job.org->dispatch 503 that drops posts.
+  schedule:
+    - cron: "30 1,10,13,22 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -54,7 +62,9 @@ jobs:
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          python run.py --threads $DRY
+          BACKUP=""
+          if [ "${{ github.event.schedule }}" = "30 1,10,13,22 * * *" ]; then BACKUP="--backup"; fi
+          python run.py --threads $DRY $BACKUP
 
       - name: Upload run artifacts (brief, post text)
         if: always()

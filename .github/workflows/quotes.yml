@@ -8,6 +8,12 @@ name: KiwinoyGamer Auto-Quote-Cards
 # Triggered by an EXTERNAL scheduler (cron-job.org job "KiwinoyGamer Quote Cards")
 # 4x/day at Philippine prime times, same reliable approach as the other tracks.
 on:
+  # BACKUP safety-net (native schedule, ~30 min after each cron-job.org slot): runs
+  # run.py --quote --backup, which posts a make-up ONLY if the primary quote card was
+  # dropped (idempotent via the 'quotes' last-posted marker) and Telegrams on a catch.
+  # GitHub's own scheduler is immune to the cron-job.org->dispatch 503 that drops posts.
+  schedule:
+    - cron: "30 6,18 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -73,8 +79,10 @@ jobs:
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          BACKUP=""
+          if [ "${{ github.event.schedule }}" = "30 6,18 * * *" ]; then BACKUP="--backup"; fi
           THEME="${{ github.event.inputs.theme }}"
           SCHED="${{ github.event.inputs.schedule_at }}"
           SCHEDARG=""
           if [ -n "$SCHED" ]; then SCHEDARG="--schedule-at $SCHED"; fi
-          python run.py --quote --quote-theme "${THEME:-auto}" $SCHEDARG $DRY
+          python run.py --quote --quote-theme "${THEME:-auto}" $SCHEDARG $DRY $BACKUP

@@ -14,6 +14,13 @@ name: KiwinoyGamer TikTok (TLOU2)
 # Raised 2->3/day 2026-07-14. NOTE: each post is a MANUAL-publish PfM draft; TikTok
 # rejects a 6th PENDING share in 24h, so keep the draft inbox published down to <=4.
 on:
+  # BACKUP safety-net (native schedule, ~30 min after each cron-job.org slot at
+  # 03/11/19 UTC = 15/23/07 NZ): runs run.py --tiktok --backup, which creates the
+  # make-up draft ONLY if the primary TikTok trigger was dropped (idempotent via the
+  # 'tiktok' marker) + Telegrams on a catch. GitHub's own scheduler is immune to the
+  # cron-job.org->dispatch 503 that drops posts. (Draft still needs manual publish.)
+  schedule:
+    - cron: "30 3,11,19 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -72,7 +79,9 @@ jobs:
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
-          python run.py --tiktok $DRY
+          BACKUP=""
+          if [ "${{ github.event.schedule }}" = "30 3,11,19 * * *" ]; then BACKUP="--backup"; fi
+          python run.py --tiktok $DRY $BACKUP
 
       - name: Upload run artifacts (brief, caption, mp4)
         if: always()
