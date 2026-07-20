@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import random
 import re
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, Optional
@@ -816,6 +817,70 @@ def build_longform_hdr(
     return out_path
 
 
+def _audio_seam_alpha(tmpdir: Path, clip: Path, w: int, gh: int, fps: int,
+                      show: float, dv: dict, ts: float) -> Optional[Path]:
+    """Per-frame seam alpha (grayscale rawvideo, w x gh) whose SIZE swells (up to
+    audio_size_max) and brightness lifts on the game-audio loudness, so the seam
+    'beats' with the action. Returns the file path, or None to fall back to the static
+    seam (no audio / no numpy / any error -> graceful degrade)."""
+    import math
+    try:
+        import numpy as np
+    except Exception:
+        return None
+    try:
+        SR = 8000
+        pcm = subprocess.run(
+            ["ffmpeg", "-v", "error", "-i", str(clip), "-t", f"{show:.2f}",
+             "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"],
+            capture_output=True, timeout=240).stdout
+        if len(pcm) < SR:                                   # basically silent / no audio
+            return None
+        sig = np.frombuffer(pcm[:len(pcm) - (len(pcm) % 2)], dtype=np.int16).astype(np.float32)
+        spf = SR / fps
+        N = int(round(show * fps)) + 12                     # a few pad frames
+        rms = np.zeros(N, dtype=np.float32)
+        for n in range(N):
+            seg = sig[int(n*spf):int((n+1)*spf)]
+            rms[n] = math.sqrt(float(np.mean(seg*seg))) if seg.size else (rms[n-1] if n else 0.0)
+        nz = rms[rms > 0]
+        ref = float(np.percentile(nz, 95)) if nz.size else 1.0
+        ref = ref or 1.0
+        norm = np.minimum(1.0, rms / ref)
+        atk, rel = float(dv.get("audio_attack", 0.55)), float(dv.get("audio_release", 0.12))
+        env = np.empty(N, dtype=np.float32)
+        prev = 0.0
+        for n in range(N):
+            v = float(norm[n])
+            prev += (atk if v > prev else rel) * (v - prev)
+            env[n] = prev
+        smax = float(dv.get("audio_size_max", 1.5))
+        bfloor = float(dv.get("audio_bright_floor", 0.80))
+        size = 1.0 + (smax - 1.0) * env
+        opac = bfloor + (1.0 - bfloor) * env
+        # seam shape (matches the default seam form), separable -> cheap per frame
+        cx, cy = w / 2.0, gh / 2.0
+        reach = max(1.0, float(dv.get("reach", 0.30)) * w)
+        bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)
+        core = max(0.6, 1.3 * ts)
+        hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)
+        xs = np.arange(w, dtype=np.float32) - cx
+        ys = np.arange(gh, dtype=np.float32) - cy
+        out = tmpdir / "seam_audio.gray"
+        with open(out, "wb") as f:
+            for n in range(N):
+                sf = float(size[n])
+                dx, dy = xs / sf, ys / sf
+                hL = np.exp(-(dx / reach) ** 2)                                    # (w,)
+                vL = np.minimum(1.0, np.exp(-(dy/core)**2) + 0.30*np.exp(-(dy/bloom)**2))  # (gh,)
+                hotx, hoty = np.exp(-(dx/hsx)**2), np.exp(-(dy/hsy)**2)
+                a = np.clip(0.55*np.outer(vL, hL) + 0.62*np.outer(hoty, hotx), 0, 1) * float(opac[n])
+                f.write((a * 255).astype(np.uint8).tobytes())
+        return out
+    except Exception:
+        return None
+
+
 def build_gameplay_triptych(
     clip: Path,
     out_path: Path,
@@ -911,39 +976,56 @@ def build_gameplay_triptych(
         dv = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_divider", {}) or {}
         dmode = str(dv.get("mode", "ambient")).lower()
         immersive = dmode == "immersive"
-        div_idx, gh = None, 0
+        # AUDIO-REACTIVE: the seam SWELLS (up to audio_size_max) + brightens on the game-
+        # audio loudness so it beats with the action. ambient/immersive only, and only if
+        # the clip has audio; otherwise it falls back to the static seam below.
+        audio_reactive = (bool(dv.get("audio_reactive", False)) and dmode in ("ambient", "immersive")
+                          and ffmpeg.has_audio(clip))
+        div_idx, gh, audio_idx = None, 0, None
         if dv.get("enabled", True):
-            base_h = float(dv.get("immersive_height", 100) if immersive else dv.get("height", 48))
-            gh = int(base_h * ts)
-            gh += gh % 2                                  # even (yuv420p)
-            cy = gh / 2.0
-            g = str((CONFIG.reels.get("caption", {}) or {}).get("hdr_text_gray", "A6"))
-            lvl = int(g, 16) if hdr else 255
-            if immersive:
-                # even soft glow band (backlight bleed): full width, soft vertical falloff,
-                # NO centre hotspot -> the colour washes wide + spills onto the panel edges.
-                a_expr = f"clip(255*0.82*exp(-pow((Y-{cy:.1f})/{gh * 0.26:.1f},2)),0,255)"
-            else:
-                cx = w / 2.0
-                reach = max(1.0, float(dv.get("reach", 0.42)) * w)   # L/R extent of the line
-                bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)   # vertical glow spread
-                core = max(0.6, 1.3 * ts)                            # line thickness
-                hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)    # central hotspot size
-                inten = max(0.0, float(dv.get("intensity", 1.0)))
-                a_expr = (
-                    f"clip(255*{inten:.3f}*("
-                    f"0.55*exp(-pow((X-{cx:.0f})/{reach:.1f},2))"
-                    f"*min(1,exp(-pow((Y-{cy:.1f})/{core:.2f},2))+0.30*exp(-pow((Y-{cy:.1f})/{bloom:.1f},2)))"
-                    f"+0.62*exp(-(pow((X-{cx:.0f})/{hsx:.1f},2)+pow((Y-{cy:.1f})/{hsy:.1f},2)))"
-                    f"),0,255)")
-            seam = Path(tmp) / "seam.png"
-            ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={w}x{gh}", "-vf",
-                        f"format=rgba,geq=r={lvl}:g={lvl}:b={lvl}:a='{a_expr}'",
-                        "-frames:v", "1", str(seam)], timeout=60)
-            if seam.exists():
-                inputs += ["-loop", "1", "-i", str(seam)]
-                div_idx = next_idx
-                next_idx += 1
+            if audio_reactive:
+                gh = int(float(dv.get("audio_height", 72)) * ts)
+                gh += gh % 2
+                _ap = _audio_seam_alpha(Path(tmp), clip, w, gh, fps, show, dv, ts)
+                if _ap and _ap.exists():
+                    inputs += ["-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{w}x{gh}",
+                               "-r", str(fps), "-i", str(_ap)]
+                    audio_idx = next_idx
+                    next_idx += 1
+                else:
+                    audio_reactive = False               # graceful fallback to static seam
+            if not audio_reactive:
+                base_h = float(dv.get("immersive_height", 100) if immersive else dv.get("height", 48))
+                gh = int(base_h * ts)
+                gh += gh % 2                              # even (yuv420p)
+                cy = gh / 2.0
+                g = str((CONFIG.reels.get("caption", {}) or {}).get("hdr_text_gray", "A6"))
+                lvl = int(g, 16) if hdr else 255
+                if immersive:
+                    # even soft glow band (backlight bleed): full width, soft vertical
+                    # falloff, NO centre hotspot -> the colour washes wide onto the panels.
+                    a_expr = f"clip(255*0.82*exp(-pow((Y-{cy:.1f})/{gh * 0.26:.1f},2)),0,255)"
+                else:
+                    cx = w / 2.0
+                    reach = max(1.0, float(dv.get("reach", 0.42)) * w)   # L/R extent of the line
+                    bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)   # vertical glow spread
+                    core = max(0.6, 1.3 * ts)                            # line thickness
+                    hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)    # central hotspot size
+                    inten = max(0.0, float(dv.get("intensity", 1.0)))
+                    a_expr = (
+                        f"clip(255*{inten:.3f}*("
+                        f"0.55*exp(-pow((X-{cx:.0f})/{reach:.1f},2))"
+                        f"*min(1,exp(-pow((Y-{cy:.1f})/{core:.2f},2))+0.30*exp(-pow((Y-{cy:.1f})/{bloom:.1f},2)))"
+                        f"+0.62*exp(-(pow((X-{cx:.0f})/{hsx:.1f},2)+pow((Y-{cy:.1f})/{hsy:.1f},2)))"
+                        f"),0,255)")
+                seam = Path(tmp) / "seam.png"
+                ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={w}x{gh}", "-vf",
+                            f"format=rgba,geq=r={lvl}:g={lvl}:b={lvl}:a='{a_expr}'",
+                            "-frames:v", "1", str(seam)], timeout=60)
+                if seam.exists():
+                    inputs += ["-loop", "1", "-i", str(seam)]
+                    div_idx = next_idx
+                    next_idx += 1
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
             # animated KiwinoyGaming lower-third — plays ONCE at the start, same spot
@@ -1004,7 +1086,8 @@ def build_gameplay_triptych(
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
                          f"crop={w}:{arth},{grade}setsar=1{hdrfy}[bot]"]
         # AMBIENT / IMMERSIVE modes sample the gameplay panel colour -> split it off here.
-        ambient = div_idx is not None and dmode in ("ambient", "immersive")
+        have_seam = div_idx is not None or audio_idx is not None
+        ambient = have_seam and dmode in ("ambient", "immersive")
         mid_tail = ",split[mid][midsrc]" if ambient else "[mid]"
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}{f10}[bg]",
@@ -1022,8 +1105,8 @@ def build_gameplay_triptych(
             f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
         ]
         vlabel = "b3"
-        # Light seams on the two panel gaps (y=band, 2*band), breathing subtly.
-        if div_idx is not None:
+        # Light seams on the two panel gaps (y=band, 2*band).
+        if have_seam:
             p_lo, p_hi = float(dv.get("pulse_min", 0.54)), float(dv.get("pulse_max", 0.90))
             p_mean, p_amp = (p_lo + p_hi) / 2.0, (p_hi - p_lo) / 2.0
             p_sec = max(0.3, float(dv.get("pulse_seconds", 3.5)))
@@ -1049,12 +1132,17 @@ def build_gameplay_triptych(
                 amb = (f"scale={zones}:1,scale={w}:{gh},gblur=sigma={sig:.0f},"
                        f"eq=saturation={sat}:brightness={bri},curves=all='0/{lift:.2f} 1/1'"
                        + (f",tmix=frames={tmix}" if tmix >= 2 else ""))
+                if audio_idx is not None:
+                    # audio-reactive: per-frame alpha (size swell + brightness baked in)
+                    alpha_line = f"[{audio_idx}:v]format=gray,split[shA][shB]"
+                else:
+                    alpha_line = (f"[{div_idx}:v]alphaextract,format=gray,"
+                                  f"geq=lum='clip(p(X,Y)*({pulse}),0,255)',split[shA][shB]")
                 fc += [
                     "[midsrc]split[msT][msB]",
                     f"[msT]crop=iw:ih/2:0:0,{amb}[ambT]",
                     f"[msB]crop=iw:ih/2:0:ih/2,{amb}[ambB]",
-                    f"[{div_idx}:v]alphaextract,format=gray,"
-                    f"geq=lum='clip(p(X,Y)*({pulse}),0,255)',split[shA][shB]",
+                    alpha_line,
                     "[ambT][shA]alphamerge[seamT]",
                     "[ambB][shB]alphamerge[seamB]",
                     f"[{vlabel}][seamT]overlay=0:{y1}[b3s1]",

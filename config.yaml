@@ -683,6 +683,15 @@ reels:
       brightness: 0.12    # overall lift of the ambient colour
       glow_floor: 0.50    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
       zones: 24           # horizontal colour zones sampled across the gameplay edge
+      # --- audio-reactive (DEFAULT ON): the seam SWELLS + brightens with the game-audio
+      #     loudness, so it beats with the action (ambient/immersive only; needs clip audio,
+      #     else it falls back to the static seam). Adds a small per-render audio+numpy step.
+      audio_reactive: true
+      audio_size_max: 1.5      # seam grows up to this (x) on the loudest hits
+      audio_bright_floor: 0.80 # min seam brightness in the quietest beats (never fully gone)
+      audio_height: 72         # seam band height @1080p (needs headroom for the swell)
+      audio_attack: 0.55       # response: how fast it swells UP on a hit (higher = snappier)
+      audio_release: 0.12      # response: how slowly it settles back (lower = smoother/slower)
       # --- immersive mode extras ---
       immersive_height: 100        # wider glow band that bleeds onto the panels
       immersive_saturation: 1.85
