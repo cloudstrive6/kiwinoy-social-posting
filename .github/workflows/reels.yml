@@ -23,6 +23,16 @@ on:
   #   - cron: "25 12 * * *"  # slot 4
   #   - cron: "25 16 * * *"  # slot 5
   #   - cron: "25 20 * * *"  # slot 6
+  #
+  # BACKUP safety-net (this ONE native schedule IS active): fires ~30 min AFTER each
+  # cron-job.org primary slot (0/8/16 UTC) and runs `run.py --reel --backup`, which
+  # posts a make-up ONLY if the primary trigger was dropped (idempotent via the
+  # last-posted marker) and Telegrams when it covers a miss. GitHub's own scheduler is
+  # immune to the cron-job.org->workflow_dispatch API 503s that cause primary misses,
+  # so it's a well-decorrelated fallback. Native cron can itself be late/dropped, but a
+  # late make-up beats a permanent miss, and the marker prevents any double-post.
+  schedule:
+    - cron: "30 0,8,16 * * *"
   workflow_dispatch:
     inputs:
       slot:
@@ -98,24 +108,21 @@ jobs:
       - name: Map trigger -> reel slot
         id: pick
         run: |
+          BACKUP="${{ github.event.inputs.backup }}"
           case "${{ github.event.schedule }}" in
-            "25 0 * * *")  SLOT=1 ;;
-            "25 4 * * *")  SLOT=2 ;;
-            "25 8 * * *")  SLOT=3 ;;
-            "25 12 * * *") SLOT=4 ;;
-            "25 16 * * *") SLOT=5 ;;
-            "25 20 * * *") SLOT=6 ;;
-            *)             SLOT="${{ github.event.inputs.slot }}" ;;
+            "30 0,8,16 * * *") SLOT=1; BACKUP="true" ;;   # native backup safety-net
+            *)                 SLOT="${{ github.event.inputs.slot }}" ;;
           esac
           echo "slot=${SLOT:-1}" >> "$GITHUB_OUTPUT"
-          echo "Selected reel slot: ${SLOT:-1}"
+          echo "backup=${BACKUP:-false}" >> "$GITHUB_OUTPUT"
+          echo "Selected reel slot: ${SLOT:-1} (backup=${BACKUP:-false})"
 
       - name: Render + publish the reel
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           BACKUP=""
-          if [ "${{ github.event.inputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
+          if [ "${{ steps.pick.outputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
           python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY $BACKUP
 
       - name: Poster frames (dry-run layout preview)
