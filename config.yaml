@@ -958,7 +958,11 @@ quotes:
   # footage for variety. Add more photos to assets/images/<game>/ for best results.
 
 threads_posts:
-  enabled: true            # RESUMED (per user 2026-06-23): picking up traction.
+  enabled: false           # PAUSED 2026-07-21 (per user) — Threads focusing on the
+                           # trending Doomsday trailer; manual posts only. Workflows
+                           # threads.yml/threads-footage.yml/threads-image.yml also
+                           # disabled_manually. Flip true + `gh workflow enable` to resume.
+                           # RESUMED (per user 2026-06-23): picking up traction.
                            # ENGAGEMENT-DRIVEN Threads/X track — replaces the old
                            # caption-only quotes that got no engagement.
   # A hashtag appended to every Threads caption (captions + footage) — a workaround
@@ -1131,7 +1135,7 @@ longform_archive:
   local_dir: reels/assets/longform-fullgame
 
 threads_footage:
-  enabled: true
+  enabled: false       # PAUSED 2026-07-21 (per user) — see threads_posts note above.
   seconds: 60          # max clip length (longer clips are trimmed)
   fps: 60              # CFR 60fps
   # Horizontal 'as-is' footage now posts to Threads + Facebook, 2x/day (2026-07-01,
