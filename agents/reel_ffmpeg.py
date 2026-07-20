@@ -904,6 +904,38 @@ def build_gameplay_triptych(
                 next_idx += 1
             else:
                 glow_on = False
+        # Light-seam DIVIDERS on the two panel gaps: a color-neutral white light —
+        # bright centre hotspot -> horizontal falloff to the edges -> soft vertical
+        # bloom, with a subtle opacity breathe. White so it reads over ANY footage/
+        # art/image colour; HDR uses the same ~203-nit graphics grey as the wordmark
+        # (pure white would blow out in PQ). Tunable via reels.gameplay.triptych_divider.
+        dv = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_divider", {}) or {}
+        div_idx, gh = None, 0
+        if dv.get("enabled", True):
+            gh = int(float(dv.get("height", 48)) * ts)
+            gh += gh % 2                                  # even (yuv420p)
+            cx, cy = w / 2.0, gh / 2.0
+            reach = max(1.0, float(dv.get("reach", 0.28)) * w)   # L/R extent of the line
+            bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)   # vertical glow spread
+            core = max(0.6, 1.3 * ts)                            # line thickness
+            hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)    # central hotspot size
+            inten = max(0.0, float(dv.get("intensity", 1.0)))    # overall brightness
+            g = str((CONFIG.reels.get("caption", {}) or {}).get("hdr_text_gray", "A6"))
+            lvl = int(g, 16) if hdr else 255
+            a_expr = (
+                f"clip(255*{inten:.3f}*("
+                f"0.55*exp(-pow((X-{cx:.0f})/{reach:.1f},2))"
+                f"*min(1,exp(-pow((Y-{cy:.1f})/{core:.2f},2))+0.30*exp(-pow((Y-{cy:.1f})/{bloom:.1f},2)))"
+                f"+0.62*exp(-(pow((X-{cx:.0f})/{hsx:.1f},2)+pow((Y-{cy:.1f})/{hsy:.1f},2)))"
+                f"),0,255)")
+            seam = Path(tmp) / "seam.png"
+            ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={w}x{gh}", "-vf",
+                        f"format=rgba,geq=r={lvl}:g={lvl}:b={lvl}:a='{a_expr}'",
+                        "-frames:v", "1", str(seam)], timeout=60)
+            if seam.exists():
+                inputs += ["-loop", "1", "-i", str(seam)]
+                div_idx = next_idx
+                next_idx += 1
         anim_rgb_idx = None
         if anim_logo and all(p and Path(p).exists() for p in anim_logo):
             # animated KiwinoyGaming lower-third — plays ONCE at the start, same spot
@@ -979,6 +1011,20 @@ def build_gameplay_triptych(
             f"[b2][bot]overlay=(W-w)/2:{2 * band}+({band}-h)/2[b3]",
         ]
         vlabel = "b3"
+        # Overlay the two breathing light seams centred on the panel gaps (y=band, 2*band).
+        if div_idx is not None:
+            p_lo, p_hi = float(dv.get("pulse_min", 0.54)), float(dv.get("pulse_max", 0.90))
+            p_mean, p_amp = (p_lo + p_hi) / 2.0, (p_hi - p_lo) / 2.0
+            p_sec = max(0.3, float(dv.get("pulse_seconds", 3.5)))
+            pulse = f"{p_mean:.3f}+{p_amp:.3f}*sin(2*PI*T/{p_sec:.2f})"
+            y1, y2 = band - gh // 2, 2 * band - gh // 2
+            fc += [
+                f"[{div_idx}:v]format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':"
+                f"a='alpha(X,Y)*({pulse})',split[sm1][sm2]",
+                f"[{vlabel}][sm1]overlay=0:{y1}[b3s1]",
+                f"[b3s1][sm2]overlay=0:{y2}{f10}[b3d]",
+            ]
+            vlabel = "b3d"
         # NOTE: no circle KG logo (removed per user) and no game logo on the triptych.
         if anim_rgb_idx is not None:
             fc += _anim_overlay(anim_rgb_idx, anim_alpha_idx, vlabel, w, "ova")

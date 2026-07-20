@@ -662,6 +662,21 @@ reels:
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
     triptych_top_dim: 0.55
+    # Light-seam DIVIDERS on the two panel gaps (per user 2026-07-20): a color-neutral
+    # white light — bright centre hotspot -> horizontal falloff to the edges -> soft
+    # vertical bloom, breathing subtly in/out. White so it reads over ANY footage/art/
+    # image colour; HDR uses the ~203-nit graphics grey (caption.hdr_text_gray) so it
+    # doesn't blow out. Applies to EVERY triptych reel (FB/IG/Threads/TikTok + the 4K
+    # HDR YouTube ones). Set enabled:false to revert to plain black gaps.
+    triptych_divider:
+      enabled: true
+      height: 48          # seam graphic height @1080p (scales w/ resolution); gap is ~32px, bloom spills a little
+      intensity: 1.0      # overall brightness (1.0 = as approved; lower = subtler)
+      reach: 0.28         # how far the line extends L/R before fading (fraction of width)
+      bloom: 7            # vertical glow spread @1080p
+      pulse_min: 0.54     # breathe: min opacity fraction
+      pulse_max: 0.90     # breathe: max opacity fraction
+      pulse_seconds: 3.5  # breathe period
     # CLASSIC layout blurred-fill background (per user 2026-07-20): instead of black
     # bands, the footage is duplicated as the bottom layer, stretched to fill the whole
     # 9:16 frame, then blurred + darkened — no black spaces, hook + game title stay
