@@ -662,27 +662,35 @@ reels:
     # Darken the triptych TOP still (like the quote cards) so the hook caption
     # dominates. 1.0 = no change, lower = darker; 0.55 ~= a 45% black overlay.
     triptych_top_dim: 0.55
-    # Light-seam DIVIDERS on the two panel gaps (per user 2026-07-20). Two modes:
+    # Light-seam DIVIDERS on the two panel gaps (per user 2026-07-20). Three modes:
     #   ambient (DEFAULT, Hue-sync): each seam samples the gameplay panel's colour +
-    #     brightness live and glows to match the action (like a Philips Hue TV sync) —
+    #     brightness live and glows to match the action (like a Philips Hue TV sync),
     #     shaped by the seam form, with a shadow lift so dark beats keep a soft glow.
+    #   immersive: same Hue-sync but a WIDER soft glow that bleeds onto the panel edges,
+    #     punchier colour, and temporal smoothing so hues GLIDE. More cinematic.
     #   neutral: a color-neutral white light seam (bright centre hotspot -> falloff ->
     #     bloom). White so it reads over any colour; HDR uses ~203-nit graphics grey.
     # Applies to EVERY triptych reel (FB/IG/Threads/TikTok + the 4K HDR YouTube ones).
     # Set enabled:false to revert to plain black gaps.
     triptych_divider:
       enabled: true
-      mode: ambient       # ambient (Hue-sync, DEFAULT) | neutral (white light seam)
+      mode: ambient       # ambient (Hue-sync, DEFAULT) | immersive (wider glow) | neutral (white seam)
+      # --- ambient (default) + neutral: seam-FORM knobs ---
+      reach: 0.42         # how far the seam line stretches toward the L/R edges (fraction of width; higher = reaches the edges more)
+      intensity: 1.0      # brightness of the neutral seam
       # --- ambient mode (Hue-sync) ---
       saturation: 1.5     # vividness of the sampled colour
       brightness: 0.06    # overall lift of the ambient colour
       glow_floor: 0.28    # shadow lift so dark scenes still glow softly (0 = dim toward black, truer Hue)
       zones: 24           # horizontal colour zones sampled across the gameplay edge
-      # --- neutral mode ---
-      intensity: 1.0      # overall brightness of the neutral seam
-      reach: 0.28         # how far the neutral line extends L/R before fading (fraction of width)
+      # --- immersive mode extras ---
+      immersive_height: 100        # wider glow band that bleeds onto the panels
+      immersive_saturation: 1.85
+      immersive_brightness: 0.10
+      immersive_glow_floor: 0.12
+      temporal_smooth: 6           # frames averaged so colours glide (0 = off)
       # --- shared ---
-      height: 48          # seam graphic height @1080p (scales w/ resolution)
+      height: 48          # ambient/neutral seam height @1080p (scales w/ resolution)
       bloom: 7            # vertical glow spread @1080p
       pulse_min: 0.54     # breathe: min opacity fraction
       pulse_max: 0.90     # breathe: max opacity fraction

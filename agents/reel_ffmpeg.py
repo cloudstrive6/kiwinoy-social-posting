@@ -904,30 +904,38 @@ def build_gameplay_triptych(
                 next_idx += 1
             else:
                 glow_on = False
-        # Light-seam DIVIDERS on the two panel gaps: a color-neutral white light —
-        # bright centre hotspot -> horizontal falloff to the edges -> soft vertical
-        # bloom, with a subtle opacity breathe. White so it reads over ANY footage/
-        # art/image colour; HDR uses the same ~203-nit graphics grey as the wordmark
-        # (pure white would blow out in PQ). Tunable via reels.gameplay.triptych_divider.
+        # Light-seam DIVIDERS on the two panel gaps. mode = ambient (default, Hue-sync)
+        # | immersive (a WIDER soft glow that bleeds onto the panels + colour smoothing)
+        # | neutral (a color-neutral white light seam). The seam SHAPE (its alpha) masks
+        # the sampled colour in ambient/immersive; neutral uses it white directly.
         dv = (CONFIG.reels.get("gameplay", {}) or {}).get("triptych_divider", {}) or {}
+        dmode = str(dv.get("mode", "ambient")).lower()
+        immersive = dmode == "immersive"
         div_idx, gh = None, 0
         if dv.get("enabled", True):
-            gh = int(float(dv.get("height", 48)) * ts)
+            base_h = float(dv.get("immersive_height", 100) if immersive else dv.get("height", 48))
+            gh = int(base_h * ts)
             gh += gh % 2                                  # even (yuv420p)
-            cx, cy = w / 2.0, gh / 2.0
-            reach = max(1.0, float(dv.get("reach", 0.28)) * w)   # L/R extent of the line
-            bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)   # vertical glow spread
-            core = max(0.6, 1.3 * ts)                            # line thickness
-            hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)    # central hotspot size
-            inten = max(0.0, float(dv.get("intensity", 1.0)))    # overall brightness
+            cy = gh / 2.0
             g = str((CONFIG.reels.get("caption", {}) or {}).get("hdr_text_gray", "A6"))
             lvl = int(g, 16) if hdr else 255
-            a_expr = (
-                f"clip(255*{inten:.3f}*("
-                f"0.55*exp(-pow((X-{cx:.0f})/{reach:.1f},2))"
-                f"*min(1,exp(-pow((Y-{cy:.1f})/{core:.2f},2))+0.30*exp(-pow((Y-{cy:.1f})/{bloom:.1f},2)))"
-                f"+0.62*exp(-(pow((X-{cx:.0f})/{hsx:.1f},2)+pow((Y-{cy:.1f})/{hsy:.1f},2)))"
-                f"),0,255)")
+            if immersive:
+                # even soft glow band (backlight bleed): full width, soft vertical falloff,
+                # NO centre hotspot -> the colour washes wide + spills onto the panel edges.
+                a_expr = f"clip(255*0.82*exp(-pow((Y-{cy:.1f})/{gh * 0.26:.1f},2)),0,255)"
+            else:
+                cx = w / 2.0
+                reach = max(1.0, float(dv.get("reach", 0.42)) * w)   # L/R extent of the line
+                bloom = max(1.0, float(dv.get("bloom", 7.0)) * ts)   # vertical glow spread
+                core = max(0.6, 1.3 * ts)                            # line thickness
+                hsx, hsy = max(1.0, 0.05 * w), max(1.0, 6.0 * ts)    # central hotspot size
+                inten = max(0.0, float(dv.get("intensity", 1.0)))
+                a_expr = (
+                    f"clip(255*{inten:.3f}*("
+                    f"0.55*exp(-pow((X-{cx:.0f})/{reach:.1f},2))"
+                    f"*min(1,exp(-pow((Y-{cy:.1f})/{core:.2f},2))+0.30*exp(-pow((Y-{cy:.1f})/{bloom:.1f},2)))"
+                    f"+0.62*exp(-(pow((X-{cx:.0f})/{hsx:.1f},2)+pow((Y-{cy:.1f})/{hsy:.1f},2)))"
+                    f"),0,255)")
             seam = Path(tmp) / "seam.png"
             ffmpeg.run(["-f", "lavfi", "-i", f"color=c=white:s={w}x{gh}", "-vf",
                         f"format=rgba,geq=r={lvl}:g={lvl}:b={lvl}:a='{a_expr}'",
@@ -995,8 +1003,8 @@ def build_gameplay_triptych(
         else:
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
                          f"crop={w}:{arth},{grade}setsar=1{hdrfy}[bot]"]
-        # AMBIENT (Hue-sync) mode samples the gameplay panel colour -> split it off here.
-        ambient = div_idx is not None and str(dv.get("mode", "ambient")).lower() == "ambient"
+        # AMBIENT / IMMERSIVE modes sample the gameplay panel colour -> split it off here.
+        ambient = div_idx is not None and dmode in ("ambient", "immersive")
         mid_tail = ",split[mid][midsrc]" if ambient else "[mid]"
         fc = [
             f"color=c=black:s={w}x{h}:r={fps}{f10}[bg]",
@@ -1026,11 +1034,21 @@ def build_gameplay_triptych(
                 # the gameplay panel's top/bottom halves each frame, then shaped by the seam
                 # form (its alpha). A shadow lift (glow_floor) keeps a soft glow in dark beats.
                 zones = int(dv.get("zones", 24))
-                sat, bri = float(dv.get("saturation", 1.5)), float(dv.get("brightness", 0.06))
-                lift = float(dv.get("glow_floor", 0.28))
-                sig = max(6.0, 34.0 * ts)
+                if immersive:                              # wider, punchier, colour glides
+                    sat = float(dv.get("immersive_saturation", 1.85))
+                    bri = float(dv.get("immersive_brightness", 0.10))
+                    lift = float(dv.get("immersive_glow_floor", 0.12))
+                    sig = max(6.0, 42.0 * ts)
+                    tmix = int(dv.get("temporal_smooth", 6))
+                else:                                      # the current default seam
+                    sat = float(dv.get("saturation", 1.5))
+                    bri = float(dv.get("brightness", 0.06))
+                    lift = float(dv.get("glow_floor", 0.28))
+                    sig = max(6.0, 34.0 * ts)
+                    tmix = 0
                 amb = (f"scale={zones}:1,scale={w}:{gh},gblur=sigma={sig:.0f},"
-                       f"eq=saturation={sat}:brightness={bri},curves=all='0/{lift:.2f} 1/1'")
+                       f"eq=saturation={sat}:brightness={bri},curves=all='0/{lift:.2f} 1/1'"
+                       + (f",tmix=frames={tmix}" if tmix >= 2 else ""))
                 fc += [
                     "[midsrc]split[msT][msB]",
                     f"[msT]crop=iw:ih/2:0:0,{amb}[ambT]",
