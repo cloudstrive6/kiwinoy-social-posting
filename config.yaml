@@ -485,7 +485,7 @@ reels:
     # They're auto-discovered by their "<game>__" name prefix, downloaded at
     # render time into cache_dir, and merged with any local clips. Set
     # use_releases: false to turn this off.
-    use_releases: true
+    use_releases: false
     release_repo: cloudstrive6/kiwinoy-social-posting
     release_tag: footage
     # B2 media bucket (native API, requests-only) is the NEW home for gameplay
