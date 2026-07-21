@@ -2179,6 +2179,10 @@ def run_threads_image(
     """Threads IMAGE post: research the hottest sport -> design a KG graphic on
     YOUR sports photo/footage -> publish to Threads (image + caption). Skips if
     you have no sports media for the topic (the text track still covers it)."""
+    if not (CONFIG.threads_posts or {}).get("enabled", True):
+        print("[threads-image] Threads posting paused (threads_posts.enabled=false) — skipping.",
+              flush=True)
+        return {"kind": "threads_image", "published": False, "skipped": "disabled"}
     run_dir = OUTPUT_DIR / f"{_stamp()}_threadsimg"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[threads-image] {m}", flush=True)
