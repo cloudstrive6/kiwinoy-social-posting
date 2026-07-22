@@ -215,7 +215,7 @@ image:
     headline_style: >
       Angular, engraved military sci-fi caps — clean hard-edged metallic sans with
       a futuristic UNSC feel, like the Halo logo.
-    hashtags: ['#Halo', '#MasterChief', '#HaloCampaignEvolved', '#Xbox', '#Gaming']
+    hashtags: ['#Halo', '#HaloCampaignEvolved', '#MasterChief', '#PS5', '#Gaming']
   - match: ['mobile legends', 'mlbb', 'mpl philippines', 'mpl ph', 'mpl season',
       'm6 world', 'm7 world', 'moonton', 'bang bang']
     style: >
@@ -571,7 +571,7 @@ reels:
     ff7remake: ["#FF7Remake", "#FinalFantasyVIIRemake", "#FinalFantasy", "#FF7", "#gaming"]
     thelastofus2: ["#thelastofuspart2", "#thelastofus", "#TLOU2", "#PS5", "#gaming"]
     thelastofus1: ["#thelastofus", "#TLOU", "#thelastofusremastered", "#PS5", "#gaming"]
-    halo: ["#Halo", "#MasterChief", "#Xbox", "#gaming", "#gamingreels"]
+    halo: ["#Halo", "#HaloCampaignEvolved", "#MasterChief", "#PS5", "#gamingreels"]
     re: ["#ResidentEvil", "#RE", "#survivalhorror", "#gaming", "#PS5"]
     genshin: ["#GenshinImpact", "#Genshin", "#gaming", "#gachagame", "#gamingreels"]
     hsr: ["#HonkaiStarRail", "#StarRail", "#HSR", "#gaming", "#gachagame"]
