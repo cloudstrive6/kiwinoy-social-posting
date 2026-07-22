@@ -392,6 +392,8 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
         print(f"[content] relatable FILL caption failed ({e!r}); using a fallback line.", flush=True)
     if not line:                                             # SAFE: feeling-only, always grounded
         line = random.choice(_FILL_FALLBACKS)
+    if line:                                                 # capitalize the first letter (per user)
+        line = line[0].upper() + line[1:]
     return f"{line}\n\n{' '.join(_fill_tags(game))}".strip()
 
 

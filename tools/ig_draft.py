@@ -46,6 +46,9 @@ def main() -> int:
                     "for a MANUAL Instagram post (add your own trending song in-app).")
     ap.add_argument("--game", default=None,
                     help="game key (default: the current prefer_override / tiktok game)")
+    ap.add_argument("--clip", default=None,
+                    help="render a SPECIFIC clip by filename from <game>-vertical (e.g. re-post a "
+                         "clip that already went out). Default: a fresh unused clip.")
     ap.add_argument("--seconds", type=float, default=None,
                     help="cap the reel length in seconds (default: whole clip up to IG's 15-min max)")
     ap.add_argument("--keep-clip", action="store_true",
@@ -56,8 +59,23 @@ def main() -> int:
     vkey = f"{game}-vertical"
     print(f"[ig-draft] game={game}  pool={vkey}", flush=True)
 
-    # 1) pick a fresh, unused vertical clip (the picker retries on download hiccups)
-    clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+    # 1) resolve the clip — a SPECIFIC one (--clip, a deliberate re-post) or a fresh unused one
+    cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get("cache_dir", "reels/assets/footage/.cache")
+    if args.clip:
+        clip_path, clip_id = None, None
+        for kind, item in reel_composer._candidates(vkey):
+            iname = item["name"] if isinstance(item, dict) else Path(str(item)).name
+            if iname == args.clip:
+                clip_path = (Path(item) if kind == "local"
+                             else reel_composer._download_item(kind, item, cache))
+                clip_id = reel_composer._clip_id(kind, item, vkey)
+                break
+        if not clip_path:
+            print(f"[ig-draft] Clip '{args.clip}' not found/downloadable in '{vkey}'.", flush=True)
+            return 2
+        args.keep_clip = True   # a deliberate re-post — never consume/re-mark the clip
+    else:
+        clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
     if not clip_path:
         print(f"[ig-draft] No footage in '{vkey}'. Add vertical clips to "
               f"reels/assets/footage/{vkey}/ (then sync to B2) first.", flush=True)
