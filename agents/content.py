@@ -247,9 +247,12 @@ def _fill_tags(n_pool: int = 3) -> list[str]:
     return [t if str(t).startswith("#") else f"#{t}" for t in tags]
 
 
-def _relatable_caption(observation: str, angle: str) -> str:
+def _relatable_caption(observation: str, angle: str, avoid: str = "") -> str:
     """Write ONE short, human, relatable FIRST-PERSON caption from the observer's read
-    of the clip — the moment/feeling, NOT the game. No game/character names, no hype."""
+    of the clip — the moment/feeling, NOT the game. No game/character names, no hype.
+    `avoid` feeds back a critic's rejection reason for a corrected second attempt."""
+    fix = (f"\nA PREVIOUS attempt was REJECTED because: {avoid}\nWrite a new line that "
+           "fixes that.\n" if avoid else "")
     prompt = (
         "You write captions for full-screen vertical gameplay reels. This is NOT an ad — "
         "we do NOT promote the game. We post gameplay so the audience LIKES it, RELATES to "
@@ -262,12 +265,23 @@ def _relatable_caption(observation: str, angle: str) -> str:
         '- "Got 10 mins before lunch ends, might as well swing across the city"\n'
         '- "POV: you just needed to clear your head"\n'
         '- "when the grind finally slows down for a second"\n\n'
-        f"Use THIS lens for your caption: {angle}.\n\n"
-        "RULES:\n"
-        "- Relatable + shareable. First person, or a \"POV:\" line, works great.\n"
+        f"Use THIS lens for your caption: {angle}.\n"
+        f"{fix}\n"
+        "GROUNDING — this is the rule people notice when it's broken:\n"
+        "- Only reference actions/places the observation ACTUALLY describes. Do NOT invent "
+        "concrete specifics — no 'rooftop', 'landed', 'sat down', 'found a spot', 'stopped' "
+        "unless the observer explicitly says so. If the clip is continuous swinging / flying "
+        "/ gliding / falling, your caption is about MOVEMENT, air, speed or freedom — NEVER "
+        "about stopping, landing, resting, or staying put.\n"
+        "- The FEELING is yours to choose; the physical action must match the clip.\n\n"
+        "POV — keep it coherent:\n"
+        "- If you start with 'POV:', it must describe the VIEWER'S OWN relatable situation or "
+        "feeling (something a person scrolling recognizes from their real life). It must NOT "
+        "read as the on-screen character narrating what they're doing. If in doubt, drop "
+        "'POV:' and just say the feeling in first person.\n\n"
+        "OTHER RULES:\n"
         "- NO game name, NO character names, NO 'this game'; NO marketing words "
         "(masterpiece, insane graphics, must-play, underrated, stunning).\n"
-        "- Tie the feeling to what's ACTUALLY happening on screen, but keep it human.\n"
         "- Max ~14 words, ONE line. 0-1 tasteful emoji is fine. No hashtags, no quotes, "
         "no preamble. Return ONLY the caption line."
     )
@@ -275,12 +289,41 @@ def _relatable_caption(observation: str, angle: str) -> str:
     return (raw.splitlines()[0].strip().strip('"') if raw else "")[:120]
 
 
+def _verify_caption(caption: str, observation: str) -> tuple[bool, str]:
+    """Adversarial critic: reject a caption that invents on-screen facts, contradicts the
+    action, uses an incoherent POV, or promotes the game. Returns (ok, issues). Fail-OPEN
+    (ok=True) if the critic itself errors, so a transient model issue never blocks posting."""
+    prompt = (
+        "You are a STRICT fact-checker for a short, relatable social caption on a gameplay "
+        "clip. Your job is to catch captions that don't match the video or confuse the reader.\n\n"
+        f"OBSERVER'S FACTUAL READ OF THE CLIP:\n{observation}\n\n"
+        f'CAPTION TO CHECK:\n"{caption}"\n\n'
+        "Mark it BAD if ANY of these are true:\n"
+        "1. It states a concrete visual fact the observation does NOT support (e.g. says "
+        "'rooftop', 'landed', 'sat down', 'found a spot', a specific object/place that isn't "
+        "described).\n"
+        "2. It CONTRADICTS the action — e.g. implies stopping/landing/stillness while the clip "
+        "is continuous swinging, flying, gliding, or falling.\n"
+        "3. The POV is incoherent — a 'POV:' line that reads as the character narrating their "
+        "in-game action instead of a situation/feeling the VIEWER relates to.\n"
+        "4. It names the game or a character, or uses marketing words.\n\n"
+        "A relatable FEELING (needing air, decompressing, escaping for a minute) is FINE as "
+        "long as the physical anchor matches the clip. Be strict but reasonable.\n"
+        'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=90))
+        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+    except Exception:
+        return True, ""
+
+
 def relatable_fill_caption(video_path, game: str = "") -> str:
-    """RELATABLE caption for the full-bleed FILL vertical reels. REVIEWS the clip (the
-    shared vision OBSERVER) and writes a short, human, first-person caption about the
-    moment/feeling — no game name, no marketing — so the audience relates + shares.
-    Falls back to a relatable generic line if vision/model is unavailable. Caption
-    already includes its lifestyle hashtags."""
+    """RELATABLE caption for the full-bleed FILL vertical reels. REVIEWS the clip (shared
+    vision OBSERVER), writes a short human first-person moment/feeling line (no game name,
+    no marketing), then FACT-CHECKS it against the observation — regenerating once if the
+    critic flags an invented fact / contradiction / confused POV. Falls back to a safe
+    feeling-only line if vision is unavailable or both attempts fail. Includes hashtags."""
     import tempfile
     from pathlib import Path
 
@@ -295,10 +338,18 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
                 observation = _observe_clip(cands, gname)
                 if observation:
-                    line = _relatable_caption(observation, angle)
+                    cand = _relatable_caption(observation, angle)
+                    ok, issues = _verify_caption(cand, observation) if cand else (False, "")
+                    if not ok and cand:                      # one grounded correction pass
+                        print(f"[content] FILL caption rejected ({issues or 'unclear'}); "
+                              "regenerating.", flush=True)
+                        cand = _relatable_caption(observation, angle, avoid=issues)
+                        ok, _ = _verify_caption(cand, observation) if cand else (False, "")
+                    if ok and cand:
+                        line = cand
     except Exception as e:
         print(f"[content] relatable FILL caption failed ({e!r}); using a fallback line.", flush=True)
-    if not line:
+    if not line:                                             # SAFE: feeling-only, always grounded
         line = random.choice(_FILL_FALLBACKS)
     return f"{line}\n\n{' '.join(_fill_tags())}".strip()
 
