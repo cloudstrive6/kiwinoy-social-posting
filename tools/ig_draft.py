@@ -104,31 +104,26 @@ def main() -> int:
     # 3) relatable, clip-grounded caption (<=5 hashtags, brand-tagged)
     caption = content.relatable_fill_caption(clip_path, game)
 
-    # 4) upload to B2 drafts/ig/ + presign a 7-day download link
+    # 4) upload to B2 drafts/ig/, then PING Telegram with filename + size + caption. The user
+    # browses drafts/ig/ in the Backblaze app and grabs the file there (no download link).
     la = CONFIG.raw().get("longform_archive", {}) or {}
     remote = str(la.get("remote", "kgb2"))
-    bucket = b2_store._bucket()
     key = f"drafts/ig/{reel_path.name}"
     print(f"[ig-draft] uploading to B2 -> {key}", flush=True)
-    rc = subprocess.run(["rclone", "copyto", str(reel_path), f"{remote}:{bucket}/{key}",
+    rc = subprocess.run(["rclone", "copyto", str(reel_path), f"{remote}:{b2_store._bucket()}/{key}",
                          "--b2-chunk-size", "100M"], env=_b2_env(remote)).returncode
-    link = b2_store.presigned_url(key) if rc == 0 else None
-
-    # 5) deliver to Telegram (link + caption). Fail-soft to the local path.
-    if link:
-        msg = (f"\U0001F3AC IG DRAFT ready — {game}, {int(target)}s\n"
-               "Open on your phone, save the video, then post to Instagram and add your "
-               "trending song in-app.\n\n"
-               f"⬇️ Download (valid 7 days):\n{link}\n\n"
-               f"— caption (copy below) —\n{caption}")
-        print("[ig-draft] Telegram:", "sent" if notify.telegram(msg) else
-              "NOT sent (set TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID)", flush=True)
-    else:
-        print(f"[ig-draft] B2 upload/presign failed (rc={rc}); file is local: {reel_path}", flush=True)
-        notify.telegram(f"⚠️ IG draft rendered but the upload failed. File on the PC:\n"
+    if rc != 0:
+        print(f"[ig-draft] B2 upload failed (rc={rc}); file is local: {reel_path}", flush=True)
+        notify.telegram(f"⚠️ IG draft rendered but the B2 upload failed. File on the PC:\n"
                         f"{reel_path}\n\n— caption —\n{caption}")
         print("\n[ig-draft] CAPTION:\n" + caption, flush=True)
         return 1
+    msg = (f"\U0001F3AC IG draft ready — {game}, {int(target)}s\n"
+           f"\U0001F4C1 Backblaze → drafts/ig/\n"
+           f"• File: {reel_path.name}\n"
+           f"• Size: {size_mb:.0f} MB\n\n"
+           f"— caption (copy below) —\n{caption}")
+    print("[ig-draft] Telegram ping:", "sent" if notify.telegram(msg) else "NOT sent", flush=True)
 
     # 6) mark the clip used so the auto feed won't post the same one (unless --keep-clip)
     if not args.keep_clip:
