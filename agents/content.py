@@ -234,17 +234,58 @@ _FILL_FALLBACKS = [
     "some days you just wanna log off reality for a while",
     "me pretending my problems don't exist for 30 minutes",
 ]
-# Relatable / lifestyle tags for FILL (NOT game-buy tags): a fixed core + a rotating sample.
-_FILL_TAG_CORE = ["#gaming", "#gamingreels", "#gamingcommunity"]
-_FILL_TAG_POOL = ["#relatable", "#gamerlife", "#gamingislife", "#justforfun", "#gamingclips",
-                  "#chill", "#cozygaming", "#gamersoftiktok", "#mood", "#nostalgia"]
+# Relatable NICHE tags for FILL (the '1-2 niche' slots of the 3-5 formula).
+_FILL_NICHE = ["#gamingreels", "#gamingclips", "#gamingcommunity", "#gamerlife", "#relatable"]
 
 
-def _fill_tags(n_pool: int = 3) -> list[str]:
-    pool = _FILL_TAG_POOL[:]
-    random.shuffle(pool)
-    tags = (CONFIG.reels.get("fill_hashtags", None) or (_FILL_TAG_CORE + pool[:n_pool]))
-    return [t if str(t).startswith("#") else f"#{t}" for t in tags]
+def _max_tags() -> int:
+    """Global hashtag cap (reels.max_hashtags, hard-limited to 5 per platform guidance)."""
+    try:
+        return max(1, min(5, int(CONFIG.reels.get("max_hashtags", 5) or 5)))
+    except Exception:
+        return 5
+
+
+def _dedupe_cap(tags: list, cap: int) -> list[str]:
+    """Normalize to #tags, drop dupes (case-insensitive), keep order, hard-cap at `cap`."""
+    seen, out = set(), []
+    for t in tags:
+        t = str(t).strip()
+        if not t:
+            continue
+        t = t if t.startswith("#") else f"#{t}"
+        if t.lower() not in seen and len(out) < cap:
+            seen.add(t.lower())
+            out.append(t)
+    return out
+
+
+def _fill_tags(game: str = "") -> list[str]:
+    """Up to reels.max_hashtags (<=5) tags for a FILL reel, per the 3-5 formula:
+    1-2 CORE topic (the game tag), 1-2 NICHE (relatable gaming), 1 BRAND (the channel)."""
+    cap = _max_tags()
+    override = CONFIG.reels.get("fill_hashtags", None)
+    if override:
+        return _dedupe_cap(list(override), cap)
+    core = list((CONFIG.reels.get("game_hashtags", {}) or {}).get(game, []))[:2]   # CORE topic
+    niche = _FILL_NICHE[:]
+    random.shuffle(niche)
+    brand = str(CONFIG.reels.get("brand_hashtag", "") or "").strip()
+    reserve = 1 if brand else 0                     # keep the last slot for the brand tag
+    out = _dedupe_cap(core, cap - reserve)          # 1-2 core
+    out = _dedupe_cap(out + niche, cap - reserve)   # niche fills the middle
+    if brand:
+        out = _dedupe_cap(out + [brand], cap)       # brand takes the final slot
+    return out
+
+
+def _reel_tags_with_brand(game: str) -> list[str]:
+    """CORE game tags (<=3) + the 1 BRAND tag, capped at reels.max_hashtags. For the
+    classic/triptych + vision caption paths. Stays <=4 so IG's later +1 #gamingreels
+    keeps the post within the 5-tag limit."""
+    brand = str(CONFIG.reels.get("brand_hashtag", "") or "").strip()
+    base = list(_reel_hashtags({"game": game}))
+    return _dedupe_cap(base + ([brand] if brand else []), _max_tags())
 
 
 def _relatable_caption(observation: str, angle: str, avoid: str = "") -> str:
@@ -351,7 +392,7 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
         print(f"[content] relatable FILL caption failed ({e!r}); using a fallback line.", flush=True)
     if not line:                                             # SAFE: feeling-only, always grounded
         line = random.choice(_FILL_FALLBACKS)
-    return f"{line}\n\n{' '.join(_fill_tags())}".strip()
+    return f"{line}\n\n{' '.join(_fill_tags(game))}".strip()
 
 
 def _text(prompt: str, timeout: int = 120) -> str:
@@ -525,7 +566,7 @@ def hook_and_caption_from_video(
         hook = "Wait for it"
     if not line:
         line = "Watch this clip"
-    tags = _reel_hashtags({"game": game})
+    tags = _reel_tags_with_brand(game)
     # with_game_title=True (classic/triptych reels -> FB/IG/TikTok) inserts the game
     # title + emoji between the body and the hashtags. Off by default so other callers
     # (e.g. the YouTube Short description) keep the plain body+hashtags caption.
@@ -608,5 +649,5 @@ def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str
         print(f"[content] vision caption failed ({e!r}); using a generic line.", flush=True)
     if not line:
         line = "Watch this clip"
-    tags = _reel_hashtags({"game": game})
+    tags = _reel_tags_with_brand(game)
     return f"{line}\n\n{' '.join(tags)}".strip()

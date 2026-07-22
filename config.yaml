@@ -576,6 +576,12 @@ reels:
     genshin: ["#GenshinImpact", "#Genshin", "#gaming", "#gachagame", "#gamingreels"]
     hsr: ["#HonkaiStarRail", "#StarRail", "#HSR", "#gaming", "#gachagame"]
     mlbb: ["#MobileLegends", "#MLBB", "#MobileLegendsBangBang", "#gaming", "#esports"]
+  # HASHTAG POLICY (per user + platform guidance 2026-07-21): MAX 5 tags, following the
+  # 3-5 formula — 1-2 CORE topic (the game tag) + 1-2 NICHE (relatable gaming) + 1 BRAND.
+  # YouTube/TikTok/Instagram all favour 3-5 tight, relevant tags over a wall of them, and
+  # 15+ tags gets the post's tags ignored. Enforced in agents/content.py.
+  max_hashtags: 5
+  brand_hashtag: "#KiwinoyGamer"     # the consistent channel/brand tag (the '1 brand' slot)
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
   caption:
