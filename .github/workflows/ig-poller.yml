@@ -1,0 +1,82 @@
+name: KiwinoyGamer IG-Draft Poller
+
+# Lets the user TEXT the Telegram bot "ig draft" (optionally a game and/or a length, e.g.
+# "ig draft halo 30s") and have a full-bleed vertical reel rendered IN THE CLOUD, dropped
+# into B2 drafts/ig/, and pinged back — no PC needed. Polls Telegram every ~15 min.
+#
+# SAFETY: tools/telegram_poller.py honours ONLY messages from TELEGRAM_CHAT_ID (chat-id
+# gate). The single action is ig_draft.py = render + upload to a PRIVATE bucket + ping;
+# it NEVER posts to any platform. The cheap poll step runs every 15 min; the heavy render
+# deps (ffmpeg/rclone/full pip/claude-code) install ONLY when a command was received.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:      # manual poke for testing
+
+concurrency:
+  group: kiwinoy-ig-poller
+  cancel-in-progress: false
+
+permissions:
+  contents: write         # ig_draft records the used clip (gh_release marker)
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read footage + upload the draft
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }} # read commands + ping the user
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      # CHEAP poll: confirm updates, ack a command, emit fire/game/seconds. Runs every 15 min.
+      - name: Check Telegram for a command
+        id: check
+        run: |
+          pip install requests PyYAML python-dotenv truststore
+          python tools/telegram_poller.py --check
+
+      # Everything below runs ONLY when the user actually texted a command.
+      - name: Install render dependencies
+        if: steps.check.outputs.fire == '1'
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Render the IG draft
+        if: steps.check.outputs.fire == '1'
+        run: |
+          ARGS="--game ${{ steps.check.outputs.game }}"
+          if [ -n "${{ steps.check.outputs.seconds }}" ] && [ "${{ steps.check.outputs.seconds }}" != "0" ]; then
+            ARGS="$ARGS --seconds ${{ steps.check.outputs.seconds }}"
+          fi
+          echo "running: python tools/ig_draft.py $ARGS"
+          python tools/ig_draft.py $ARGS
+
+      - name: Tell the user if the render failed
+        if: failure() && steps.check.outputs.fire == '1'
+        run: |
+          python -c "from core import notify; notify.telegram('⚠️ Sorry, the IG draft render hit an error. Text \'ig draft\' to retry, or ask me in Claude Code.')"
+
+      - name: Upload artifacts
+        if: always() && steps.check.outputs.fire == '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ig-draft-${{ github.run_id }}
+          path: output/
+          retention-days: 7
+          if-no-files-found: ignore
