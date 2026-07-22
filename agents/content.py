@@ -16,6 +16,7 @@ trim at a word boundary as a last resort, so the rule never slips.
 """
 from __future__ import annotations
 
+import random
 import re
 from typing import Any
 
@@ -209,6 +210,97 @@ Rules:
         body = f"{gname} gameplay\nPure vibes, edge to edge.\n{gname}"
     tags = _reel_hashtags({"game": game}, max_tags=max_tags)
     return f"{body}\n\n{' '.join(tags)}".strip()
+
+
+# --- RELATABLE full-bleed (FILL) captions ---------------------------------------
+# The FILL reels are pure footage posted for the AUDIENCE to relate to and share —
+# we do NOT promote the game. So the caption reviews the clip and speaks like a real
+# person captioning their own video (a feeling, a little life-moment), with NO game
+# name and no marketing. Rotating 'life-moment' angles keep captions varied across
+# posts (the old game-level caption repeated because it never looked at the clip).
+_FILL_ANGLES = [
+    "a relatable daily-life parallel — a work break, the commute, lunch hour, chores, needing to decompress",
+    "the raw FEELING of this exact moment — calm, freedom, relief, focus, being in the zone",
+    'a "POV:" line the viewer instantly sees themselves in',
+    "a tiny diary/mood caption, like you're texting a close friend about your day",
+    "the little escape this gives you after a long, draining day",
+    "a small everyday win, or a 'treat yourself for five minutes' moment",
+]
+_FILL_FALLBACKS = [
+    "POV: you just needed to clear your head for a bit",
+    "the little escape after a long day",
+    "when you finally get a quiet moment to yourself",
+    "just needed ten minutes to breathe",
+    "some days you just wanna log off reality for a while",
+    "me pretending my problems don't exist for 30 minutes",
+]
+# Relatable / lifestyle tags for FILL (NOT game-buy tags): a fixed core + a rotating sample.
+_FILL_TAG_CORE = ["#gaming", "#gamingreels", "#gamingcommunity"]
+_FILL_TAG_POOL = ["#relatable", "#gamerlife", "#gamingislife", "#justforfun", "#gamingclips",
+                  "#chill", "#cozygaming", "#gamersoftiktok", "#mood", "#nostalgia"]
+
+
+def _fill_tags(n_pool: int = 3) -> list[str]:
+    pool = _FILL_TAG_POOL[:]
+    random.shuffle(pool)
+    tags = (CONFIG.reels.get("fill_hashtags", None) or (_FILL_TAG_CORE + pool[:n_pool]))
+    return [t if str(t).startswith("#") else f"#{t}" for t in tags]
+
+
+def _relatable_caption(observation: str, angle: str) -> str:
+    """Write ONE short, human, relatable FIRST-PERSON caption from the observer's read
+    of the clip — the moment/feeling, NOT the game. No game/character names, no hype."""
+    prompt = (
+        "You write captions for full-screen vertical gameplay reels. This is NOT an ad — "
+        "we do NOT promote the game. We post gameplay so the audience LIKES it, RELATES to "
+        "it, feels something, and SHARES it because it mirrors their own life or mood.\n\n"
+        f"WHAT'S ON SCREEN (an observer's factual read of THIS clip):\n{observation}\n\n"
+        "Write ONE short, human, FIRST-PERSON caption about the moment/feeling in this clip "
+        "— the way a real person captions their own video.\n\n"
+        "Match the VIBE of these (do NOT copy them):\n"
+        '- "The peace of flying after a battle"\n'
+        '- "Got 10 mins before lunch ends, might as well swing across the city"\n'
+        '- "POV: you just needed to clear your head"\n'
+        '- "when the grind finally slows down for a second"\n\n'
+        f"Use THIS lens for your caption: {angle}.\n\n"
+        "RULES:\n"
+        "- Relatable + shareable. First person, or a \"POV:\" line, works great.\n"
+        "- NO game name, NO character names, NO 'this game'; NO marketing words "
+        "(masterpiece, insane graphics, must-play, underrated, stunning).\n"
+        "- Tie the feeling to what's ACTUALLY happening on screen, but keep it human.\n"
+        "- Max ~14 words, ONE line. 0-1 tasteful emoji is fine. No hashtags, no quotes, "
+        "no preamble. Return ONLY the caption line."
+    )
+    raw = sanitize(_text(prompt, timeout=120)).strip()
+    return (raw.splitlines()[0].strip().strip('"') if raw else "")[:120]
+
+
+def relatable_fill_caption(video_path, game: str = "") -> str:
+    """RELATABLE caption for the full-bleed FILL vertical reels. REVIEWS the clip (the
+    shared vision OBSERVER) and writes a short, human, first-person caption about the
+    moment/feeling — no game name, no marketing — so the audience relates + shares.
+    Falls back to a relatable generic line if vision/model is unavailable. Caption
+    already includes its lifestyle hashtags."""
+    import tempfile
+    from pathlib import Path
+
+    from core import frames
+
+    line = ""
+    angle = random.choice(_FILL_ANGLES)
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            if cands:
+                gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
+                observation = _observe_clip(cands, gname)
+                if observation:
+                    line = _relatable_caption(observation, angle)
+    except Exception as e:
+        print(f"[content] relatable FILL caption failed ({e!r}); using a fallback line.", flush=True)
+    if not line:
+        line = random.choice(_FILL_FALLBACKS)
+    return f"{line}\n\n{' '.join(_fill_tags())}".strip()
 
 
 def _text(prompt: str, timeout: int = 120) -> str:

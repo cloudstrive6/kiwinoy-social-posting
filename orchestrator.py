@@ -631,11 +631,12 @@ def run_gameplay_reel(
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
     if layout == "fill":
-        # Generic GAME caption (the raw footage isn't reviewed); no on-screen hook.
-        caption = content.generic_game_caption(brief["game"])
+        # RELATABLE caption: review the clip + write a human, first-person moment/feeling
+        # line (no game name, no marketing) so the audience relates + shares. No hook.
+        caption = content.relatable_fill_caption(clip_path, brief["game"])
         hook = ""
         brief["hook"] = ""
-        log(f"Game: {brief.get('subject')} | FILL vertical | clip {clip_id}")
+        log(f"Game: {brief.get('subject')} | FILL vertical (relatable) | clip {clip_id}")
     else:
         # Landscape-composited layouts: review the clip for a lore-grounded on-screen
         # hook + caption (ENGLISH per user).
@@ -2069,7 +2070,7 @@ def run_youtube_short(
     reel_path = run_dir / "short.mp4"
     gcfg = CONFIG.reels.get("gameplay", {}) or {}
     if layout == "fill":
-        caption = content.generic_game_caption(game)
+        caption = content.relatable_fill_caption(clip_path, game)
         hook = (caption.splitlines()[0].strip() if caption else game)
         target = yt_target     # whole clip up to 3 min
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
