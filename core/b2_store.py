@@ -200,6 +200,30 @@ def download_footage(item: dict[str, str], cache_dir: Path) -> Optional[Path]:
         return None
 
 
+def presigned_url(key: str, valid_seconds: int = 7 * 24 * 3600) -> Optional[str]:
+    """A time-limited, shareable download URL for a PRIVATE-bucket object, via
+    b2_get_download_authorization (max 7 days). Returns the URL with the auth token
+    appended, or None on failure. Used to hand a rendered draft to the user's phone."""
+    auth = _authorize()
+    if not auth or not key:
+        return None
+    try:
+        valid = max(1, min(int(valid_seconds), 604800))   # B2 hard cap = 7 days
+        url = f"{auth['apiUrl']}/b2api/v3/b2_get_download_authorization"
+        r = requests.post(url, headers={"Authorization": auth["token"]},
+                          json={"bucketId": auth["bucketId"], "fileNamePrefix": key,
+                                "validDurationInSeconds": valid}, timeout=_TIMEOUT)
+        if r.status_code != 200:
+            return None
+        tok = r.json().get("authorizationToken", "")
+        if not tok:
+            return None
+        bucket = auth.get("bucketName") or _bucket()
+        return f"{auth['downloadUrl']}/file/{bucket}/{quote(key, safe='/')}?Authorization={tok}"
+    except Exception:
+        return None
+
+
 if __name__ == "__main__":  # self-test against the real bucket
     import sys
     os.environ.setdefault("_B2_SELFTEST", "1")
