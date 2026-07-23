@@ -63,16 +63,26 @@ def _closest_slot_now(track: str) -> int:
     return best_id
 
 
+def _backup_window(track_key: str) -> int:
+    """The make-up staleness window for a track = that track's SLOT INTERVAL (minutes).
+    Per-track because a flat window mis-fires when GitHub runs the backup schedule hours
+    late: window must exceed 'time since a SUCCESSFUL same-cycle post' yet stay under a
+    real miss (>= 1 interval). See config reels.backup.window_minutes_by_track."""
+    bk = (CONFIG.reels.get("backup", {}) or {})
+    by = (bk.get("window_minutes_by_track", {}) or {})
+    return int(by.get(track_key, bk.get("window_minutes", 480)))
+
+
 def _with_backup(track_key: str, label: str, backup: bool, dry_run: bool, fn) -> int:
     """Run a single-post track with backup-trigger self-heal + Telegram-on-catch.
 
     When backup=True (the native backup schedule fired): if a post for track_key
-    already happened within reels.backup.window_minutes, the primary trigger worked
-    -> SKIP silently. Otherwise the primary was dropped -> run fn() (the make-up) and
-    Telegram that a miss was covered. Any successful (non-dry) run stamps the
-    last-posted marker so the guard always has fresh data. Returns an exit code."""
+    already happened within this track's window (= its slot interval), the primary
+    trigger worked -> SKIP silently. Otherwise the primary was dropped -> run fn() (the
+    make-up) and Telegram that a miss was covered. Any successful (non-dry) run stamps
+    the last-posted marker so the guard always has fresh data. Returns an exit code."""
     from core import gh_release as _ghr
-    window = int((CONFIG.reels.get("backup", {}) or {}).get("window_minutes", 120))
+    window = _backup_window(track_key)
     if backup and not dry_run:
         mins = _ghr.minutes_since_post(track_key)
         if mins is not None and mins < window:
@@ -345,9 +355,8 @@ def main() -> int:
     # post (below), so the guard always has fresh data.
     backup = bool(getattr(args, "backup", False)) and track == "reel" and not args.dry_run
     if backup:
-        from core.config import CONFIG as _C
         from core import gh_release as _ghr
-        window = int((_C.reels.get("backup", {}) or {}).get("window_minutes", 120))
+        window = _backup_window("reels_feed")
         mins = _ghr.minutes_since_post("reels_feed")
         if mins is not None and mins < window:
             print(f"[backup] a reel already posted {mins:.0f} min ago (< {window}m) — "

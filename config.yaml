@@ -334,7 +334,19 @@ reels:
   # within window_minutes (i.e. the primary cron->GitHub trigger was dropped by a
   # transient 503), and Telegrams that it covered a miss. Otherwise it skips silently.
   backup:
-    window_minutes: 120
+    # A make-up fires only if the last post for a track is OLDER than that track's window.
+    # CRITICAL (fixed 2026-07-23): the window MUST equal the track's SLOT INTERVAL, not a
+    # flat 120m. GitHub's native backup schedule runs HOURS late (unreliable scheduler), so
+    # a flat 120m window mistook a >120m-old-but-SUCCESSFUL post for a MISS and fired a
+    # duplicate reel. Window = interval cleanly separates 'slot fired' (last post < 1
+    # interval) from 'slot missed' (last post >= 1 interval), immune to WHEN the backup runs.
+    window_minutes: 480                 # default = 8h
+    window_minutes_by_track:
+      reels_feed: 480                   # reels 0/8/16 UTC  -> 8h interval
+      tiktok: 480                       # tiktok 3/11/19 UTC -> 8h interval
+      threads_text: 720                 # threads caption 1/13 UTC -> 12h interval
+      threads_footage: 720              # threads footage 10/22 UTC -> 12h interval
+      quotes: 720                       # quotes 6/18 UTC    -> 12h interval
   # YouTube Shorts control for gameplay reels (separate from video_post_to). YouTube
   # throttled the channel's new-Short reach (6 auto-Shorts/day flagged as repetitive),
   # so (#4) PAUSED 2026-06-26: enabled=false -> no reel posts to YouTube at all.
