@@ -662,7 +662,9 @@ reels:
     # ~every 3rd reel as its own IG-only post, so IG's daily posts cycle all three
     # while the other platforms never get the sideways look. A game with no art falls
     # back to classic for its triptych turn.
-    layouts: [classic, triptych, fill, rotated]
+    layouts: [classic, triptych, fill]   # 'rotated' (IG-only sideways landscape) PAUSED
+                                          # 2026-07-24 per user, until further notice. Re-add
+                                          # 'rotated' here to resume the IG-exclusive look.
     # FILL = full-bleed vertical (new 2026-07-03): raw LANDSCAPE clips you paste into a
     # DEDICATED per-game folder, scaled to COVER the whole 9:16 frame (centre-crop, no
     # bands/logo/text — pure footage). Original game audio + the 1080p reels' volume
