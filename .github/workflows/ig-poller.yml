@@ -57,20 +57,28 @@ jobs:
           curl -fsSL https://rclone.org/install.sh | sudo bash
           npm install -g @anthropic-ai/claude-code
 
-      - name: Render the IG draft
+      - name: Render the draft (IG or Threads)
         if: steps.check.outputs.fire == '1'
+        env:
+          KIND: ${{ steps.check.outputs.kind }}
+          GAME: ${{ steps.check.outputs.game }}
+          SECONDS: ${{ steps.check.outputs.seconds }}
+          FMT: ${{ steps.check.outputs.fmt }}
         run: |
-          ARGS="--game ${{ steps.check.outputs.game }}"
-          if [ -n "${{ steps.check.outputs.seconds }}" ] && [ "${{ steps.check.outputs.seconds }}" != "0" ]; then
-            ARGS="$ARGS --seconds ${{ steps.check.outputs.seconds }}"
+          SEC=""
+          if [ -n "$SECONDS" ] && [ "$SECONDS" != "0" ]; then SEC="--seconds $SECONDS"; fi
+          if [ "$KIND" = "threads" ]; then
+            echo "running: python tools/threads_draft.py --format $FMT --game $GAME $SEC"
+            python tools/threads_draft.py --format "$FMT" --game "$GAME" $SEC
+          else
+            echo "running: python tools/ig_draft.py --game $GAME $SEC"
+            python tools/ig_draft.py --game "$GAME" $SEC
           fi
-          echo "running: python tools/ig_draft.py $ARGS"
-          python tools/ig_draft.py $ARGS
 
       - name: Tell the user if the render failed
         if: failure() && steps.check.outputs.fire == '1'
         run: |
-          python -c "from core import notify; notify.telegram('⚠️ Sorry, the IG draft render hit an error. Text \'ig draft\' to retry, or ask me in Claude Code.')"
+          python -c "from core import notify; notify.telegram('⚠️ Sorry, the draft render hit an error. Text your command again to retry, or ask me in Claude Code.')"
 
       - name: Upload artifacts
         if: always() && steps.check.outputs.fire == '1'

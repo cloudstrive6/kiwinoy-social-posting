@@ -27,7 +27,16 @@ from core.config import CONFIG          # noqa: E402
 from core import notify                 # noqa: E402
 
 API = "https://api.telegram.org/bot{token}/{method}"
-CMD_RE = re.compile(r"\big[\s_-]?draft\b", re.I)     # "ig draft" / "ig-draft" / "igdraft"
+IG_RE = re.compile(r"\big[\s_-]?draft\b", re.I)        # "ig draft" / "ig-draft" / "igdraft"
+TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thread draft"
+# Threads-draft FORMAT keywords -> canonical format. Checked in order; first match wins.
+_FMT_KEYWORDS = [
+    ("fill", ["full vertical bleed", "full bleed", "full-bleed", "fullbleed", "fill",
+              "vertical bleed", "full screen", "fullscreen", "vertical"]),
+    ("landscape", ["landscape", "horizontal", "wide", "as is", "as-is", "16:9", "16 9"]),
+    ("triptych", ["triptych", "tryptich", "3 panel", "3-panel", "three panel", "3panel"]),
+    ("classic", ["classic", "standard", "band"]),
+]
 _ALIASES = {
     "spiderman": "spider-man2", "spider man": "spider-man2", "spidey": "spider-man2",
     "sm2": "spider-man2", "tlou": "thelastofus2", "last of us": "thelastofus2",
@@ -65,11 +74,20 @@ def _seconds(text: str) -> int:
     return int(m.group(1)) if m else 0
 
 
-def _emit(fire: int, game: str = "", seconds: int = 0) -> None:
+def _fmt_from_text(text: str) -> str:
+    """The Threads-draft render format named in the text, else 'fill'."""
+    t = text.lower()
+    for fmt, kws in _FMT_KEYWORDS:
+        if any(k in t for k in kws):
+            return fmt
+    return "fill"
+
+
+def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "") -> None:
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a", encoding="utf-8") as fh:
-            fh.write(f"fire={fire}\ngame={game}\nseconds={seconds}\n")
+            fh.write(f"fire={fire}\nkind={kind}\ngame={game}\nseconds={seconds}\nfmt={fmt}\n")
 
 
 def main() -> int:
@@ -85,26 +103,36 @@ def main() -> int:
         _emit(0)
         return 0
     max_uid = max(int(u.get("update_id", 0)) for u in updates)
-    cmd = ""
-    for u in updates:                                    # keep the LATEST matching command
+    kind, cmd = "", ""
+    for u in updates:                                    # keep the LATEST matching command (either kind)
         msg = u.get("message") or u.get("edited_message") or {}
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
-        if CMD_RE.search(text):
-            cmd = text
+        if TH_RE.search(text):                           # check threads BEFORE ig
+            kind, cmd = "threads", text
+        elif IG_RE.search(text):
+            kind, cmd = "ig", text
     if check:                                            # mark ALL updates seen (before firing)
         _tg("getUpdates", offset=max_uid + 1)
     if not cmd:
-        print("[poller] no ig-draft command in this batch.", flush=True)
+        print("[poller] no draft command in this batch.", flush=True)
         _emit(0)
         return 0
     game, secs = _resolve_game(cmd), _seconds(cmd)
-    print(f"[poller] command: {cmd!r} -> game={game} seconds={secs}", flush=True)
-    if check:
-        notify.telegram(f"\U0001F3AC Got it — rendering an IG draft ({game}"
-                        + (f", {secs}s" if secs else "") + "). It'll land in drafts/ig in a couple minutes…")
-        _emit(1, game, secs)
+    if kind == "threads":
+        fmt = _fmt_from_text(cmd)
+        print(f"[poller] THREADS draft: {cmd!r} -> fmt={fmt} game={game} seconds={secs}", flush=True)
+        if check:
+            notify.telegram(f"\U0001F9F5 Got it — rendering a Threads draft ({fmt}, {game}"
+                            + (f", {secs}s" if secs else "") + "). It'll land in drafts/threads in a couple minutes…")
+            _emit(1, "threads", game, secs, fmt)
+    else:
+        print(f"[poller] IG draft: {cmd!r} -> game={game} seconds={secs}", flush=True)
+        if check:
+            notify.telegram(f"\U0001F3AC Got it — rendering an IG draft ({game}"
+                            + (f", {secs}s" if secs else "") + "). It'll land in drafts/ig in a couple minutes…")
+            _emit(1, "ig", game, secs, "")
     return 0
 
 
