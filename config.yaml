@@ -353,12 +353,13 @@ reels:
   # On resume, set enabled=true and (#1) YouTube only posts on `slots` (2 of the 6
   # daily reel slots ~= 2/day) instead of every slot, to look less bulk/automated.
   youtube:
-    # STOPPED 2026-07-03 (per user): the 1080p feed reels no longer go to YouTube via
-    # Post for Me. YouTube Shorts move to a DEDICATED 4K/60 HDR track (classic <-> triptych
-    # alternating) uploaded via the YouTube Data API (core/youtube.py) — see the
-    # youtube_shorts section below. enabled=false = this PfM path is off.
-    enabled: false
-    slots: [1, 2, 3]       # legacy/reference only
+    # RESUMED 2026-07-24 (per user): the 1080p feed reels post to YouTube as Shorts via
+    # Post for Me, 3x/day (one per reels slot, 0/8/16 UTC). This is the 1080p path; the
+    # DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) stays separate/idle.
+    # NOTE: YouTube previously throttled the channel's Shorts reach from bulk auto-posting
+    # (paused 2026-06-26) — watch reach; dial back if it throttles again. See core/youtube.py.
+    enabled: true
+    slots: [1, 2, 3]       # legacy/reference only (feed-reel path adds YouTube whenever enabled)
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
@@ -489,7 +490,8 @@ reels:
     # Resolved by CONFIG.preferred_footage_games(). TikTok is a separate forced-game track
     # (already spider-man2); YouTube unaffected.
     prefer_override:
-      games: [spider-man2]
+      games: [halo]        # HALO: Campaign Evolved launch priority (2026-07-24, per user) —
+                           # FB/IG feed reels prefer Halo footage. Switched from spider-man2.
       until: "2099-12-31T23:59:59Z"
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
@@ -615,7 +617,7 @@ reels:
   # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
-    game: spider-man2    # Marvel's Spider-Man 2 (switched from TLOU2 2026-07-05 per user —
+    game: halo           # Halo: Campaign Evolved (switched from spider-man2 2026-07-24, launch priority; was TLOU2 2026-07-05 per user —
                          # TLOU2 gameplays paused on TikTok; SM2 footage synced to the release).
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
     posts_per_day: 3     # reference; actual firing = cron-job.org. 3/day EQUALLY SPACED
