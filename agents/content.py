@@ -234,8 +234,9 @@ _FILL_FALLBACKS = [
     "some days you just wanna log off reality for a while",
     "me pretending my problems don't exist for 30 minutes",
 ]
-# Relatable NICHE tags for FILL (the '1-2 niche' slots of the 3-5 formula).
-_FILL_NICHE = ["#gamingreels", "#gamingclips", "#gamingcommunity", "#gamerlife", "#relatable"]
+# Relatable NICHE tags for FILL (the '1-2 niche' slots of the 3-5 formula). NB: no
+# "#relatable" — it's a huge generic tag with no gaming-discovery value (dropped per user).
+_FILL_NICHE = ["#gamingreels", "#gamingclips", "#gamingcommunity", "#gamerlife"]
 
 
 def _max_tags() -> int:
@@ -392,8 +393,9 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
         print(f"[content] relatable FILL caption failed ({e!r}); using a fallback line.", flush=True)
     if not line:                                             # SAFE: feeling-only, always grounded
         line = random.choice(_FILL_FALLBACKS)
-    if line:                                                 # capitalize the first letter (per user)
+    if line:                                                 # tidy casing (per user): first letter + standalone "i"
         line = line[0].upper() + line[1:]
+        line = re.sub(r"\bi\b", "I", line)                   # "where i breathe" -> "where I breathe"
     return f"{line}\n\n{' '.join(_fill_tags(game))}".strip()
 
 
