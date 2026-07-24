@@ -586,6 +586,7 @@ def run_gameplay_reel(
     game: Optional[str] = None,        # force this game (dedicated track, e.g. TikTok TLOU2)
     tiktok_only: bool = False,         # publish ONLY to TikTok via Zernio (not the PfM platforms)
     layout_override: Optional[str] = None,  # force a specific layout (classic/triptych/fill/rotated)
+    clip_override: Optional[str] = None,     # force a SPECIFIC footage clip by filename (re-post/refire)
 ) -> dict[str, Any]:
     """Gameplay-only reel: one standalone clip + a static hook caption (no VO).
 
@@ -637,7 +638,22 @@ def run_gameplay_reel(
     #   FILL needs the vertical pool ('<game>-vertical'); if none/unreachable -> classic.
     #   classic/triptych/rotated need the landscape pool; if none/unreachable -> FILL.
     vkey = f"{brief['game']}{vcfg.get('key_suffix', '-vertical')}"
-    if layout == "fill":
+    if clip_override:                            # refire a SPECIFIC clip (e.g. re-caption a bad hook)
+        cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
+            "cache_dir", "reels/assets/footage/.cache")
+        clip_path, clip_id = None, None
+        for kind, item in reel_composer._candidates(brief["game"]):
+            iname = item["name"] if isinstance(item, dict) else Path(str(item)).name
+            if iname == clip_override:
+                clip_path = (Path(item) if kind == "local"
+                             else reel_composer._download_item(kind, item, cache))
+                clip_id = reel_composer._clip_id(kind, item, brief["game"])
+                break
+        if not clip_path:
+            log(f"Clip override '{clip_override}' not found in '{brief['game']}' — skipping.")
+            return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
+        log(f"Clip forced (override): {clip_id}")
+    elif layout == "fill":
         clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
         if not clip_path:
             clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])

@@ -476,10 +476,12 @@ def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -
     return sanitize(_text(prompt, timeout=120)).strip()
 
 
-def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) -> tuple[str, str]:
+def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
+                      avoid: str = "") -> tuple[str, str]:
     """From the observer's read + the game lore, write BOTH the scroll-stopping
     on-screen HOOK (master-of-viewer-psychology) and the post caption, grounded
-    in what THIS clip actually shows. Returns (hook, caption)."""
+    in what THIS clip actually shows. Returns (hook, caption). `avoid` feeds back a
+    critic's rejection reason for a corrected retry."""
     from core import claude_code, lore
 
     brief = lore.lore_for(game)
@@ -488,13 +490,16 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) ->
         f"correctly):\n{brief}\n\n" if brief else ""
     )
     cap_lang = "Natural Taglish is welcome." if taglish else "Write it in ENGLISH."
+    fix = (f"A PREVIOUS attempt was REJECTED for a lore/accuracy error: {avoid}\n"
+           "Fix it — write hook + caption that only reference what THIS clip actually "
+           "shows.\n\n" if avoid else "")
     prompt = (
         f"You are writing text for a {gname} gameplay reel. You are a MASTER of "
         "short-video viewer psychology and retention — your job is to stop the "
         "scroll in the first second.\n\n"
         f"WHAT'S ON SCREEN (an observer's factual description of THIS clip):\n"
         f"{observation}\n\n"
-        f"{lore_block}"
+        f"{lore_block}{fix}"
         "STEP 1 — silently identify the exact character / location / moment by "
         "matching the description to the story above (respect any 'DON'T CONFUSE' "
         "notes). STEP 2 — write two things:\n\n"
@@ -513,6 +518,18 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) ->
         "CAPTION (sits BELOW the video as the post caption):\n"
         "- ONE short clip-title line, 3 to 8 words, accurate to the moment.\n"
         f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
+        "GROUNDING — accuracy is NON-NEGOTIABLE (viewers call out lore mistakes):\n"
+        "- Name a character ONLY if THIS clip actually shows or names them — a visible "
+        "character in the description, OR an on-screen SUBTITLE that names the speaker. "
+        "If a subtitle reads e.g. 'JOHNSON: ...', the one talking is JOHNSON; never credit "
+        "a different character.\n"
+        "- Do NOT invoke an iconic character just because they're famous in this game. If "
+        "they are not seen or heard in THIS clip, they are NOT in it — e.g. don't mention "
+        "Cortana for an Operation-METEORITE / prequel mission she isn't part of and whose "
+        "voice isn't in the clip.\n"
+        "- Don't assert a story EVENT / plan / relationship the description doesn't support. "
+        "When unsure who or what it is, hook the ACTION, the setting, or a gamer FEELING — "
+        "never a guessed identity or plot point. Respect any 'DON'T CONFUSE' notes above.\n\n"
         'Return ONLY this JSON: {"hook": "the on-screen hook", "caption": "the caption"}'
     )
     raw = _text(prompt, timeout=150)
@@ -528,6 +545,34 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool) ->
                 hook = ln.strip().strip('"')
                 break
     return hook[:90], caption[:90]
+
+
+def _verify_hook(hook: str, caption: str, observation: str) -> tuple[bool, str]:
+    """Adversarial LORE/ACCURACY critic for the classic/triptych on-screen hook + caption:
+    reject a CHARACTER not seen/heard in the clip, a subtitle attributed to the wrong
+    speaker, or a story event the observation doesn't support. Returns (ok, issues).
+    Fail-OPEN (ok=True) if the critic itself errors, so a transient issue never blocks a post."""
+    prompt = (
+        "You are a STRICT lore/accuracy checker for a gameplay reel's ON-SCREEN hook + "
+        "caption. Viewers publicly call out mistakes, so be rigorous.\n\n"
+        f"OBSERVER'S FACTUAL READ OF THE CLIP (only what is actually visible/readable):\n"
+        f"{observation}\n\n"
+        f'HOOK: "{hook}"\nCAPTION: "{caption}"\n\n'
+        "Mark it BAD if ANY of these are true:\n"
+        "1. It names or clearly implies a CHARACTER the observation does NOT show or name "
+        "(not visible, not in any on-screen subtitle). An iconic-but-ABSENT character (e.g. "
+        "crediting Cortana when she isn't seen/heard) is BAD.\n"
+        "2. It contradicts an on-screen SUBTITLE speaker — e.g. the subtitle says 'JOHNSON:' "
+        "but the text credits or implies a different character.\n"
+        "3. It asserts a story EVENT / plan / relationship the observation doesn't support.\n"
+        "A hook about the ACTION, the setting, or a general gamer feeling is FINE.\n"
+        'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=90))
+        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+    except Exception:
+        return True, ""
 
 
 def game_title_line(game: str) -> str:
@@ -564,6 +609,20 @@ def hook_and_caption_from_video(
                 observation = _observe_clip(cands, gname)
                 if observation:
                     hook, line = _hook_and_caption(observation, game, gname, taglish)
+                    # LORE FACT-CHECK: reject an on-screen hook that invents a character
+                    # (e.g. Cortana in an Op-METEORITE clip) / misattributes a subtitle /
+                    # asserts an unshown event, and regenerate once with the reason fed back.
+                    ok, issues = _verify_hook(hook, line, observation) if hook else (True, "")
+                    if not ok:
+                        print(f"[content] hook rejected ({issues or 'lore mismatch'}); "
+                              "regenerating.", flush=True)
+                        h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues)
+                        ok2, _ = _verify_hook(h2, l2, observation) if h2 else (False, "")
+                        if ok2 and h2:
+                            hook, line = h2, l2
+                        else:
+                            # 2nd attempt still failed -> a safe action hook (no identities)
+                            hook = "You have to see this play"
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     if not hook:

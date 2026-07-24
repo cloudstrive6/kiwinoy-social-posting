@@ -258,7 +258,9 @@ GAME_LORE["halo"] = (
     "Weapon', nothing from Halo 2/3/4/5/Infinite).\n"
     "NEW CONTENT: adds 3 prequel missions — 'OPERATION METEORITE', set ONE YEAR BEFORE "
     "the main story, led by Master Chief + Sgt. Avery Johnson (before Halo is found). So "
-    "a clip may be this prequel; still just the Chief + the UNSC vs the Covenant.\n"
+    "a clip may be this prequel; still just the Chief + the UNSC vs the Covenant. "
+    "CRITICAL: in Op METEORITE, CORTANA is NOT with the Chief yet — do NOT mention Cortana "
+    "for a METEORITE clip; Johnson + UNSC Marines are the voices there.\n"
     "NAMING: single playable hero — the player is ALWAYS the MASTER CHIEF (Spartan "
     "John-117), a tall super-soldier in the iconic green MJOLNIR armor with a gold "
     "visor. Name him confidently. He barely speaks; CORTANA (his AI) does the talking.\n"
@@ -290,7 +292,11 @@ GAME_LORE["halo"] = (
     "the ring to stop it.\n"
     "DON'T CONFUSE: green armor = Master Chief (the only hero); floating white eye = "
     "343 Guilty Spark; the zombies = the Flood; the alien army = the Covenant; Halo is "
-    "a RING (a place), not a handheld weapon."
+    "a RING (a place), not a handheld weapon.\n"
+    "CORTANA RULE: only mention Cortana if she is ACTUALLY present in the clip — her "
+    "blue/purple hologram is visible OR her voice/subtitle appears. If the on-screen "
+    "subtitle credits someone else (e.g. 'JOHNSON:') or you see Marines and no blue AI, "
+    "Cortana is NOT there (likely Op METEORITE) — never attribute the moment to her."
 )
 
 
