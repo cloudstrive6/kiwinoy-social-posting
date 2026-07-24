@@ -658,8 +658,11 @@ def run_gameplay_reel(
         if not clip_path:
             clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
             if clip_path:
-                log(f"No vertical footage ({vkey}) — falling back to the classic layout.")
-                layout = "classic"
+                # No vertical footage -> ALTERNATE triptych <-> classic (per user 2026-07-25),
+                # so an empty vertical pool still gives variety. Triptych only when the game
+                # has key art (else classic); n (the used-clip counter) drives the alternation.
+                layout = "triptych" if (_game_art(brief["game"]) and n % 2 == 0) else "classic"
+                log(f"No vertical footage ({vkey}) — falling back to the {layout} layout.")
     else:  # classic / triptych / rotated -> landscape pool
         clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
         if not clip_path:
