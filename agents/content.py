@@ -547,21 +547,31 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
     return hook[:90], caption[:90]
 
 
-def _verify_hook(hook: str, caption: str, observation: str) -> tuple[bool, str]:
+def _verify_hook(hook: str, caption: str, observation: str, game: str = "") -> tuple[bool, str]:
     """Adversarial LORE/ACCURACY critic for the classic/triptych on-screen hook + caption:
     reject a CHARACTER not seen/heard in the clip, a subtitle attributed to the wrong
     speaker, or a story event the observation doesn't support. Returns (ok, issues).
     Fail-OPEN (ok=True) if the critic itself errors, so a transient issue never blocks a post."""
+    from core import lore
+    brief = lore.lore_for(game) if game else ""
+    lore_block = (f"GAME CONTEXT (use this to know WHO the player-character is + any "
+                  f"first-person / naming notes):\n{brief}\n\n" if brief else "")
     prompt = (
         "You are a STRICT lore/accuracy checker for a gameplay reel's ON-SCREEN hook + "
         "caption. Viewers publicly call out mistakes, so be rigorous.\n\n"
+        f"{lore_block}"
         f"OBSERVER'S FACTUAL READ OF THE CLIP (only what is actually visible/readable):\n"
         f"{observation}\n\n"
         f'HOOK: "{hook}"\nCAPTION: "{caption}"\n\n'
+        "Naming the game's established PLAYER-CHARACTER / protagonist is ALWAYS OK even if "
+        "they aren't visible — MANY games are FIRST-PERSON, where you play as them but only "
+        "see their weapon/hands (e.g. Halo's Master Chief; an alien-looking gun in the "
+        "player's hands is a weapon they're HOLDING, not the character's identity). Only "
+        "OTHER characters (companions, NPCs, villains) must actually be shown/heard.\n\n"
         "Mark it BAD if ANY of these are true:\n"
-        "1. It names or clearly implies a CHARACTER the observation does NOT show or name "
-        "(not visible, not in any on-screen subtitle). An iconic-but-ABSENT character (e.g. "
-        "crediting Cortana when she isn't seen/heard) is BAD.\n"
+        "1. It names or clearly implies a NON-player CHARACTER the observation does NOT show "
+        "or name (an iconic-but-ABSENT companion/NPC, e.g. crediting Cortana when she isn't "
+        "seen/heard). Do NOT flag the established player-character just for being unseen.\n"
         "2. It contradicts an on-screen SUBTITLE speaker — e.g. the subtitle says 'JOHNSON:' "
         "but the text credits or implies a different character.\n"
         "3. It asserts a story EVENT / plan / relationship the observation doesn't support.\n"
@@ -612,12 +622,12 @@ def hook_and_caption_from_video(
                     # LORE FACT-CHECK: reject an on-screen hook that invents a character
                     # (e.g. Cortana in an Op-METEORITE clip) / misattributes a subtitle /
                     # asserts an unshown event, and regenerate once with the reason fed back.
-                    ok, issues = _verify_hook(hook, line, observation) if hook else (True, "")
+                    ok, issues = _verify_hook(hook, line, observation, game) if hook else (True, "")
                     if not ok:
                         print(f"[content] hook rejected ({issues or 'lore mismatch'}); "
                               "regenerating.", flush=True)
                         h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues)
-                        ok2, _ = _verify_hook(h2, l2, observation) if h2 else (False, "")
+                        ok2, _ = _verify_hook(h2, l2, observation, game) if h2 else (False, "")
                         if ok2 and h2:
                             hook, line = h2, l2
                         else:
