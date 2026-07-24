@@ -35,6 +35,14 @@ reels/assets/footage/*/*.m4v
 reels/assets/footage/*/*.mkv
 # Render-time download cache for release clips:
 reels/assets/footage/.cache/
+# Game-art title-screen VIDEOS (triptych bottom panel) — large, live on B2 via
+# tools/art_footage.py (art-footage/<game>/). Keep the folder structure (.gitkeep) tracked.
+reels/assets/game-art-footage*/*/*.mp4
+reels/assets/game-art-footage*/*/*.mov
+reels/assets/game-art-footage*/*/*.webm
+reels/assets/game-art-footage*/*/*.m4v
+reels/assets/game-art-footage*/*/*.mkv
+reels/assets/game-art-footage*/.cache/
 
 # Your finished reels drop-folder: big files, queued to the 'ready-reels' Release
 # by tools/ready_reels.py (never committed to the repo).

@@ -152,6 +152,24 @@ def list_footage(gamekey: str) -> list[dict[str, str]]:
     return out
 
 
+def list_art_footage(gamekey: str) -> list[dict[str, str]]:
+    """Return [{name, key}] for a game's TITLE-SCREEN art videos on B2
+    (``art-footage/<game>/*``) — the looping bottom-panel clips for the triptych.
+    Same shape as list_footage; download with ``download_footage``."""
+    if not enabled() or not gamekey:
+        return []
+    prefix = f"art-footage/{gamekey}/"
+    out: list[dict[str, str]] = []
+    for f in _list_names(prefix):
+        key = str(f.get("fileName", ""))
+        name = key[len(prefix):]
+        if not name or "/" in name:
+            continue
+        if Path(name).suffix.lower() in VIDEO_EXTS:
+            out.append({"name": name, "key": key})
+    return out
+
+
 def list_games() -> dict[str, int]:
     """{game_key: clip_count} for every game with clips under the footage prefix."""
     if not enabled():

@@ -106,6 +106,7 @@ def main() -> int:
                 return 2
             print(f"[threads-draft] rendering triptych ({int(target)}s)...", flush=True)
             reel_ffmpeg.build_gameplay_triptych(clip_path, out, hook=hook, game_art=art,
+                                                game_art_video=orch._game_art_footage(game),
                                                 top_image=orch._game_screenshot(game), logo=orch._reel_logo(),
                                                 fps=fps, w=1080, h=1920, target_seconds=target,
                                                 music=orch._reel_music(), anim_logo=orch._anim_logo())

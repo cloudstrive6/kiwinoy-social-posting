@@ -886,7 +886,8 @@ def build_gameplay_triptych(
     out_path: Path,
     hook: str,
     game_art: Path,
-    top_image: Optional[Path] = None,
+    game_art_video: Optional[Path] = None,   # looping MUTED title-screen video for the bottom
+    top_image: Optional[Path] = None,        # panel (overrides the static game_art image)
     logo: Optional[Path] = None,
     fps: int = 60,
     w: int = 1080,
@@ -905,9 +906,11 @@ def build_gameplay_triptych(
     Returns the rendered MP4 bytes. Raises if the clip or art is missing (the
     orchestrator then falls back to the classic layout)."""
     clip, game_art = Path(clip), Path(game_art)
+    art_video = Path(game_art_video) if game_art_video else None
+    art_is_video = bool(art_video and art_video.exists())    # video title-screen for the bottom panel
     if not clip.exists():
         raise ReelFfmpegError(f"gameplay clip missing: {clip}")
-    if not game_art.exists():
+    if not art_is_video and not game_art.exists():
         raise ReelFfmpegError(f"game art missing: {game_art}")
     dur = ffmpeg.duration(clip) or target_seconds
     show = min(float(target_seconds), dur) if dur else float(target_seconds)
@@ -932,9 +935,13 @@ def build_gameplay_triptych(
         ass = build_ass(Path(tmp) / "cap.ass", w, h, hook=hook, hook_end=show,
                         hook_center=(w // 2, band // 2), hdr=hdr)
 
-        inputs: list[str] = ["-i", str(clip),
-                             "-loop", "1", "-i", str(shot),
-                             "-loop", "1", "-i", str(game_art)]
+        # Bottom-panel source (input 2): a LOOPING MUTED game-art video (title screen) when
+        # provided, else the static game-art image. -stream_loop -1 loops the video; the
+        # output -t (= gameplay length) trims it, so it repeats for the whole gameplay, and
+        # its audio is never mapped (muted). Falls back to the image if no video is given.
+        art_in = (["-stream_loop", "-1", "-i", str(art_video)] if art_is_video
+                  else ["-loop", "1", "-i", str(game_art)])
+        inputs: list[str] = ["-i", str(clip), "-loop", "1", "-i", str(shot)] + art_in
         next_idx = 3
         # Moving glow for the bottom game-art panel: a big SOFT round light that
         # WANDERS (sin-based, non-repeating path) so the art's own highlights/edges/
@@ -1045,6 +1052,7 @@ def build_gameplay_triptych(
         # dominant element. rr/gg/bb<1 multiplies brightness -> 0.55 ~= a 45% black
         # overlay. Tunable via reels.gameplay.triptych_top_dim (lower = darker).
         dim = float((CONFIG.reels.get("gameplay", {}) or {}).get("triptych_top_dim", 0.55))
+        art_fps = f",fps={fps}" if art_is_video else ""   # normalize the art-video frame rate
         # Bottom panel: fill the art to the 16:9 panel, GRADE it, then sweep a glow.
         if glow_on and blob_idx is not None:
             sway = float(gl.get("sway", 0.42))           # how far the light wanders
@@ -1058,7 +1066,7 @@ def build_gameplay_triptych(
             dy = f"{ay:.0f}*sin(2*PI*t/{p3:.2f})+{by:.0f}*sin(2*PI*t/{p4:.2f})"
             bot_lines = [
                 f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
-                f"crop={w}:{arth},{grade}setsar=1,format=gbrp[artg]",
+                f"crop={w}:{arth}{art_fps},{grade}setsar=1,format=gbrp[artg]",
                 f"[artg]split[artA][artB]",
                 f"color=c=black:s={w}x{arth}:r={fps},format=gbrp[lblk]",
             ]
@@ -1084,7 +1092,7 @@ def build_gameplay_triptych(
             ]
         else:
             bot_lines = [f"[2:v]scale={w}:{arth}:force_original_aspect_ratio=increase,"
-                         f"crop={w}:{arth},{grade}setsar=1{hdrfy}[bot]"]
+                         f"crop={w}:{arth}{art_fps},{grade}setsar=1{hdrfy}[bot]"]
         # AMBIENT / IMMERSIVE modes sample the gameplay panel colour -> split it off here.
         have_seam = div_idx is not None or audio_idx is not None
         ambient = have_seam and dmode in ("ambient", "immersive")

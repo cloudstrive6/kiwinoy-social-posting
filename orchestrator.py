@@ -114,6 +114,31 @@ def _game_art(game: Optional[str], alt: Optional[int] = None) -> Optional[Any]:
     return None
 
 
+def _game_art_footage(game: Optional[str], alt: Optional[int] = None) -> Optional[Any]:
+    """A looping TITLE-SCREEN art VIDEO for the triptych's BOTTOM panel — OVERRIDES the
+    static _game_art image when present. Videos live on B2 under ``art-footage/<game>/``
+    (uploaded via tools/art_footage.py; ~5 min title-screen recordings with the game
+    logo). Rotates like _game_art via `alt` (multiple videos per game cycle). Returns a
+    downloaded local Path, or None -> the caller falls back to the static _game_art image."""
+    if not game:
+        return None
+    try:
+        from core import b2_store, game_quotes
+        if not b2_store.enabled():
+            return None
+        cache = ROOT / "reels/assets/game-art-footage/.cache"
+        for key in (str(game), game_quotes.universe_for_game(game) or ""):
+            if not key:
+                continue
+            items = sorted(b2_store.list_art_footage(key), key=lambda c: c["name"])
+            if items:
+                pick = items[alt % len(items)] if alt is not None else random.choice(items)
+                return b2_store.download_footage(pick, cache)
+    except Exception as e:
+        print(f"[art-footage] resolve failed ({e!r}) — using the static art image.", flush=True)
+    return None
+
+
 def _game_character(game: Optional[str]) -> Optional[Any]:
     """A random TRANSPARENT character cutout PNG for the thumbnail's prominent
     foreground subject. Drop hero renders (Cloud, Master Chief, ...) in
@@ -670,6 +695,7 @@ def run_gameplay_reel(
     ig_rotated = ((not tiktok_only) and ("rotated" in layouts)
                   and (n % 3 == 2) and layout != "fill")
     art = _game_art(brief.get("game")) if layout == "triptych" else None
+    art_video = _game_art_footage(brief.get("game")) if layout == "triptych" else None
     # TikTok export: MATCH the FB/IG/Threads feed encode by default (per user 2026-07-07).
     # The 30 Mbps "hi" spec backfired on TikTok's PUBLIC API transcode (proven: high bitrate
     # degrades worse). Set reels.tiktok.hi_bitrate: true to restore the 30M browser-upload spec.
@@ -686,7 +712,7 @@ def run_gameplay_reel(
         log(f"Rendering 3-panel gameplay reel (art: {art.name}, "
             f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
         video_bytes = reel_ffmpeg.build_gameplay_triptych(
-            clip_path, reel_path, hook=hook, game_art=art, top_image=top,
+            clip_path, reel_path, hook=hook, game_art=art, game_art_video=art_video, top_image=top,
             logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
             music=_reel_music(), anim_logo=_anim_logo(), hi_bitrate=tt_hi)
     else:
@@ -2056,6 +2082,7 @@ def run_youtube_short(
     # Triptych: ALTERNATE the game-art files deterministically (main <-> art 1 <-> ...)
     # across successive triptychs, keyed off the post counter, per user.
     art = _game_art(game, alt=n // len(layouts)) if layout == "triptych" else None
+    art_video = _game_art_footage(game, alt=n // len(layouts)) if layout == "triptych" else None
     if layout == "triptych" and not art:
         log("No game art for this game — using the classic layout this post.")
         layout = "classic"
@@ -2089,7 +2116,7 @@ def run_youtube_short(
             log(f"Rendering 4K HDR triptych (art: {art.name}, "
                 f"top: {'library' if top else 'clip-frame'}, <={int(target)}s)...")
             reel_ffmpeg.build_gameplay_triptych(
-                clip_path, reel_path, hook=hook, game_art=art, top_image=top,
+                clip_path, reel_path, hook=hook, game_art=art, game_art_video=art_video, top_image=top,
                 logo=_reel_logo(), fps=fps, w=rw, h=rh, target_seconds=target,
                 music=_reel_music(), anim_logo=_anim_logo(), hdr=True)
         else:
