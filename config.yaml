@@ -490,8 +490,10 @@ reels:
     # Resolved by CONFIG.preferred_footage_games(). TikTok is a separate forced-game track
     # (already spider-man2); YouTube unaffected.
     prefer_override:
-      games: [halo]        # HALO: Campaign Evolved launch priority (2026-07-24, per user) —
-                           # FB/IG feed reels prefer Halo footage. Switched from spider-man2.
+      games: [spider-man2] # Spider-Man 2 ONLY on FB/IG feed reels (+ the YouTube Shorts
+                           # crosspost). Resumed 2026-07-27 (per user); Halo launch push
+                           # paused. To switch games/resume rotation: change `games` or set
+                           # `until` to a past date.
       until: "2099-12-31T23:59:59Z"
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
@@ -617,8 +619,8 @@ reels:
   # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
-    game: halo           # Halo: Campaign Evolved (switched from spider-man2 2026-07-24, launch priority; was TLOU2 2026-07-05 per user —
-                         # TLOU2 gameplays paused on TikTok; SM2 footage synced to the release).
+    game: spider-man2    # Marvel's Spider-Man 2 (resumed 2026-07-27 per user; Halo launch push paused.
+                         # Was halo 2026-07-24; TLOU2 gameplays paused on TikTok 2026-07-05).
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
     posts_per_day: 3     # reference; actual firing = cron-job.org. 3/day EQUALLY SPACED
                          # (every 8h): 07:00 / 15:00 / 23:00 NZ (Pacific/Auckland). Raised
