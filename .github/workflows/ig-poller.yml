@@ -1,13 +1,14 @@
 name: KiwinoyGamer IG-Draft Poller
 
-# Lets the user TEXT the Telegram bot "ig draft" (optionally a game and/or a length, e.g.
-# "ig draft halo 30s") and have a full-bleed vertical reel rendered IN THE CLOUD, dropped
-# into B2 drafts/ig/, and pinged back — no PC needed. Polls Telegram every ~15 min.
+# Lets the user TEXT the Telegram bot a draft command — "ig draft" / "threads draft <fmt>" /
+# "fb draft <fmt>" (optionally a game and/or a length, e.g. "fb draft triptych halo 30s") —
+# and have the reel rendered IN THE CLOUD, dropped into B2 drafts/<platform>/, and pinged
+# back — no PC needed. Polls Telegram every ~15 min.
 #
 # SAFETY: tools/telegram_poller.py honours ONLY messages from TELEGRAM_CHAT_ID (chat-id
-# gate). The single action is ig_draft.py = render + upload to a PRIVATE bucket + ping;
-# it NEVER posts to any platform. The cheap poll step runs every 15 min; the heavy render
-# deps (ffmpeg/rclone/full pip/claude-code) install ONLY when a command was received.
+# gate). The actions are ig_draft.py / threads_draft.py / fb_draft.py = render + upload to a
+# PRIVATE bucket + ping; they NEVER post to any platform. The cheap poll step runs every 15
+# min; the heavy render deps (ffmpeg/rclone/full pip/claude-code) install ONLY on a command.
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -57,7 +58,7 @@ jobs:
           curl -fsSL https://rclone.org/install.sh | sudo bash
           npm install -g @anthropic-ai/claude-code
 
-      - name: Render the draft (IG or Threads)
+      - name: Render the draft (IG, Threads or FB)
         if: steps.check.outputs.fire == '1'
         env:
           KIND: ${{ steps.check.outputs.kind }}
@@ -70,6 +71,9 @@ jobs:
           if [ "$KIND" = "threads" ]; then
             echo "running: python tools/threads_draft.py --format $FMT --game $GAME $SEC"
             python tools/threads_draft.py --format "$FMT" --game "$GAME" $SEC
+          elif [ "$KIND" = "fb" ]; then
+            echo "running: python tools/fb_draft.py --format $FMT --game $GAME $SEC"
+            python tools/fb_draft.py --format "$FMT" --game "$GAME" $SEC
           else
             echo "running: python tools/ig_draft.py --game $GAME $SEC"
             python tools/ig_draft.py --game "$GAME" $SEC

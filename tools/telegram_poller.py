@@ -1,13 +1,16 @@
-"""Poll Telegram for on-demand commands (currently: "ig draft") and hand them to the
-ig-poller.yml workflow so the user can fire a reel from their phone with the PC off.
+"""Poll Telegram for on-demand draft commands ("ig draft" / "threads draft" / "fb draft")
+and hand them to the ig-poller.yml workflow so the user can fire a reel from their phone
+with the PC off.
 
 SECURITY: only messages from TELEGRAM_CHAT_ID are honoured — a chat-id gate so nobody
-else who finds the bot can trigger a render. The only command runs `tools/ig_draft.py`,
-which renders a full-bleed reel + uploads it to the PRIVATE B2 `drafts/ig/` + pings the
-user; it NEVER posts anything publicly. Commands understood:
-    "ig draft"              -> default game, whole clip
-    "ig draft halo"         -> a specific game
-    "ig draft 30s"          -> cap the length
+else who finds the bot can trigger a render. The commands run `tools/ig_draft.py` /
+`tools/threads_draft.py` / `tools/fb_draft.py`, which render a reel + upload it to the
+PRIVATE B2 `drafts/<platform>/` + ping the user; they NEVER post anything publicly.
+Commands understood:
+    "ig draft [game] [Ns]"                 -> full-bleed IG draft
+    "threads draft [format] [game] [Ns]"   -> Threads draft (default format: fill)
+    "fb draft [format] [game] [Ns]"        -> Facebook draft (default format: classic)
+  formats: classic | triptych | fill | landscape;  e.g. "fb draft triptych halo 30s"
 
 Modes:
     python tools/telegram_poller.py --check   # CI: confirm updates, ack, emit GITHUB_OUTPUT (fire/game/seconds)
@@ -29,6 +32,7 @@ from core import notify                 # noqa: E402
 API = "https://api.telegram.org/bot{token}/{method}"
 IG_RE = re.compile(r"\big[\s_-]?draft\b", re.I)        # "ig draft" / "ig-draft" / "igdraft"
 TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thread draft"
+FB_RE = re.compile(r"\b(?:fb|facebook)\s+draft\b", re.I)  # "fb draft" / "facebook draft"
 # Threads-draft FORMAT keywords -> canonical format. Checked in order; first match wins.
 _FMT_KEYWORDS = [
     ("fill", ["full vertical bleed", "full bleed", "full-bleed", "fullbleed", "fill",
@@ -74,13 +78,13 @@ def _seconds(text: str) -> int:
     return int(m.group(1)) if m else 0
 
 
-def _fmt_from_text(text: str) -> str:
-    """The Threads-draft render format named in the text, else 'fill'."""
+def _fmt_from_text(text: str, default: str = "fill") -> str:
+    """The render format named in the text, else `default` (Threads -> 'fill', FB -> 'classic')."""
     t = text.lower()
     for fmt, kws in _FMT_KEYWORDS:
         if any(k in t for k in kws):
             return fmt
-    return "fill"
+    return default
 
 
 def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "") -> None:
@@ -109,8 +113,10 @@ def main() -> int:
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
-        if TH_RE.search(text):                           # check threads BEFORE ig
+        if TH_RE.search(text):                           # distinct keywords -> exclusive
             kind, cmd = "threads", text
+        elif FB_RE.search(text):
+            kind, cmd = "fb", text
         elif IG_RE.search(text):
             kind, cmd = "ig", text
     if check:                                            # mark ALL updates seen (before firing)
@@ -127,6 +133,13 @@ def main() -> int:
             notify.telegram(f"\U0001F9F5 Got it — rendering a Threads draft ({fmt}, {game}"
                             + (f", {secs}s" if secs else "") + "). It'll land in drafts/threads in a couple minutes…")
             _emit(1, "threads", game, secs, fmt)
+    elif kind == "fb":
+        fmt = _fmt_from_text(cmd, default="classic")     # FB default = the canonical branded reel
+        print(f"[poller] FB draft: {cmd!r} -> fmt={fmt} game={game} seconds={secs}", flush=True)
+        if check:
+            notify.telegram(f"\U0001F4D8 Got it — rendering an FB draft ({fmt}, {game}"
+                            + (f", {secs}s" if secs else "") + "). It'll land in drafts/fb in a couple minutes…")
+            _emit(1, "fb", game, secs, fmt)
     else:
         print(f"[poller] IG draft: {cmd!r} -> game={game} seconds={secs}", flush=True)
         if check:
