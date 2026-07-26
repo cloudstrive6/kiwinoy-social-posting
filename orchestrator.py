@@ -859,21 +859,63 @@ def run_gameplay_reel(
             return _trims[dur]
 
         rest_targets = [t for t in main_targets if t != "facebook"]
+        # FACEBOOK is TRIPTYCH-ONLY (per user 2026-07-27). IG/YouTube keep the shared
+        # classic/triptych/fill rotation; FB always gets a triptych. When the slot is
+        # already a triptych, FB reuses the shared render. On a CLASSIC slot, FB gets a
+        # triptych of the SAME landscape clip + hook. On a FILL slot (vertical clip, no
+        # hook) FB picks its OWN fresh landscape clip + writes its own hook/caption. With
+        # no game art the game can't be a triptych -> FB falls back to the shared render.
+        fb_story_bytes = video_bytes                       # what the FB Story reposts
+        fb_story_hook = hook
         if "facebook" in main_targets:
             try:
+                fb_art = _game_art(brief.get("game"))
+                fb_src = reel_path
+                fb_caption = caption
+                if layout == "triptych" or not fb_art:
+                    if not fb_art and layout != "triptych":
+                        log("FB triptych: no game art for this game — using the shared render.")
+                elif layout == "fill":
+                    fb_clip, fb_cid = reel_composer.pick_unused_clip(brief["game"])
+                    if fb_clip:
+                        fb_story_hook, fb_caption = content.hook_and_caption_from_video(
+                            fb_clip, brief.get("game", ""), taglish=False, with_game_title=True)
+                        fb_tgt = min(float(ffmpeg.duration(fb_clip) or target), track_cap)
+                        fb_src = run_dir / "reel_fb_triptych.mp4"
+                        reel_ffmpeg.build_gameplay_triptych(
+                            fb_clip, fb_src, hook=fb_story_hook, game_art=fb_art,
+                            game_art_video=_game_art_footage(brief.get("game")),
+                            top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
+                            fps=fps, w=rw, h=rh, target_seconds=fb_tgt, music=_reel_music(),
+                            anim_logo=_anim_logo())
+                        if reel_composer.mark_clip_used(fb_cid):
+                            log(f"FB triptych: dedicated landscape clip {fb_cid} (marked used).")
+                    else:
+                        log("FB triptych: no landscape clip on this fill slot — using the shared render.")
+                else:                                          # classic slot -> triptych of the same clip
+                    fb_src = run_dir / "reel_fb_triptych.mp4"
+                    reel_ffmpeg.build_gameplay_triptych(
+                        clip_path, fb_src, hook=hook, game_art=fb_art,
+                        game_art_video=_game_art_footage(brief.get("game")),
+                        top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
+                        fps=fps, w=rw, h=rh, target_seconds=target, music=_reel_music(),
+                        anim_logo=_anim_logo())
+                    log("FB triptych: built from the classic-slot landscape clip.")
+
                 fb_dur = _eff("facebook")                       # 0-cap -> full clip
-                src = reel_path
-                if clip_dur and fb_dur < clip_dur - 1.0:
-                    src = run_dir / "reel_fb_src.mp4"
+                src = fb_src
+                if clip_dur and fb_dur < clip_dur - 1.0 and fb_src == reel_path:
+                    src = run_dir / "reel_fb_src.mp4"          # trim only the SHARED render
                     reel_ffmpeg.trim_seconds(reel_path, src, fb_dur)
                 fb_bytes = reel_ffmpeg.reencode_facebook(src, run_dir / "reel_fb.mp4", fps=fps)
-                log(f"Publishing Facebook (FB-spec 60fps, {fb_dur or clip_dur:.0f}s)...")
+                fb_story_bytes = fb_bytes
+                log("Publishing Facebook (triptych-only, FB-spec 60fps)...")
                 # REELS placement regardless of length — FB Reels have no cap since June 2025
                 # (publish_video fail-opens to a feed video if the placement is ever rejected).
                 result["facebook_result"] = publisher.run_reel(
-                    caption=caption, video_bytes=fb_bytes, scheduled_at=scheduled_at, targets=["facebook"])
+                    caption=fb_caption, video_bytes=fb_bytes, scheduled_at=scheduled_at, targets=["facebook"])
             except Exception as e:
-                log(f"FB-spec re-encode failed ({e!r}) — posting FB with the shared render.")
+                log(f"FB triptych/re-encode failed ({e!r}) — posting FB with the shared render.")
                 rest_targets = main_targets
 
         api_result = None
@@ -937,13 +979,16 @@ def run_gameplay_reel(
                 log(f"IG Story repost skipped ({e!r})")
                 result["ig_story_error"] = repr(e)
 
-        # Same reach-booster on the FACEBOOK Page Story (whatever FB received).
+        # Same reach-booster on the FACEBOOK Page Story — reposts whatever FB received
+        # (the FB triptych bytes + its hook; falls back to the shared render/hook).
         if gcfg.get("fb_stories", False) and "facebook" in targets:
             try:
                 log("Reposting reel to Facebook Story...")
-                story_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
+                _fbtags = content._reel_hashtags({"game": brief.get("game")}, 1)
+                story_cap = (f"{fb_story_hook}\n\n{_fbtags[0]}".strip()
+                             if (fb_story_hook and _fbtags) else fb_story_hook)
                 result["fb_story_result"] = publisher.run_fb_story(
-                    caption=story_cap, media_bytes=video_bytes, is_video=True,
+                    caption=story_cap, media_bytes=fb_story_bytes, is_video=True,
                     scheduled_at=scheduled_at)
                 log("Facebook Story reposted.")
             except Exception as e:  # ephemeral bonus reach — never fatal
@@ -1363,6 +1408,9 @@ def run_quote_card(
     from core import gh_release
 
     qcfg = CONFIG.raw().get("quotes", {}) or {}
+    if not qcfg.get("enabled", True):        # PAUSED (per user 2026-07-27) — see config quotes.enabled
+        print("[quote-card] quotes disabled (quotes.enabled: false) — skipping.", flush=True)
+        return {"kind": "quote_card", "published": False, "skipped": "disabled"}
     run_dir = OUTPUT_DIR / f"{_stamp()}_quote_card"
     run_dir.mkdir(parents=True, exist_ok=True)
     log = lambda m: print(f"[quote-card] {m}", flush=True)

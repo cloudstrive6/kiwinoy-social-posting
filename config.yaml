@@ -943,7 +943,10 @@ carousels:
 # footage's game universe (Spider-Man: games + films + comics). Life-general quotes
 # were removed (per user) — it's all game/story now.
 quotes:
-  enabled: true
+  enabled: false           # PAUSED 2026-07-27 (per user): stop auto-posting the static
+                           # quote CARDS (+ their FB Story). run_quote_card no-ops on this
+                           # flag AND the quotes.yml workflow is disabled. Flip true +
+                           # `gh workflow enable quotes.yml` to resume.
   # Per-day target (2x/day, 2026-07-01 per user), every 12h. The EXTERNAL cron-job.org
   # quotes job fires 06:00 + 18:00 UTC (2PM / 2AM PHT) — interleaved with the reels
   # (00/08/16) + footage (10/22) so FB/Threads posts stay ~2h+ apart. ALL 'story' = a
