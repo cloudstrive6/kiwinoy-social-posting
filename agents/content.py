@@ -402,15 +402,11 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
 def descriptive_fill_caption(game: str = "") -> str:
     """The PREVIOUS descriptive/hype FILL caption style (punchy title + vibe lines +
     game name), RESTORED to ALTERNATE with relatable_fill_caption — per user 2026-07-28,
-    the descriptive style earned the 2 highest-view fill reels. Reuses the game-level
-    hype body (generic_game_caption) but applies the current FILL hashtag set
-    (_fill_tags: <=5, brand-tagged) so tagging stays on-policy across both styles."""
-    base = generic_game_caption(game)
-    body = base.split("\n\n#")[0].rstrip()                   # drop generic_game_caption's own tags
-    if not body:
-        gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
-        body = f"{gname} gameplay\nPure vibes, edge to edge.\n{gname}"
-    return f"{body}\n\n{' '.join(_fill_tags(game))}".strip()
+    the descriptive style earned the 2 highest-view fill reels. Uses the EXACT old
+    GAME-ONLY hashtags (config game_hashtags, <=5, NO brand tag) that those winning
+    reels ran with (per user 2026-07-28) — i.e. generic_game_caption verbatim. The
+    RELATABLE variant keeps the brand-tagged _fill_tags set."""
+    return generic_game_caption(game)
 
 
 def _text(prompt: str, timeout: int = 120) -> str:
