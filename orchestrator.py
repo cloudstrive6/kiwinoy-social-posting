@@ -675,12 +675,21 @@ def run_gameplay_reel(
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
     if layout == "fill":
-        # RELATABLE caption: review the clip + write a human, first-person moment/feeling
-        # line (no game name, no marketing) so the audience relates + shares. No hook.
-        caption = content.relatable_fill_caption(clip_path, brief["game"])
+        # FILL caption ALTERNATES two styles (per user 2026-07-28) on the used-clip
+        # counter n: EVEN -> RELATABLE (clip-grounded human first-person moment, no game
+        # name/marketing); ODD -> DESCRIPTIVE/HYPE (the previous game-level style that
+        # earned the 2 highest-view fill reels: punchy title + vibe lines + game name).
+        # FILL lands ~every 3rd slot, so n parity flips between consecutive fill reels.
+        # Both use the same <=5 brand-tagged FILL hashtags. No on-screen hook either way.
+        if n % 2 == 0:
+            caption = content.relatable_fill_caption(clip_path, brief["game"])
+            _cap_style = "relatable"
+        else:
+            caption = content.descriptive_fill_caption(brief["game"])
+            _cap_style = "descriptive"
         hook = ""
         brief["hook"] = ""
-        log(f"Game: {brief.get('subject')} | FILL vertical (relatable) | clip {clip_id}")
+        log(f"Game: {brief.get('subject')} | FILL vertical ({_cap_style}) | clip {clip_id}")
     else:
         # Landscape-composited layouts: review the clip for a lore-grounded on-screen
         # hook + caption (ENGLISH per user).
