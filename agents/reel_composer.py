@@ -178,9 +178,29 @@ def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]
         return all(cid not in led.get(p, set()) for p in plats)
 
     fresh = [(k, i) for (k, i) in pool if _fresh(_clip_id(k, i, key))]
+    # LOW-POOL WATCH (per user 2026-07-30): DON'T reuse when a platform's fresh clips run
+    # out — Telegram-alert at <=20 remaining, and SKIP (don't repeat) at 0. Adding footage
+    # is how the pool refills. (Alert throttled to once/24h per pool+platform.)
+    n_fresh = len(fresh)
+    if n_fresh <= 20:
+        try:
+            from core import notify
+            akey = f"{key}:{','.join(sorted(plats))}"
+            if gh_release.low_pool_should_alert(akey):
+                lbl = "+".join(sorted(plats))
+                if n_fresh == 0:
+                    notify.telegram(f"🟥 Footage EXHAUSTED — '{key}' has 0 fresh clips left for {lbl}. "
+                                    "Those posts will PAUSE (no reuse, per your rule) until you add + "
+                                    "sync more footage.")
+                else:
+                    notify.telegram(f"🟧 Footage running low — '{key}' has {n_fresh} fresh clip(s) left "
+                                    f"for {lbl} (≤20). Add + sync more footage soon to avoid a gap.")
+        except Exception:
+            pass
     if not fresh:
-        gh_release.reset_used(key, plats)   # all shown on these platforms -> restart cycle
-        fresh = pool
+        # No reuse: skip this run (a caller may fall back to the other pool/format).
+        print(f"[reel] '{key}' exhausted for {plats} — NOT reusing (per user); skipping.", flush=True)
+        return None, None
     # Try several fresh clips: a single transient download failure (a GitHub-Release
     # 503, a B2 hiccup) must NOT skip the whole reel. Prefer the reliable sources
     # (local, then B2 native API) over flaky GitHub Releases, shuffled for variety.

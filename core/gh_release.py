@@ -426,6 +426,28 @@ def minutes_since_post(track: str) -> Optional[float]:
         return None
 
 
+# ---- low-footage-pool alert throttle (per user 2026-07-30) --------------------------
+# When a game's fresh clips for a platform drop to <=20, Telegram-alert the user to add
+# footage — but at most once per COOLDOWN per (pool,platform) so it isn't spammy.
+LOW_POOL_ASSET = "_low_pool_alerts.json"
+
+
+def low_pool_should_alert(alert_key: str, cooldown_hours: float = 24.0) -> bool:
+    """True if we should send a low-pool alert for `alert_key` now (records the time).
+    Fail-open to True on read/write trouble is WRONG (would spam); fail to False."""
+    try:
+        cur = _read_json_asset(LOW_POOL_ASSET) or {}
+        ts = cur.get(alert_key)
+        now = time.time()
+        if ts and (now - float(ts)) / 3600.0 < cooldown_hours:
+            return False
+        cur[alert_key] = now
+        _write_json_asset(LOW_POOL_ASSET, cur)
+        return True
+    except Exception:
+        return False
+
+
 # ---------------------------------------------------- quote assets (images/music)
 
 QIMAGE_MANIFEST = "_quote_images.json"
