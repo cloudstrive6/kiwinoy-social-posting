@@ -169,6 +169,13 @@ def main() -> int:
         action="store_true",
         help="dedicated TikTok reel: one TLOU2 gameplay clip (classic<->triptych), posts ONLY to TikTok via Zernio",
     )
+    g.add_argument(
+        "--youtube-reel",
+        dest="youtube_reel",
+        action="store_true",
+        help="dedicated YouTube Shorts reel (decoupled from the FB/IG feed): posts ONLY to YouTube, "
+             "picking clips not-yet-on-YouTube (incl. the FB/IG/TikTok backlog)",
+    )
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument("--backup", action="store_true",
                    help="backup trigger: only post if the primary missed this slot "
@@ -287,6 +294,18 @@ def main() -> int:
             lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
                                       scheduled_at=args.schedule_at,
                                       game=str(tk.get("game", "thelastofus2")), tiktok_only=True,
+                                      layout_override=args.layout, clip_override=args.clip))
+
+    # Dedicated YouTube Shorts track (decoupled from the FB/IG feed, per user 2026-07-30):
+    # posts ONLY to YouTube, picking clips fresh on YouTube (works the FB/IG/TikTok backlog).
+    if args.youtube_reel:
+        if not (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
+            print("[youtube-reel] reels.youtube.enabled is false — skipping.", flush=True)
+            return 0
+        return _with_backup(
+            "youtube_reel", "YouTube reel", args.backup, args.dry_run,
+            lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
+                                      scheduled_at=args.schedule_at, youtube_only=True,
                                       layout_override=args.layout, clip_override=args.clip))
 
     # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]

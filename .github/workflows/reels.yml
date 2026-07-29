@@ -117,13 +117,25 @@ jobs:
           echo "backup=${BACKUP:-false}" >> "$GITHUB_OUTPUT"
           echo "Selected reel slot: ${SLOT:-1} (backup=${BACKUP:-false})"
 
-      - name: Render + publish the reel
+      - name: Render + publish the reel (Facebook + Instagram feed)
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           BACKUP=""
           if [ "${{ steps.pick.outputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
           python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY $BACKUP
+
+      # DECOUPLED YouTube Shorts track (per user 2026-07-30): its OWN clip, fresh on
+      # YouTube (works the FB/IG/TikTok backlog). Same 3x/day trigger = 3 YT Shorts/day.
+      # if: always() so a feed-step hiccup doesn't skip YouTube. Gated by reels.youtube.enabled.
+      - name: Render + publish the YouTube Short (decoupled track)
+        if: always()
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          BACKUP=""
+          if [ "${{ steps.pick.outputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
+          python run.py --youtube-reel $DRY $BACKUP
 
       - name: Poster frames (dry-run layout preview)
         if: ${{ github.event.inputs.dry_run == 'true' }}

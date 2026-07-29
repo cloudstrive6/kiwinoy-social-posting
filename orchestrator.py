@@ -585,6 +585,7 @@ def run_gameplay_reel(
     scheduled_at: Optional[str] = None,
     game: Optional[str] = None,        # force this game (dedicated track, e.g. TikTok TLOU2)
     tiktok_only: bool = False,         # publish ONLY to TikTok via Zernio (not the PfM platforms)
+    youtube_only: bool = False,        # publish ONLY to YouTube (its own decoupled track)
     layout_override: Optional[str] = None,  # force a specific layout (classic/triptych/fill/rotated)
     clip_override: Optional[str] = None,     # force a SPECIFIC footage clip by filename (re-post/refire)
 ) -> dict[str, Any]:
@@ -636,11 +637,11 @@ def run_gameplay_reel(
     from core import gh_release as _ghr
     if tiktok_only:
         pick_platforms = ["tiktok"]
-    else:
+    elif youtube_only:                          # YT is its OWN decoupled track now
+        pick_platforms = ["youtube"]
+    else:                                        # feed = FB/IG only (YouTube left the bundle)
         pick_platforms = [t for t in CONFIG.platforms.get("video_post_to", ["facebook", "instagram"])
                           if t in _ghr.LEDGER_PLATFORMS]
-        if (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
-            pick_platforms.append("youtube")
     reel_path = run_dir / "reel.mp4"
     fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
@@ -847,16 +848,37 @@ def run_gameplay_reel(
                                  f"({clip_id}). It could repeat next run — worth a quick check.")
                 except Exception:
                     pass
+    elif youtube_only:
+        # DEDICATED YouTube Shorts track (decoupled from the FB/IG feed, per user 2026-07-30)
+        # so YT works through clips NOT-YET-on-YT independently (incl. the FB/IG/TikTok
+        # backlog). 1080p SDR reel via PfM, trimmed to YouTube's Shorts cap.
+        pmax = (CONFIG.reels.get("platform_max_seconds", {}) or {})
+        yt_cap = float(pmax.get("youtube", 180) or 0)
+        yt_bytes = video_bytes
+        if yt_cap and clip_dur and clip_dur > yt_cap + 1.0:
+            trimmed = run_dir / "reel_yt.mp4"
+            reel_ffmpeg.trim_seconds(reel_path, trimmed, yt_cap)
+            yt_bytes = trimmed.read_bytes()
+        log(f"Publishing to YouTube (dedicated Shorts track, {min(clip_dur or yt_cap, yt_cap):.0f}s)...")
+        res = publisher.run_reel(caption=caption, video_bytes=yt_bytes,
+                                 scheduled_at=scheduled_at, targets=["youtube"])
+        result["published"] = bool(res)
+        result["youtube_result"] = res
+        if res:
+            if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['youtube']
+                log(f"Marked clip used (youtube): {clip_id}")
+            else:
+                log(f"WARNING: YouTube posted but FAILED to record clip used ({clip_id}) — may repeat.")
+                try:
+                    from core import notify as _nt
+                    _nt.telegram(f"⚠️ A YouTube reel posted but the used-clip ledger write FAILED "
+                                 f"({clip_id}). It could repeat next run — worth a quick check.")
+                except Exception:
+                    pass
     else:
-        # YouTube is gated separately (reels.youtube). RESUMED 2026-07-01: 3 reels/day
-        # = 3 Shorts/day (the spam-safe cap), so when enabled EVERY gameplay reel also
-        # posts to YouTube. (The old per-slot gate never matched — the reels cron
-        # always sends slot 1.)
+        # FEED = Facebook + Instagram (YouTube is its OWN track now, see youtube_only).
         targets = [t for t in CONFIG.platforms.get(
             "video_post_to", ["facebook", "instagram", "threads"]) if t != "x"]
-        ycfg = CONFIG.reels.get("youtube", {}) or {}
-        if ycfg.get("enabled", False):
-            targets = targets + ["youtube"]
         # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
         # full caption + their fuller hashtags. The FILL format follows the Threads
         # LANDSCAPE rule instead: caption body + #GamingThreads only (no game tags).

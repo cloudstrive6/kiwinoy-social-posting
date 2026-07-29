@@ -353,13 +353,17 @@ reels:
   # On resume, set enabled=true and (#1) YouTube only posts on `slots` (2 of the 6
   # daily reel slots ~= 2/day) instead of every slot, to look less bulk/automated.
   youtube:
-    # RESUMED 2026-07-24 (per user): the 1080p feed reels post to YouTube as Shorts via
-    # Post for Me, 3x/day (one per reels slot, 0/8/16 UTC). This is the 1080p path; the
-    # DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) stays separate/idle.
+    # DECOUPLED YouTube Shorts track (per user 2026-07-30): YouTube is NO LONGER bundled
+    # into the FB/IG feed render — it's its own track (`run.py --youtube-reel`, fired by
+    # reels.yml on the same 3x/day trigger = 3x/day). It picks clips FRESH ON YOUTUBE
+    # independently (per-platform ledger), so it works through clips already on FB/IG/TikTok
+    # but not-yet-on-YouTube (the backlog), each once. 1080p SDR reel via Post for Me,
+    # trimmed to the Shorts cap (platform_max_seconds.youtube). Set enabled:false to pause.
     # NOTE: YouTube previously throttled the channel's Shorts reach from bulk auto-posting
-    # (paused 2026-06-26) — watch reach; dial back if it throttles again. See core/youtube.py.
+    # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
+    # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
     enabled: true
-    slots: [1, 2, 3]       # legacy/reference only (feed-reel path adds YouTube whenever enabled)
+    slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
