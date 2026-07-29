@@ -3,7 +3,7 @@
 > **Keep this file up to date.** Whenever the TikTok process changes (routing, encode,
 > captions, cadence, cron status), update this doc in the same change.
 
-_Last updated: 2026-07-10._
+_Last updated: 2026-07-30._
 
 ## TL;DR
 Everything TikTok goes to **Post for Me DRAFTS** (PfM's TikTok app is unaudited → can't
@@ -16,6 +16,13 @@ auto-publish public), which you **publish manually** in the TikTok app. Each dra
   your GPU and posts as a PfM draft (preserves 60fps HDR). Kept open for on-demand use.
 
 Both DM the caption to Telegram; both need manual publish in-app.
+
+**Footage dedupe (per-platform, 2026-07-30):** the automated 1080p track picks clips via the
+shared per-platform used-clip ledger (`core/gh_release`, key `tiktok`). TikTok now has its OWN
+used-set — a clip used on the FB/IG/YouTube feed is still fresh for TikTok and vice versa
+(previously one global ledger blocked reuse everywhere). The clip is marked used on `tiktok`
+only when PfM accepts the draft. (The manual 4K HDR script uses its separate
+`.tiktok_ledgers/<game>.json`.)
 
 ## Why this design
 | | Zernio (old) | Post for Me (current) |
