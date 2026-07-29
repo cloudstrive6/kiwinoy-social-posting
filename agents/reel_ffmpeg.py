@@ -1472,7 +1472,14 @@ def _v_encode(hi: bool = False) -> list[str]:
     -sws_flags there = Premiere's "Use Maximum Render Quality". 15-20 Mbps sits in
     TikTok's proven sweet spot (higher bitrates backfired on its public transcode)."""
     if not hi:
+        # CRF 21 quality, but with a VBV CEILING so a high-motion clip can't balloon
+        # into a file Instagram's Reels ingester chokes on. A 25 Mbps / 511 MB, 162s
+        # reel failed IG publish repeatedly (IN_PROGRESS -> ERROR, "Unable to publish
+        # media"), matching Meta's ~500 MB ingestion wall (per user 2026-07-30). Cap =
+        # 12 Mbps peak / 24 Mbps buffer -> a full 180s reel stays ~270 MB (safe), while
+        # CRF keeps calm scenes lean. FB re-encodes on top; TikTok uses hi=True.
         return ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+                "-maxrate", "12M", "-bufsize", "24M",
                 "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
     return ["-c:v", "libx264", "-preset", "slow",
             "-b:v", "15M", "-maxrate", "20M", "-bufsize", "20M",   # VBR 2-pass: target 15 / max 20
