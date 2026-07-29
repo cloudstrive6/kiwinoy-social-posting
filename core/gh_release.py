@@ -273,27 +273,56 @@ def _quote_image_index() -> dict[str, str]:
     return idx
 
 
-def used_clips() -> set[str]:
-    """Clip ids already used for a gameplay reel (fail-open to empty set)."""
+def read_ledger(retries: int = 4) -> Optional[set[str]]:
+    """Fetch the used-clip set from the release asset, distinguishing states:
+      * set()  -> ledger genuinely empty / no ledger asset yet (a known state)
+      * a set  -> the recorded ids
+      * None   -> UNREADABLE after retries (transient GitHub error) — callers MUST
+                  NOT treat this as 'empty', or dedup silently vanishes and clips
+                  repeat. The picker fails CLOSED (skips) on None instead.
+    Retries transient 403/429/5xx so a blip doesn't wipe the anti-repeat guarantee."""
     rel = _release()
     if not rel:
-        return set()
+        return None
     repo = _cfg().get("release_repo")
-    for a in _fresh_assets(repo, rel.get("id")):
-        if a.get("name") == USED_LEDGER_ASSET:
-            try:
-                # Read by unique asset ID, not browser_download_url: the latter is
-                # CDN-cached by <tag>/<name> and serves STALE content after a
-                # delete+reupload. The asset-id endpoint reflects the new upload.
-                r = requests.get(
-                    f"https://api.github.com/repos/{repo}/releases/assets/{a['id']}",
-                    headers={**_headers(), "Accept": "application/octet-stream"},
-                    timeout=30)
-                if r.status_code == 200:
-                    return set((r.json() or {}).get("used", []) or [])
-            except Exception:
-                return set()
-    return set()
+    asset_id = None
+    try:
+        for a in _fresh_assets(repo, rel.get("id")):
+            if a.get("name") == USED_LEDGER_ASSET:
+                asset_id = a.get("id")
+                break
+    except Exception:
+        return None
+    if asset_id is None:
+        return set()                      # no ledger asset yet == empty (known state)
+    for attempt in range(retries):
+        try:
+            # Read by unique asset ID, not browser_download_url: the latter is
+            # CDN-cached by <tag>/<name> and serves STALE content after a
+            # delete+reupload. The asset-id endpoint reflects the new upload.
+            r = requests.get(
+                f"https://api.github.com/repos/{repo}/releases/assets/{asset_id}",
+                headers={**_headers(), "Accept": "application/octet-stream"},
+                timeout=30)
+            if r.status_code == 200:
+                return set((r.json() or {}).get("used", []) or [])
+            if r.status_code in (403, 429, 500, 502, 503, 504) and attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return None
+        except Exception:
+            if attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return None
+    return None
+
+
+def used_clips() -> set[str]:
+    """Clip ids already used for a gameplay reel. Fail-open to empty for non-critical
+    callers (stats); the PICKER uses read_ledger() so it can fail CLOSED on None."""
+    s = read_ledger()
+    return s if s is not None else set()
 
 
 def _write_ledger(used: set[str]) -> bool:
@@ -317,13 +346,23 @@ def _write_ledger(used: set[str]) -> bool:
     if not upload_url:
         return False
     body = json.dumps({"used": sorted(used)}, ensure_ascii=False).encode("utf-8")
-    try:
-        r = requests.post(f"{upload_url}?name={USED_LEDGER_ASSET}",
-                          headers={**h, "Content-Type": "application/json"},
-                          data=body, timeout=60)
-        return r.ok
-    except Exception:
-        return False
+    for attempt in range(3):
+        try:
+            r = requests.post(f"{upload_url}?name={USED_LEDGER_ASSET}",
+                              headers={**h, "Content-Type": "application/json"},
+                              data=body, timeout=60)
+            if r.ok:
+                return True
+            if r.status_code in (403, 429, 500, 502, 503, 504) and attempt < 2:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return False
+        except Exception:
+            if attempt < 2:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return False
+    return False
 
 
 # ------------------------------------------------ last-posted markers (backup guard)
@@ -517,15 +556,30 @@ def quote_music_pool() -> list[str]:
             if str(a.get("name", "")).startswith("qmusic")]
 
 
-def add_used_clip(clip_id: str) -> bool:
-    """Record clip_id as used for a gameplay reel."""
+def add_used_clip(clip_id: str, retries: int = 4) -> bool:
+    """Record clip_id as used for a gameplay reel. Re-reads the FRESHEST ledger
+    immediately before each write and unions in the new id — this shrinks the
+    read-modify-write lost-update window when tracks run concurrently (feed +
+    TikTok + the draft poller + backups all mutate this one asset). Retries the
+    whole cycle so a transient GitHub error doesn't drop the mark (an unrecorded
+    post is exactly what causes a same-platform repeat)."""
     if not clip_id:
         return False
-    cur = used_clips()
-    if clip_id in cur:
-        return True
-    cur.add(clip_id)
-    return _write_ledger(cur)
+    for attempt in range(retries):
+        cur = read_ledger()
+        if cur is None:                   # couldn't read -> can't safely merge; retry
+            if attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return False
+        if clip_id in cur:
+            return True                   # already recorded (or a concurrent writer got it)
+        cur.add(clip_id)
+        if _write_ledger(cur):
+            return True
+        if attempt < retries - 1:
+            time.sleep(1.0 * (attempt + 1))
+    return False
 
 
 def reset_used(prefix: Optional[str] = None) -> bool:

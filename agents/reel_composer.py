@@ -162,7 +162,15 @@ def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
     pool = _candidates(key)
     if not pool:
         return None, None
-    used = gh_release.used_clips()
+    used = gh_release.read_ledger()
+    if used is None:
+        # Ledger UNREADABLE (transient GitHub error after retries). Treating it as
+        # empty would mark every clip 'fresh' and risk RE-POSTING an already-used
+        # clip on this platform. Fail CLOSED: skip this run (the backup self-heal
+        # retries later) rather than repeat. (per user 2026-07-30 no-repeat rule)
+        print(f"[reel] used-clip ledger UNREADABLE — skipping to avoid a repeat ({key}).",
+              flush=True)
+        return None, None
     fresh = [(k, i) for (k, i) in pool if _clip_id(k, i, key) not in used]
     if not fresh:
         gh_release.reset_used(key)   # all shown once -> restart this game's cycle

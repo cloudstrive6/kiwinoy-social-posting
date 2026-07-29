@@ -823,8 +823,17 @@ def run_gameplay_reel(
         result["published"] = bool(res)
         result["tiktok_result"] = res
         result["tiktok_via"] = via
-        if res and reel_composer.mark_clip_used(clip_id):
-            log(f"Marked clip used: {clip_id}")
+        if res:
+            if reel_composer.mark_clip_used(clip_id):
+                log(f"Marked clip used: {clip_id}")
+            else:   # TikTok draft created but ledger write failed -> repeat risk; alert
+                log(f"WARNING: TikTok posted but FAILED to record clip used ({clip_id}) — may repeat.")
+                try:
+                    from core import notify as _nt
+                    _nt.telegram(f"⚠️ A TikTok reel posted but the used-clip ledger write FAILED "
+                                 f"({clip_id}). It could repeat next run — worth a quick check.")
+                except Exception:
+                    pass
     else:
         # YouTube is gated separately (reels.youtube). RESUMED 2026-07-01: 3 reels/day
         # = 3 Shorts/day (the spam-safe cap), so when enabled EVERY gameplay reel also
@@ -974,6 +983,14 @@ def run_gameplay_reel(
         # clip itself stays on the release for future commentary reels.
         if reel_composer.mark_clip_used(clip_id):
             log(f"Marked clip used: {clip_id}")
+        else:   # posted but the ledger write failed after retries -> repeat risk; alert
+            log(f"WARNING: posted but FAILED to record clip used ({clip_id}) — may repeat.")
+            try:
+                from core import notify as _nt
+                _nt.telegram(f"⚠️ A reel posted but the used-clip ledger write FAILED "
+                             f"({clip_id}). It could repeat next run — worth a quick check.")
+            except Exception:
+                pass
 
         # Reach-booster: also repost the reel to the Instagram STORY (placement=
         # stories), using whichever video IG received. IG-only, best-effort.
