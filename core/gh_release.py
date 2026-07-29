@@ -273,13 +273,39 @@ def _quote_image_index() -> dict[str, str]:
     return idx
 
 
-def read_ledger(retries: int = 4) -> Optional[set[str]]:
-    """Fetch the used-clip set from the release asset, distinguishing states:
-      * set()  -> ledger genuinely empty / no ledger asset yet (a known state)
-      * a set  -> the recorded ids
-      * None   -> UNREADABLE after retries (transient GitHub error) — callers MUST
-                  NOT treat this as 'empty', or dedup silently vanishes and clips
-                  repeat. The picker fails CLOSED (skips) on None instead.
+# PER-PLATFORM used-clip ledger (per user 2026-07-30): each platform tracks its own
+# used clips so a clip can appear ONCE on each platform independently — a clip used on
+# TikTok is still fresh for the feed/YouTube, and a paused YouTube doesn't have its
+# slate consumed by IG/TikTok. (FB+IG+YouTube still share ONE feed render, so a feed
+# clip is marked on all its actual targets together — see orchestrator.)
+LEDGER_PLATFORMS = ("facebook", "instagram", "youtube", "tiktok", "threads")
+# Migration: the OLD ledger was a flat list (global). Those clips were posted across
+# the feed (FB/IG) + TikTok (+ Threads before it paused) while YouTube was paused, so
+# seed them as used on those platforms and leave YOUTUBE fresh (its whole point).
+_LEGACY_SEED_PLATFORMS = ("facebook", "instagram", "tiktok", "threads")
+
+
+def _parse_ledger(payload: dict) -> dict[str, set[str]]:
+    """Normalize a ledger payload into {platform: set(ids)}. Accepts the NEW per-platform
+    dict form and the OLD flat-list form (migrated by seeding the legacy platforms)."""
+    used = (payload or {}).get("used", {})
+    out: dict[str, set[str]] = {p: set() for p in LEDGER_PLATFORMS}
+    if isinstance(used, list):                       # OLD flat global list -> seed
+        base = set(used)
+        for p in _LEGACY_SEED_PLATFORMS:
+            out[p] = set(base)                       # youtube stays empty (fresh)
+    elif isinstance(used, dict):
+        for p, ids in used.items():
+            out[str(p)] = set(ids or [])
+    return out
+
+
+def read_ledger(retries: int = 4) -> Optional[dict[str, set[str]]]:
+    """Fetch the per-platform used-clip ledger. Distinguishes states:
+      * {platform: set(...)} -> the recorded ids (empty sets if nothing yet)
+      * None                 -> UNREADABLE after retries (transient GitHub error).
+                                Callers MUST NOT treat this as empty, or dedup silently
+                                vanishes and clips repeat; the picker fails CLOSED on None.
     Retries transient 403/429/5xx so a blip doesn't wipe the anti-repeat guarantee."""
     rel = _release()
     if not rel:
@@ -294,7 +320,7 @@ def read_ledger(retries: int = 4) -> Optional[set[str]]:
     except Exception:
         return None
     if asset_id is None:
-        return set()                      # no ledger asset yet == empty (known state)
+        return {p: set() for p in LEDGER_PLATFORMS}   # no ledger yet == all empty (known)
     for attempt in range(retries):
         try:
             # Read by unique asset ID, not browser_download_url: the latter is
@@ -305,7 +331,7 @@ def read_ledger(retries: int = 4) -> Optional[set[str]]:
                 headers={**_headers(), "Accept": "application/octet-stream"},
                 timeout=30)
             if r.status_code == 200:
-                return set((r.json() or {}).get("used", []) or [])
+                return _parse_ledger(r.json() or {})
             if r.status_code in (403, 429, 500, 502, 503, 504) and attempt < retries - 1:
                 time.sleep(1.0 * (attempt + 1))
                 continue
@@ -318,15 +344,23 @@ def read_ledger(retries: int = 4) -> Optional[set[str]]:
     return None
 
 
-def used_clips() -> set[str]:
-    """Clip ids already used for a gameplay reel. Fail-open to empty for non-critical
-    callers (stats); the PICKER uses read_ledger() so it can fail CLOSED on None."""
-    s = read_ledger()
-    return s if s is not None else set()
+def used_clips(platform: Optional[str] = None) -> set[str]:
+    """Used clip ids: for one `platform`, or the UNION across platforms if None.
+    Fail-open to empty for non-critical callers (stats/counters); the PICKER uses
+    read_ledger() so it can fail CLOSED on None."""
+    led = read_ledger()
+    if led is None:
+        return set()
+    if platform:
+        return led.get(platform, set())
+    u: set[str] = set()
+    for s in led.values():
+        u |= s
+    return u
 
 
-def _write_ledger(used: set[str]) -> bool:
-    """Replace the ledger asset with the given set. Needs a write token."""
+def _write_ledger(used: dict[str, set[str]]) -> bool:
+    """Replace the ledger asset with the given per-platform mapping. Needs a write token."""
     token = _token()
     cfg = _cfg()
     repo = cfg.get("release_repo")
@@ -345,7 +379,8 @@ def _write_ledger(used: set[str]) -> bool:
     upload_url = (rel.get("upload_url", "") or "").split("{")[0]
     if not upload_url:
         return False
-    body = json.dumps({"used": sorted(used)}, ensure_ascii=False).encode("utf-8")
+    payload = {"used": {p: sorted(ids) for p, ids in used.items() if ids}}
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     for attempt in range(3):
         try:
             r = requests.post(f"{upload_url}?name={USED_LEDGER_ASSET}",
@@ -556,38 +591,49 @@ def quote_music_pool() -> list[str]:
             if str(a.get("name", "")).startswith("qmusic")]
 
 
-def add_used_clip(clip_id: str, retries: int = 4) -> bool:
-    """Record clip_id as used for a gameplay reel. Re-reads the FRESHEST ledger
-    immediately before each write and unions in the new id — this shrinks the
-    read-modify-write lost-update window when tracks run concurrently (feed +
-    TikTok + the draft poller + backups all mutate this one asset). Retries the
-    whole cycle so a transient GitHub error doesn't drop the mark (an unrecorded
-    post is exactly what causes a same-platform repeat)."""
-    if not clip_id:
+def add_used_clip(clip_id: str, platforms, retries: int = 4) -> bool:
+    """Record clip_id as used ON EACH of `platforms` for a gameplay reel. Re-reads the
+    FRESHEST ledger immediately before each write and unions in the new id — this shrinks
+    the read-modify-write lost-update window when tracks run concurrently (feed + TikTok +
+    the draft poller + backups all mutate this one asset). Retries the whole cycle so a
+    transient GitHub error doesn't drop the mark (an unrecorded post is exactly what causes
+    a same-platform repeat)."""
+    plats = [str(p) for p in (platforms or []) if p]
+    if not clip_id or not plats:
         return False
     for attempt in range(retries):
-        cur = read_ledger()
-        if cur is None:                   # couldn't read -> can't safely merge; retry
+        led = read_ledger()
+        if led is None:                   # couldn't read -> can't safely merge; retry
             if attempt < retries - 1:
                 time.sleep(1.0 * (attempt + 1))
                 continue
             return False
-        if clip_id in cur:
-            return True                   # already recorded (or a concurrent writer got it)
-        cur.add(clip_id)
-        if _write_ledger(cur):
+        changed = False
+        for p in plats:
+            s = led.setdefault(p, set())
+            if clip_id not in s:
+                s.add(clip_id)
+                changed = True
+        if not changed:
+            return True                   # already recorded on every target platform
+        if _write_ledger(led):
             return True
         if attempt < retries - 1:
             time.sleep(1.0 * (attempt + 1))
     return False
 
 
-def reset_used(prefix: Optional[str] = None) -> bool:
-    """Clear the ledger; with prefix '<game>', clear only that game's entries
-    (used to restart the cycle once every clip for a game has been shown)."""
-    cur = used_clips()
-    cur = {c for c in cur if not c.startswith(f"{prefix}__")} if prefix else set()
-    return _write_ledger(cur)
+def reset_used(prefix: Optional[str] = None, platforms=None) -> bool:
+    """Restart a cycle: clear this game's (`prefix`) entries on the given `platforms`
+    (all platforms if None). Used when every clip for a game has been shown on a platform."""
+    led = read_ledger()
+    if led is None:
+        return False
+    plats = [str(p) for p in platforms] if platforms else list(led.keys())
+    for p in plats:
+        s = led.get(p, set())
+        led[p] = {c for c in s if not c.startswith(f"{prefix}__")} if prefix else set()
+    return _write_ledger(led)
 
 
 def download(asset: dict[str, str], cache_dir: Path) -> Optional[Path]:

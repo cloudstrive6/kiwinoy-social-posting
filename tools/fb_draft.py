@@ -69,12 +69,12 @@ def main() -> int:
     # Pool: fill draws from the vertical pool (fallback landscape); the rest use landscape footage.
     if fmt == "fill":
         vkey = f"{game}-vertical"
-        clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+        clip_path, clip_id = reel_composer.pick_unused_clip(vkey, ["facebook"])
         if not clip_path:
             print(f"[fb-draft] no vertical clips in '{vkey}' — falling back to landscape footage.", flush=True)
-            clip_path, clip_id = reel_composer.pick_unused_clip(game)
+            clip_path, clip_id = reel_composer.pick_unused_clip(game, ["facebook"])
     else:
-        clip_path, clip_id = reel_composer.pick_unused_clip(game)
+        clip_path, clip_id = reel_composer.pick_unused_clip(game, ["facebook"])
     if not clip_path:
         print(f"[fb-draft] No footage in the '{game}' pool. Add clips + sync to B2 first.", flush=True)
         return 2
@@ -156,8 +156,8 @@ def main() -> int:
     # Mark the clip used so the auto feed won't post the same one (unless --keep-clip).
     if not args.keep_clip and clip_id:
         try:
-            reel_composer.mark_clip_used(clip_id)
-            print(f"[fb-draft] marked clip used (auto feed won't reuse it): {clip_id}", flush=True)
+            reel_composer.mark_clip_used(clip_id, ["facebook"])
+            print(f"[fb-draft] marked clip used on FB (auto FB feed won't reuse it): {clip_id}", flush=True)
         except Exception:
             pass
 

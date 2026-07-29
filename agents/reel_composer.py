@@ -150,20 +150,22 @@ def _clip_id(kind: str, item: Any, key: str) -> str:
     return f"{key}__{Path(item).name}"
 
 
-def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
-    """Pick ONE gameplay clip for `key`, preferring clips NOT yet used for a
-    gameplay reel (tracked in the footage release ledger). Returns
-    (path, clip_id) or (None, None).
+def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]]:
+    """Pick ONE gameplay clip for `key` that is UNUSED on every platform in
+    `platforms` (per-platform ledger, per user 2026-07-30) — so a clip used on
+    TikTok is still fresh for the feed/YouTube, etc. Returns (path, clip_id) or
+    (None, None).
 
-    Clips are never deleted — they stay available for commentary reels. When
-    every clip for a game has already been used, the ledger for that game resets
-    and the cycle restarts (so we still post, just begin reusing the oldest).
+    Clips are never deleted — they stay available for commentary reels. When every
+    clip for a game has been shown on these platforms, that game+platform cycle
+    resets and restarts (so we still post, just begin reusing the oldest).
     """
+    plats = [str(p) for p in (platforms or []) if p]
     pool = _candidates(key)
     if not pool:
         return None, None
-    used = gh_release.read_ledger()
-    if used is None:
+    led = gh_release.read_ledger()
+    if led is None:
         # Ledger UNREADABLE (transient GitHub error after retries). Treating it as
         # empty would mark every clip 'fresh' and risk RE-POSTING an already-used
         # clip on this platform. Fail CLOSED: skip this run (the backup self-heal
@@ -171,9 +173,13 @@ def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
         print(f"[reel] used-clip ledger UNREADABLE — skipping to avoid a repeat ({key}).",
               flush=True)
         return None, None
-    fresh = [(k, i) for (k, i) in pool if _clip_id(k, i, key) not in used]
+
+    def _fresh(cid: str) -> bool:                # unused on EVERY target platform
+        return all(cid not in led.get(p, set()) for p in plats)
+
+    fresh = [(k, i) for (k, i) in pool if _fresh(_clip_id(k, i, key))]
     if not fresh:
-        gh_release.reset_used(key)   # all shown once -> restart this game's cycle
+        gh_release.reset_used(key, plats)   # all shown on these platforms -> restart cycle
         fresh = pool
     # Try several fresh clips: a single transient download failure (a GitHub-Release
     # 503, a B2 hiccup) must NOT skip the whole reel. Prefer the reliable sources
@@ -192,9 +198,9 @@ def pick_unused_clip(key: str) -> tuple[Optional[Path], Optional[str]]:
     return None, None
 
 
-def mark_clip_used(clip_id: str) -> bool:
-    """Record a clip as used for a gameplay reel (call after a successful post)."""
-    return gh_release.add_used_clip(clip_id)
+def mark_clip_used(clip_id: str, platforms) -> bool:
+    """Record a clip as used ON EACH of `platforms` (call after a successful post)."""
+    return gh_release.add_used_clip(clip_id, platforms)
 
 
 class ReelRenderError(RuntimeError):

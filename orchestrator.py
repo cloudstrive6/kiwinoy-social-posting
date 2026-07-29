@@ -628,6 +628,19 @@ def run_gameplay_reel(
     if layout_override:                         # manual override (e.g. --layout triptych)
         layout = str(layout_override).strip().lower()
         log(f"Layout forced by override: {layout}")
+    # PER-PLATFORM no-repeat (per user 2026-07-30): pick a clip fresh on the platforms
+    # THIS render actually targets, so e.g. a TikTok clip stays available for the feed and
+    # a paused YouTube keeps a clean slate. TikTok track -> ['tiktok']; feed -> its real
+    # reel targets (video_post_to minus x, + youtube when enabled). FB+IG+YT share one feed
+    # render, so the feed clip is marked on all of them together.
+    from core import gh_release as _ghr
+    if tiktok_only:
+        pick_platforms = ["tiktok"]
+    else:
+        pick_platforms = [t for t in CONFIG.platforms.get("video_post_to", ["facebook", "instagram"])
+                          if t in _ghr.LEDGER_PLATFORMS]
+        if (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
+            pick_platforms.append("youtube")
     reel_path = run_dir / "reel.mp4"
     fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
@@ -654,9 +667,9 @@ def run_gameplay_reel(
             return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
         log(f"Clip forced (override): {clip_id}")
     elif layout == "fill":
-        clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+        clip_path, clip_id = reel_composer.pick_unused_clip(vkey, pick_platforms)
         if not clip_path:
-            clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+            clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"], pick_platforms)
             if clip_path:
                 # No vertical footage -> ALTERNATE triptych <-> classic (per user 2026-07-25),
                 # so an empty vertical pool still gives variety. Triptych only when the game
@@ -664,9 +677,9 @@ def run_gameplay_reel(
                 layout = "triptych" if (_game_art(brief["game"]) and n % 2 == 0) else "classic"
                 log(f"No vertical footage ({vkey}) — falling back to the {layout} layout.")
     else:  # classic / triptych / rotated -> landscape pool
-        clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"])
+        clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"], pick_platforms)
         if not clip_path:
-            clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+            clip_path, clip_id = reel_composer.pick_unused_clip(vkey, pick_platforms)
             if clip_path:
                 log(f"No landscape footage ({brief['game']}) — falling back to the FILL vertical layout.")
                 layout = "fill"
@@ -824,7 +837,7 @@ def run_gameplay_reel(
         result["tiktok_result"] = res
         result["tiktok_via"] = via
         if res:
-            if reel_composer.mark_clip_used(clip_id):
+            if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['tiktok']
                 log(f"Marked clip used: {clip_id}")
             else:   # TikTok draft created but ledger write failed -> repeat risk; alert
                 log(f"WARNING: TikTok posted but FAILED to record clip used ({clip_id}) — may repeat.")
@@ -894,7 +907,7 @@ def run_gameplay_reel(
                     if not fb_art and layout != "triptych":
                         log("FB triptych: no game art for this game — using the shared render.")
                 elif layout == "fill":
-                    fb_clip, fb_cid = reel_composer.pick_unused_clip(brief["game"])
+                    fb_clip, fb_cid = reel_composer.pick_unused_clip(brief["game"], ["facebook"])
                     if fb_clip:
                         fb_story_hook, fb_caption = content.hook_and_caption_from_video(
                             fb_clip, brief.get("game", ""), taglish=False, with_game_title=True)
@@ -906,7 +919,7 @@ def run_gameplay_reel(
                             top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
                             fps=fps, w=rw, h=rh, target_seconds=fb_tgt, music=_reel_music(),
                             anim_logo=_anim_logo())
-                        if reel_composer.mark_clip_used(fb_cid):
+                        if reel_composer.mark_clip_used(fb_cid, ["facebook"]):
                             log(f"FB triptych: dedicated landscape clip {fb_cid} (marked used).")
                     else:
                         log("FB triptych: no landscape clip on this fill slot — using the shared render.")
@@ -979,10 +992,10 @@ def run_gameplay_reel(
                 log(f"Instagram rotated reel skipped ({e!r})")
                 result["ig_rotated_error"] = repr(e)
 
-        # Remember this clip so the next gameplay reel uses fresh footage. The
-        # clip itself stays on the release for future commentary reels.
-        if reel_composer.mark_clip_used(clip_id):
-            log(f"Marked clip used: {clip_id}")
+        # Remember this clip so the next gameplay reel uses fresh footage — marked on
+        # the feed platforms it actually went to (FB/IG + YT if enabled), per-platform.
+        if reel_composer.mark_clip_used(clip_id, pick_platforms):
+            log(f"Marked clip used ({'+'.join(pick_platforms)}): {clip_id}")
         else:   # posted but the ledger write failed after retries -> repeat risk; alert
             log(f"WARNING: posted but FAILED to record clip used ({clip_id}) — may repeat.")
             try:

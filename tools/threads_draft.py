@@ -66,11 +66,11 @@ def main() -> int:
 
     # Pool: fill draws from the vertical pool (fallback landscape); the rest use landscape footage.
     if fmt == "fill":
-        clip_path, clip_id = reel_composer.pick_unused_clip(f"{game}-vertical")
+        clip_path, clip_id = reel_composer.pick_unused_clip(f"{game}-vertical", ["threads"])
         if not clip_path:
-            clip_path, clip_id = reel_composer.pick_unused_clip(game)
+            clip_path, clip_id = reel_composer.pick_unused_clip(game, ["threads"])
     else:
-        clip_path, clip_id = reel_composer.pick_unused_clip(game)
+        clip_path, clip_id = reel_composer.pick_unused_clip(game, ["threads"])
     if not clip_path:
         print(f"[threads-draft] No footage in the '{game}' pool. Add clips + sync to B2 first.", flush=True)
         return 2

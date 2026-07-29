@@ -75,7 +75,7 @@ def main() -> int:
             return 2
         args.keep_clip = True   # a deliberate re-post — never consume/re-mark the clip
     else:
-        clip_path, clip_id = reel_composer.pick_unused_clip(vkey)
+        clip_path, clip_id = reel_composer.pick_unused_clip(vkey, ["instagram"])
     if not clip_path:
         print(f"[ig-draft] No footage in '{vkey}'. Add vertical clips to "
               f"reels/assets/footage/{vkey}/ (then sync to B2) first.", flush=True)
@@ -127,8 +127,8 @@ def main() -> int:
 
     # 6) mark the clip used so the auto feed won't post the same one (unless --keep-clip)
     if not args.keep_clip:
-        reel_composer.mark_clip_used(clip_id)
-        print(f"[ig-draft] marked clip used (auto feed won't reuse it): {clip_id}", flush=True)
+        reel_composer.mark_clip_used(clip_id, ["instagram"])
+        print(f"[ig-draft] marked clip used on IG (auto IG feed won't reuse it): {clip_id}", flush=True)
 
     print("\n[ig-draft] DONE.\nCAPTION:\n" + caption, flush=True)
     return 0
