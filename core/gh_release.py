@@ -505,6 +505,37 @@ def read_post_log() -> list:
     return list(cur.get("posts", [])) if isinstance(cur, dict) else []
 
 
+# ---- PINNED next clip (per user 2026-07-30) ----------------------------------------
+# Force the NEXT scheduled run of a track to use a SPECIFIC clip (+ optional layout),
+# consumed once. Lets us re-post a particular clip at the next slot without an extra
+# off-cadence post. e.g. re-post a reel that YouTube mis-classified as long-form.
+NEXT_CLIP_ASSET = "_next_clip.json"
+
+
+def set_next_clip(track: str, clip: str, layout: Optional[str] = None) -> bool:
+    """Pin `clip` (+ optional `layout`) as the next post for `track`."""
+    if not track or not clip:
+        return False
+    cur = _read_json_asset(NEXT_CLIP_ASSET) or {}
+    cur[str(track)] = {"clip": clip, "layout": layout}
+    return _write_json_asset(NEXT_CLIP_ASSET, cur)
+
+
+def take_next_clip(track: str) -> Optional[dict]:
+    """Pop the pinned clip for `track` ({'clip':..,'layout':..}) or None. CONSUMES it —
+    returns the entry ONLY if the clear write succeeds, so a run can't re-post it twice."""
+    cur = _read_json_asset(NEXT_CLIP_ASSET)
+    if not isinstance(cur, dict):
+        return None
+    entry = cur.get(str(track))
+    if not entry:
+        return None
+    cur.pop(str(track), None)
+    if not _write_json_asset(NEXT_CLIP_ASSET, cur):
+        return None                     # couldn't clear -> don't consume (avoid a repeat)
+    return entry
+
+
 def find_posts(query: str = "", limit: int = 20) -> list:
     """Posts whose record contains `query` (caption/hook/clip_id/platform), NEWEST first."""
     import json as _json

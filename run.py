@@ -302,11 +302,24 @@ def main() -> int:
         if not (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
             print("[youtube-reel] reels.youtube.enabled is false — skipping.", flush=True)
             return 0
-        return _with_backup(
-            "youtube_reel", "YouTube reel", args.backup, args.dry_run,
-            lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
-                                      scheduled_at=args.schedule_at, youtube_only=True,
-                                      layout_override=args.layout, clip_override=args.clip))
+
+        def _run_yt():
+            clip, lay = args.clip, args.layout
+            # A PINNED next clip (e.g. a re-post) overrides the random pick — consumed once,
+            # and NOT on a dry run. Resolved here so the backup wrapper only consumes it when
+            # it actually posts (a missed slot), never on a primary that already posted.
+            if not clip and not args.dry_run:
+                from core import gh_release as _g
+                pin = _g.take_next_clip("youtube_reel")
+                if pin and pin.get("clip"):
+                    clip = pin["clip"]
+                    lay = lay or pin.get("layout")
+                    print(f"[youtube-reel] using PINNED clip: {clip} (layout={lay or 'auto'})", flush=True)
+            return run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
+                                     scheduled_at=args.schedule_at, youtube_only=True,
+                                     layout_override=lay, clip_override=clip)
+
+        return _with_backup("youtube_reel", "YouTube reel", args.backup, args.dry_run, _run_yt)
 
     # LOCAL long-form YouTube: --parts <folder/file> [--game <key>] [--publish-at <iso>]
     if args.youtube:
