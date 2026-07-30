@@ -809,6 +809,30 @@ def run_gameplay_reel(
         "target_seconds": target, "actual_seconds": round(actual, 1),
         "caption": caption, "reel_path": str(reel_path), "dry_run": dry_run,
     }
+
+    def _record_post(platforms, api=None, clip=None, hook_=None, cap_=None):
+        """Durable POST LOG (per user 2026-07-30): one record per published post so any reel
+        traces back to its exact clip forever. Best-effort; never blocks a post."""
+        try:
+            import time as _t
+            from core import gh_release as _g
+            rid = ""
+            if isinstance(api, dict):
+                rid = api.get("id") or api.get("post_id") or ""
+            plats = [str(p) for p in (platforms or []) if p]
+            if not plats:
+                return
+            _g.log_post({
+                "ts": _t.time(), "kind": "gameplay", "game": brief.get("game"),
+                "clip_id": clip or clip_id, "layout": layout,
+                "hook": (hook if hook_ is None else hook_),
+                "caption": (caption if cap_ is None else cap_),
+                "platforms": plats, "result_id": rid,
+            })
+        except Exception:
+            pass
+
+    fb_own_clip = None   # set when FB posts its OWN (fill-slot) triptych clip, not the main one
     if dry_run:
         log("DRY RUN — skipping publish.")
         result["published"] = False
@@ -838,6 +862,7 @@ def run_gameplay_reel(
         result["tiktok_result"] = res
         result["tiktok_via"] = via
         if res:
+            _record_post(pick_platforms, res)                           # ['tiktok']
             if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['tiktok']
                 log(f"Marked clip used: {clip_id}")
             else:   # TikTok draft created but ledger write failed -> repeat risk; alert
@@ -865,6 +890,7 @@ def run_gameplay_reel(
         result["published"] = bool(res)
         result["youtube_result"] = res
         if res:
+            _record_post(pick_platforms, res)                           # ['youtube']
             if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['youtube']
                 log(f"Marked clip used (youtube): {clip_id}")
             else:
@@ -941,6 +967,7 @@ def run_gameplay_reel(
                             top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
                             fps=fps, w=rw, h=rh, target_seconds=fb_tgt, music=_reel_music(),
                             anim_logo=_anim_logo())
+                        fb_own_clip = fb_cid   # FB posted its OWN clip, not the main one
                         if reel_composer.mark_clip_used(fb_cid, ["facebook"]):
                             log(f"FB triptych: dedicated landscape clip {fb_cid} (marked used).")
                     else:
@@ -967,6 +994,9 @@ def run_gameplay_reel(
                 # (publish_video fail-opens to a feed video if the placement is ever rejected).
                 result["facebook_result"] = publisher.run_reel(
                     caption=fb_caption, video_bytes=fb_bytes, scheduled_at=scheduled_at, targets=["facebook"])
+                if result.get("facebook_result"):   # log FB's OWN clip/hook/caption
+                    _record_post(["facebook"], result["facebook_result"],
+                                 clip=(fb_own_clip or clip_id), hook_=fb_story_hook, cap_=fb_caption)
             except Exception as e:
                 log(f"FB triptych/re-encode failed ({e!r}) — posting FB with the shared render.")
                 rest_targets = main_targets
@@ -994,6 +1024,9 @@ def run_gameplay_reel(
         result["published"] = True
         result["postforme_result"] = api_result
         log(f"Published. Post id: {(api_result or {}).get('id', '(see result.json)')}")
+        # POST LOG: the MAIN reel (clip_id) went to rest_targets (IG + Threads if on, and FB
+        # too when FB used the shared render). FB's own fill-slot clip is logged separately above.
+        _record_post(rest_targets, api_result)
         # NOTE: TikTok is NOT posted here — it's a SEPARATE dedicated track
         # (run_tiktok_reel: TLOU2-only, 4x/day) so the general multi-game reels don't
         # land on TikTok. See core/zernio.py.

@@ -448,6 +448,71 @@ def low_pool_should_alert(alert_key: str, cooldown_hours: float = 24.0) -> bool:
         return False
 
 
+# ---- durable POST LOG (per user 2026-07-30) ----------------------------------------
+# One appended record per published post so any reel can be traced back to its exact clip
+# forever (no 14-day CI-artifact race). Fields: ts, kind, game, clip_id, layout, hook,
+# caption, platforms, result_id. Read/searched by tools/find_post.py + re-render flows.
+POST_LOG_ASSET = "_post_log.json"
+POST_LOG_MAX = 4000        # keep the most-recent N records (tiny JSON; bounds growth)
+
+
+def log_post(entry: dict, retries: int = 3) -> bool:
+    """Append a post record. EXISTENCE-AWARE read so a transient GitHub read error can't
+    clobber the whole history (skip this append instead). Best-effort — never raises."""
+    if not entry:
+        return False
+    repo = _cfg().get("release_repo")
+    rel = _release()
+    if not repo or not rel:
+        return False
+    for attempt in range(retries):
+        posts = None
+        try:
+            aid = None
+            for a in _fresh_assets(repo, rel.get("id")):
+                if a.get("name") == POST_LOG_ASSET:
+                    aid = a.get("id")
+                    break
+            if aid is None:
+                posts = []                        # no log yet -> start fresh (safe)
+            else:
+                r = requests.get(
+                    f"https://api.github.com/repos/{repo}/releases/assets/{aid}",
+                    headers={**_headers(), "Accept": "application/octet-stream"}, timeout=30)
+                if r.status_code == 200:
+                    d = r.json() or {}
+                    posts = list(d.get("posts", [])) if isinstance(d, dict) else []
+        except Exception:
+            posts = None
+        if posts is None:                         # read error -> do NOT clobber; retry
+            if attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            return False
+        posts.append(entry)
+        if len(posts) > POST_LOG_MAX:
+            posts = posts[-POST_LOG_MAX:]
+        if _write_json_asset(POST_LOG_ASSET, {"posts": posts}):
+            return True
+        if attempt < retries - 1:
+            time.sleep(1.0 * (attempt + 1))
+    return False
+
+
+def read_post_log() -> list:
+    """All post records (oldest first). Fail-open to [] for read errors."""
+    cur = _read_json_asset(POST_LOG_ASSET) or {}
+    return list(cur.get("posts", [])) if isinstance(cur, dict) else []
+
+
+def find_posts(query: str = "", limit: int = 20) -> list:
+    """Posts whose record contains `query` (caption/hook/clip_id/platform), NEWEST first."""
+    import json as _json
+    q = (query or "").lower().strip()
+    hits = [p for p in read_post_log() if not q or q in _json.dumps(p, ensure_ascii=False).lower()]
+    return list(reversed(hits))[: max(1, int(limit))]
+
+
 # ---------------------------------------------------- quote assets (images/music)
 
 QIMAGE_MANIFEST = "_quote_images.json"
