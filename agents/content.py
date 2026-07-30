@@ -529,6 +529,10 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "- ONE short clip-title line, 3 to 8 words, accurate to the moment.\n"
         f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
         "GROUNDING — accuracy is NON-NEGOTIABLE (viewers call out lore mistakes):\n"
+        "- The curiosity gap / bold claim MUST BE TRUE to this clip. NEVER invent an object, "
+        "prop, weapon, action or event that isn't actually on screen just to be provocative "
+        "(e.g. do not ask 'why is Spider-Man pulling out a gun?' when there is no gun — and "
+        "heroes like Spider-Man don't use guns anyway). A false hook is worse than a plain one.\n"
         "- Name a character ONLY if THIS clip actually shows or names them — a visible "
         "character in the description, OR an on-screen SUBTITLE that names the speaker. "
         "If a subtitle reads e.g. 'JOHNSON: ...', the one talking is JOHNSON; never credit "
@@ -595,6 +599,48 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "") -> t
         return True, ""
 
 
+def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "") -> tuple[bool, str]:
+    """VISION critic (per user 2026-07-30): re-check the on-screen HOOK against the ACTUAL
+    clip FRAMES — not the text observation — so it catches a FABRICATED premise the text
+    critic misses (e.g. 'Why is Spider-Man pulling out a gun?' when no gun is on screen).
+    Looks at the real frames and asks whether the hook's central claim is actually shown.
+    Returns (ok, issues). Fail-OPEN (ok=True) if vision is unavailable — never blocks a post
+    on a transient error, only on a confident rejection. Claude vision first, OpenAI fallback."""
+    from core import claude_code, openai_client
+    if not hook or not cands:
+        return True, ""
+    instruction = (
+        f"You are a STRICT accuracy checker for a {gname} gameplay reel's ON-SCREEN hook. "
+        "These are frames from the ACTUAL clip.\n\n"
+        f'ON-SCREEN HOOK: "{hook}"\nPOST CAPTION: "{caption}"\n\n'
+        "Judge ONLY from what is literally visible in these frames. Mark it BAD if the hook's "
+        "central claim/premise is NOT clearly supported by the footage — e.g. it claims an "
+        "OBJECT (a gun/weapon), an ACTION, or a CHARACTER that does not actually appear. "
+        "Clickbait/curiosity is fine ONLY if it is TRUE to what's shown; a hook about the "
+        "visible action, setting, or mood is fine. Be especially suspicious of props/weapons "
+        "a character wouldn't use (e.g. Spider-Man does not use guns).\n"
+        'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
+    )
+    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
+    try:
+        raw = claude_code.run(
+            f"Use the Read tool to open these frames first.\n\n{instruction}\n\nFrames:\n{listing}",
+            allowed_tools="Read", timeout=180)
+    except claude_code.ClaudeCodeError as e:
+        print(f"[content] vision hook-check: Claude unavailable ({e}); trying OpenAI vision.", flush=True)
+        try:
+            raw = openai_client.vision(instruction, cands)
+        except Exception:
+            return True, ""            # vision unavailable -> don't block
+    except Exception:
+        return True, ""
+    try:
+        d = extract_json(raw)
+        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+    except Exception:
+        return True, ""
+
+
 def game_title_line(game: str) -> str:
     """The '<Game Title> <emoji>' line that sits BETWEEN the caption body and the
     hashtags on classic/triptych reel captions (per user 2026-07-14), e.g.
@@ -629,16 +675,29 @@ def hook_and_caption_from_video(
                 observation = _observe_clip(cands, gname)
                 if observation:
                     hook, line = _hook_and_caption(observation, game, gname, taglish)
-                    # LORE FACT-CHECK: reject an on-screen hook that invents a character
-                    # (e.g. Cortana in an Op-METEORITE clip) / misattributes a subtitle /
-                    # asserts an unshown event, and regenerate once with the reason fed back.
-                    ok, issues = _verify_hook(hook, line, observation, game) if hook else (True, "")
+                    # ACCURACY GATE (two critics): (1) TEXT lore critic — invented character /
+                    # wrong subtitle speaker / unshown story event; (2) VISION critic that
+                    # re-checks the hook against the ACTUAL FRAMES, catching a FABRICATED premise
+                    # the text read missed (e.g. "Why is Spider-Man pulling out a gun?" when no
+                    # gun is on screen — flagged by user 2026-07-30). Regenerate once, feeding
+                    # the reason back; if it still fails, fall back to a safe action hook.
+                    def _check_hook(h: str, l: str) -> tuple[bool, str]:
+                        if not h:
+                            return False, "empty hook"
+                        ok1, i1 = _verify_hook(h, l, observation, game)
+                        if not ok1:
+                            return False, i1 or "lore mismatch"
+                        ok2, i2 = _verify_hook_vision(h, l, cands, gname)
+                        if not ok2:
+                            return False, i2 or "hook not supported by the footage"
+                        return True, ""
+
+                    ok, issues = _check_hook(hook, line)
                     if not ok:
-                        print(f"[content] hook rejected ({issues or 'lore mismatch'}); "
-                              "regenerating.", flush=True)
+                        print(f"[content] hook rejected ({issues}); regenerating.", flush=True)
                         h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues)
-                        ok2, _ = _verify_hook(h2, l2, observation, game) if h2 else (False, "")
-                        if ok2 and h2:
+                        ok2, _ = _check_hook(h2, l2)
+                        if ok2:
                             hook, line = h2, l2
                         else:
                             # 2nd attempt still failed -> a safe action hook (no identities)
