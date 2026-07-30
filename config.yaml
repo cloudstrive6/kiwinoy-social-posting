@@ -648,7 +648,9 @@ reels:
                        # to ingest reliably + is IG's reach-favoured range. Lowered from 900.
     threads: 180       # 3 min (same Meta processing limit; was 300)
     tiktok: 3600       # 60 min (effectively full)
-    youtube: 180       # 3 min (Shorts; longer = a normal long-form video, not a Short)
+    youtube: 179       # 2:59 — MUST stay <180s or YouTube treats it as a long-form VIDEO,
+                       # not a Short (a 3:01 reel posted as long-form, 2026-07-30). Both YT
+                       # tracks (1080p PfM + 4K Data-API) read this cap.
     absolute_max: 3600 # hard ceiling on the main render so a bad file can't render for hours
   # FB + IG STORY reach-booster cap: Stories reject video > 60s ("Duration ... is greater
   # than the maximum allowed duration of 60 seconds", page-stories-api). The main reel is

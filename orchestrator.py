@@ -878,13 +878,13 @@ def run_gameplay_reel(
         # so YT works through clips NOT-YET-on-YT independently (incl. the FB/IG/TikTok
         # backlog). 1080p SDR reel via PfM, trimmed to YouTube's Shorts cap.
         pmax = (CONFIG.reels.get("platform_max_seconds", {}) or {})
-        yt_cap = float(pmax.get("youtube", 180) or 0)
+        yt_cap = float(pmax.get("youtube", 179) or 0)      # <=179s -> stays a SHORT (>180 = long-form)
         yt_bytes = video_bytes
-        if yt_cap and clip_dur and clip_dur > yt_cap + 1.0:
+        if yt_cap and actual and actual > yt_cap + 0.3:    # trim ANYTHING over the Shorts cap
             trimmed = run_dir / "reel_yt.mp4"
-            reel_ffmpeg.trim_seconds(reel_path, trimmed, yt_cap)
+            reel_ffmpeg.trim_seconds(reel_path, trimmed, yt_cap)   # stream-copy, lands <= yt_cap
             yt_bytes = trimmed.read_bytes()
-        log(f"Publishing to YouTube (dedicated Shorts track, {min(clip_dur or yt_cap, yt_cap):.0f}s)...")
+        log(f"Publishing to YouTube (dedicated Shorts track, <={min(actual or yt_cap, yt_cap):.0f}s)...")
         res = publisher.run_reel(caption=caption, video_bytes=yt_bytes,
                                  scheduled_at=scheduled_at, targets=["youtube"])
         result["published"] = bool(res)
@@ -2250,7 +2250,7 @@ def run_youtube_short(
 
     # DURATION (per user 2026-07-11): whole clip up to YouTube Shorts' 3-min cap (longer than
     # 3 min = a normal long-form video, not a Short).
-    yt_cap = float((CONFIG.reels.get("platform_max_seconds", {}) or {}).get("youtube", 180)) or 180.0
+    yt_cap = float((CONFIG.reels.get("platform_max_seconds", {}) or {}).get("youtube", 179)) or 179.0
     yt_target = (lambda d: min(d, yt_cap) if d else yt_cap)(float(ffmpeg.duration(clip_path) or 0.0))
 
     # 3) caption. FILL = generic GAME caption (pure footage, no on-screen hook); the
