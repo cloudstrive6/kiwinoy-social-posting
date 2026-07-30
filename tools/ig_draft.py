@@ -104,11 +104,12 @@ def main() -> int:
     # 3) relatable, clip-grounded caption (<=5 hashtags, brand-tagged)
     caption = content.relatable_fill_caption(clip_path, game)
 
-    # 4) upload to B2 drafts/ig/, then PING Telegram with filename + size + caption. The user
-    # browses drafts/ig/ in the Backblaze app and grabs the file there (no download link).
+    # 4) upload to B2 drafts/ig/ under a self-describing name (platform_game_format_keyword_
+    # NZ-stamp), then PING Telegram. The user browses drafts/ig/ in the Backblaze app.
+    fname = content.draft_filename("ig", game, "fill", content.footage_keyword(caption))
     la = CONFIG.raw().get("longform_archive", {}) or {}
     remote = str(la.get("remote", "kgb2"))
-    key = f"drafts/ig/{reel_path.name}"
+    key = f"drafts/ig/{fname}"
     print(f"[ig-draft] uploading to B2 -> {key}", flush=True)
     rc = subprocess.run(["rclone", "copyto", str(reel_path), f"{remote}:{b2_store._bucket()}/{key}",
                          "--b2-chunk-size", "100M"], env=_b2_env(remote)).returncode
@@ -120,7 +121,7 @@ def main() -> int:
         return 1
     msg = (f"\U0001F3AC IG draft ready — {game}, {int(target)}s\n"
            f"\U0001F4C1 Backblaze → drafts/ig/\n"
-           f"• File: {reel_path.name}\n"
+           f"• File: {fname}\n"
            f"• Size: {size_mb:.0f} MB\n\n"
            f"— caption (copy below) —\n{caption}")
     print("[ig-draft] Telegram ping:", "sent" if notify.telegram(msg) else "NOT sent", flush=True)

@@ -655,6 +655,56 @@ def game_title_line(game: str) -> str:
     return f"{gname} {emo}".strip()
 
 
+# ---- self-describing DRAFT filenames (per user 2026-07-30) --------------------------
+# B2 draft files are named <platform>_<game>_<format>_<keyword>_<NZ stamp>.<ext>, e.g.
+# ig_spider-man2_triptych_rooftop_20260730-221553.mp4 — so a glance tells you the game,
+# format, a footage keyword (location/action), and WHEN it was sent (NZ local time).
+_FOOTAGE_KEYWORDS = [
+    "rooftop", "street", "subway", "bridge", "harbor", "dock", "pier", "park", "alley",
+    "skyscraper", "tower", "construction", "museum", "lab", "hospital", "school", "warehouse",
+    "factory", "train", "highway", "beach", "boardwalk", "carnival", "interior", "cutscene",
+    "night", "rain", "storm", "snow", "sunset", "chase", "swing", "dive", "freefall", "glide",
+    "fight", "boss", "brawl", "stealth", "takedown", "ambush", "escape", "rescue", "battle",
+    "vortex", "portal", "hunter", "symbiote", "venom", "kraven", "lizard", "stakeout", "gadget",
+    "web", "perch", "skydive", "downtown", "harbor", "sewer", "prison", "arena",
+]
+
+
+def footage_keyword(*texts: str, fallback: str = "clip") -> str:
+    """One lowercase location/action keyword from the clip's caption/hook (for the draft
+    filename). Curated vocab first (prefix match, so swing/swings/swinging all hit), else
+    the first salient non-stopword, else `fallback`."""
+    blob = re.sub(r"#\w+", " ", " ".join(str(t or "") for t in texts)).lower()
+    for kw in _FOOTAGE_KEYWORDS:
+        if re.search(rf"\b{re.escape(kw)}", blob):
+            return kw
+    stop = {"the", "and", "that", "this", "with", "for", "was", "just", "live", "while", "when",
+            "across", "city", "game", "gameplay", "spider", "spiderman", "marvel", "marvels",
+            "from", "into", "your", "have", "been", "they", "them", "their", "what", "does",
+            "did", "almost", "something", "watch", "wait", "here"}
+    for w in re.findall(r"[a-z]{4,}", blob):
+        if w not in stop:
+            return w
+    return fallback
+
+
+def draft_stamp() -> str:
+    """Draft-filename timestamp in NZ LOCAL time (the user's tz), %Y%m%d-%H%M%S — so it
+    reads right no matter where the render ran (local PC or a UTC CI runner)."""
+    from datetime import datetime, timedelta, timezone
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.now(ZoneInfo("Pacific/Auckland")).strftime("%Y%m%d-%H%M%S")
+    except Exception:
+        return (datetime.now(timezone.utc) + timedelta(hours=12)).strftime("%Y%m%d-%H%M%S")
+
+
+def draft_filename(platform: str, game: str, fmt: str, keyword: str, ext: str = "mp4") -> str:
+    """<platform>_<game>_<format>_<keyword>_<NZ stamp>.<ext>."""
+    kw = re.sub(r"[^a-z0-9]+", "-", (keyword or "clip").lower()).strip("-") or "clip"
+    return f"{platform}_{game}_{fmt}_{kw}_{draft_stamp()}.{ext}"
+
+
 def hook_and_caption_from_video(
     video_path, game: str = "", taglish: bool = False, with_game_title: bool = False
 ) -> tuple[str, str]:

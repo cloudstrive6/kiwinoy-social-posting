@@ -121,10 +121,11 @@ def main() -> int:
     size_mb = out.stat().st_size / (1024 * 1024)
     print(f"[threads-draft] rendered {out.name} ({size_mb:.0f} MB)", flush=True)
 
-    # Upload to B2 drafts/threads/ + ping Telegram (filename + size + caption).
+    # Upload to B2 drafts/threads/ under a self-describing name + ping Telegram.
+    fname = content.draft_filename("threads", game, fmt, content.footage_keyword(caption, locals().get("hook", "")))
     la = CONFIG.raw().get("longform_archive", {}) or {}
     remote = str(la.get("remote", "kgb2"))
-    key = f"drafts/threads/{out.name}"
+    key = f"drafts/threads/{fname}"
     print(f"[threads-draft] uploading to B2 -> {key}", flush=True)
     rc = subprocess.run(["rclone", "copyto", str(out), f"{remote}:{b2_store._bucket()}/{key}",
                          "--b2-chunk-size", "100M"], env=_b2_env(remote)).returncode
@@ -136,7 +137,7 @@ def main() -> int:
         return 1
     msg = (f"\U0001F9F5 Threads draft ready — {fmt}, {game}, {int(target)}s\n"
            f"\U0001F4C1 Backblaze → drafts/threads/\n"
-           f"• File: {out.name}\n"
+           f"• File: {fname}\n"
            f"• Size: {size_mb:.0f} MB\n\n"
            f"— caption (copy below) —\n{caption}")
     print("[threads-draft] Telegram ping:", "sent" if notify.telegram(msg) else "NOT sent", flush=True)
