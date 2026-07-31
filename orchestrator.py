@@ -617,11 +617,23 @@ def run_gameplay_reel(
     # NON-rotated layouts (classic <-> triptych <-> fill) on the persistent used-clip
     # counter; the sideways "rotated" look is INSTAGRAM-EXCLUSIVE (~every 3rd reel).
     layouts = [str(x) for x in (gcfg.get("layouts") or ["classic"])]
+    # LAYOUT ROTATION is per-TRACK (per user 2026-07-31): rotate classic<->triptych<->fill on
+    # THIS TRACK's OWN post count for the game — NOT the global cross-platform union, which is
+    # dominated by FB/IG/TikTok and locked YouTube to triptych 4x in a row (its 8h slots each
+    # added ~3 to the shared counter, so n%3 never moved). Count both the landscape (game__)
+    # and vertical (game-vertical__) ids so every post advances the cycle by one.
+    if tiktok_only:
+        _lp = "tiktok"
+    elif youtube_only:
+        _lp = "youtube"
+    else:
+        _lp = "instagram"                        # feed representative (FB/IG share the reel)
     try:
         from core import gh_release as _ghr
-        used = _ghr.used_clips()
-        # A dedicated (forced-game) track alternates on THAT game's own used count.
-        n = len([u for u in used if str(u).startswith(f"{game}__")]) if game else len(used)
+        gk = str(brief.get("game") or "")
+        pset = _ghr.used_clips(_lp)              # THIS track's own used-clip set
+        n = (len([u for u in pset if str(u).startswith((gk + "__", gk + "-vertical__"))])
+             if gk else len(pset))
     except Exception:
         n = 0
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
