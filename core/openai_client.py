@@ -86,6 +86,21 @@ def vision(prompt: str, image_paths: list, system: str = "", model: str | None =
     return (resp.output_text or "").strip()
 
 
+def transcribe(audio_path, prompt: str = "", model: str | None = None) -> str:
+    """Speech-to-text of an audio file (the clip's spoken DIALOGUE), so hooks/captions can
+    be grounded in what's actually SAID. `prompt` biases spelling (e.g. character names).
+    Returns the transcript text; '' on any error (fail-open — never blocks a post)."""
+    model = model or CONFIG.models.get("transcribe") or "whisper-1"
+    try:
+        with open(audio_path, "rb") as f:
+            r = client().audio.transcriptions.create(
+                model=model, file=f, prompt=(prompt or None), response_format="text")
+        return (r if isinstance(r, str) else getattr(r, "text", "") or "").strip()
+    except Exception as e:
+        print(f"[openai] transcribe failed ({e!r})", flush=True)
+        return ""
+
+
 def image(prompt: str, size: str | None = None, quality: str | None = None) -> bytes:
     """Generate one image with gpt-image-1. Returns PNG bytes."""
     cfg = CONFIG.image

@@ -454,6 +454,55 @@ def _observe_clip(cands: list, gname: str) -> str:
         return sanitize(openai_client.vision(instruction, cands)).strip()
 
 
+def _transcribe_clip(video_path, gname: str = "") -> str:
+    """Whisper transcript of the clip's spoken DIALOGUE, word-for-word (per user 2026-07-31),
+    so the writer + critics know exactly WHO says WHAT — not just what a few frames show.
+    Extracts a small mono audio track and transcribes it (biased by the game name for
+    spelling). Fail-open to '' (silent/no-dialogue clips + any error don't block a post)."""
+    import tempfile
+    from pathlib import Path
+
+    from core import elevenlabs, ffmpeg, openai_client
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            a = Path(tmp) / "audio.mp3"
+            # cap at 240s -> bounds cost (a reel is <=180s anyway); mono 16k mp3 = tiny.
+            rc, _ = ffmpeg.run(["-i", str(video_path), "-t", "240", "-vn", "-ac", "1",
+                                "-ar", "16000", "-b:a", "64k", str(a)], timeout=120)
+            if rc != 0 or not a.exists() or a.stat().st_size < 1024:
+                return ""
+            # ElevenLabs Scribe first (better on non-speech — it annotates, doesn't invent),
+            # then OpenAI Whisper. Either provider depleted just means no dialogue grounding.
+            t = _clean_transcript(elevenlabs.speech_to_text(a))
+            if not t:
+                t = _clean_transcript(openai_client.transcribe(a, prompt=(gname or "").strip()))
+            return sanitize(t).strip()
+    except Exception as e:
+        print(f"[content] transcribe failed ({e!r}); proceeding without dialogue.", flush=True)
+        return ""
+
+
+# Whisper hallucinates these on silent / music-only / non-speech audio — treat as NO dialogue.
+_STT_HALLUCINATIONS = {
+    "thank you for watching", "thanks for watching", "please subscribe", "like and subscribe",
+    "subscribe to my channel", "see you next time", "thank you", "thanks", "you", "bye",
+    "thank you very much", "thank you so much",
+}
+
+
+def _clean_transcript(t: str) -> str:
+    """Drop known STT hallucinations + pure non-speech annotations so only REAL dialogue
+    reaches the hook writer. '' means no usable dialogue (hook the action instead)."""
+    t = (t or "").strip()
+    if not t:
+        return ""
+    if t.lower().strip(".!?, ") in _STT_HALLUCINATIONS:
+        return ""
+    if not re.sub(r"\[[^\]]*\]", "", t).strip():   # only "[walking]" / "[music]" etc. = no speech
+        return ""
+    return t
+
+
 def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -> str:
     """Stage 2 (lore-grounded CAPTIONER): map the observer's factual read onto the
     game's story/characters/locations, work out which moment it is, then write the
@@ -487,17 +536,21 @@ def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -
 
 
 def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
-                      avoid: str = "") -> tuple[str, str]:
-    """From the observer's read + the game lore, write BOTH the scroll-stopping
-    on-screen HOOK (master-of-viewer-psychology) and the post caption, grounded
-    in what THIS clip actually shows. Returns (hook, caption). `avoid` feeds back a
-    critic's rejection reason for a corrected retry."""
+                      avoid: str = "", dialogue: str = "") -> tuple[str, str]:
+    """From the observer's read + the clip's DIALOGUE + the game lore, write BOTH the
+    scroll-stopping on-screen HOOK and the post caption, grounded in what THIS clip
+    actually shows AND says. Returns (hook, caption). `avoid` feeds back a critic's
+    rejection reason for a corrected retry; `dialogue` is the Whisper transcript."""
     from core import claude_code, lore
 
     brief = lore.lore_for(game)
     lore_block = (
         f"GAME STORY / CHARACTERS / PLACES (use this to identify the moment "
         f"correctly):\n{brief}\n\n" if brief else ""
+    )
+    dlg_block = (
+        f"EXACT SPOKEN DIALOGUE in this clip (transcript — the STRONGEST evidence of "
+        f"who/what this moment is about):\n\"{dialogue.strip()}\"\n\n" if dialogue.strip() else ""
     )
     cap_lang = "Natural Taglish is welcome." if taglish else "Write it in ENGLISH."
     fix = (f"A PREVIOUS attempt was REJECTED for a lore/accuracy error: {avoid}\n"
@@ -509,7 +562,7 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "scroll in the first second.\n\n"
         f"WHAT'S ON SCREEN (an observer's factual description of THIS clip):\n"
         f"{observation}\n\n"
-        f"{lore_block}{fix}"
+        f"{dlg_block}{lore_block}{fix}"
         "STEP 1 — silently identify the exact character / location / moment by "
         "matching the description to the story above (respect any 'DON'T CONFUSE' "
         "notes). STEP 2 — write two things:\n\n"
@@ -544,7 +597,13 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "voice isn't in the clip.\n"
         "- Don't assert a story EVENT / plan / relationship the description doesn't support. "
         "When unsure who or what it is, hook the ACTION, the setting, or a gamer FEELING — "
-        "never a guessed identity or plot point. Respect any 'DON'T CONFUSE' notes above.\n\n"
+        "never a guessed identity or plot point. Respect any 'DON'T CONFUSE' notes above.\n"
+        "- USE THE DIALOGUE above as the source of truth for WHO and WHAT. The character you "
+        "control/play is NOT necessarily who the moment is ABOUT — e.g. you may control Miles "
+        "in a scene set inside PETER's mind; then it's PETER's inner conflict, not the player's. "
+        "Whose name/mind/story the dialogue points to is who the hook is about — attribute by "
+        "the DIALOGUE, never by the on-screen avatar. Don't write an ambiguous 'he/his own mind' "
+        "when the dialogue makes the person explicit.\n\n"
         'Return ONLY this JSON: {"hook": "the on-screen hook", "caption": "the caption"}'
     )
     raw = _text(prompt, timeout=150)
@@ -562,19 +621,22 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
     return hook[:90], caption[:90]
 
 
-def _verify_hook(hook: str, caption: str, observation: str, game: str = "") -> tuple[bool, str]:
+def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
+                 dialogue: str = "") -> tuple[bool, str]:
     """Adversarial LORE/ACCURACY critic for the classic/triptych on-screen hook + caption:
     reject a CHARACTER not seen/heard in the clip, a subtitle attributed to the wrong
-    speaker, or a story event the observation doesn't support. Returns (ok, issues).
-    Fail-OPEN (ok=True) if the critic itself errors, so a transient issue never blocks a post."""
+    speaker, a story event the observation doesn't support, or a wrong attribution the
+    DIALOGUE contradicts. Returns (ok, issues). Fail-OPEN (ok=True) if the critic errors."""
     from core import lore
     brief = lore.lore_for(game) if game else ""
     lore_block = (f"GAME CONTEXT (use this to know WHO the player-character is + any "
                   f"first-person / naming notes):\n{brief}\n\n" if brief else "")
+    dlg_block = (f"EXACT SPOKEN DIALOGUE (transcript — the strongest evidence of who/what "
+                 f"this moment is about):\n\"{dialogue.strip()}\"\n\n" if dialogue.strip() else "")
     prompt = (
         "You are a STRICT lore/accuracy checker for a gameplay reel's ON-SCREEN hook + "
         "caption. Viewers publicly call out mistakes, so be rigorous.\n\n"
-        f"{lore_block}"
+        f"{lore_block}{dlg_block}"
         f"OBSERVER'S FACTUAL READ OF THE CLIP (only what is actually visible/readable):\n"
         f"{observation}\n\n"
         f'HOOK: "{hook}"\nCAPTION: "{caption}"\n\n'
@@ -590,6 +652,11 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "") -> t
         "2. It contradicts an on-screen SUBTITLE speaker — e.g. the subtitle says 'JOHNSON:' "
         "but the text credits or implies a different character.\n"
         "3. It asserts a story EVENT / plan / relationship the observation doesn't support.\n"
+        "4. It CONTRADICTS the DIALOGUE, or mis-attributes the moment. The character the player "
+        "CONTROLS is NOT necessarily who the scene is about — if the dialogue shows it's set "
+        "inside PETER's mind while the player is Miles, a hook saying the player 'fights himself "
+        "in his own mind' is WRONG (it's Peter's). Flag ambiguous/mis-attributed 'he/his' when "
+        "the dialogue names the actual person.\n"
         "A hook about the ACTION, the setting, or a general gamer feeling is FINE.\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
@@ -600,26 +667,31 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "") -> t
         return True, ""
 
 
-def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "") -> tuple[bool, str]:
+def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
+                        dialogue: str = "") -> tuple[bool, str]:
     """VISION critic (per user 2026-07-30): re-check the on-screen HOOK against the ACTUAL
-    clip FRAMES — not the text observation — so it catches a FABRICATED premise the text
-    critic misses (e.g. 'Why is Spider-Man pulling out a gun?' when no gun is on screen).
-    Looks at the real frames and asks whether the hook's central claim is actually shown.
+    clip FRAMES + the spoken DIALOGUE — not just the text observation — so it catches a
+    FABRICATED premise (e.g. 'a gun' when none is shown) AND a mis-attribution the dialogue
+    contradicts (e.g. crediting the controlled character for another character's moment).
     Returns (ok, issues). Fail-OPEN (ok=True) if vision is unavailable — never blocks a post
     on a transient error, only on a confident rejection. Claude vision first, OpenAI fallback."""
     from core import claude_code, openai_client
     if not hook or not cands:
         return True, ""
+    dlg = (f'\nEXACT SPOKEN DIALOGUE in the clip (transcript): "{dialogue.strip()}"\n'
+           if dialogue.strip() else "")
     instruction = (
         f"You are a STRICT accuracy checker for a {gname} gameplay reel's ON-SCREEN hook. "
         "These are frames from the ACTUAL clip.\n\n"
-        f'ON-SCREEN HOOK: "{hook}"\nPOST CAPTION: "{caption}"\n\n'
-        "Judge ONLY from what is literally visible in these frames. Mark it BAD if the hook's "
-        "central claim/premise is NOT clearly supported by the footage — e.g. it claims an "
-        "OBJECT (a gun/weapon), an ACTION, or a CHARACTER that does not actually appear. "
-        "Clickbait/curiosity is fine ONLY if it is TRUE to what's shown; a hook about the "
-        "visible action, setting, or mood is fine. Be especially suspicious of props/weapons "
-        "a character wouldn't use (e.g. Spider-Man does not use guns).\n"
+        f'ON-SCREEN HOOK: "{hook}"\nPOST CAPTION: "{caption}"\n{dlg}\n'
+        "Judge from what is literally visible in these frames AND what the dialogue says. Mark "
+        "it BAD if the hook's central claim/premise is NOT supported — e.g. it claims an OBJECT "
+        "(a gun/weapon), an ACTION, or a CHARACTER that does not actually appear, OR it "
+        "MIS-ATTRIBUTES the moment (the dialogue shows it's about/inside a DIFFERENT character "
+        "than the one being played — e.g. inside Peter's mind while controlling Miles). "
+        "Clickbait/curiosity is fine ONLY if TRUE to what's shown/said; a hook about the visible "
+        "action, setting, or mood is fine. Be suspicious of props a character wouldn't use "
+        "(Spider-Man does not use guns).\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
@@ -724,21 +796,25 @@ def hook_and_caption_from_video(
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
                 observation = _observe_clip(cands, gname)
+                # DIALOGUE (per user 2026-07-31): transcribe the clip's actual spoken words so
+                # the writer + critics know WHO says WHAT — e.g. a scene set inside PETER's mind
+                # while you CONTROL Miles must be about Peter, not the controlled character.
+                dialogue = _transcribe_clip(video_path, gname)
                 if observation:
-                    hook, line = _hook_and_caption(observation, game, gname, taglish)
+                    hook, line = _hook_and_caption(observation, game, gname, taglish, dialogue=dialogue)
                     # ACCURACY GATE (two critics): (1) TEXT lore critic — invented character /
                     # wrong subtitle speaker / unshown story event; (2) VISION critic that
                     # re-checks the hook against the ACTUAL FRAMES, catching a FABRICATED premise
                     # the text read missed (e.g. "Why is Spider-Man pulling out a gun?" when no
-                    # gun is on screen — flagged by user 2026-07-30). Regenerate once, feeding
-                    # the reason back; if it still fails, fall back to a safe action hook.
+                    # gun is on screen — flagged by user 2026-07-30). Both also get the DIALOGUE.
+                    # Regenerate once, feeding the reason back; else fall back to a safe hook.
                     def _check_hook(h: str, l: str) -> tuple[bool, str]:
                         if not h:
                             return False, "empty hook"
-                        ok1, i1 = _verify_hook(h, l, observation, game)
+                        ok1, i1 = _verify_hook(h, l, observation, game, dialogue=dialogue)
                         if not ok1:
                             return False, i1 or "lore mismatch"
-                        ok2, i2 = _verify_hook_vision(h, l, cands, gname)
+                        ok2, i2 = _verify_hook_vision(h, l, cands, gname, dialogue=dialogue)
                         if not ok2:
                             return False, i2 or "hook not supported by the footage"
                         return True, ""
@@ -746,7 +822,7 @@ def hook_and_caption_from_video(
                     ok, issues = _check_hook(hook, line)
                     if not ok:
                         print(f"[content] hook rejected ({issues}); regenerating.", flush=True)
-                        h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues)
+                        h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues, dialogue=dialogue)
                         ok2, _ = _check_hook(h2, l2)
                         if ok2:
                             hook, line = h2, l2

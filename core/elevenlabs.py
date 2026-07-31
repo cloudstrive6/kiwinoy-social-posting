@@ -63,6 +63,28 @@ def tts(text: str) -> Optional[bytes]:
     return None
 
 
+def speech_to_text(audio_path, model_id: str = "scribe_v1") -> str:
+    """Transcribe an audio file to text via ElevenLabs Scribe (STT). Returns the transcript,
+    or '' if the key is missing / unavailable / any error (fail-open — never raises)."""
+    key = CONFIG.elevenlabs_api_key
+    if not key:
+        return ""
+    try:
+        with open(audio_path, "rb") as f:
+            resp = requests.post(
+                "https://api.elevenlabs.io/v1/speech-to-text",
+                headers={"xi-api-key": key},
+                data={"model_id": model_id},
+                files={"file": ("audio.mp3", f, "audio/mpeg")},
+                timeout=180)
+        if resp.status_code == 200:
+            return str((resp.json() or {}).get("text", "") or "").strip()
+        print(f"[elevenlabs] STT failed ({resp.status_code}): {resp.text[:200]}", flush=True)
+    except Exception as e:
+        print(f"[elevenlabs] STT error: {e!r}", flush=True)
+    return ""
+
+
 # ---------------------------------------------------------- timestamped TTS
 
 def _voice_cfg() -> tuple[Optional[str], Optional[str], dict[str, Any]]:
