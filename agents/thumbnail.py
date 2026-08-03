@@ -296,6 +296,7 @@ def build_thumbnail(
     char_scale: Optional[float] = None,  # override character height (fraction of H; >1 bleeds off bottom)
     char_max_w: Optional[float] = None,  # override max character width (fraction of W)
     char_top: Optional[float] = None,    # override character top offset (fraction of H)
+    char_grade: Optional[dict] = None,   # override subject-grade keys (gentle grade keeps a clean render faithful)
     characters: Optional[Sequence[str]] = None,  # MULTIPLE character PNGs -> a cast lineup
     char_layout: Optional[Sequence[dict]] = None,  # per-character {xc,hf,mw,top} override for the lineup
     bg_blur: Optional[float] = None,     # override backdrop blur px (keep the scene identifiable)
@@ -399,7 +400,8 @@ def build_thumbnail(
             if n == 1:
                 side = str(g.get("character_side", "right"))
                 xc1 = float(char_x if char_x is not None else g.get("character_x", 0.63))
-                _composite_character(c, chars[0], g,
+                cg = dict(g, **(char_grade or {}))     # gentle grade keeps a clean render faithful
+                _composite_character(c, chars[0], cg,
                     xc=(xc1 if side == "right" else 1.0 - xc1),
                     height_frac=float(char_scale if char_scale is not None else g.get("character_scale", 1.14)),
                     max_w_frac=float(char_max_w if char_max_w is not None else g.get("character_max_w", 0.6)),

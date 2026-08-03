@@ -118,9 +118,24 @@ def scrape_candidates(wiki_host: str, query: str, out_dir, *, n: int = 8,
     except Exception:
         return []
 
+    # Drop obviously OFF-MODEL / different-art-style / wrong-subject files by name so
+    # the pool is game-accurate renders of the RIGHT character (the casting director
+    # is the final judge, but this keeps chibi/mobile-spinoff/teen junk out).
+    _BAD = ("wotv", "chibi", "funko", "comic", "sketch", "concept", "teen",
+            "young", "dissidia", "chocobo", "kart", "dress", "spinoff", "ff record",
+            "record keeper", "brave exvius", "opera omnia", "theatrhythm")
+    subj = (query.split("from")[0]).strip().lower().split()
+    subj = [w for w in subj if len(w) > 2][:2]           # e.g. ['cloud','strife']
+    def keep(t: str) -> bool:
+        tl = t.lower()
+        if any(b in tl for b in _BAD):
+            return False
+        return all(w in tl for w in subj) if subj else True
+
     def score(t: str) -> tuple:
         tl = t.lower()
         return (sum(k in tl for k in prefer), "render" in tl, "png" in tl, -len(tl))
+    titles = [t for t in titles if keep(t)]
     titles.sort(key=score, reverse=True)
 
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
@@ -411,11 +426,14 @@ def select_render(candidates: Sequence[str], brief: str = "") -> dict:
     prompt = (
         "You are a CASTING ART DIRECTOR for high-CTR YouTube gaming thumbnails. "
         f"These candidate OFFICIAL character renders are provided in order [{labels}]. "
-        f"Brief: {brief}. Pick the ONE best using proven high-CTR principles: the "
-        "character's FACE should be clearly visible and ideally toward the viewer, "
-        "high resolution/sharpness, an iconic/recognizable pose or signature weapon, "
-        "and a strong expression. A full-body render is fine — we can crop it — so "
-        "judge on face quality + recognizability, not just how much body is shown. "
+        f"Brief: {brief}. Pick the ONE best. TOP PRIORITY: the render must look "
+        "EXACTLY like the character AS THEY APPEAR IN THIS GAME — a photoreal, "
+        "high-fidelity, game-accurate face. HARD-DOWNRANK renders in a different art "
+        "style (mobile-spinoff/chibi/comic/older-title/teen versions), off-model or "
+        "stylized faces, low resolution, or a DIFFERENT character. Among the "
+        "game-accurate ones, then prefer: face clearly visible (ideally toward the "
+        "viewer), sharp, an iconic/recognizable pose or signature weapon, strong "
+        "expression. A full-body render is fine — we can crop it. "
         "Then recommend the FRAMING that makes the face prominent: 'full' (whole "
         "body), 'upper' (chest-up), or 'closeup' (face + shoulders). "
         "Return STRICT JSON {best_index:int, framing:'full'|'upper'|'closeup', why:str}.")
@@ -527,7 +545,8 @@ def build(out_path, *, candidates: Sequence[str] = (), scrape: Optional[dict] = 
           title_text: str = "PART 1",
           game_logo=None, badge_lines: Sequence[str] = ("4K", "HDR"),
           title_box_fill: Sequence[int] = (214, 18, 18),
-          char_x: float = 0.57, char_scale: float = 1.08, char_top: float = 0.03,
+          char_x: float = 0.60, char_scale: float = 1.11, char_top: float = 0.02,
+          char_grade: Optional[dict] = None,
           palette: Sequence[str] = _PALETTE, bg_style_hint: str = "",
           brief: str = "", work_dir=None, qc_rounds: int = 3):
     """Fully autonomous, no human decisions. The agents do everything:
@@ -573,6 +592,12 @@ def build(out_path, *, candidates: Sequence[str] = (), scrape: Optional[dict] = 
     # let a broken layout score 10/10.
     from agents import thumbnail as T
     box = tuple(title_box_fill)
+    # GENTLE subject grade by default — keep a clean official render FAITHFUL (the
+    # strong default grade over-sharpens/saturates a face so it reads 'off-model').
+    grade = char_grade if char_grade is not None else {
+        "subject_target_lum": 158, "subject_brightness_max": 1.10,
+        "subject_saturation": 1.02, "subject_contrast": 1.03,
+        "subject_clarity": 1.06, "subject_rim": 0.32}
     last = None
     start = _FRAMINGS.index(cast["framing"]) if cast.get("framing") in _FRAMINGS else 1
     for fi in range(start, len(_FRAMINGS)):
@@ -581,7 +606,8 @@ def build(out_path, *, candidates: Sequence[str] = (), scrape: Optional[dict] = 
         out = T.build_thumbnail(text=title_text, out_path=out_path, image=str(bg),
                                 character=str(cut), game_logo=game_logo,
                                 badge_lines=badge_lines, box_fill=box,
-                                char_x=char_x, char_scale=char_scale, char_top=char_top)
+                                char_x=char_x, char_scale=char_scale, char_top=char_top,
+                                char_grade=grade)
         report = qc(out)
         last = report
         # Accept once the face is prominent (geometry is already guaranteed). If the
