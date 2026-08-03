@@ -413,18 +413,18 @@ def generate_background(out_path, *, style_hint: str = "",
 # FRAMING + HERO PLACEMENT — the real render composited onto the AI background  #
 # --------------------------------------------------------------------------- #
 _FRAMINGS = ["full", "upper", "closeup"]
-# HEAD-CENTERED box crop: (box height as a fraction of body height, box aspect w/h).
-# A tighter box centred on the head makes the FACE fill the frame — a plain
-# top-vertical slice does NOT (it keeps full width, so a wide prop like the Buster
-# Sword stays huge and the face reads small).
-_FRAME_BOX = {"upper": (0.62, 0.95), "closeup": (0.38, 0.90)}
+# 'upper' = a VERTICAL top-crop (chest-up): keeps FULL WIDTH so a wide signature
+# prop like the Buster Sword stays WHOLE, while the face still reads large once
+# scaled. 'closeup' = a HEAD-CENTRED box (tight face + shoulders) for when a much
+# bigger face is needed — this necessarily drops wide props.
+_FRAME_VFRAC = {"upper": 0.56}
+_FRAME_BOX = {"closeup": (0.40, 0.92)}
 
 
 def crop_framing(render, framing: str, out_path) -> Path:
-    """Cut out the render (rembg if needed) and crop so the FACE fills more of the
-    frame. 'full' keeps the whole render; 'upper' (chest-up) and 'closeup'
-    (face+shoulders) crop a box CENTRED ON THE HEAD — horizontally too — so a wide
-    weapon/prop can't shrink the face."""
+    """Cut out the render (rembg if needed) and crop for the framing. 'full' keeps
+    the whole render; 'upper' vertically crops to chest-up (keeps wide props like a
+    weapon WHOLE); 'closeup' crops a head-centred box (biggest face, drops props)."""
     import numpy as np
     from PIL import Image
     im = Image.open(render).convert("RGBA")
@@ -436,7 +436,9 @@ def crop_framing(render, framing: str, out_path) -> Path:
     if bb:
         im = im.crop(bb)
     w, h = im.size
-    if framing in _FRAME_BOX:
+    if framing in _FRAME_VFRAC:                       # vertical crop, full width
+        im = im.crop((0, 0, w, int(h * _FRAME_VFRAC[framing])))
+    elif framing in _FRAME_BOX:                        # head-centred box crop
         a = np.asarray(im.split()[-1])
         ys, xs = np.where(a > 32)
         if len(ys):
