@@ -309,49 +309,205 @@ def compose(base_path, spec: dict, out_path, *, game_logo=None,
 # 6/7. QC + CONTENT critic (vision)                                           #
 # --------------------------------------------------------------------------- #
 def qc(path) -> dict:
-    """QC art-director: inspect EVERY element. Returns {...,verdict:PASS|FAIL}."""
+    """QC art-director: inspect EVERY element AND judge CTR quality. Mechanics
+    alone aren't enough — a technically-clean thumbnail with a tiny face still
+    fails (that gap let a 4/10 full-body shot through once). Returns
+    {...,verdict:PASS|FAIL}."""
     from core import openai_client as ai
     prompt = (
-        "You are a meticulous YouTube thumbnail QC ART DIRECTOR. Inspect EVERY "
-        "element and verify it's perfect: (1) game logo fully visible, not clipped "
-        "by any edge; (2) 4K/HDR badge has comfortable padding, text not crowded "
-        "against its border; (3) title fully readable, not clipped, not covering the "
-        "character's face or chest emblem; (4) nothing overlaps awkwardly; (5) "
-        "balanced composition, no large dead space; (6) mobile-legible at small size. "
+        "You are a meticulous YouTube thumbnail QC ART DIRECTOR. FAIL unless the "
+        "thumbnail is both mechanically clean AND high-CTR. Check: "
+        "(1) game logo fully visible, not clipped; (2) 4K/HDR badge has comfortable "
+        "padding, text not crowded; (3) title fully readable, not clipped, not "
+        "covering the face; (4) nothing overlaps awkwardly; (5) balanced, no large "
+        "dead space; (6) mobile-legible at small size; "
+        "(7) FACE PROMINENCE — the character's face is LARGE and clearly readable "
+        "(a tiny face in a full-body shot FAILS); "
+        "(8) SUBJECT DOMINANCE — the character (not a prop/background) is the focal "
+        "point; (9) not cluttered. "
         "Return STRICT JSON: {logo_ok,badge_ok,title_ok,overlap_ok,balance_ok,"
-        "mobile_ok, issues:[concise], verdict:'PASS'|'FAIL'}.")
+        "mobile_ok,face_prominent,subject_dominant,not_cluttered, "
+        "issues:[concise], score:1-10, verdict:'PASS'|'FAIL'}. "
+        "verdict PASS requires score>=7 AND face_prominent true.")
     raw = ai.vision(prompt, [str(path)])
     m = re.search(r"\{.*\}", raw, re.S)
     return json.loads(m.group(0)) if m else {"verdict": "FAIL", "issues": ["no json"]}
 
 
-def build(out_path, *, character_image=None, title_text: str = "PART 1",
-          game_logo=None, style: str = "hero",
-          badge_lines: Sequence[str] = ("4K", "HDR"),
-          palette: Sequence[str] = _PALETTE,
-          scrape: Optional[dict] = None, work_dir=None,
-          qc_rounds: int = 2, relight_tries: int = 3):
-    """End-to-end. Provide `character_image` (a render/cutout) OR `scrape`
-    ({wiki_host, query, prefer}) to fetch one. Returns (path, qc_report).
+def fidelity_ok(composite, reference) -> dict:
+    """Confirm the composited character still matches the OFFICIAL source render
+    (Gemini never touches the character, so this should always pass — it's the
+    guardrail that catches an accidental swap/redraw)."""
+    from core import openai_client as ai
+    raw = ai.vision(
+        "Image 1 is a YouTube thumbnail; image 2 is the OFFICIAL game character "
+        "render. Does the character in image 1 match image 2 EXACTLY (same outfit, "
+        "face, hair, design)? JSON {matches:bool, differences:[..]}.",
+        [str(composite), str(reference)])
+    m = re.search(r"\{.*\}", raw, re.S)
+    return json.loads(m.group(0)) if m else {"matches": False}
 
-    The relight is regenerated up to `relight_tries` times if QC keeps failing
-    (a fresh Gemini composite often fixes a bad first roll); within each relit
-    base the art-direct+compose+qc loop runs up to `qc_rounds` times."""
+
+# --------------------------------------------------------------------------- #
+# CASTING — the art director picks the best render + framing (no human input)  #
+# --------------------------------------------------------------------------- #
+def select_render(candidates: Sequence[str], brief: str = "") -> dict:
+    """The CASTING art director looks at every candidate official render and picks
+    the ONE best for a high-CTR thumbnail, per the mined winning pattern, AND says
+    how tightly to frame it so the FACE is prominent. Returns
+    {best_index, framing:'full'|'upper'|'closeup', why}."""
+    from core import openai_client as ai
+    labels = ", ".join(f"{i}:{Path(c).name}" for i, c in enumerate(candidates))
+    prompt = (
+        "You are a CASTING ART DIRECTOR for high-CTR YouTube gaming thumbnails. "
+        f"These candidate OFFICIAL character renders are provided in order [{labels}]. "
+        f"Brief: {brief}. Pick the ONE best using proven high-CTR principles: the "
+        "character's FACE should be clearly visible and ideally toward the viewer, "
+        "high resolution/sharpness, an iconic/recognizable pose or signature weapon, "
+        "and a strong expression. A full-body render is fine — we can crop it — so "
+        "judge on face quality + recognizability, not just how much body is shown. "
+        "Then recommend the FRAMING that makes the face prominent: 'full' (whole "
+        "body), 'upper' (chest-up), or 'closeup' (face + shoulders). "
+        "Return STRICT JSON {best_index:int, framing:'full'|'upper'|'closeup', why:str}.")
+    raw = ai.vision(prompt, [str(c) for c in candidates])
+    m = re.search(r"\{.*\}", raw, re.S)
+    d = json.loads(m.group(0)) if m else {}
+    d["best_index"] = max(0, min(len(candidates) - 1, int(d.get("best_index", 0))))
+    d.setdefault("framing", "upper")
+    return d
+
+
+# --------------------------------------------------------------------------- #
+# BACKGROUND — Gemini generates a dramatic scene ONLY (never the character)     #
+# --------------------------------------------------------------------------- #
+def generate_background(out_path, *, style_hint: str = "",
+                        palette: Sequence[str] = _PALETTE, retries: int = 6) -> Path:
+    """Gemini generates a dramatic 16:9 BACKGROUND with NO characters/text/logos,
+    then we trim any letterbox bars so it fills the canvas edge-to-edge."""
+    import io as _io
+    import numpy as np
+    from PIL import Image
+    from core import gemini
+    pal = " / ".join(palette)
+    prompt = (
+        "Create a 16:9 LANDSCAPE cinematic YouTube-thumbnail BACKGROUND for an epic "
+        f"video game. {style_hint} Dark, moody, dramatic, with depth, glowing bokeh "
+        "lights, drifting embers/particles, volumetric haze, high contrast, premium "
+        "colour grade. ABSOLUTELY NO characters, NO people, NO text, NO logos, NO "
+        "watermark. Keep one side calmer/darker for a title and the subject. Palette "
+        f"{pal}. Full-bleed — fill the entire frame edge to edge, no black bars, no "
+        "letterbox.")
+    png = gemini.edit_image(prompt, [], aspect_ratio="16:9", retries=retries)
+    im = Image.open(_io.BytesIO(png)).convert("RGB")
+    a = np.asarray(im); Hh, Ww, _ = a.shape
+    rows = np.where(a.reshape(Hh, -1).mean(1) > 14)[0]
+    cols = np.where(a.transpose(1, 0, 2).reshape(Ww, -1).mean(1) > 14)[0]
+    if len(rows) and len(cols):
+        im = im.crop((int(cols[0]), int(rows[0]), int(cols[-1]) + 1, int(rows[-1]) + 1))
+    out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out_path)
+    return out_path
+
+
+# --------------------------------------------------------------------------- #
+# FRAMING + HERO PLACEMENT — the real render composited onto the AI background  #
+# --------------------------------------------------------------------------- #
+_FRAMINGS = ["full", "upper", "closeup"]
+# HEAD-CENTERED box crop: (box height as a fraction of body height, box aspect w/h).
+# A tighter box centred on the head makes the FACE fill the frame — a plain
+# top-vertical slice does NOT (it keeps full width, so a wide prop like the Buster
+# Sword stays huge and the face reads small).
+_FRAME_BOX = {"upper": (0.62, 0.95), "closeup": (0.38, 0.90)}
+
+
+def crop_framing(render, framing: str, out_path) -> Path:
+    """Cut out the render (rembg if needed) and crop so the FACE fills more of the
+    frame. 'full' keeps the whole render; 'upper' (chest-up) and 'closeup'
+    (face+shoulders) crop a box CENTRED ON THE HEAD — horizontally too — so a wide
+    weapon/prop can't shrink the face."""
+    import numpy as np
+    from PIL import Image
+    im = Image.open(render).convert("RGBA")
+    if float((np.asarray(im)[:, :, 3] < 10).mean()) < 0.05:   # opaque -> rembg
+        _inject_ssl()
+        from rembg import remove
+        im = remove(im)
+    bb = im.split()[-1].getbbox()
+    if bb:
+        im = im.crop(bb)
+    w, h = im.size
+    if framing in _FRAME_BOX:
+        a = np.asarray(im.split()[-1])
+        ys, xs = np.where(a > 32)
+        if len(ys):
+            y0c, y1c = int(ys.min()), int(ys.max()); body = max(1, y1c - y0c)
+            band = ys < y0c + body * 0.16                 # top band = the head
+            hx = int(np.median(xs[band])) if band.any() else (w // 2)
+            hfrac, agg = _FRAME_BOX[framing]
+            boxh = int(body * hfrac); boxw = int(boxh * agg)
+            x0 = max(0, hx - boxw // 2); y0 = max(0, y0c - int(boxh * 0.06))
+            im = im.crop((x0, y0, min(w, x0 + boxw), min(h, y0 + boxh)))
+    out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out_path)
+    return out_path
+
+
+def place_hero(bg_path, render_cut, out_path) -> Path:
+    """Composite the REAL character cutout onto the AI background with a GENTLE
+    grade (keep the official render faithful) + rim light + drop shadow. The
+    character is never sent through an image model — this is what guarantees an
+    exact, official-looking character."""
+    from PIL import Image
+    from agents import thumbnail as T
+    g = T._CFG()
+    gm = dict(g, subject_target_lum=150, subject_brightness_max=1.12,
+              subject_saturation=1.06, subject_contrast=1.06, subject_clarity=1.15)
+    base = _cover(Image.open(bg_path).convert("RGB")).convert("RGBA")
+    T._composite_character(base, str(render_cut), gm,
+                           xc=float(g.get("character_x", 0.63)),
+                           height_frac=1.15, max_w_frac=0.62, top=0.0)
+    out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
+    base.convert("RGB").save(out_path, "JPEG", quality=95)
+    return out_path
+
+
+def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
+          game_logo=None, badge_lines: Sequence[str] = ("4K", "HDR"),
+          palette: Sequence[str] = _PALETTE, bg_style_hint: str = "",
+          brief: str = "", work_dir=None, qc_rounds: int = 3):
+    """Fully autonomous, no human decisions. The agents do everything:
+
+      1. CASTING art director picks the best render from `candidates` + a framing.
+      2. Gemini generates a dramatic BACKGROUND (never the character).
+      3. AUTO-FRAMING loop: composite the REAL render at the chosen framing; if the
+         QC art director says the face isn't prominent, escalate the crop
+         (full -> upper -> closeup) and re-composite until the face is big enough.
+      4. Within each framing, the layout art director + QC feedback loop refine the
+         text/logo/badge until QC PASSES (mechanics AND CTR/face-prominence).
+      5. A fidelity critic confirms the character still matches the official render.
+
+    Returns (path, report) where report carries the casting/framing/qc/fidelity."""
     work = Path(work_dir) if work_dir else Path(out_path).parent / "_tdir"
     work.mkdir(parents=True, exist_ok=True)
+    candidates = [c for c in candidates if c and Path(str(c)).exists()]
+    if not candidates:
+        raise RuntimeError("no candidate renders exist")
 
-    src = character_image
-    if not src and scrape:
-        src = scrape_fandom_character(scrape["wiki_host"], scrape["query"],
-                                      work / "scrape.png", scrape.get("prefer", ()))
-    if not src:
-        raise RuntimeError("no character_image and scrape failed")
-    cut = cutout(src, work / "cutout.png")
+    # 1) CASTING — the art director chooses the render + initial framing
+    cast = select_render(candidates, brief or f"{title_text} hero thumbnail")
+    render = str(candidates[cast["best_index"]])
 
+    # 2) BACKGROUND — dramatic scene, no character
+    bg = generate_background(work / "bg.png", style_hint=bg_style_hint, palette=palette)
+
+    # 3) AUTO-FRAMING loop — tighten the crop until the face is prominent
+    start = _FRAMINGS.index(cast["framing"]) if cast.get("framing") in _FRAMINGS else 1
     last = None
-    for t in range(max(1, relight_tries)):
-        base = relight(cut, work / f"relit_{t}.png", style=style, palette=palette)
-        fx, free_side = _subject_side(base)         # keep text off the character
+    for fi in range(start, len(_FRAMINGS)):
+        framing = _FRAMINGS[fi]
+        cut = crop_framing(render, framing, work / f"cut_{framing}.png")
+        base = place_hero(bg, cut, work / f"base_{framing}.jpg")
+        free_side = _subject_side(base)[1]
         issues = None
         for _ in range(max(1, qc_rounds)):
             spec = art_direct(base, title_text, free_side=free_side, prior_issues=issues)
@@ -359,6 +515,12 @@ def build(out_path, *, character_image=None, title_text: str = "PART 1",
             report = qc(out)
             last = report
             if str(report.get("verdict", "")).upper() == "PASS":
-                return out, report
-            issues = report.get("issues") or None   # feed the failures back next round
-    return Path(out_path), last
+                report["fidelity"] = fidelity_ok(out, render)
+                return Path(out), {"casting": cast, "framing": framing,
+                                   "render": render, "qc": report}
+            issues = report.get("issues") or None
+            # face still too small -> stop refining text, go to a TIGHTER crop
+            if not report.get("face_prominent", True):
+                break
+    return Path(out_path), {"casting": cast, "framing": _FRAMINGS[-1],
+                            "render": render, "qc": last}
