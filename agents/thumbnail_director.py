@@ -473,6 +473,7 @@ def place_hero(bg_path, render_cut, out_path) -> Path:
 
 def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
           game_logo=None, badge_lines: Sequence[str] = ("4K", "HDR"),
+          title_box_fill: Sequence[int] = (214, 18, 18),
           palette: Sequence[str] = _PALETTE, bg_style_hint: str = "",
           brief: str = "", work_dir=None, qc_rounds: int = 3):
     """Fully autonomous, no human decisions. The agents do everything:
@@ -500,27 +501,30 @@ def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
     # 2) BACKGROUND — dramatic scene, no character
     bg = generate_background(work / "bg.png", style_hint=bg_style_hint, palette=palette)
 
-    # 3) AUTO-FRAMING loop — tighten the crop until the face is prominent
-    start = _FRAMINGS.index(cast["framing"]) if cast.get("framing") in _FRAMINGS else 1
+    # 3) AUTO-FRAMING loop. GEOMETRY is deterministic — the composite uses the
+    # proven fixed layout (logo top-left, badge top-right, CENTRED title box
+    # bottom-left, guaranteed no overlaps / no clipping / centred text) via
+    # agents.thumbnail.build_thumbnail. The vision agents are used ONLY for
+    # JUDGMENT: casting (above), face-prominence (drives the crop escalation), and
+    # fidelity. We do NOT trust a vision model for pixel geometry — that gap once
+    # let a broken layout score 10/10.
+    from agents import thumbnail as T
+    box = tuple(title_box_fill)
     last = None
+    start = _FRAMINGS.index(cast["framing"]) if cast.get("framing") in _FRAMINGS else 1
     for fi in range(start, len(_FRAMINGS)):
         framing = _FRAMINGS[fi]
         cut = crop_framing(render, framing, work / f"cut_{framing}.png")
-        base = place_hero(bg, cut, work / f"base_{framing}.jpg")
-        free_side = _subject_side(base)[1]
-        issues = None
-        for _ in range(max(1, qc_rounds)):
-            spec = art_direct(base, title_text, free_side=free_side, prior_issues=issues)
-            out = compose(base, spec, out_path, game_logo=game_logo, badge_lines=badge_lines)
-            report = qc(out)
-            last = report
-            if str(report.get("verdict", "")).upper() == "PASS":
-                report["fidelity"] = fidelity_ok(out, render)
-                return Path(out), {"casting": cast, "framing": framing,
-                                   "render": render, "qc": report}
-            issues = report.get("issues") or None
-            # face still too small -> stop refining text, go to a TIGHTER crop
-            if not report.get("face_prominent", True):
-                break
+        out = T.build_thumbnail(text=title_text, out_path=out_path, image=str(bg),
+                                character=str(cut), game_logo=game_logo,
+                                badge_lines=badge_lines, box_fill=box)
+        report = qc(out)
+        last = report
+        # Accept once the face is prominent (geometry is already guaranteed). If the
+        # face is still small, escalate to a TIGHTER crop and re-composite.
+        if report.get("face_prominent", True) and int(report.get("score", 0) or 0) >= 7:
+            report["fidelity"] = fidelity_ok(out, render)
+            return Path(out), {"casting": cast, "framing": framing,
+                               "render": render, "qc": report}
     return Path(out_path), {"casting": cast, "framing": _FRAMINGS[-1],
                             "render": render, "qc": last}
