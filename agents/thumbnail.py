@@ -168,14 +168,15 @@ def _autocrop_alpha(img):
     return img.crop(bbox) if bbox else img
 
 
-def _grade_subject(rgba, *, target_lum: float = 140.0, bmin: float = 0.9, bmax: float = 1.7,
+def _grade_subject(rgba, *, target_lum: float = 150.0, bmin: float = 0.9, bmax: float = 1.4,
                    contrast: float = 1.14, saturation: float = 1.22, clarity: float = 1.35):
     """Grade the CUT-OUT subject on its own so it reads bright, vibrant + crisp — the
     MKIceAndFire 'subject pops' look — no matter how dark/flat the source frame was.
-    'Check + adjust': measures the subject's mean luminance over its OPAQUE pixels only
-    and auto-lifts brightness toward `target_lum` (clamped to [bmin,bmax] so an
-    already-bright render isn't blown out / a curated render isn't crushed), then adds
-    contrast, saturation + clarity. Alpha is preserved untouched."""
+    'Check + adjust': measures the subject's luminance over its OPAQUE pixels and auto-lifts
+    brightness toward `target_lum` (clamped to [bmin,bmax]), then adds contrast, saturation +
+    clarity. Uses the 75th-PERCENTILE luminance of the LIT areas — NOT the mean — so a subject
+    with large dark regions (e.g. Cloud's black outfit) isn't misread as 'dark' and
+    over-brightened, blowing out the face/hair (per user 2026-08-02). Alpha untouched."""
     import numpy as np
     from PIL import Image, ImageEnhance
     rgba = rgba.convert("RGBA")
@@ -185,8 +186,8 @@ def _grade_subject(rgba, *, target_lum: float = 140.0, bmin: float = 0.9, bmax: 
     mask = np.asarray(a) > 32
     if int(mask.sum()) > 64:
         lum = 0.299 * arr[..., 0] + 0.587 * arr[..., 1] + 0.114 * arr[..., 2]
-        mean = float(lum[mask].mean())
-        mult = max(bmin, min(bmax, (target_lum / mean) if mean > 1 else 1.0))
+        ref = float(np.percentile(lum[mask], 75))   # lit areas drive it, not the dark clothes
+        mult = max(bmin, min(bmax, (target_lum / ref) if ref > 1 else 1.0))
     else:
         mult = 1.0
     rgb = ImageEnhance.Brightness(rgb).enhance(mult)
@@ -292,6 +293,9 @@ def build_thumbnail(
     auto_compose: Optional[bool] = None,  # analyze + auto-crop toward the subject (None = config default, on)
     character: Optional[str] = None,     # transparent character PNG composited big in the foreground
     characters: Optional[Sequence[str]] = None,  # MULTIPLE character PNGs -> a cast lineup
+    char_layout: Optional[Sequence[dict]] = None,  # per-character {xc,hf,mw,top} override for the lineup
+    bg_blur: Optional[float] = None,     # override backdrop blur px (keep the scene identifiable)
+    bg_darken: Optional[float] = None,   # override backdrop brightness (0..1; 1 = untouched)
 ) -> Path:
     """Render the 1280x720 thumbnail: cover-cropped + punchier game image, a dark
     4K/HDR badge top-right, the game logo top-left (if given), and a bold red box
@@ -377,10 +381,14 @@ def build_thumbnail(
             # A cast lineup dissolves the backdrop to dark bokeh (like the reference cast
             # thumbnails) so scene structure can't read as faint rectangles behind them.
             dk = float(g.get("subject_lineup_bg_darken", 0.5)) if lineup else float(g.get("character_bg_darken", 0.7))
+            if bg_darken is not None:                      # caller override (keep scene readable)
+                dk = float(bg_darken)
             if dk < 1.0:                                  # subdue the bg -> character(s) pop
                 base = ImageEnhance.Brightness(base).enhance(dk)
                 base = ImageEnhance.Color(base).enhance(float(g.get("character_bg_sat", 0.9)))
             bl = float(g.get("subject_lineup_bg_blur", 12)) if lineup else float(g.get("character_bg_blur", 0))
+            if bg_blur is not None:                        # caller override (don't mush the scene)
+                bl = float(bg_blur)
             if bl > 0:                                     # soften bg clutter (HUD / scene edges)
                 base = base.filter(ImageFilter.GaussianBlur(bl))
             c = base.convert("RGBA")
@@ -407,12 +415,21 @@ def build_thumbnail(
                           subject_clarity=float(g.get("subject_lineup_clarity", 1.18)),
                           subject_rim=float(g.get("subject_lineup_rim", 0.0)),
                           character_shadow=float(g.get("subject_lineup_shadow", 0.0)))
-                hf = max(0.72, min(1.12, 1.16 - 0.07 * (n - 1)))
-                mw = min(0.58, 1.25 / n)
+                # Fill vertically + BLEED off the bottom (studio bust renders): scale tall
+                # so the chest/waist crop goes off-frame instead of a hard cut with empty
+                # space below. Big casts get horizontal overlap (a roster) rather than tiny.
+                hf = float(g.get("subject_lineup_scale", 1.3))
+                mw = min(0.62, float(g.get("subject_lineup_maxw_n", 2.4)) / n)
+                dtop = max(0.0, float(g.get("character_top", 0.0)))
+                lay = list(char_layout) if char_layout else None
                 for i, cp in enumerate(chars):
-                    _composite_character(c, cp, gm, xc=(i + 0.5) / n,
-                                         height_frac=hf, max_w_frac=mw,
-                                         top=max(0.0, float(g.get("character_top", 0.0))))
+                    ov = lay[i] if lay and i < len(lay) else {}
+                    _composite_character(
+                        c, cp, gm,
+                        xc=float(ov.get("xc", (i + 0.5) / n)),
+                        height_frac=float(ov.get("hf", hf)),
+                        max_w_frac=float(ov.get("mw", mw)),
+                        top=float(ov.get("top", dtop)))
             base = c.convert("RGB")
             draw = ImageDraw.Draw(base)
         except Exception:
