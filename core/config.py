@@ -70,6 +70,13 @@ class _Config:
     def elevenlabs_api_key(self) -> str:
         return self._key("ELEVENLABS_API_KEY")
 
+    # Google AI Studio (Gemini) — used for the thumbnail RELIGHT pass
+    # (gemini-2.5-flash-image / "Nano Banana"): image-EDIT the exact scraped
+    # character cutout into a dramatic, high-CTR composite. Env-only.
+    @property
+    def gemini_api_key(self) -> str:
+        return self._key("GEMINI_API_KEY")
+
     # Zernio unified social API — we route TikTok through it (our own TikTok app was
     # rejected for self-posting; Zernio holds TikTok's approval). Env-only.
     @property
