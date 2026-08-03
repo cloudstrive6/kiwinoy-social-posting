@@ -100,6 +100,56 @@ def scrape_fandom_character(wiki_host: str, query: str, out_path,
     return None
 
 
+def scrape_candidates(wiki_host: str, query: str, out_dir, *, n: int = 8,
+                      prefer: Sequence[str] = ()) -> list:
+    """Download up to `n` distinct HIGH-RES, PORTRAIT character renders matching
+    `query` from a Fandom wiki — the pool the casting art director chooses from.
+    Portrait + min-resolution filters skip scene/wallpaper images and tiny icons,
+    so the casting director judges real character renders. Returns cached paths."""
+    _inject_ssl()
+    import requests
+    api = f"https://{wiki_host}/api.php"
+    s = requests.Session(); s.headers.update(_UA)
+    try:
+        r = s.get(api, params={"action": "query", "list": "search",
+                  "srsearch": query, "srnamespace": 6, "srlimit": 40,
+                  "format": "json"}, timeout=25)
+        titles = [h["title"] for h in r.json().get("query", {}).get("search", [])]
+    except Exception:
+        return []
+
+    def score(t: str) -> tuple:
+        tl = t.lower()
+        return (sum(k in tl for k in prefer), "render" in tl, "png" in tl, -len(tl))
+    titles.sort(key=score, reverse=True)
+
+    out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+    paths: list = []
+    for title in titles:
+        if len(paths) >= n:
+            break
+        try:
+            info = s.get(api, params={"action": "query", "titles": title,
+                     "prop": "imageinfo", "iiprop": "url|size|mime",
+                     "format": "json"}, timeout=25).json()
+            ii = next(iter(info["query"]["pages"].values()))["imageinfo"][0]
+            w, h = int(ii.get("width", 0)), int(ii.get("height", 0))
+            if "png" not in ii.get("mime", ""):
+                continue
+            if w < 600 or h < 600 or w >= h:      # skip small + landscape (scenes)
+                continue
+            data = s.get(ii["url"], timeout=60).content
+            if len(data) < 40_000:
+                continue
+            safe = re.sub(r"[^\w.-]", "_", title.replace("File:", ""))
+            p = out_dir / safe
+            p.write_bytes(data)
+            paths.append(str(p))
+        except Exception:
+            continue
+    return paths
+
+
 # --------------------------------------------------------------------------- #
 # 2. CUTOUT — rembg (skipped if the source is already transparent)            #
 # --------------------------------------------------------------------------- #
@@ -473,9 +523,11 @@ def place_hero(bg_path, render_cut, out_path) -> Path:
     return out_path
 
 
-def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
+def build(out_path, *, candidates: Sequence[str] = (), scrape: Optional[dict] = None,
+          title_text: str = "PART 1",
           game_logo=None, badge_lines: Sequence[str] = ("4K", "HDR"),
           title_box_fill: Sequence[int] = (214, 18, 18),
+          char_x: float = 0.57, char_scale: float = 1.08, char_top: float = 0.03,
           palette: Sequence[str] = _PALETTE, bg_style_hint: str = "",
           brief: str = "", work_dir=None, qc_rounds: int = 3):
     """Fully autonomous, no human decisions. The agents do everything:
@@ -492,13 +544,22 @@ def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
     Returns (path, report) where report carries the casting/framing/qc/fidelity."""
     work = Path(work_dir) if work_dir else Path(out_path).parent / "_tdir"
     work.mkdir(parents=True, exist_ok=True)
-    candidates = [c for c in candidates if c and Path(str(c)).exists()]
-    if not candidates:
-        raise RuntimeError("no candidate renders exist")
+
+    # 0) POOL — the agent SCRAPES a wide candidate pool itself (+ any provided),
+    # so the casting director isn't limited to hand-fed renders.
+    pool = [str(c) for c in candidates if c and Path(str(c)).exists()]
+    if scrape:
+        pool += scrape_candidates(scrape["wiki_host"], scrape["query"],
+                                  work / "pool", n=int(scrape.get("n", 8)),
+                                  prefer=scrape.get("prefer", ()))
+    # de-dup while preserving order
+    seen = set(); pool = [p for p in pool if not (p in seen or seen.add(p))]
+    if not pool:
+        raise RuntimeError("no candidate renders (provide candidates= or scrape=)")
 
     # 1) CASTING — the art director chooses the render + initial framing
-    cast = select_render(candidates, brief or f"{title_text} hero thumbnail")
-    render = str(candidates[cast["best_index"]])
+    cast = select_render(pool, brief or f"{title_text} hero thumbnail")
+    render = str(pool[cast["best_index"]])
 
     # 2) BACKGROUND — dramatic scene, no character
     bg = generate_background(work / "bg.png", style_hint=bg_style_hint, palette=palette)
@@ -519,7 +580,8 @@ def build(out_path, *, candidates: Sequence[str], title_text: str = "PART 1",
         cut = crop_framing(render, framing, work / f"cut_{framing}.png")
         out = T.build_thumbnail(text=title_text, out_path=out_path, image=str(bg),
                                 character=str(cut), game_logo=game_logo,
-                                badge_lines=badge_lines, box_fill=box)
+                                badge_lines=badge_lines, box_fill=box,
+                                char_x=char_x, char_scale=char_scale, char_top=char_top)
         report = qc(out)
         last = report
         # Accept once the face is prominent (geometry is already guaranteed). If the

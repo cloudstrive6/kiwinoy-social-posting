@@ -292,6 +292,10 @@ def build_thumbnail(
     crop_bottom: float = 0.0,            # trim this fraction off the source bottom (copyright strip)
     auto_compose: Optional[bool] = None,  # analyze + auto-crop toward the subject (None = config default, on)
     character: Optional[str] = None,     # transparent character PNG composited big in the foreground
+    char_x: Optional[float] = None,      # override horizontal centre (0..1) of the single character
+    char_scale: Optional[float] = None,  # override character height (fraction of H; >1 bleeds off bottom)
+    char_max_w: Optional[float] = None,  # override max character width (fraction of W)
+    char_top: Optional[float] = None,    # override character top offset (fraction of H)
     characters: Optional[Sequence[str]] = None,  # MULTIPLE character PNGs -> a cast lineup
     char_layout: Optional[Sequence[dict]] = None,  # per-character {xc,hf,mw,top} override for the lineup
     bg_blur: Optional[float] = None,     # override backdrop blur px (keep the scene identifiable)
@@ -394,12 +398,12 @@ def build_thumbnail(
             c = base.convert("RGBA")
             if n == 1:
                 side = str(g.get("character_side", "right"))
-                xc1 = float(g.get("character_x", 0.63))    # face clears the badge
+                xc1 = float(char_x if char_x is not None else g.get("character_x", 0.63))
                 _composite_character(c, chars[0], g,
                     xc=(xc1 if side == "right" else 1.0 - xc1),
-                    height_frac=float(g.get("character_scale", 1.14)),
-                    max_w_frac=float(g.get("character_max_w", 0.6)),
-                    top=float(g.get("character_top", 0.0)))
+                    height_frac=float(char_scale if char_scale is not None else g.get("character_scale", 1.14)),
+                    max_w_frac=float(char_max_w if char_max_w is not None else g.get("character_max_w", 0.6)),
+                    top=float(char_top if char_top is not None else g.get("character_top", 0.0)))
             else:
                 # CAST LINEUP: evenly spread across the frame; fewer characters => taller.
                 # Slight overlap reads as a group; the logo + title box layer on top.
