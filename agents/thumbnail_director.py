@@ -162,27 +162,53 @@ def relight(cutout_path, out_path, *, style: str = "hero",
 # --------------------------------------------------------------------------- #
 # 4. ART DIRECT — a vision agent decides placement (not hardcoded)            #
 # --------------------------------------------------------------------------- #
-def art_direct(base_path, title_text: str) -> dict:
+def _subject_side(base_path) -> tuple:
+    """(fx, free_side): the subject's horizontal centroid (0..1) and which HALF is
+    free for text ('left' or 'right')."""
+    from PIL import Image
+    from agents import thumbnail as T
+    try:
+        fx, _, _ = T._subject(Image.open(base_path).convert("RGB"))
+    except Exception:
+        fx = 0.6
+    return fx, ("left" if fx >= 0.5 else "right")
+
+
+def art_direct(base_path, title_text: str, *, free_side: str = "left",
+               prior_issues: Optional[Sequence[str]] = None) -> dict:
     """Look at the composited render and decide the text/logo/badge layout per
     winning-CTR principles. The WORDS of `title_text` are fixed (may be split
-    into <=2 lines); only placement/size/style are chosen."""
+    into <=2 lines); only placement/size/style are chosen. `free_side` is the
+    empty half where text belongs; `prior_issues` are the previous QC failures to
+    FIX this round (feedback loop)."""
     from core import openai_client as ai
+    side_anchors = (["top-left", "mid-left", "bottom-left"] if free_side == "left"
+                    else ["top-right", "mid-right", "bottom-right"])
+    logo_corner = "top-left" if free_side == "left" else "top-right"
+    badge_corner = "top-right" if free_side == "left" else "top-left"
+    fix = ("\nThe PREVIOUS attempt FAILED QC for these reasons — FIX them all: "
+           + "; ".join(prior_issues)) if prior_issues else ""
     prompt = (
         "You are an elite YouTube gaming-thumbnail ART DIRECTOR. The character is "
-        "already composited in this base image. Decide the TEXT & BADGE layout that "
-        "maximizes CTR: fill dead space, NEVER cover the character's face or chest "
-        "emblem, big bold readable title, strong contrast, mobile-legible. "
-        f"The title text is EXACTLY '{title_text}' — keep these words (you may split "
-        "into at most 2 UPPERCASE lines). Return STRICT JSON: "
-        "{title_lines:[1-2 UPPERCASE lines], "
-        "title_anchor:['top-left','mid-left','bottom-left','bottom-center'], "
-        "title_size:0.10-0.18, title_style:'box'|'outline', title_color:hex, "
-        "box_color:hex|null, logo_anchor:['top-left','top-center','top-right'], "
-        "logo_scale:0.22-0.34, badge_anchor:['top-right','top-left','bottom-right']}")
+        f"already composited in this base image, occupying the {'RIGHT' if free_side=='left' else 'LEFT'} "
+        f"side. ALL text/badge/logo must go on the FREE ({free_side.upper()}) side and in the "
+        "corners — NEVER over the character's face or chest. Maximize CTR: fill the dead "
+        "space with a big bold readable title, strong contrast, mobile-legible. "
+        f"The title text is EXACTLY '{title_text}' — keep these words (you may split into at "
+        "most 2 UPPERCASE lines). Return STRICT JSON: {title_lines:[1-2 UPPERCASE lines], "
+        f"title_anchor:one of {side_anchors}, title_size:0.12-0.17, "
+        "title_style:'box'|'outline', title_color:hex, box_color:hex|null, "
+        f"logo_anchor:'{logo_corner}', logo_scale:0.24-0.32, badge_anchor:'{badge_corner}'}}"
+        + fix)
     raw = ai.vision(prompt, [str(base_path)])
     m = re.search(r"\{.*\}", raw, re.S)
     spec = json.loads(m.group(0)) if m else {}
     spec.setdefault("title_lines", [title_text.upper()])
+    # Safety net: force text furniture onto the free side regardless of the model.
+    if spec.get("title_anchor") not in side_anchors:
+        spec["title_anchor"] = side_anchors[1]
+    spec["logo_anchor"] = logo_corner
+    spec["badge_anchor"] = badge_corner
     return spec
 
 
@@ -216,10 +242,19 @@ def compose(base_path, spec: dict, out_path, *, game_logo=None,
 
     if game_logo and Path(str(game_logo)).exists():
         lg = Image.open(str(game_logo)).convert("RGBA")
+        r_, g_, b_, a_ = lg.split()
+        a_ = a_.point(lambda v: 0 if v < 24 else v)      # kill faint matte box
+        lg = Image.merge("RGBA", (r_, g_, b_, a_))
         mw = int(W * float(spec.get("logo_scale", 0.28)))
         if lg.width > mw:
             lg = lg.resize((mw, int(lg.height * mw / lg.width)), Image.LANCZOS)
         x, y = _anchor_xy(spec.get("logo_anchor", "top-left"), lg.width, lg.height)
+        # White outline behind the logo so a DARK logo (e.g. FF7) stays legible on
+        # a dark background — trace the logo's own shape, no visible backing box.
+        m = lg.split()[-1].filter(ImageFilter.MaxFilter(7)).filter(ImageFilter.GaussianBlur(3))
+        outline = Image.new("RGBA", lg.size, (255, 255, 255, 0)); outline.putalpha(m)
+        for _ in range(2):
+            im.alpha_composite(outline, (x, y))
         im.alpha_composite(lg, (x, y))
 
     blines = [str(x).upper() for x in (badge_lines or []) if str(x).strip()]
@@ -241,13 +276,18 @@ def compose(base_path, spec: dict, out_path, *, game_logo=None,
     fs = int(H * float(spec.get("title_size", 0.15))); tf = T._font(fs)
     lw = max(d.textbbox((0, 0), t, font=tf)[2] for t in tl); glh = int(fs * 1.16)
     blk = glh * len(tl)
+    def _rgb(c, default):
+        try:
+            return ImageColor.getrgb(c)[:3]
+        except Exception:
+            return default
     style = spec.get("title_style", "box"); box = spec.get("box_color")
-    tcol = ImageColor.getrgb(spec.get("title_color", "#FFFFFF"))
+    tcol = _rgb(spec.get("title_color", "#FFFFFF"), (255, 255, 255))
     if style == "box" and box:
         bx, by = _anchor_xy(spec.get("title_anchor", "mid-left"), lw + 64, blk + 48)
         ov = Image.new("RGBA", im.size, (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
         od.rounded_rectangle([bx, by, bx + lw + 64, by + blk + 48], radius=20,
-                             fill=ImageColor.getrgb(box) + (235,),
+                             fill=_rgb(box, (0, 0, 0)) + (235,),
                              outline=(255, 255, 255, 255), width=6)
         im.alpha_composite(ov); tx, ty = bx + 32, by + 24
     else:
@@ -311,11 +351,14 @@ def build(out_path, *, character_image=None, title_text: str = "PART 1",
     last = None
     for t in range(max(1, relight_tries)):
         base = relight(cut, work / f"relit_{t}.png", style=style, palette=palette)
+        fx, free_side = _subject_side(base)         # keep text off the character
+        issues = None
         for _ in range(max(1, qc_rounds)):
-            spec = art_direct(base, title_text)
+            spec = art_direct(base, title_text, free_side=free_side, prior_issues=issues)
             out = compose(base, spec, out_path, game_logo=game_logo, badge_lines=badge_lines)
             report = qc(out)
             last = report
             if str(report.get("verdict", "")).upper() == "PASS":
                 return out, report
+            issues = report.get("issues") or None   # feed the failures back next round
     return Path(out_path), last
