@@ -1849,6 +1849,45 @@ def _resolve_characters(game: Optional[str], names) -> list[str]:
     return out
 
 
+def _director_thumbnail(game, title_text, game_logo, box_fill, out_dir, *,
+                        subject=None, dcfg=None):
+    """PRO autonomous thumbnail via agents/thumbnail_director (opt-in). The agents
+    scrape the exact game-accurate character (Fandom wiki + local renders in
+    reels/assets/game-character/<game>/), generate an AI background, auto-frame,
+    compose on the proven layout, and QC. Per-game wiki/subject/palette/bg come from
+    `dcfg['games'][game]`. Returns (Path|None, report). Never raises to the caller's
+    critical path — the caller wraps it and falls back to the legacy thumbnail."""
+    from pathlib import Path as _P
+    from core.config import ROOT as _ROOT
+    from agents import thumbnail_director as _td
+    dcfg = dcfg or {}
+    gcfg = (dcfg.get("games", {}) or {}).get(game, {}) or {}
+    subject = subject or gcfg.get("subject")
+    if not subject:
+        return None, {}
+    wiki = gcfg.get("wiki_host") or dcfg.get("wiki_host")
+    cand_dir = _ROOT / "reels/assets/game-character" / str(game)
+    exts = {".png", ".webp", ".jpg", ".jpeg"}
+    key = subject.split()[0].lower()
+    cands = ([str(p) for p in sorted(cand_dir.iterdir())
+              if p.suffix.lower() in exts and key in p.name.lower()]
+             if cand_dir.is_dir() else [])
+    scrape = ({"wiki_host": wiki,
+               "query": f"{subject} {gcfg.get('query_suffix', '')} render".strip(),
+               "prefer": ("render", "bust", "promo"), "n": int(dcfg.get("pool", 8))}
+              if wiki else None)
+    if not cands and not scrape:
+        return None, {}
+    out = _P(out_dir) / "thumbnail.jpg"
+    pal = tuple(gcfg.get("palette") or dcfg.get("palette") or _td._PALETTE)
+    p, rep = _td.build(out, candidates=cands, scrape=scrape, title_text=title_text,
+                       game_logo=game_logo, title_box_fill=tuple(box_fill), palette=pal,
+                       bg_style_hint=gcfg.get("bg_style", ""),
+                       brief=f"{subject} from {gcfg.get('game_name', game)}, game-accurate, high-CTR",
+                       work_dir=_P(out_dir) / "_work")
+    return (_P(p) if _P(p).exists() else None), rep
+
+
 def run_youtube_longform(
     parts,
     game: Optional[str] = None,
@@ -1861,6 +1900,7 @@ def run_youtube_longform(
     privacy: Optional[str] = None,
     reuse_concat: Optional[str] = None,
     thumb_characters: Optional[Sequence[str]] = None,  # names -> a cast-lineup thumbnail
+    thumb_subject: Optional[str] = None,  # director pipeline: single hero name (e.g. "Cloud Strife")
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """LOCAL long-form YouTube: concat the labelled 4K/60 HDR10 PART files into one
@@ -1988,6 +2028,24 @@ def run_youtube_longform(
         if ffimg.exists():
             bgs.append((str(ffimg), 0.0, 0.6))
 
+    # PRO AUTONOMOUS THUMBNAIL (opt-in: reels.thumbnail.director.enabled) — the agents
+    # scrape the exact game-accurate character, generate an AI background, auto-frame,
+    # compose on the PROVEN layout + QC/fidelity. Falls back to the legacy path below on
+    # any error / when disabled. See agents/thumbnail_director.py + [[thumbnail-director-pipeline]].
+    _dir_thumb, _drep = None, {}
+    if game and (tcfg.get("director") or {}).get("enabled"):
+        try:
+            _dir_thumb, _drep = _director_thumbnail(
+                game, txt, gl, box, tdir / "director",
+                subject=thumb_subject, dcfg=(tcfg.get("director") or {}))
+            if _dir_thumb:
+                _dq = _drep.get("qc", {})
+                log(f"director thumbnail -> {_dir_thumb.name} (render "
+                    f"{Path(_drep.get('render', '?')).name}, framing {_drep.get('framing')}, "
+                    f"score {_dq.get('score')}, face {_dq.get('face_prominent')}, weapon {_dq.get('weapon_ok')})")
+        except Exception as e:
+            log(f"director thumbnail failed ({e!r}) — legacy fallback"); _dir_thumb = None
+
     # PROMINENT FOREGROUND CHARACTER (#1 CTR lever). Priority: a hand-curated hero
     # render (cleanest) > else AUTO-CUT the best subject out of the candidate stills
     # with rembg (core/cutout.py) so every game gets a hero with no manual curation.
@@ -2003,7 +2061,7 @@ def run_youtube_longform(
         pass                                          # explicit lineup; skip single-hero cutout
     elif char_png:
         log(f"Curated character render: {Path(char_png).name} — compositing in the foreground.")
-    elif bool(tcfg.get("cutout_auto", True)) and bgs:
+    elif _dir_thumb is None and bool(tcfg.get("cutout_auto", True)) and bgs:
         from core import cutout as _cut
         if _cut.available():
             cp = _cut.best_cutout([b[0] for b in bgs], run_dir / "cutout",
@@ -2066,6 +2124,8 @@ def run_youtube_longform(
             log(f"{len(variants)} variant(s) -> {tdir} (live: {thumb.name}, {how} score {best})")
     except Exception as e:
         log(f"thumbnail variants failed ({e!r}) — no custom thumbnail")
+    if _dir_thumb is not None:                          # director wins when it produced one
+        thumb = _dir_thumb
 
     result: dict[str, Any] = {
         "kind": "youtube_longform", "game": game, "title": title,

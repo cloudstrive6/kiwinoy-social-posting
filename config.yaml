@@ -445,6 +445,23 @@ reels:
     cutout_auto: true                # no curated render? auto-cut the hero from the stills (rembg)
     cutout_model: u2net_human_seg    # isolates the PERSON (ignores HUD/scenery) — best for game heroes
     cutout_fallback_model: isnet-general-use  # retried when the human model finds nothing (non-human subject)
+    # PRO AUTONOMOUS THUMBNAIL pipeline (agents/thumbnail_director.py). When enabled +
+    # a per-game entry exists, run_youtube_longform uses it INSTEAD of the legacy path:
+    # scrape the exact game-accurate character (Fandom wiki + local game-character/<game>/),
+    # generate an AI background (Gemini), auto-frame to a prominent face, compose on the
+    # proven layout, QC + fidelity-check. Needs GEMINI_API_KEY. Falls back to legacy on error.
+    # Pass the hero per upload via run_youtube_longform(thumb_subject="Cloud Strife").
+    director:
+      enabled: false                 # OFF by default — flip true to use the pro pipeline
+      pool: 8                        # candidate renders scraped per upload
+      games:
+        ff7remake:
+          subject: Cloud Strife      # default hero (override per upload with thumb_subject=)
+          wiki_host: finalfantasy.fandom.com
+          query_suffix: FFVII Remake
+          game_name: Final Fantasy VII Remake
+          palette: ["#39B6FF", "#1B2A4A", "#0B1020"]
+          bg_style: A dark dystopian night mega-city with reactor glow and mako energy.
   duration_seconds: 14
   fps: 60          # render reels at 60fps end-to-end (smooth gameplay motion)
   width: 1080
