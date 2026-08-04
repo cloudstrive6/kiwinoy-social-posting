@@ -389,11 +389,15 @@ def qc(path) -> dict:
         "(7) FACE PROMINENCE — the character's face is LARGE and clearly readable "
         "(a tiny face in a full-body shot FAILS); "
         "(8) SUBJECT DOMINANCE — the character (not a prop/background) is the focal "
-        "point; (9) not cluttered. "
+        "point; (9) not cluttered; "
+        "(10) NO AWKWARDLY CROPPED WEAPON/PROP — if the character holds a signature "
+        "weapon or prop (sword, staff, gun, etc.), it must be either FULLY visible or "
+        "clearly sweeping off-frame; a weapon cut mid-object at BOTH ends (floating "
+        "cropped chunk) FAILS. "
         "Return STRICT JSON: {logo_ok,badge_ok,title_ok,overlap_ok,balance_ok,"
-        "mobile_ok,face_prominent,subject_dominant,not_cluttered, "
+        "mobile_ok,face_prominent,subject_dominant,not_cluttered,weapon_ok, "
         "issues:[concise], score:1-10, verdict:'PASS'|'FAIL'}. "
-        "verdict PASS requires score>=7 AND face_prominent true.")
+        "verdict PASS requires score>=7 AND face_prominent true AND weapon_ok true.")
     raw = ai.vision(prompt, [str(path)])
     m = re.search(r"\{.*\}", raw, re.S)
     return json.loads(m.group(0)) if m else {"verdict": "FAIL", "issues": ["no json"]}
