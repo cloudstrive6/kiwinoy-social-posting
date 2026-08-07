@@ -637,6 +637,15 @@ def run_gameplay_reel(
     except Exception:
         n = 0
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
+    # INSTAGRAM ONLY: drop the triptych format for the configured games (weakest IG
+    # performance, per user 2026-08-08). Only the FEED track (_lp=="instagram") is
+    # touched, and that shared layout is what IG posts; FACEBOOK still forces its OWN
+    # triptych (triptych-only), and the TikTok/YouTube tracks are unaffected.
+    if _lp == "instagram":
+        _ig_no_trip = set((CONFIG.reels.get("footage", {}) or {}).get(
+            "ig_exclude_triptych_games", []) or [])
+        if str(brief.get("game") or "") in _ig_no_trip and "triptych" in main_layouts:
+            main_layouts = [l for l in main_layouts if l != "triptych"] or ["classic"]
     layout = main_layouts[n % len(main_layouts)]
     if layout_override:                         # manual override (e.g. --layout triptych)
         layout = str(layout_override).strip().lower()

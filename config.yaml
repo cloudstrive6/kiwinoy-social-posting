@@ -516,6 +516,12 @@ reels:
                            # paused. To switch games/resume rotation: change `games` or set
                            # `until` to a past date.
       until: "2099-12-31T23:59:59Z"
+    # INSTAGRAM ONLY: drop the TRIPTYCH format for these games (weakest IG performance,
+    # per user 2026-08-08). Affects ONLY the IG feed render (IG posts the shared feed
+    # layout, which becomes classic<->fill for these games); FACEBOOK keeps its
+    # triptych-only override, and TikTok / YouTube are unaffected. Empty list / game
+    # removed = triptych stays for that game on IG.
+    ig_exclude_triptych_games: [spider-man1, spider-man-miles-morales, spider-man2]
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
     #   python tools/footage.py upload <game> <path-to-clip.mp4>
