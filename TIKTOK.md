@@ -8,14 +8,21 @@ _Last updated: 2026-07-30._
 ## TL;DR
 Everything TikTok goes to **Post for Me DRAFTS** (PfM's TikTok app is unaudited → can't
 auto-publish public), which you **publish manually** in the TikTok app. Each draft's
-**caption + hashtags** are DMed to you on **Telegram** to copy-paste. There are **two paths**:
+**caption + hashtags** are DMed to you on **Telegram** to copy-paste. There are **three paths**:
 
 - **Automated 1080p (CI)** — the `tiktok.yml` cron renders a 1080p SDR gameplay reel 4×/day
   and posts it as a PfM draft. Runs in GitHub Actions (no GPU needed for 1080p).
+- **On-demand via Telegram (CI)** — text the bot **`tiktok draft [format] [game]`** (e.g.
+  `tiktok draft classic spider-man2`, `tiktok draft triptych spider-man 1`,
+  `tiktok draft fill miles morales`). The `ig-poller.yml` workflow renders it (formats:
+  classic | triptych | fill; default classic; default game = `tiktok.game`) and posts a PfM
+  draft → your TikTok **in-app Drafts**. Same path as the cron (`tools/tiktok_draft.py` →
+  `run_gameplay_reel(tiktok_only=True)`), just triggered by you. Needs `POSTFORME_API_KEY`
+  in the poller workflow (added 2026-08-08).
 - **Manual 4K/60 HDR (local)** — you ask for it; `process_tiktok_hd.py` renders 4K HDR on
   your GPU and posts as a PfM draft (preserves 60fps HDR). Kept open for on-demand use.
 
-Both DM the caption to Telegram; both need manual publish in-app.
+All three DM the caption to Telegram; all need manual publish in-app.
 
 **Footage dedupe (per-platform, 2026-07-30):** the automated 1080p track picks clips via the
 shared per-platform used-clip ledger (`core/gh_release`, key `tiktok`). TikTok now has its OWN

@@ -1,15 +1,18 @@
-"""Poll Telegram for on-demand draft commands ("ig draft" / "threads draft" / "fb draft")
-and hand them to the ig-poller.yml workflow so the user can fire a reel from their phone
-with the PC off.
+"""Poll Telegram for on-demand draft commands ("ig draft" / "threads draft" / "fb draft"
+/ "tiktok draft") and hand them to the ig-poller.yml workflow so the user can fire a reel
+from their phone with the PC off.
 
 SECURITY: only messages from TELEGRAM_CHAT_ID are honoured — a chat-id gate so nobody
-else who finds the bot can trigger a render. The commands run `tools/ig_draft.py` /
-`tools/threads_draft.py` / `tools/fb_draft.py`, which render a reel + upload it to the
-PRIVATE B2 `drafts/<platform>/` + ping the user; they NEVER post anything publicly.
+else who finds the bot can trigger a render. IG/Threads/FB commands run `tools/ig_draft.py`
+/ `tools/threads_draft.py` / `tools/fb_draft.py` (render + upload to the PRIVATE B2
+`drafts/<platform>/` + ping — they NEVER post publicly). The TikTok command runs
+`tools/tiktok_draft.py`, which posts a Post-for-Me DRAFT to TikTok's INBOX so the reel
+lands in your TikTok app's Drafts to finish + publish manually (caption DMed to paste).
 Commands understood:
     "ig draft [game] [Ns]"                 -> full-bleed IG draft
     "threads draft [format] [game] [Ns]"   -> Threads draft (default format: fill)
     "fb draft [format] [game] [Ns]"        -> Facebook draft (default format: classic)
+    "tiktok draft [format] [game]"         -> TikTok in-app draft (default format: classic)
   formats: classic | triptych | fill | landscape;  e.g. "fb draft triptych halo 30s"
 
 Modes:
@@ -33,6 +36,13 @@ API = "https://api.telegram.org/bot{token}/{method}"
 IG_RE = re.compile(r"\big[\s_-]?draft\b", re.I)        # "ig draft" / "ig-draft" / "igdraft"
 TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thread draft"
 FB_RE = re.compile(r"\b(?:fb|facebook)\s+draft\b", re.I)  # "fb draft" / "facebook draft"
+TT_RE = re.compile(r"\btik[\s_-]?tok\b", re.I)         # "tiktok" / "tik tok" / "tik-tok"
+# TikTok intent: the message says "tiktok" AND either "draft" or names a format (so a
+# stray mention like "check tiktok analytics" doesn't fire). e.g. "tiktok draft classic
+# spider-man2" or "tiktok spider-man 2 classic format".
+_DRAFT_OR_FMT = re.compile(
+    r"\b(draft|classic|triptych|tryptich|fill|full[\s-]?bleed|vertical|landscape|standard)\b",
+    re.I)
 # Threads-draft FORMAT keywords -> canonical format. Checked in order; first match wins.
 _FMT_KEYWORDS = [
     ("fill", ["full vertical bleed", "full bleed", "full-bleed", "fullbleed", "fill",
@@ -41,9 +51,14 @@ _FMT_KEYWORDS = [
     ("triptych", ["triptych", "tryptich", "3 panel", "3-panel", "three panel", "3panel"]),
     ("classic", ["classic", "standard", "band"]),
 ]
-_ALIASES = {
+_ALIASES = {                                             # MOST SPECIFIC first (first match wins)
+    "miles morales": "spider-man-miles-morales", "miles": "spider-man-miles-morales",
+    "spider-man 2": "spider-man2", "spider man 2": "spider-man2",
+    "spiderman 2": "spider-man2", "sm2": "spider-man2",
+    "spider-man 1": "spider-man1", "spider man 1": "spider-man1",
+    "spiderman 1": "spider-man1", "sm1": "spider-man1", "remastered": "spider-man1",
     "spiderman": "spider-man2", "spider man": "spider-man2", "spidey": "spider-man2",
-    "sm2": "spider-man2", "tlou": "thelastofus2", "last of us": "thelastofus2",
+    "tlou": "thelastofus2", "last of us": "thelastofus2",
     "ff7": "ff7remake", "final fantasy": "ff7remake",
 }
 
@@ -117,6 +132,8 @@ def main() -> int:
             kind, cmd = "threads", text
         elif FB_RE.search(text):
             kind, cmd = "fb", text
+        elif TT_RE.search(text) and _DRAFT_OR_FMT.search(text):
+            kind, cmd = "tiktok", text
         elif IG_RE.search(text):
             kind, cmd = "ig", text
     if check:                                            # mark ALL updates seen (before firing)
@@ -140,6 +157,14 @@ def main() -> int:
             notify.telegram(f"\U0001F4D8 Got it — rendering an FB draft ({fmt}, {game}"
                             + (f", {secs}s" if secs else "") + "). It'll land in drafts/fb in a couple minutes…")
             _emit(1, "fb", game, secs, fmt)
+    elif kind == "tiktok":
+        fmt = _fmt_from_text(cmd, default="classic")     # TikTok default = the branded classic reel
+        print(f"[poller] TikTok draft: {cmd!r} -> fmt={fmt} game={game} seconds={secs}", flush=True)
+        if check:
+            notify.telegram(f"\U0001F3B5 Got it — rendering a TikTok draft ({fmt}, {game}). It'll "
+                            "appear in your TikTok app Drafts in a couple minutes to finish + post "
+                            "(I'll send the caption to paste).")
+            _emit(1, "tiktok", game, secs, fmt)
     else:
         print(f"[poller] IG draft: {cmd!r} -> game={game} seconds={secs}", flush=True)
         if check:

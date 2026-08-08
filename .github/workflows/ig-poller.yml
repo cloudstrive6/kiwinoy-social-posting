@@ -29,6 +29,7 @@ jobs:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}  # TikTok draft -> Post-for-Me inbox flow
       B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read footage + upload the draft
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }} # read commands + ping the user
@@ -74,6 +75,9 @@ jobs:
           elif [ "$KIND" = "fb" ]; then
             echo "running: python tools/fb_draft.py --format $FMT --game $GAME $SEC"
             python tools/fb_draft.py --format "$FMT" --game "$GAME" $SEC
+          elif [ "$KIND" = "tiktok" ]; then
+            echo "running: python tools/tiktok_draft.py --format $FMT --game $GAME"
+            python tools/tiktok_draft.py --format "$FMT" --game "$GAME"
           else
             echo "running: python tools/ig_draft.py --game $GAME $SEC"
             python tools/ig_draft.py --game "$GAME" $SEC
