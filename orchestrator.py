@@ -720,7 +720,7 @@ def run_gameplay_reel(
             caption = content.relatable_fill_caption(clip_path, brief["game"])
             _cap_style = "relatable"
         else:
-            caption = content.descriptive_fill_caption(brief["game"])
+            caption = content.descriptive_fill_caption(clip_path, brief["game"])
             _cap_style = "descriptive"
         hook = ""
         brief["hook"] = ""

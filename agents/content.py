@@ -360,6 +360,31 @@ def _verify_caption(caption: str, observation: str) -> tuple[bool, str]:
         return True, ""
 
 
+def _verify_descriptive(caption: str, observation: str) -> tuple[bool, str]:
+    """Fact-check the DESCRIPTIVE/hype FILL caption. Unlike _verify_caption, it ALLOWS
+    naming the game + hype/marketing words — it ONLY catches an ACTION/setting that
+    doesn't match the clip (the 'swinging' on a ground-fight bug, per user 2026-08-09).
+    Fail-OPEN on critic error so a transient issue never blocks posting."""
+    prompt = (
+        "You are a fact-checker for a short HYPE caption on a gameplay clip. The caption is "
+        "ALLOWED to name the game and use hype/marketing/vibe words — do NOT flag that.\n\n"
+        f"OBSERVER'S FACTUAL READ OF THE CLIP:\n{observation}\n\n"
+        f'CAPTION TO CHECK:\n"{caption}"\n\n'
+        "Mark it BAD ONLY if the described ACTION or setting doesn't match the video:\n"
+        "1. It states/implies a specific action or place the observation does NOT support "
+        "(e.g. 'swinging'/'web-slinging'/'parkour'/'flying'/'gliding' when the clip is a "
+        "GROUND fight; a location/object that isn't there).\n"
+        "2. It CONTRADICTS what is happening on screen.\n"
+        "Generic vibe/energy words are fine. Judge the ACTION accuracy only.\n"
+        'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=90))
+        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+    except Exception:
+        return True, ""
+
+
 def relatable_fill_caption(video_path, game: str = "") -> str:
     """RELATABLE caption for the full-bleed FILL vertical reels. REVIEWS the clip (shared
     vision OBSERVER), writes a short human first-person moment/feeling line (no game name,
@@ -399,14 +424,74 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
     return f"{line}\n\n{' '.join(_fill_tags(game))}".strip()
 
 
-def descriptive_fill_caption(game: str = "") -> str:
-    """The PREVIOUS descriptive/hype FILL caption style (punchy title + vibe lines +
-    game name), RESTORED to ALTERNATE with relatable_fill_caption — per user 2026-07-28,
-    the descriptive style earned the 2 highest-view fill reels. Uses the EXACT old
-    GAME-ONLY hashtags (config game_hashtags, <=5, NO brand tag) that those winning
-    reels ran with (per user 2026-07-28) — i.e. generic_game_caption verbatim. The
-    RELATABLE variant keeps the brand-tagged _fill_tags set."""
-    return generic_game_caption(game)
+def _descriptive_caption(observation: str, gname: str, avoid: str = "") -> str:
+    """Write the descriptive/hype FILL body (punchy title + vibe lines + game name)
+    GROUNDED in the observer's read of THIS clip, so the hype matches what's actually
+    on screen (no inventing 'swinging' on a ground-fight clip)."""
+    prompt = f"""Write a short, punchy HYPE caption for a gameplay reel of "{gname}", GROUNDED in
+what ACTUALLY happens in THIS clip. Do NOT invent actions that aren't shown — e.g. do not say
+"swinging"/"web-slinging" if the clip is a ground fight; describe the action that's really there.
+
+WHAT'S ON SCREEN (an observer's factual read of THIS clip):
+{observation}
+
+Match THIS style exactly (a punchy title line, 1-2 vibe lines, then the game name):
+---
+Spiderman Cinematic Parkour ✨
+Fluid movement, wall runs, and cinematic flow ✨
+Marvel's Spider-Man turns NYC into a parkour playground.
+Marvel's Spider-Man Remastered 💗
+---
+
+Rules:
+- 3-4 short lines total. First line = a punchy title (1 tasteful emoji ok) that fits the ACTUAL on-screen action.
+- 1-2 vibe lines about the feel of THIS specific moment/action (accurate to the clip, not generic).
+- Final line = the game's proper name "{gname}" (a heart or sparkle emoji ok).
+- NO hashtags (added separately), no quotes, no preamble. Return ONLY the caption.""" + (
+        f"\n- AVOID (a prior draft was wrong): {avoid}" if avoid else "")
+    return sanitize(_text(prompt)).strip()
+
+
+def descriptive_fill_caption(video_path=None, game: str = "") -> str:
+    """The descriptive/hype FILL caption style (punchy title + vibe lines + game name),
+    now GROUNDED IN THE CLIP: it REVIEWS the footage first (shared vision OBSERVER) so
+    the hype matches the actual action — per user 2026-08-09, a fill caption said
+    "swinging" on a Spider-Man GROUND-FIGHT clip because this variant never looked at
+    the footage. Fact-checks against the observation (regenerates once on a flagged
+    invention/contradiction). Uses the EXACT GAME-ONLY hashtags (config game_hashtags,
+    <=5, NO brand tag — per user 2026-07-28) that the winning reels ran with. Falls back
+    to the game-level generic_game_caption if no clip is given or vision is unavailable."""
+    import tempfile
+    from pathlib import Path
+
+    from core import frames
+
+    body = ""
+    if video_path:
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+                if cands:
+                    gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
+                    observation = _observe_clip(cands, gname)
+                    if observation:
+                        cand = _descriptive_caption(observation, gname)
+                        ok, issues = _verify_descriptive(cand, observation) if cand else (False, "")
+                        if not ok and cand:                  # one grounded correction pass
+                            print(f"[content] descriptive FILL caption rejected "
+                                  f"({issues or 'unclear'}); regenerating.", flush=True)
+                            cand = _descriptive_caption(observation, gname, avoid=issues)
+                            ok, _ = _verify_descriptive(cand, observation) if cand else (False, "")
+                        if ok and cand:
+                            body = cand
+        except Exception as e:
+            print(f"[content] descriptive FILL caption failed ({e!r}); game-level fallback.",
+                  flush=True)
+    if not body:                                             # no clip / vision down -> game-level
+        return generic_game_caption(game)
+    body = "\n".join(l.strip() for l in sanitize(body).strip().splitlines() if l.strip())[:400]
+    tags = _reel_hashtags({"game": game}, max_tags=_max_tags())   # GAME-ONLY tags (per user)
+    return f"{body}\n\n{' '.join(tags)}".strip()
 
 
 def _text(prompt: str, timeout: int = 120) -> str:
