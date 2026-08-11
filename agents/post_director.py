@@ -509,9 +509,40 @@ ACCENT = (255, 62, 62)          # headline keyword highlight (high-CTR red)
 YELLOW = (255, 209, 41)
 
 
+def _enhance_cinematic(img, *, sat: float = 1.20, contrast: float = 1.11,
+                       bloom: float = 0.38, vignette: float = 0.30):
+    """Make a real scraped still read like polished key-art: expand tonal range, richer
+    colour + contrast, a gentle highlight BLOOM and edge VIGNETTE, and a light sharpen.
+    Purely photographic post-processing — it never repaints the subject, so a real
+    character stays exactly itself (no AI drift)."""
+    from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+    import numpy as np
+    img = img.convert("RGB")
+    img = ImageOps.autocontrast(img, cutoff=0.4)
+    img = ImageEnhance.Color(img).enhance(sat)
+    img = ImageEnhance.Contrast(img).enhance(contrast)
+    img = img.filter(ImageFilter.UnsharpMask(radius=2.0, percent=95, threshold=2))
+    arr = np.asarray(img).astype(np.float32)
+    # highlight bloom (screen-blend a blurred bright-pass) — cinematic glow
+    lum = arr.mean(2, keepdims=True)
+    hi = np.clip((lum - 172) / 83, 0, 1) * arr
+    hi_img = Image.fromarray(np.clip(hi, 0, 255).astype("uint8")).filter(
+        ImageFilter.GaussianBlur(14))
+    base = arr / 255.0
+    bl = (np.asarray(hi_img).astype(np.float32) / 255.0) * bloom
+    arr = (1 - (1 - base) * (1 - bl)) * 255.0
+    # vignette — darken outer edges to focus the subject
+    h, w = arr.shape[:2]
+    Y, X = np.ogrid[:h, :w]
+    d = np.sqrt(((X - w / 2) / (w / 2)) ** 2 + ((Y - h / 2) / (h / 2)) ** 2)
+    mask = 1 - vignette * np.clip((d - 0.55) / 0.45, 0, 1)
+    arr = arr * mask[..., None]
+    return Image.fromarray(np.clip(arr, 0, 255).astype("uint8"))
+
+
 def build_card(topic: str, game: str, headline: str, out_path,
                palette: Optional[list] = None, bg_image=None,
-               accents: Optional[list] = None) -> Optional[Path]:
+               accents: Optional[list] = None, is_ai_scene: bool = False) -> Optional[Path]:
     """News-card (1080x1350, 4:5), FACE-FORWARD like a high-CTR news page: the image fills
     the frame (subject/face up top), and a bottom block carries a NEWS pill + a bold
     LEFT-aligned headline with ACCENT-coloured keywords + the BOSS KG signature over a strong
@@ -529,6 +560,10 @@ def build_card(topic: str, game: str, headline: str, out_path,
         is_render = rgba.getchannel("A").getextrema()[0] < 245   # true transparency = a cutout
         bg = (_render_on_dark(rgba, palette) if is_render
               else _cover(raw.convert("RGB"), CARD, CARDH, top_bias=True))
+        # cinematic finishing pass so a flat scraped still reads like key-art (a generated
+        # scene is already stylised, so grade it a touch lighter).
+        bg = _enhance_cinematic(bg, bloom=0.30 if is_ai_scene else 0.38,
+                                vignette=0.24 if is_render else 0.30)
     except Exception as e:
         print(f"[post_director] card bg failed ({e!r}).", flush=True)
         return None
@@ -640,9 +675,9 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
         res["accents"] = accents
         slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40] or "trend"
 
-        def _try(bg_src, tag):
+        def _try(bg_src, tag, is_ai=False):
             img = build_card(topic, game, headline, out_dir / f"{slug}_{tag}.jpg",
-                             palette=palette, bg_image=bg_src, accents=accents)
+                             palette=palette, bg_image=bg_src, accents=accents, is_ai_scene=is_ai)
             if not img:
                 return None
             return {"image": str(img), "screen": screen(img, res.get("caption", ""), topic)}
@@ -675,7 +710,7 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
                 scene = _gemini_bg(topic, game, palette)
                 sp = out_dir / f"{slug}_ai.jpg"
                 scene.save(sp, "JPEG", quality=94)
-                r = _try(sp, "ai")
+                r = _try(sp, "ai", is_ai=True)
                 if r is not None and (best is None
                                       or r["screen"].get("score", 0) >= best["screen"].get("score", 0)):
                     best = r
