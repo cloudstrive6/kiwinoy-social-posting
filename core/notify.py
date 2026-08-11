@@ -53,6 +53,29 @@ def telegram(text: str) -> bool:
         return False
 
 
+def telegram_photo(image_path, caption: str = "") -> bool:
+    """Send a photo (with an optional caption) to the configured Telegram chat, so a
+    draft is reviewable at a glance on the phone. Returns True on success; never raises.
+    Caption is capped at Telegram's 1024-char photo-caption limit."""
+    tok, chat = _creds()
+    if not (tok and chat):
+        return False
+    try:
+        import requests
+        with open(image_path, "rb") as fh:
+            r = requests.post(
+                API.format(token=tok, method="sendPhoto"),
+                data={"chat_id": chat, "caption": (caption or "")[:1024]},
+                files={"photo": fh}, timeout=60)
+        if r.status_code >= 400:
+            print(f"[notify] Telegram photo failed [{r.status_code}]: {r.text[:200]}", flush=True)
+            return False
+        return True
+    except Exception as e:
+        print(f"[notify] Telegram photo error ({e!r}) — continuing.", flush=True)
+        return False
+
+
 def tiktok_draft_caption(caption: str, game: str = "") -> bool:
     """Send ONE message per TikTok draft = the caption + hashtags ONLY (no header/prefix),
     so long-press -> Copy grabs exactly what to paste into TikTok. One post = one message."""
