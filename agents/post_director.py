@@ -138,11 +138,15 @@ def verify_caption(topic: str, caption: str, game: str = "") -> dict:
         return {"ok": True, "issues": [f"verify skipped: {e}"], "safe_caption": caption}
 
 
-def story_canvas_bytes(card_path) -> bytes:
+def story_canvas_bytes(card_path, cta: Optional[str] = None,
+                       cta_sub: Optional[str] = None) -> bytes:
     """Fit the 4:5 trend card onto a 1080x1920 (9:16) Instagram STORY canvas — the card
-    centred over a blurred, darkened blow-up of itself. Returns PNG bytes."""
+    centred over a blurred, darkened blow-up of itself — and render a CTA in the bottom
+    band. The CTA lives ONLY on this Story image, never on the FB/Threads card. IG blocks
+    API text/link stickers, so it's designed text (visible, not tappable). Returns PNG bytes."""
     import io as _io
-    from PIL import Image, ImageFilter, ImageEnhance
+    from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
+    from agents import thumbnail as T
     W, H = 1080, 1920
     card = Image.open(card_path).convert("RGB")
     # background: cover-fill the story frame with a heavily blurred, dimmed card
@@ -152,11 +156,40 @@ def story_canvas_bytes(card_path) -> bytes:
                   (bg.width - W) // 2 + W, (bg.height - H) // 2 + H))
     bg = bg.filter(ImageFilter.GaussianBlur(40))
     bg = ImageEnhance.Brightness(bg).enhance(0.45)
-    # foreground: the card at full width, vertically centred
+    # foreground: the card at full width, sat high so the CTA below stays clear of IG's
+    # bottom reply-bar (the story "safe zone").
     fw = W
     fh = int(card.height * fw / card.width)
     fg = card.resize((fw, fh), Image.LANCZOS)
-    bg.paste(fg, (0, (H - fh) // 2))
+    y0 = 150
+    bg.paste(fg, (0, y0))
+
+    # CTA tucked just below the card (Story-only). Config-driven, easy to reword.
+    ap = (CONFIG.raw().get("trends", {}) or {}).get("autopost", {}) or {}
+    line = cta if cta is not None else str(ap.get("ig_story_cta", "") or "")
+    sub = cta_sub if cta_sub is not None else str(ap.get("ig_story_cta_sub", "") or "")
+    if line or sub:
+        d = ImageDraw.Draw(bg)
+        cx = W // 2
+        YEL = (255, 209, 41)
+        lf = T._font(46)
+        words, lines, cur = line.upper().split(), [], ""
+        for w in words:
+            t = (cur + " " + w).strip()
+            if d.textbbox((0, 0), t, font=lf)[2] <= W - 130:
+                cur = t
+            else:
+                lines.append(cur); cur = w
+        if cur:
+            lines.append(cur)
+        y = y0 + fh + 34                          # just under the card
+        for ln in lines:
+            d.text((cx, y), ln, font=lf, fill=(255, 255, 255), anchor="ma",
+                   stroke_width=3, stroke_fill=(0, 0, 0))
+            y += int(46 * 1.14)
+        if sub:
+            _draw_centered_spaced(d, cx, y + 6, sub.upper(), T._font(34), YEL, spacing=8)
+
     out = _io.BytesIO()
     bg.save(out, "PNG")
     return out.getvalue()

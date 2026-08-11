@@ -48,6 +48,10 @@ trends:
     threads: true
     instagram_story: true
     min_score: 8            # only auto-post cards the screener scores >= this
+    # CTA rendered on the IG STORY only (NOT on the FB/Threads card). IG blocks API text/
+    # link stickers, so this is designed text on the story image — visible, not tappable.
+    ig_story_cta: "Follow our Facebook for the full story"
+    ig_story_cta_sub: "Link in bio"
 models:
   # Caption/beats writer. "claude_code" = your Claude subscription token (FREE),
   # "openai" = gpt-4.1 (paid), "anthropic" = Anthropic API key (paid).

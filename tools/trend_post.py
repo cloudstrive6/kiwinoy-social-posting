@@ -183,7 +183,9 @@ def _publish(res: dict, pick: dict) -> bool:
             done.append("Threads-FAIL"); print(f"   Threads post failed: {e!r}", flush=True)
     if ap.get("instagram_story", True):
         try:
-            publisher.run_ig_story_image("", pd.story_canvas_bytes(img))
+            # Post-for-Me requires a non-empty caption even for a Story (it isn't shown on
+            # the story itself); the visible CTA is rendered onto the canvas.
+            publisher.run_ig_story_image(caption, pd.story_canvas_bytes(img))
             done.append("IG-Story")
         except Exception as e:
             done.append("IGStory-FAIL"); print(f"   IG story failed: {e!r}", flush=True)
