@@ -129,8 +129,8 @@ def _card_query(topic: str, game: str) -> str:
 # KG-franchise -> (Fandom wiki host, a recognizable subject to scrape). For these the
 # thumbnail_director scraper reliably pulls REAL, on-model official art.
 _GAME_WIKI = [
-    (("spider-man 2", "spider-man2"), "marvels-spider-man.fandom.com", "Symbiote Suit"),
-    (("miles morales",), "marvels-spider-man.fandom.com", "Miles Morales"),
+    (("spider-man 2", "spider-man2"), "marvels-spider-man.fandom.com", "Advanced Suit 2.0"),
+    (("miles morales",), "marvels-spider-man.fandom.com", "Advanced Tech Suit"),
     (("spider-man", "spiderman"), "marvels-spider-man.fandom.com", "Advanced Suit"),
     (("final fantasy vii", "ffvii", "ff7"), "finalfantasy.fandom.com", "Cloud Strife from FFVII Remake"),
     (("final fantasy",), "finalfantasy.fandom.com", "Cloud Strife"),
@@ -212,31 +212,84 @@ def _gemini_bg(topic: str, game: str, palette: Optional[list]):
     return Image.open(_io.BytesIO(png)).convert("RGB")
 
 
+def _trim_black(img):
+    """Trim near-black letterbox borders (Gemini sometimes returns them)."""
+    import numpy as np
+    from PIL import Image
+    a = np.asarray(img.convert("RGB")); H, W, _ = a.shape
+    rows = np.where(a.reshape(H, -1).mean(1) > 14)[0]
+    cols = np.where(a.transpose(1, 0, 2).reshape(W, -1).mean(1) > 14)[0]
+    if len(rows) and len(cols):
+        img = img.crop((int(cols[0]), int(rows[0]), int(cols[-1]) + 1, int(rows[-1]) + 1))
+    return img
+
+
+def _cover_square(img, top_bias: bool = False):
+    """Cover-fit an RGB image to CARD×CARD. For a portrait image, a top_bias keeps the
+    HEAD (faces are near the top) instead of a blind centre crop that decapitates it."""
+    from PIL import Image
+    img = _trim_black(img)
+    s = max(CARD / img.width, CARD / img.height)
+    img = img.resize((int(img.width * s), int(img.height * s)), Image.LANCZOS)
+    ox = (img.width - CARD) // 2
+    oy = (int((img.height - CARD) * 0.08) if (top_bias and img.height > img.width)
+          else (img.height - CARD) // 2)
+    return img.crop((ox, oy, ox + CARD, oy + CARD))
+
+
+def _render_on_dark(render_rgba, palette: Optional[list] = None):
+    """Compose a TRANSPARENT character render onto a dark themed canvas, FACE-FORWARD:
+    head near the top, body bleeding off the bottom (where the headline scrim sits). Fixes
+    the 'where's the face?' full-body center-crop."""
+    from PIL import Image, ImageColor, ImageDraw, ImageFilter
+    from agents.thumbnail import _autocrop_alpha
+    r = _autocrop_alpha(render_rgba)
+    col = (226, 54, 54)
+    try:
+        if palette:
+            col = ImageColor.getrgb(palette[0])[:3]
+    except Exception:
+        pass
+    canvas = Image.new("RGBA", (CARD, CARD), (10, 12, 22, 255))
+    glow = Image.new("RGBA", (CARD, CARD), (0, 0, 0, 0))
+    ImageDraw.Draw(glow).ellipse([CARD * 0.08, -CARD * 0.2, CARD * 0.92, CARD * 0.62],
+                                 fill=col + (70,))
+    canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(130)))
+    th = int(CARD * 1.12)                                   # tall -> body bleeds off bottom
+    rr = r.resize((max(1, int(r.width * th / r.height)), th), Image.LANCZOS)
+    if rr.width > int(CARD * 0.98):
+        rr = rr.resize((int(CARD * 0.98), max(1, int(rr.height * CARD * 0.98 / rr.width))),
+                       Image.LANCZOS)
+    canvas.alpha_composite(rr, ((CARD - rr.width) // 2, int(CARD * 0.02)))
+    return canvas.convert("RGB")
+
+
 def build_card(topic: str, game: str, headline: str, out_path,
                palette: Optional[list] = None, bg_image=None) -> Optional[Path]:
     """1080x1080 trend card. Background = the given `bg_image` (a real scraped image) if
-    provided, else a generated Gemini scene; then a bottom scrim + bold headline +
-    TRENDING pill + KG logo. Returns the JPEG path, or None on total failure."""
+    provided — a transparent character render is composed FACE-FORWARD on a dark canvas,
+    a photo/scene is cover-cropped keeping the head — else a generated Gemini scene; then a
+    bottom scrim + bold headline + TRENDING pill + KG logo. Returns the JPEG path or None."""
     from PIL import Image, ImageDraw
     from agents import thumbnail as T
 
     bg = None
     if bg_image and Path(bg_image).exists():
         try:
-            bg = Image.open(bg_image).convert("RGB")
+            raw = Image.open(bg_image)
+            rgba = raw.convert("RGBA")
+            is_render = rgba.getchannel("A").getextrema()[0] < 245   # has real transparency
+            bg = (_render_on_dark(rgba, palette) if is_render
+                  else _cover_square(raw.convert("RGB"), top_bias=True))
         except Exception:
             bg = None
-    if bg is None:                                          # fall back to a generated scene
+    if bg is None:                                          # generated scene fallback
         try:
-            bg = _gemini_bg(topic, game, palette)
+            bg = _cover_square(_gemini_bg(topic, game, palette))
         except Exception as e:
             print(f"[post_director] card bg failed ({e!r}).", flush=True)
             return None
-    # cover-fit to square
-    s = max(CARD / bg.width, CARD / bg.height)
-    bg = bg.resize((int(bg.width * s), int(bg.height * s)), Image.LANCZOS)
-    bg = bg.crop(((bg.width - CARD) // 2, (bg.height - CARD) // 2,
-                  (bg.width - CARD) // 2 + CARD, (bg.height - CARD) // 2 + CARD)).convert("RGBA")
+    bg = bg.convert("RGBA")
     # bottom scrim for headline legibility
     scrim = Image.new("RGBA", (CARD, CARD), (0, 0, 0, 0))
     sd = ImageDraw.Draw(scrim)
