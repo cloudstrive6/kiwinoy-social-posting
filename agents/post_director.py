@@ -104,12 +104,42 @@ def _fix_hashtags(text: str) -> str:
     return "\n".join(out)
 
 
+def _reflow_caption(text: str) -> str:
+    """Guarantee FB-friendly paragraph structure (hook / body / question / hashtags separated
+    by blank lines). If the text already has blank-line paragraphs it's returned unchanged;
+    if a rewrite flattened it into one block, rebuild the paragraphs so spacing never gets
+    lost on a post."""
+    text = (text or "").strip()
+    if text.count("\n\n") >= 1:
+        return re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"\s*\n\s*", " ", text).strip()             # collapse stray single newlines
+    tags = ""
+    m = re.search(r"((?:#\w+\s*)+)$", text)                    # pull a trailing hashtag run
+    if m:
+        tags = " ".join(re.findall(r"#\w+", m.group(1)))
+        text = text[:m.start()].strip()
+    sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    if sents:
+        qi = max((i for i, s in enumerate(sents) if "?" in s), default=-1)
+        question = " ".join(sents[qi:]) if qi >= 0 else ""
+        pre = sents[:qi] if qi >= 0 else sents
+        hook = pre[0] if pre else ""
+        body = " ".join(pre[1:]) if len(pre) > 1 else ""
+        parts = [p for p in (hook, body, question) if p]
+    else:
+        parts = [text] if text else []
+    out = "\n\n".join(parts)
+    if tags:
+        out = (out + "\n\n" + tags) if out else tags
+    return out.strip()
+
+
 def fit_threads(caption: str, limit: int = 495) -> str:
     """Adapt a caption for Threads: STRIP all hashtags (not idiomatic there, per user) and
     fit the ~500-char limit WITHOUT cutting mid-sentence (Threads truncates longer posts
     mid-word). Keeps the HOOK + the closing CTA/question and fills the middle with as many
     WHOLE context sentences as fit."""
-    cap = (caption or "").strip()
+    cap = _reflow_caption((caption or "").strip())          # ensure paragraph structure first
     blocks = [b.strip() for b in cap.split("\n\n") if b.strip()]
     if blocks and blocks[-1].lstrip().startswith("#"):     # drop the trailing hashtag block
         blocks.pop()
@@ -117,9 +147,10 @@ def fit_threads(caption: str, limit: int = 495) -> str:
     cap = "\n\n".join(blocks).strip()
     if len(cap) <= limit:
         return cap
-    # too long -> keep hook + closing CTA (may end in an emoji, not '?'), fill middle
+    # too long -> keep hook + closing CTA (may end in an emoji, not '?'), fill middle. Only
+    # treat the last block as the CTA when there's a hook before it (never pop the sole block).
     question = ""
-    if blocks and ("?" in blocks[-1] or len(blocks) >= 3):
+    if len(blocks) >= 2 and ("?" in blocks[-1] or len(blocks) >= 3):
         question = blocks.pop()
     hook = blocks[0] if blocks else cap
     context = " ".join(blocks[1:]) if len(blocks) > 1 else ""
@@ -166,6 +197,8 @@ def verify_caption(topic: str, caption: str, game: str = "") -> dict:
         d = extract_json(_text(prompt))
         safe = sanitize(str(d.get("safe_caption") or caption)).strip()
         safe = _fix_hashtags(safe) if safe else caption
+        # guarantee paragraph spacing survives even if the critic flattened the rewrite
+        safe = _reflow_caption(safe) if safe else caption
         return {"ok": bool(d.get("ok", True)), "issues": d.get("issues", []),
                 "safe_caption": safe or caption}
     except Exception as e:
