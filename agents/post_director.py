@@ -3,15 +3,15 @@
 Given a pick {topic, angle, game, stage} from agents.trends.analyze(), it:
   1. COPYWRITER  -> an FB-native caption: hook + a value line + a question CTA + tags,
                     accurate to the topic (no fabricated stats), scroll-stopping.
-  2. HEADLINE    -> a punchy <=8-word on-image headline.
-  3. NEWS CARD   -> a 1080x1350 (4:5) card: a REAL, topic-related scraped image (the source
-                    article's hero image, a web image search, or on-model official character
-                    art) under a top scrim, a NEWS kicker, the bold headline, a "VIA:
-                    <source>" attribution, + the KG logo. NO AI-generated background — an
-                    unrelated picture makes the post useless, so a topic with no usable real
-                    image is SKIPPED, not filled with a generic scene.
-  4. SCREEN      -> a vision critic checks the image genuinely depicts the topic, the post is
-                    accurate + on-brand, and the headline is mobile-legible + unclipped.
+  2. HEADLINE    -> a punchy headline + 1-2 accent keywords to colour-highlight.
+  3. NEWS CARD   -> a 1080x1350 (4:5) FACE-FORWARD card: the image fills the frame (subject
+                    up top); a bottom block carries a NEWS pill + a bold LEFT-aligned headline
+                    with ACCENT-coloured keywords + the BOSS KG signature over a strong scrim.
+                    Image sourcing = REAL key art first (article hero / web search / Fandom
+                    art); when none passes, a STUNNING on-topic cinematic AI scene (still
+                    relevance-screened). Only a topic with no usable image at all is skipped.
+  4. SCREEN      -> a vision critic checks the image depicts/evokes the topic (real OR
+                    cinematic, never generic/wrong), is striking, and the headline is legible.
 
 direct(pick) runs all four and returns {caption, headline, image, screen, ok}. Never
 raises to the runner — it fails soft so a bad topic just doesn't produce a draft.
@@ -195,14 +195,69 @@ def story_canvas_bytes(card_path, cta: Optional[str] = None,
     return out.getvalue()
 
 
-def _headline(topic: str, angle: str) -> str:
-    from agents.content import _text, sanitize
+def _headline(topic: str, angle: str) -> tuple:
+    """Return (headline, accents) — a punchy on-image headline plus 1-2 KEY PHRASES to
+    highlight in an accent colour (like a high-CTR news card). Each accent is an exact
+    substring of the headline."""
+    from agents.content import _text, sanitize, extract_json
     prompt = (
-        f"Write a PUNCHY on-image headline (<=8 words, UPPERCASE ok) for a gaming trend "
-        f"card about: {topic}. Angle: {angle}. It must be accurate + instantly readable. "
-        "No hashtags, no quotes, no emoji. Return ONLY the headline.")
-    h = sanitize(_text(prompt)).strip().strip('"').split("\n")[0]
-    return h[:60] if h else (topic[:60])
+        "Write a PUNCHY on-image NEWS-card headline for a Marvel post about: "
+        f"{topic}. Angle: {angle}. Rules: <=9 words, UPPERCASE-friendly, accurate, instantly "
+        "readable, no hashtags/quotes/emoji. ALSO pick 1-2 KEY PHRASES from the headline to "
+        "HIGHLIGHT in accent colour (the most important hook words/nouns). Each accent phrase "
+        "MUST be an exact substring of the headline.\n"
+        'Return STRICT JSON {"headline":"...","accents":["phrase","phrase"]}.')
+    try:
+        d = extract_json(_text(prompt))
+        h = sanitize(str(d.get("headline", ""))).strip().strip('"').split("\n")[0]
+        accents = [str(a).strip() for a in (d.get("accents") or []) if str(a).strip()]
+        if h:
+            return h[:70], accents[:3]
+    except Exception:
+        pass
+    h = sanitize(_text("Write a punchy <=8-word headline (no quotes/emoji) for: " + topic))
+    h = h.strip().strip('"').split("\n")[0]
+    return (h[:70] if h else topic[:70]), []
+
+
+def _accent_flags(words: list, accents: Optional[list]) -> list:
+    """Per-word bool: is this headline word part of an accent phrase?"""
+    flags = [False] * len(words)
+    def _norm(s):
+        return re.sub(r"[^a-z0-9]", "", s.lower())
+    low = [_norm(w) for w in words]
+    for ph in accents or []:
+        pw = [_norm(p) for p in ph.split() if _norm(p)]
+        if not pw:
+            continue
+        for i in range(len(low) - len(pw) + 1):
+            if low[i:i + len(pw)] == pw:
+                for j in range(i, i + len(pw)):
+                    flags[j] = True
+    return flags
+
+
+def _wrap_tokens(d, tokens: list, font, max_w: int) -> list:
+    """Wrap [(word, accent)] into lines (each a list of tokens) that fit max_w."""
+    lines, cur = [], []
+    for tok in tokens:
+        trial = cur + [tok]
+        w = d.textlength(" ".join(t[0] for t in trial), font=font)
+        if w <= max_w or not cur:
+            cur = trial
+        else:
+            lines.append(cur); cur = [tok]
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _draw_tokens_left(d, x: int, y: int, toks: list, font, base, accent):
+    """Draw a line of [(word, is_accent)] left-to-right, colouring accent words."""
+    for word, is_acc in toks:
+        d.text((x, y), word, font=font, fill=(accent if is_acc else base),
+               stroke_width=3, stroke_fill=(0, 0, 0))
+        x += int(d.textlength(word + " ", font=font))
 
 
 def scrape_topic_images(query: str, out_dir, n: int = 4) -> list:
@@ -350,18 +405,41 @@ def _article_image(link: str, out_path):
         return None
 
 
+def _safe_scene(topic: str, game: str) -> str:
+    """Translate a topic into a COPYRIGHT-SAFE cinematic scene description (no trademarked
+    franchise / character / actor names) — Gemini blocks (PROHIBITED_CONTENT) when an IP name
+    is in the prompt, so we describe only generic, evocative visual elements."""
+    from agents.content import _text, sanitize
+    p = ("Turn this news topic into ONE vivid sentence describing a cinematic POSTER-BACKGROUND "
+         "scene. Use ONLY generic, evocative visual elements — setting, environment, objects, "
+         "weather, lighting, mood, colours. ABSOLUTELY NO trademarked or franchise names, NO "
+         "character names, NO actor names, NO brand/studio names. Do not name the game or movie."
+         f"\nTOPIC: {topic} ({game})\nReturn ONLY the one-sentence scene description.")
+    s = sanitize(_text(p)).strip().strip('"').split("\n")[0]
+    # backstop: scrub any franchise/IP tokens the model may have slipped in
+    s = re.sub(r"(?i)\b(marvel|spider[- ]?man|wolverine|avengers|x[- ]?men|insomniac|"
+               r"venom|deadpool|doom(sday)?|mcu|disney|sony|playstation|comic[- ]?con)\b",
+               "", s)
+    return re.sub(r"\s{2,}", " ", s).strip(" ,.-") or "an epic cinematic scene, dramatic lighting"
+
+
 def _gemini_bg(topic: str, game: str, palette: Optional[list]):
+    """Generate a STUNNING, on-topic cinematic scene for the news card (used only when no
+    strong REAL image is available). It's built from a COPYRIGHT-SAFE scene description (no IP
+    names — Gemini refuses those) so it evokes the subject's world/mood, like epic movie
+    key-art, rather than drawing a trademarked hero."""
     from PIL import Image
     from core import gemini
     import io as _io
-    pal = " / ".join(palette) if palette else "crimson red, deep blue, near-black"
+    scene = _safe_scene(topic, game)
+    pal = " / ".join(palette) if palette else "cinematic, high-contrast, premium"
     prompt = (
-        f"Create a 1:1 SQUARE dramatic, cinematic GAMING-themed background for a news/trend "
-        f"card about: {topic} ({game}). Moody, high-contrast, energetic, premium; glowing "
-        f"light, depth, subtle particles. Palette: {pal}. Keep the LOWER HALF darker/simpler "
-        "so a headline stays readable. ABSOLUTELY NO text, NO logos, NO watermark, NO real "
-        "faces/characters.")
-    png = gemini.edit_image(prompt, [], aspect_ratio="1:1", retries=5)
+        "Create a STUNNING, photorealistic, cinematic 1:1 image for a poster background. "
+        f"SCENE: {scene}. Make it look like epic AAA movie KEY-ART: dramatic lighting, "
+        "atmosphere, depth, energy, premium quality. Put the main visual interest in the UPPER "
+        "portion and keep the LOWER portion darker/simpler so a headline stays readable. "
+        f"Palette/tone: {pal}. ABSOLUTELY NO text, NO logos, NO watermarks, NO real faces.")
+    png = gemini.edit_image(prompt, [], aspect_ratio="1:1", retries=4)
     return Image.open(_io.BytesIO(png)).convert("RGB")
 
 
@@ -427,14 +505,19 @@ def _draw_centered_spaced(d, cx: int, y: int, text: str, font, fill, spacing: in
         x += wc + spacing
 
 
+ACCENT = (255, 62, 62)          # headline keyword highlight (high-CTR red)
+YELLOW = (255, 209, 41)
+
+
 def build_card(topic: str, game: str, headline: str, out_path,
-               palette: Optional[list] = None, bg_image=None) -> Optional[Path]:
-    """News-card (1080x1350, 4:5). REAL scraped `bg_image` REQUIRED — a transparent
-    character render is composed face-forward on a dark canvas, a photo/scene is
-    cover-cropped keeping the head. NO AI-scene fallback: without a usable real image this
-    returns None (the post is skipped rather than shipped with an unrelated picture). Adds a
-    top scrim + centred NEWS kicker + bold headline + BOSS KG brand credit.
-    """
+               palette: Optional[list] = None, bg_image=None,
+               accents: Optional[list] = None) -> Optional[Path]:
+    """News-card (1080x1350, 4:5), FACE-FORWARD like a high-CTR news page: the image fills
+    the frame (subject/face up top), and a bottom block carries a NEWS pill + a bold
+    LEFT-aligned headline with ACCENT-coloured keywords + the BOSS KG signature over a strong
+    bottom scrim. `bg_image` (real scraped art or a generated cinematic scene) is REQUIRED —
+    a transparent render is composed on a dark canvas, anything else is cover-cropped. Returns
+    the JPEG path, or None without a usable image."""
     from PIL import Image, ImageDraw
     from agents import thumbnail as T
 
@@ -450,57 +533,70 @@ def build_card(topic: str, game: str, headline: str, out_path,
         print(f"[post_director] card bg failed ({e!r}).", flush=True)
         return None
     bg = bg.convert("RGBA")
-    cx = CARD // 2
+    margin = 56
 
-    # top scrim (headline zone) + a soft bottom scrim (logo/attribution legibility)
+    # strong BOTTOM scrim (headline zone) + a light top touch for balance
     scrim = Image.new("RGBA", (CARD, CARDH), (0, 0, 0, 0))
     sd = ImageDraw.Draw(scrim)
     for y in range(CARDH):
-        top = int(232 * max(0.0, 1.0 - y / (CARDH * 0.52)) ** 1.15)
-        bot = int(150 * max(0.0, (y - CARDH * 0.82) / (CARDH * 0.18)) ** 1.4)
-        sd.line([(0, y), (CARD, y)], fill=(6, 8, 16, min(240, max(top, bot))))
+        bot = int(250 * max(0.0, (y - CARDH * 0.36) / (CARDH * 0.64)) ** 1.25)
+        top = int(90 * max(0.0, 1.0 - y / (CARDH * 0.22)) ** 1.4)
+        sd.line([(0, y), (CARD, y)], fill=(6, 8, 16, min(248, max(bot, top))))
     bg.alpha_composite(scrim)
     d = ImageDraw.Draw(bg)
 
-    YEL = (255, 209, 41)
-    # NEWS kicker (centred, letter-spaced)
-    kf = T._font(34)
-    _draw_centered_spaced(d, cx, 58, "NEWS", kf, YEL, spacing=10)
-
-    # headline — centred, wrapped, big + bold (UPPERCASE), stroked for legibility
+    # headline tokens (uppercase) + accent flags, wrapped, auto-sized to fit <=4 lines
     words = headline.upper().split()
-    fs = 96
-    while fs > 46:
+    flags = _accent_flags(words, [a.upper() for a in (accents or [])])
+    toks_all = list(zip(words, flags))
+    max_w = CARD - 2 * margin
+    fs = 92
+    while fs > 44:
         f = T._font(fs)
-        lines, cur = [], ""
-        for w in words:
-            test = (cur + " " + w).strip()
-            if d.textbbox((0, 0), test, font=f)[2] <= CARD - 120:
-                cur = test
-            else:
-                lines.append(cur); cur = w
-        if cur:
-            lines.append(cur)
+        lines = _wrap_tokens(d, toks_all, f, max_w)
         if len(lines) <= 4:
             break
         fs -= 6
     f = T._font(fs)
-    lh = int(fs * 1.06)
-    y = 120
+    lh = int(fs * 1.05)
+
+    # lay out the bottom block from the bottom up: BOSS KG, headline, NEWS pill
+    boss_f = T._font(32)
+    y_boss = CARDH - margin - (boss_f.getmetrics()[0] + boss_f.getmetrics()[1])
+    head_h = lh * len(lines)
+    y_head = y_boss - 20 - head_h
+
+    # NEWS pill (solid, bright, dark text) just above the headline
+    pf = T._font(30)
+    ptxt = "NEWS"
+    ptw = int(d.textlength(ptxt, font=pf))
+    pasc, pdesc = pf.getmetrics()
+    ppadx, ppady = 20, 9
+    pbw, pbh = ptw + 2 * ppadx, (pasc + pdesc) + 2 * ppady
+    y_pill = y_head - 16 - pbh
+    d.rounded_rectangle([margin, y_pill, margin + pbw, y_pill + pbh], radius=pbh // 2,
+                        fill=YELLOW)
+    d.text((margin + ppadx, y_pill + ppady), ptxt, font=pf, fill=(16, 16, 22))
+
+    # headline lines, left-aligned, accent keywords coloured
+    y = y_head
     for ln in lines:
-        d.text((cx, y), ln, font=f, fill=(255, 255, 255), anchor="ma",
-               stroke_width=3, stroke_fill=(0, 0, 0))
+        _draw_tokens_left(d, margin, y, ln, f, (255, 255, 255), ACCENT)
         y += lh
 
-    # KG brand credit under the headline (centred, yellow, letter-spaced) — this is our
-    # page, so our signature sits where a news outlet's 'VIA:' source line would; no
-    # separate logo badge (removed per brand preference).
-    y += 16
-    _draw_centered_spaced(d, cx, y, BRAND_CREDIT.upper(), T._font(34), YEL, spacing=10)
+    # BOSS KG signature, bottom-left, letter-spaced
+    _draw_left_spaced(d, margin, y_boss, BRAND_CREDIT.upper(), boss_f, YELLOW, spacing=8)
 
     out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
     bg.convert("RGB").save(out_path, "JPEG", quality=92, optimize=True)
     return out_path
+
+
+def _draw_left_spaced(d, x: int, y: int, text: str, font, fill, spacing: int = 6):
+    """Draw letter-spaced text starting at x (left-aligned)."""
+    for ch in text:
+        d.text((x, y), ch, font=font, fill=fill)
+        x += int(d.textlength(ch, font=font)) + spacing
 
 
 def screen(image, caption: str, topic: str) -> dict:
@@ -512,14 +608,15 @@ def screen(image, caption: str, topic: str) -> dict:
     prompt = (
         "You are the POST DIRECTOR screening a Facebook gaming NEWS card before it goes to "
         f"drafts. The intended TREND TOPIC is: {topic}\n\nThe CAPTION is:\n{caption}\n\n"
-        "Look at the attached image. The photo/artwork is what stops the scroll, so it MUST "
-        "genuinely depict THIS topic. Approve ONLY if ALL hold: (1) the background image is "
-        "a REAL, on-topic photo/still/character clearly about the topic (the RIGHT game, "
-        "character, person, or franchise) — REJECT a generic/abstract/AI-looking background, "
-        "a wrong or unrelated subject, or a real-world look-alike (e.g. a real spider for "
-        "'Spider-Man'); (2) nothing misleading, fabricated, or off-brand for a positive "
-        "gaming page; (3) OUR white headline is fully readable, not clipped, and not colliding "
-        "with any text already baked into the photo; (4) it looks appealing on a phone. "
+        "Look at the attached image — it's what stops the scroll. Approve ONLY if ALL hold: "
+        "(1) the image clearly DEPICTS or vividly EVOKES this topic — the right game/"
+        "character/scene/world/mood — whether it's a real still/official art OR a cinematic "
+        "illustration. REJECT only if it's generic/off-topic, the WRONG subject, a real-world "
+        "look-alike (e.g. a real spider for 'Spider-Man'), or misleading about what the story "
+        "is; a striking on-topic cinematic scene is GOOD. (2) It is high quality and visually "
+        "striking (not low-res, bland, or broken). (3) Nothing misleading, fabricated, or "
+        "off-brand for a positive fan page. (4) OUR headline is fully readable, not clipped, "
+        "and not colliding with text baked into the image. "
         'Return STRICT JSON {"ok":bool,"score":1-10,"issues":[concise]}.')
     try:
         d = extract_json(ai.vision(prompt, [str(image)]))
@@ -538,16 +635,20 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
     res: dict[str, Any] = {"topic": topic, "game": game, "ok": False}
     try:
         res["caption"] = write_caption(topic, angle, game)
-        res["headline"] = _headline(topic, angle)
+        headline, accents = _headline(topic, angle)
+        res["headline"] = headline
+        res["accents"] = accents
         slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40] or "trend"
-        # REAL, topic-related images ONLY — the image is what stops the scroll, so an
-        # unrelated picture makes the post useless. Sourced in relevance order and the
-        # vision SCREENER keeps the one that truly matches the topic (rejecting junk):
-        #   1) the SOURCE ARTICLE's own hero image (most on-topic for a news-driven trend)
-        #   2) a web image search for the topic/game
-        #   3) official FANDOM character art (on-model render, for our franchises)
-        # NO AI-generated fallback: if nothing real passes, we SKIP (ok stays False) so a
-        # useless/irrelevant card never ships.
+
+        def _try(bg_src, tag):
+            img = build_card(topic, game, headline, out_dir / f"{slug}_{tag}.jpg",
+                             palette=palette, bg_image=bg_src, accents=accents)
+            if not img:
+                return None
+            return {"image": str(img), "screen": screen(img, res.get("caption", ""), topic)}
+
+        # 1) REAL, topic-related images first, in relevance order — the vision SCREENER
+        #    keeps the one that truly matches (article hero -> web search -> Fandom art):
         srcs: list = []
         art = _article_image(str(pick.get("source_link", "")), out_dir / f"{slug}_article.jpg")
         if art:
@@ -556,21 +657,37 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
         srcs += _game_art_images(game, out_dir / f"{slug}_art", n=3)
         best = None
         for i, bg_src in enumerate(srcs):
-            img = build_card(topic, game, res["headline"], out_dir / f"{slug}_c{i}.jpg",
-                             palette=palette, bg_image=bg_src)
-            if not img:
+            r = _try(bg_src, f"c{i}")
+            if r is None:
                 continue
-            sc = screen(img, res.get("caption", ""), topic)
-            if best is None or sc.get("score", 0) > best["screen"].get("score", 0):
-                best = {"image": str(img), "screen": sc}
-            if sc.get("ok"):
+            if best is None or r["screen"].get("score", 0) > best["screen"].get("score", 0):
+                best = r
+            if r["screen"].get("ok"):
                 break
+
+        # 2) STUNNING on-topic AI SCENE fallback — only when no real image PASSED. A
+        #    cinematic, on-topic generated scene (screened for relevance) beats skipping a
+        #    good story. Config trends.allow_ai_scene (default true) can disable it.
+        allow_ai = bool((CONFIG.raw().get("trends", {}) or {})
+                        .get("allow_ai_scene", True))
+        if (best is None or not best["screen"].get("ok")) and allow_ai:
+            try:
+                scene = _gemini_bg(topic, game, palette)
+                sp = out_dir / f"{slug}_ai.jpg"
+                scene.save(sp, "JPEG", quality=94)
+                r = _try(sp, "ai")
+                if r is not None and (best is None
+                                      or r["screen"].get("score", 0) >= best["screen"].get("score", 0)):
+                    best = r
+            except Exception as e:
+                print(f"[post_director] AI scene fallback failed ({e!r}).", flush=True)
+
         if best:
             res["image"] = best["image"]
             res["screen"] = best["screen"]
             res["ok"] = bool(best["screen"].get("ok"))
         else:
-            res["screen"] = {"ok": False, "score": 0, "issues": ["no real related image found"]}
+            res["screen"] = {"ok": False, "score": 0, "issues": ["no usable image found"]}
     except Exception as e:
         res["error"] = repr(e)
     return res

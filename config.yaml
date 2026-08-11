@@ -40,6 +40,9 @@ trends:
   # FRESHNESS: a story older than this (by its article publish date) is no longer "news"
   # and is dropped before the analyst even sees it — so we never post something a week late.
   max_age_days: 7
+  # IMAGES: real key art first; when no strong REAL image passes the screener, GENERATE a
+  # stunning ON-TOPIC cinematic scene (still relevance-screened). false = real-images-only.
+  allow_ai_scene: true
   # AUTOPOST (per user 2026-08-11): trend cards publish DIRECTLY — no manual upload.
   # Facebook + Threads get the card + caption; Instagram gets the image as a STORY only.
   # A higher screener bar + a caption accuracy check gate each post (no human review), and
