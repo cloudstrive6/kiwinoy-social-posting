@@ -67,14 +67,69 @@ def _headline(topic: str, angle: str) -> str:
     return h[:60] if h else (topic[:60])
 
 
-def build_card(topic: str, game: str, headline: str, out_path,
-               palette: Optional[list] = None) -> Optional[Path]:
-    """1080x1080 trend card: Gemini on-theme background + scrim + headline + TRENDING
-    pill + KG logo. Returns the JPEG path, or None if the background couldn't render."""
-    from PIL import Image, ImageDraw, ImageFilter
-    from agents import thumbnail as T
-    from core import gemini
+def scrape_topic_images(query: str, out_dir, n: int = 4) -> list:
+    """Download up to `n` REAL related images for a topic via Bing image search (no API
+    key). Returns a list of saved Paths (best-effort, largest-ish first). The vision
+    SCREENER then picks the RELEVANT one and rejects junk (e.g. a photo of a real spider
+    for 'Spider-Man'). Press/promo imagery on a fan gaming page = standard practice."""
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+    except Exception:
+        pass
+    import html
+    import re
+    import requests
+    from PIL import Image
+    import io as _io
+    ua = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/126 Safari/537.36", "Accept-Language": "en-US,en;q=0.9"}
+    try:
+        r = requests.get("https://www.bing.com/images/search",
+                         params={"q": query, "form": "HDRSC2", "first": "1"},
+                         headers=ua, timeout=20)
+        # Bing stores each full image URL in an HTML-ESCAPED `m="{...murl...}"` tile
+        # attribute, so unescape the page before pulling murl.
+        murls = re.findall(r'"murl":"(.*?)"', html.unescape(r.text))
+    except Exception:
+        return []
+    out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+    saved, seen = [], set()
+    for m in murls[:30]:
+        if len(saved) >= n:
+            break
+        u = m.encode("utf-8").decode("unicode_escape")
+        if u in seen or not u.lower().startswith("http"):
+            continue
+        seen.add(u)
+        try:
+            ir = requests.get(u, headers=ua, timeout=25)
+            if ir.status_code >= 400 or "image" not in ir.headers.get("Content-Type", ""):
+                continue
+            im = Image.open(_io.BytesIO(ir.content))
+            if im.width < 700 or im.height < 450:          # skip icons/thumbnails
+                continue
+            p = out_dir / f"src_{len(saved)}.jpg"
+            im.convert("RGB").save(p, "JPEG", quality=94)
+            saved.append(p)
+        except Exception:
+            continue
+    return saved
 
+
+def _card_query(topic: str, game: str) -> str:
+    """A search query biased toward GAME imagery (so 'Spider-Man' returns the game, not a
+    real spider)."""
+    g = (game or "").strip()
+    if g and g.lower() not in ("gaming", "game"):
+        return f"{g} video game"
+    return topic
+
+
+def _gemini_bg(topic: str, game: str, palette: Optional[list]):
+    from PIL import Image
+    from core import gemini
+    import io as _io
     pal = " / ".join(palette) if palette else "crimson red, deep blue, near-black"
     prompt = (
         f"Create a 1:1 SQUARE dramatic, cinematic GAMING-themed background for a news/trend "
@@ -82,13 +137,30 @@ def build_card(topic: str, game: str, headline: str, out_path,
         f"light, depth, subtle particles. Palette: {pal}. Keep the LOWER HALF darker/simpler "
         "so a headline stays readable. ABSOLUTELY NO text, NO logos, NO watermark, NO real "
         "faces/characters.")
-    try:
-        png = gemini.edit_image(prompt, [], aspect_ratio="1:1", retries=5)
-    except Exception as e:
-        print(f"[post_director] card bg failed ({e!r}).", flush=True)
-        return None
-    import io as _io
-    bg = Image.open(_io.BytesIO(png)).convert("RGB")
+    png = gemini.edit_image(prompt, [], aspect_ratio="1:1", retries=5)
+    return Image.open(_io.BytesIO(png)).convert("RGB")
+
+
+def build_card(topic: str, game: str, headline: str, out_path,
+               palette: Optional[list] = None, bg_image=None) -> Optional[Path]:
+    """1080x1080 trend card. Background = the given `bg_image` (a real scraped image) if
+    provided, else a generated Gemini scene; then a bottom scrim + bold headline +
+    TRENDING pill + KG logo. Returns the JPEG path, or None on total failure."""
+    from PIL import Image, ImageDraw
+    from agents import thumbnail as T
+
+    bg = None
+    if bg_image and Path(bg_image).exists():
+        try:
+            bg = Image.open(bg_image).convert("RGB")
+        except Exception:
+            bg = None
+    if bg is None:                                          # fall back to a generated scene
+        try:
+            bg = _gemini_bg(topic, game, palette)
+        except Exception as e:
+            print(f"[post_director] card bg failed ({e!r}).", flush=True)
+            return None
     # cover-fit to square
     s = max(CARD / bg.width, CARD / bg.height)
     bg = bg.resize((int(bg.width * s), int(bg.height * s)), Image.LANCZOS)
@@ -108,14 +180,22 @@ def build_card(topic: str, game: str, headline: str, out_path,
     if lg is not None:
         bg.alpha_composite(lg, (CARD - 120 - 48, 44))
 
-    # red "TRENDING" pill, top-left (a drawn flame dot — the base font has no emoji)
+    # red "TRENDING" pill, top-left — everything vertically CENTERED on the pill's mid
+    # line (anchor='lm'), with a drawn dot (the base font has no emoji glyph).
     pf = T._font(40)
     pill = "TRENDING"
-    l, t, r, b = d.textbbox((0, 0), pill, font=pf)
-    pw, ph = r - l, b - t
-    d.rounded_rectangle([48, 48, 48 + pw + 92, 48 + ph + 36], radius=44, fill=(214, 18, 18))
-    d.ellipse([48 + 26, 48 + ph // 2 - 4, 48 + 44, 48 + ph // 2 + 14], fill=(255, 210, 60))
-    d.text((48 + 58, 48 + 18), pill, font=pf, fill=(255, 255, 255))
+    tw = int(d.textlength(pill, font=pf))
+    asc, desc = pf.getmetrics()
+    dot = 22
+    padx, pady = 32, 18
+    inner = dot + 16 + tw
+    bw, bh = inner + padx * 2, (asc + desc) + pady * 2
+    x0, y0 = 48, 48
+    cy = y0 + bh // 2
+    d.rounded_rectangle([x0, y0, x0 + bw, y0 + bh], radius=bh // 2, fill=(214, 18, 18))
+    dx = x0 + padx
+    d.ellipse([dx, cy - dot // 2, dx + dot, cy + dot // 2], fill=(255, 210, 60))
+    d.text((dx + dot + 16, cy), pill, font=pf, fill=(255, 255, 255), anchor="lm")
 
     # headline, wrapped, bottom-left, big + bold
     words = headline.upper().split()
@@ -182,9 +262,13 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
         # Card geometry is deterministic, but the Gemini background varies — retry once
         # if the screener rejects the first roll (a fresh background usually fixes it).
         best = None
-        for attempt in range(2):
-            img = build_card(topic, game, res["headline"],
-                             out_dir / f"{slug}.jpg", palette=palette)
+        # Prefer a REAL related image: scrape several, and let the SCREENER pick the
+        # relevant one (rejecting junk like a photo of a real spider). If none pass, fall
+        # back to a generated Gemini scene.
+        srcs = scrape_topic_images(_card_query(topic, game), out_dir / f"{slug}_src", n=4)
+        for bg_src in list(srcs) + [None]:                 # real images first, Gemini last
+            img = build_card(topic, game, res["headline"], out_dir / f"{slug}.jpg",
+                             palette=palette, bg_image=bg_src)
             if not img:
                 continue
             sc = screen(img, res.get("caption", ""), topic)
