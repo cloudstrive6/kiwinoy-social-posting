@@ -231,6 +231,27 @@ def delete_video(video_id: str) -> None:
     print(f"[youtube] deleted {video_id}", flush=True)
 
 
+def set_title(video_id: str, title: str) -> None:
+    """Change a video's TITLE, preserving its description/tags/category. videos.update
+    with part='snippet' REPLACES the snippet, so we fetch the current one, swap only
+    the title, and write it back (categoryId is required on update)."""
+    yt = _service()
+    items = yt.videos().list(part="snippet", id=video_id).execute().get("items", [])
+    if not items:
+        raise RuntimeError(f"video not found: {video_id}")
+    sn = items[0]["snippet"]
+    body_snippet = {
+        "title": title[:100],
+        "categoryId": sn.get("categoryId", "20"),
+        "description": sn.get("description", ""),
+        "tags": sn.get("tags", []),
+    }
+    if sn.get("defaultLanguage"):
+        body_snippet["defaultLanguage"] = sn["defaultLanguage"]
+    yt.videos().update(part="snippet", body={"id": video_id, "snippet": body_snippet}).execute()
+    print(f"[youtube] title updated on {video_id} -> {title}", flush=True)
+
+
 def set_thumbnail(video_id: str, image) -> None:
     """Set/replace the custom thumbnail on an existing video."""
     from googleapiclient.http import MediaFileUpload
