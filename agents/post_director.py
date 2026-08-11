@@ -126,6 +126,77 @@ def _card_query(topic: str, game: str) -> str:
     return topic
 
 
+# KG-franchise -> (Fandom wiki host, a recognizable subject to scrape). For these the
+# thumbnail_director scraper reliably pulls REAL, on-model official art.
+_GAME_WIKI = [
+    (("spider-man 2", "spider-man2"), "marvels-spider-man.fandom.com", "Symbiote Suit"),
+    (("miles morales",), "marvels-spider-man.fandom.com", "Miles Morales"),
+    (("spider-man", "spiderman"), "marvels-spider-man.fandom.com", "Advanced Suit"),
+    (("final fantasy vii", "ffvii", "ff7"), "finalfantasy.fandom.com", "Cloud Strife from FFVII Remake"),
+    (("final fantasy",), "finalfantasy.fandom.com", "Cloud Strife"),
+    (("halo",), "halo.fandom.com", "Master Chief"),
+    (("last of us",), "thelastofus.fandom.com", "Joel Miller"),
+    (("resident evil",), "residentevil.fandom.com", "Leon Scott Kennedy"),
+    (("god of war",), "godofwar.fandom.com", "Kratos"),
+    (("elden ring",), "eldenring.fandom.com", "Malenia"),
+    (("zelda",), "zelda.fandom.com", "Link"),
+    (("grand theft auto", "gta"), "gta.fandom.com", "protagonist"),
+]
+
+
+def _game_art_images(game: str, out_dir, n: int = 3) -> list:
+    """REAL, on-model official art for a KG-franchise game via the Fandom scraper
+    (thumbnail_director). Reliable + relevant. Returns [] for non-mapped games."""
+    g = (game or "").lower()
+    for keys, host, subj in _GAME_WIKI:
+        if any(k in g for k in keys):
+            try:
+                from agents import thumbnail_director as td
+                return [Path(p) for p in td.scrape_candidates(
+                    host, f"{subj} render", Path(out_dir), n=n,
+                    prefer=("render", "promo", "key", "art"))]
+            except Exception:
+                return []
+    return []
+
+
+def _article_image(link: str, out_path):
+    """The source news article's own hero image (og:image) — the most RELEVANT real image
+    for a news-driven trend. Returns the saved Path or None."""
+    if not link:
+        return None
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+    except Exception:
+        pass
+    import re
+    import requests
+    from PIL import Image
+    import io as _io
+    ua = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/126 Safari/537.36"}
+    try:
+        r = requests.get(link, headers=ua, timeout=20)
+        m = (re.search(r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\'](.*?)["\']',
+                       r.text, re.I) or
+             re.search(r'<meta[^>]+content=["\'](.*?)["\'][^>]+(?:property|name)=["\']og:image["\']',
+                       r.text, re.I))
+        if not m:
+            return None
+        ir = requests.get(m.group(1), headers=ua, timeout=25)
+        if "image" not in ir.headers.get("Content-Type", ""):
+            return None
+        im = Image.open(_io.BytesIO(ir.content))
+        if im.width < 600 or im.height < 350:
+            return None
+        out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
+        im.convert("RGB").save(out_path, "JPEG", quality=94)
+        return out_path
+    except Exception:
+        return None
+
+
 def _gemini_bg(topic: str, game: str, palette: Optional[list]):
     from PIL import Image
     from core import gemini
@@ -262,11 +333,19 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
         # Card geometry is deterministic, but the Gemini background varies — retry once
         # if the screener rejects the first roll (a fresh background usually fixes it).
         best = None
-        # Prefer a REAL related image: scrape several, and let the SCREENER pick the
-        # relevant one (rejecting junk like a photo of a real spider). If none pass, fall
-        # back to a generated Gemini scene.
-        srcs = scrape_topic_images(_card_query(topic, game), out_dir / f"{slug}_src", n=4)
-        for bg_src in list(srcs) + [None]:                 # real images first, Gemini last
+        # REAL images first, in reliability order, and let the SCREENER pick the relevant
+        # one (rejecting junk). Fallback chain ending in a generated Gemini scene:
+        #   1) official FANDOM game art (for KG franchises — reliable + on-model)
+        #   2) the SOURCE ARTICLE's own image (news-driven topics)
+        #   3) a best-effort web image search
+        #   4) Gemini scene (None)
+        srcs: list = []
+        srcs += _game_art_images(game, out_dir / f"{slug}_art", n=3)
+        ai = _article_image(str(pick.get("source_link", "")), out_dir / f"{slug}_article.jpg")
+        if ai:
+            srcs.append(ai)
+        srcs += scrape_topic_images(_card_query(topic, game), out_dir / f"{slug}_src", n=3)
+        for bg_src in srcs + [None]:
             img = build_card(topic, game, res["headline"], out_dir / f"{slug}.jpg",
                              palette=palette, bg_image=bg_src)
             if not img:

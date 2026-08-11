@@ -62,7 +62,11 @@ def _feed_titles(xml: str, limit: int) -> list[dict]:
         title = _t("title")
         if not title:
             continue
-        out.append({"title": title, "pub": _t("pubDate") or _t("published")})
+        link_e = it.find("link")
+        link = ""
+        if link_e is not None:
+            link = (link_e.text or "").strip() or link_e.get("href", "")   # RSS text vs Atom href
+        out.append({"title": title, "pub": _t("pubDate") or _t("published"), "link": link})
     return out
 
 
@@ -78,7 +82,8 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
         try:
             r = requests.get(url, headers=_UA, timeout=15)
             for it in _feed_titles(r.text, news_per_feed):
-                cands.append({"title": it["title"], "source": f"news:{name}", "kind": "news"})
+                cands.append({"title": it["title"], "source": f"news:{name}",
+                              "kind": "news", "link": it.get("link", "")})
         except Exception:
             continue
 
@@ -145,8 +150,9 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         f"CANDIDATES:\n{listing}{excl}\n\n"
         'Return ONLY JSON: {"picks":[{"topic":"short clear topic","why_rising":"1 line",'
         '"stage":"rising|peaking|declining","relevance":1-10,"angle":"the specific post '
-        'angle/hook for KG","game":"the game/franchise or \'gaming\'","source":"which '
-        'candidate #/source"}]}. Order picks best-first; include only rising/peaking ones.')
+        'angle/hook for KG","game":"the game/franchise or \'gaming\'","source_index":the '
+        'CANDIDATE NUMBER (integer) this pick is based on}]}. Order picks best-first; include '
+        "only rising/peaking ones.")
     try:
         d = extract_json(_text(prompt, timeout=150))
         picks = d.get("picks", []) if isinstance(d, dict) else []
