@@ -1,15 +1,22 @@
-"""Runner for the KG Facebook trend-jacking pipeline — delivers to FB DRAFTS.
+"""Runner for the KG Marvel trend-jacking pipeline.
 
-Scout rising gaming trends -> Trend Analyst ranks them (prefers RISING/pre-peak) ->
-Post Director writes an FB caption + builds a screened "trend card" -> deliver as a
-DRAFT: the card + caption go to Telegram (review at a glance) and the image is stored
-on B2 under drafts/fb-trends/. NOTHING is posted publicly — you review + post. A small
-posted-topics ledger on B2 stops repeats.
+Scout rising Marvel trends (MCU + Insomniac's Marvel games) -> Trend Analyst ranks them
+(prefers RISING/pre-peak) -> Post Director writes a caption + builds a screened "news
+card" with a REAL image -> deliver.
+
+Delivery is set by config `trends.autopost.enabled`:
+  * AUTOPOST (default): after a caption accuracy fact-check + a higher screener bar, the
+    card + caption publish DIRECTLY — Facebook + Threads get the post, Instagram gets the
+    image as a STORY — and a "went live" ping (card + exact live caption) hits Telegram so
+    a bad one can be deleted fast.
+  * DRAFT (enabled:false, or --draft): card + caption go to Telegram for you to post by hand.
+A posted-topics ledger on B2 stops repeats.
 
 Usage:
-  python tools/trend_post.py                 # up to 1 fresh trend draft
-  python tools/trend_post.py --count 2       # up to N drafts
-  python tools/trend_post.py --dry-run       # scout+analyze+build only (no B2/Telegram)
+  python tools/trend_post.py                 # 1 item, per config (autopost or draft)
+  python tools/trend_post.py --count 2       # up to N items
+  python tools/trend_post.py --draft         # force DRAFT-to-Telegram (safe test)
+  python tools/trend_post.py --dry-run       # scout+analyze+build only (no publish/Telegram)
 """
 from __future__ import annotations
 
@@ -30,7 +37,7 @@ except Exception:
 
 from core.config import CONFIG, ROOT          # noqa: E402
 from core import b2_store, notify             # noqa: E402
-from agents import trends, post_director as pd  # noqa: E402
+from agents import trends, publisher, post_director as pd  # noqa: E402
 
 _LEDGER_KEY = "drafts/fb-trends/_posted.json"
 
@@ -92,29 +99,49 @@ def _save_posted(keys: list[str]) -> None:
         print(f"[trend-post] posted-ledger write skipped ({e!r}).", flush=True)
 
 
-def _deliver(res: dict, pick: dict) -> bool:
-    """Send the draft to Telegram + store the card on B2. Returns True on Telegram send."""
+def _autopost_cfg() -> dict:
+    return (CONFIG.raw().get("trends", {}) or {}).get("autopost", {}) or {}
+
+
+def _score(res: dict) -> int:
+    try:
+        return int((res.get("screen") or {}).get("score", 0) or 0)
+    except Exception:
+        return 0
+
+
+def _png_bytes(path) -> bytes:
+    from PIL import Image
+    import io as _io
+    b = _io.BytesIO()
+    Image.open(path).convert("RGB").save(b, "PNG")
+    return b.getvalue()
+
+
+def _store_card(img, res: dict, pick: dict) -> None:
+    """Archive the card on B2 (self-describing name) — best-effort."""
     from agents.content import draft_stamp
+    if not (img and Path(img).exists()):
+        return
+    game = _key(res.get("game", "") or "marvel")[:24] or "marvel"
+    try:
+        env, remote = _rclone_env()
+        fname = f"fb-trend_{game}_{_key(res.get('topic',''))[:32]}_{draft_stamp()}.jpg"
+        subprocess.run(["rclone", "copyto", str(img),
+                        f"{remote}:{b2_store._bucket()}/drafts/fb-trends/{fname}"],
+                       env=env, capture_output=True, timeout=120)
+    except Exception as e:
+        print(f"[trend-post] B2 store skipped ({e!r}).", flush=True)
+
+
+def _deliver(res: dict, pick: dict) -> bool:
+    """DRAFT mode: send the card + caption to Telegram + archive on B2. Returns True."""
     caption = res.get("caption", "")
     topic = res.get("topic", "")
     stage = pick.get("stage", "")
-    game = _key(res.get("game", "") or "gaming")[:24] or "gaming"
     img = res.get("image")
-
-    # store the card on B2 (self-describing name) — best-effort
-    if img and Path(img).exists():
-        try:
-            env, remote = _rclone_env()
-            fname = f"fb-trend_{game}_{_key(topic)[:32]}_{draft_stamp()}.jpg"
-            subprocess.run(["rclone", "copyto", str(img),
-                            f"{remote}:{b2_store._bucket()}/drafts/fb-trends/{fname}"],
-                           env=env, capture_output=True, timeout=120)
-        except Exception as e:
-            print(f"[trend-post] B2 store skipped ({e!r}).", flush=True)
-
-    # Telegram: the card as a photo + a header, then the caption as its OWN message so
-    # long-press -> Copy grabs exactly what to paste into Facebook.
-    header = (f"\U0001F4C8 TREND DRAFT ({stage}) — review + post to Facebook\n"
+    _store_card(img, res, pick)
+    header = (f"\U0001F4C8 TREND DRAFT ({stage}) — review + post\n"
               f"Topic: {topic}\n(card stored on B2 → drafts/fb-trends/)")
     if img and Path(img).exists():
         notify.telegram_photo(img, header)
@@ -123,10 +150,63 @@ def _deliver(res: dict, pick: dict) -> bool:
     return notify.telegram(caption)   # caption alone = clean copy-paste
 
 
+def _publish(res: dict, pick: dict) -> bool:
+    """AUTOPOST mode: fact-check the caption, then publish DIRECTLY — FB + Threads get the
+    card + caption, Instagram gets the image as a STORY. Sends a 'went live' Telegram ping
+    (card + the exact live caption) so a bad one can be deleted fast. Returns True if it
+    published to at least one platform; False if the accuracy gate blocked it."""
+    ap = _autopost_cfg()
+    topic = res.get("topic", "")
+    img = res.get("image")
+
+    # accuracy gate — no human review, so verify + de-specify before it goes public
+    v = pd.verify_caption(topic, res.get("caption", ""), res.get("game", ""))
+    if not v.get("ok"):
+        print(f"   accuracy: NOT postable -> skipped ({v.get('issues')})", flush=True)
+        notify.telegram(f"⚠️ Trend skipped (accuracy): {topic}\n{v.get('issues')}")
+        return False
+    caption = v.get("safe_caption") or res.get("caption", "")
+
+    png = _png_bytes(img)
+    done: list[str] = []
+    if ap.get("facebook", True):
+        try:
+            publisher.run(caption, png, platform_keys=["facebook"], is_draft=False)
+            done.append("Facebook")
+        except Exception as e:
+            done.append("FB-FAIL"); print(f"   FB post failed: {e!r}", flush=True)
+    if ap.get("threads", True):
+        try:
+            publisher.run(caption, png, platform_keys=["threads"], is_draft=False)
+            done.append("Threads")
+        except Exception as e:
+            done.append("Threads-FAIL"); print(f"   Threads post failed: {e!r}", flush=True)
+    if ap.get("instagram_story", True):
+        try:
+            publisher.run_ig_story_image("", pd.story_canvas_bytes(img))
+            done.append("IG-Story")
+        except Exception as e:
+            done.append("IGStory-FAIL"); print(f"   IG story failed: {e!r}", flush=True)
+
+    _store_card(img, res, pick)
+    posted_any = any(d in ("Facebook", "Threads", "IG-Story") for d in done)
+    header = (f"✅ AUTO-POSTED ({pick.get('stage','')}): {topic}\n"
+              f"Targets: {', '.join(done) or 'none'}") if posted_any else (
+              f"⚠️ Auto-post FAILED for: {topic}\nTargets: {', '.join(done)}")
+    if img and Path(img).exists():
+        notify.telegram_photo(img, header[:1000])
+    else:
+        notify.telegram(header)
+    notify.telegram(caption)          # the exact live caption (review / delete if wrong)
+    return posted_any
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Generate KG Facebook trend-jacking drafts.")
-    ap.add_argument("--count", type=int, default=1, help="max drafts to produce this run")
-    ap.add_argument("--dry-run", action="store_true", help="build only; no B2/Telegram")
+    ap.add_argument("--count", type=int, default=1, help="max posts/drafts to produce this run")
+    ap.add_argument("--dry-run", action="store_true", help="build only; no publish/Telegram")
+    ap.add_argument("--draft", action="store_true",
+                    help="force DRAFT-to-Telegram even if trends.autopost.enabled is true")
     a = ap.parse_args()
 
     games = list((CONFIG.reels.get("game_names", {}) or {}).values())
@@ -150,6 +230,13 @@ def main() -> int:
             notify.telegram("\U0001F4C8 No fresh trend worth posting this cycle — will re-check next run.")
         return 0
 
+    apc = _autopost_cfg()
+    autopost = bool(apc.get("enabled")) and not a.draft and not a.dry_run
+    min_score = int(apc.get("min_score", 8) or 8)
+    mode = "AUTOPOST" if autopost else ("DRY-RUN" if a.dry_run else "DRAFT")
+    print(f"[trend-post] mode = {mode}"
+          + (f" (min screen score {min_score})" if autopost else ""), flush=True)
+
     out_dir = ROOT / "output" / "trend_posts"
     made = 0
     for pick in picks:
@@ -166,14 +253,23 @@ def main() -> int:
         if a.dry_run:
             made += 1
             continue
-        _deliver(res, pick)
+        if autopost:
+            if _score(res) < min_score:            # higher bar: no human review
+                print(f"   below autopost bar ({_score(res)} < {min_score}) -> next pick",
+                      flush=True)
+                continue
+            if not _publish(res, pick):            # accuracy gate blocked it -> try next
+                continue
+        else:
+            _deliver(res, pick)
         posted.append(_key(topic))
         _save_posted(posted)
         made += 1
 
-    print(f"[trend-post] done — {made} draft(s).", flush=True)
+    verb = "post(s)" if autopost else "draft(s)"
+    print(f"[trend-post] done — {made} {verb}.", flush=True)
     if not a.dry_run and made == 0:
-        notify.telegram("\U0001F4C8 Trends found but none passed the post screening this cycle.")
+        notify.telegram("\U0001F4C8 Trends found but none cleared this cycle's bar.")
     return 0
 
 

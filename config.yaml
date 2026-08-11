@@ -37,6 +37,17 @@ trends:
     - Insomniac Marvel's Wolverine
     - Marvel's Spider-Man 2 PS5
     - Insomniac Spider-Man game update
+  # AUTOPOST (per user 2026-08-11): trend cards publish DIRECTLY — no manual upload.
+  # Facebook + Threads get the card + caption; Instagram gets the image as a STORY only.
+  # A higher screener bar + a caption accuracy check gate each post (no human review), and
+  # a "went live" Telegram ping lets you delete a bad one fast. Set enabled:false to revert
+  # to draft-only (card + caption to Telegram).
+  autopost:
+    enabled: true
+    facebook: true
+    threads: true
+    instagram_story: true
+    min_score: 8            # only auto-post cards the screener scores >= this
 models:
   # Caption/beats writer. "claude_code" = your Claude subscription token (FREE),
   # "openai" = gpt-4.1 (paid), "anthropic" = Anthropic API key (paid).

@@ -104,6 +104,64 @@ def _fix_hashtags(text: str) -> str:
     return "\n".join(out)
 
 
+def verify_caption(topic: str, caption: str, game: str = "") -> dict:
+    """Accuracy gate for AUTOPOST (no human review). An adversarial critic checks the
+    caption for FABRICATED specifics — invented stats, dates, quotes, cast names, plot
+    details, or rumors stated as fact — that we can't stand behind. Returns
+    {ok, safe_caption, issues}: if it finds a fixable specific it returns a corrected
+    caption with the claim removed/generalised (hook + hashtags kept); if the post is
+    fundamentally unsupportable it returns ok=False. Fail-OPEN on critic error (the writer
+    is already anti-fabrication and the image screener is a second gate)."""
+    from agents.content import _text, extract_json, sanitize
+    prompt = (
+        "You are a strict FACT-CHECK editor for a Marvel fan page. A caption is about to "
+        f"AUTO-POST (no human will review it). TOPIC: {topic}\nPROPERTY: {game or 'Marvel'}\n\n"
+        f"CAPTION:\n{caption}\n\n"
+        "Flag any statement the page can't stand behind: invented or precise stats/numbers, "
+        "specific dates, direct quotes, specific casting/actor names, or plot/story details, "
+        "and rumors phrased as confirmed fact. General hype and clearly-attributed 'rumor'/"
+        "'reportedly' framing are fine.\n"
+        "ALWAYS produce `safe_caption`: an ACCURATE version — remove or generalise ONLY the "
+        "unsupported parts, keep the hook, the question, the emojis, and a hashtag line, keep "
+        "it natural. Set ok=TRUE when safe_caption is accurate and postable (this is the "
+        "normal case, even if you had to edit). Set ok=FALSE ONLY if the topic itself cannot "
+        "be posted accurately at all (pure leak/fabrication with nothing true to say).\n"
+        'Return STRICT JSON {"ok":bool,"issues":[concise what you changed],"safe_caption":'
+        '"the corrected caption (or the original if already fine)"}.')
+    try:
+        d = extract_json(_text(prompt))
+        safe = sanitize(str(d.get("safe_caption") or caption)).strip()
+        safe = _fix_hashtags(safe) if safe else caption
+        return {"ok": bool(d.get("ok", True)), "issues": d.get("issues", []),
+                "safe_caption": safe or caption}
+    except Exception as e:
+        return {"ok": True, "issues": [f"verify skipped: {e}"], "safe_caption": caption}
+
+
+def story_canvas_bytes(card_path) -> bytes:
+    """Fit the 4:5 trend card onto a 1080x1920 (9:16) Instagram STORY canvas — the card
+    centred over a blurred, darkened blow-up of itself. Returns PNG bytes."""
+    import io as _io
+    from PIL import Image, ImageFilter, ImageEnhance
+    W, H = 1080, 1920
+    card = Image.open(card_path).convert("RGB")
+    # background: cover-fill the story frame with a heavily blurred, dimmed card
+    s = max(W / card.width, H / card.height)
+    bg = card.resize((int(card.width * s), int(card.height * s)), Image.LANCZOS)
+    bg = bg.crop(((bg.width - W) // 2, (bg.height - H) // 2,
+                  (bg.width - W) // 2 + W, (bg.height - H) // 2 + H))
+    bg = bg.filter(ImageFilter.GaussianBlur(40))
+    bg = ImageEnhance.Brightness(bg).enhance(0.45)
+    # foreground: the card at full width, vertically centred
+    fw = W
+    fh = int(card.height * fw / card.width)
+    fg = card.resize((fw, fh), Image.LANCZOS)
+    bg.paste(fg, (0, (H - fh) // 2))
+    out = _io.BytesIO()
+    bg.save(out, "PNG")
+    return out.getvalue()
+
+
 def _headline(topic: str, angle: str) -> str:
     from agents.content import _text, sanitize
     prompt = (

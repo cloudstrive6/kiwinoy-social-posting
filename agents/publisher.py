@@ -268,6 +268,28 @@ def run_ig_story(
     )
 
 
+def run_ig_story_image(
+    caption: str,
+    image_bytes: bytes,
+    *,
+    content_type: str = "image/png",
+    scheduled_at: Optional[str] = None,
+    is_draft: bool = False,
+) -> dict[str, Any]:
+    """Post a single IMAGE to the Instagram STORY (placement=stories). Instagram-only, and
+    like run_ig_story it never falls back to a no-placement post, so a rejected 'stories'
+    placement can never leak the image to the IG feed — it raises and the caller skips."""
+    account_ids = CONFIG.account_ids(["instagram"])
+    if not account_ids:
+        raise postforme.PostForMeError(_NO_ACCOUNTS)
+    media_url = postforme.upload_image(image_bytes, content_type=content_type)
+    return postforme.create_post(
+        caption=caption, social_accounts=account_ids, media_urls=[media_url],
+        scheduled_at=scheduled_at, is_draft=is_draft,
+        platform_configurations={"instagram": {"placement": "stories"}},
+    )
+
+
 def run_fb_story(
     caption: str,
     media_bytes: bytes,
