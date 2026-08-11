@@ -15,6 +15,28 @@ brand:
     win, save, or look smart. Hooks hard in the first line.
 
     '
+# FB trend-jacking pipeline (tools/trend_post.py). FOCUS the scout + analyst on a
+# specific beat. Shifted 2026-08-11 to Marvel Cinematic Universe news + Insomniac's
+# Marvel games (Spider-Man 1 / Miles Morales / Spider-Man 2 / the upcoming Wolverine).
+trends:
+  focus: >
+    the MARVEL CINEMATIC UNIVERSE (MCU movies + Disney+ shows: casting, trailers,
+    release dates, box office, first looks, set photos, official announcements) AND
+    INSOMNIAC's MARVEL VIDEO GAMES (Marvel's Spider-Man, Spider-Man: Miles Morales,
+    Marvel's Spider-Man 2, and the upcoming Marvel's Wolverine — updates, DLC, sales
+    milestones, trailers, rumors from credible outlets). Pick ONLY topics that clearly
+    fit this Marvel beat; ignore unrelated gaming/entertainment topics.
+  # Google News RSS search queries — reliable, on-beat candidate sources (real article
+  # links for the news card's hero image). Add/adjust to steer the beat.
+  news_queries:
+    - Marvel Cinematic Universe
+    - MCU movie trailer
+    - Avengers Doomsday
+    - Spider-Man Brand New Day
+    - Marvel Disney+ series
+    - Insomniac Marvel's Wolverine
+    - Marvel's Spider-Man 2 PS5
+    - Insomniac Spider-Man game update
 models:
   # Caption/beats writer. "claude_code" = your Claude subscription token (FREE),
   # "openai" = gpt-4.1 (paid), "anthropic" = Anthropic API key (paid).

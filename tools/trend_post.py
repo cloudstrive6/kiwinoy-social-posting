@@ -39,6 +39,28 @@ def _key(topic: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", (topic or "").lower()).strip("-")[:60]
 
 
+def _tokens(s: str) -> set:
+    return set(re.sub(r"[^a-z0-9 ]", " ", (s or "").lower()).split())
+
+
+def _best_link(title: str, chosen: str, cands: list[dict]) -> str:
+    """Prefer a DIRECT publisher link over a Google-News redirect (whose og:image is just
+    the Google-News logo). If `chosen` is a google-news URL, find a direct-link candidate
+    covering the same story (title-word overlap) and use that link instead."""
+    if chosen and "news.google.com" not in chosen:
+        return chosen
+    ct = _tokens(title)
+    best, score = chosen, 0
+    for c in cands:
+        link = c.get("link", "")
+        if not link or "news.google.com" in link:
+            continue
+        ov = len(ct & _tokens(c.get("title", "")))
+        if ov >= 3 and ov > score:
+            best, score = link, ov
+    return best
+
+
 def _rclone_env():
     from tools.footage import _b2_env
     la = CONFIG.raw().get("longform_archive", {}) or {}
@@ -116,8 +138,9 @@ def main() -> int:
         try:
             si = int(p.get("source_index", 0))
             if 1 <= si <= len(cands):
-                p["source_link"] = cands[si - 1].get("link", "")
-                p["source_name"] = cands[si - 1].get("source", "")   # e.g. 'news:IGN'
+                c = cands[si - 1]
+                p["source_link"] = _best_link(c.get("title", ""), c.get("link", ""), cands)
+                p["source_name"] = c.get("source", "")       # e.g. 'news:IGN'
         except Exception:
             pass
     print(f"[trend-post] {len(cands)} candidates -> {len(picks)} ranked picks "

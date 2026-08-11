@@ -60,20 +60,25 @@ def _kg_logo_circular(size: int):
 
 
 def write_caption(topic: str, angle: str, game: str = "") -> str:
-    """FB-native caption for the trend post."""
+    """FB-native caption for the trend post — Marvel beat (MCU + Insomniac's Marvel games),
+    a little longer so it gives real CONTEXT, not just a hook."""
     from agents.content import _text, sanitize
     prompt = (
-        "You write scroll-stopping Facebook posts for a gaming page (KiwinoyGamer). "
-        f"Write ONE short post about this CURRENT gaming trend:\nTOPIC: {topic}\n"
-        f"ANGLE: {angle}\nGAME/FRANCHISE: {game or 'gaming'}\n\n"
-        "Rules:\n"
-        "- Open with a punchy HOOK line.\n"
-        "- 1 short line of value/context (accurate — do NOT invent specific stats, dates, "
-        "or quotes; keep claims general if unsure).\n"
+        "You write scroll-stopping Facebook posts for a MARVEL fan page (KiwinoyGamer) that "
+        "covers the Marvel Cinematic Universe and Insomniac's Marvel games. Write ONE post "
+        f"about this CURRENT trending topic:\nTOPIC: {topic}\nANGLE: {angle}\n"
+        f"PROPERTY: {game or 'Marvel'}\n\n"
+        "Structure:\n"
+        "- Open with a punchy HOOK line that stops the scroll.\n"
+        "- Then 2-3 sentences of real CONTEXT: what happened, why it matters, and why fans "
+        "should care — enough that someone who only skims still gets the story. Be ACCURATE: "
+        "do NOT invent specific stats, dates, quotes, or plot details; if unsure, keep the "
+        "claim general rather than fabricating a specific.\n"
         "- End with a QUESTION that invites comments (engagement is the goal).\n"
-        "- Warm, hype, community tone. 1-3 tasteful emojis. <= ~55 words total.\n"
-        "- Then 3-5 relevant hashtags on the last line.\n"
-        "- No clickbait lies, no preamble. Return ONLY the post text.")
+        "- Warm, hype, in-the-know community tone. 2-4 tasteful emojis. ~70-110 words for the "
+        "body (longer than a one-liner, but still tight).\n"
+        "- Then 4-6 relevant hashtags on the last line.\n"
+        "- No clickbait lies, no preamble, no markdown. Return ONLY the post text.")
     return sanitize(_text(prompt)).strip()
 
 
@@ -137,13 +142,21 @@ def scrape_topic_images(query: str, out_dir, n: int = 4) -> list:
     return saved
 
 
+# Insomniac's Marvel GAME titles (vs MCU films/shows) — decides whether an image search
+# should bias to game art or to a real film/show still.
+_GAME_TITLES = ("marvel's spider-man", "spider-man 2", "spider-man: miles", "miles morales",
+                "marvel's wolverine")
+
+
 def _card_query(topic: str, game: str) -> str:
-    """A search query biased toward GAME imagery (so 'Spider-Man' returns the game, not a
-    real spider)."""
+    """Web-image-search fallback query = the SUBJECT, not the full headline sentence (a
+    sentence is a terrible image query — it returned a real spider / stock photos). Bias an
+    Insomniac GAME title to game art; use an MCU film/show property as-is for real stills."""
     g = (game or "").strip()
-    if g and g.lower() not in ("gaming", "game"):
-        return f"{g} video game"
-    return topic
+    gl = g.lower()
+    if not g or gl in ("gaming", "game", "marvel", "mcu"):
+        return topic
+    return f"{g} video game" if any(k in gl for k in _GAME_TITLES) else g
 
 
 # KG-franchise -> (Fandom wiki host, a recognizable subject to scrape). For these the
@@ -204,11 +217,18 @@ def _article_image(link: str, out_path):
                        r.text, re.I))
         if not m:
             return None
-        ir = requests.get(m.group(1), headers=ua, timeout=25)
+        img_url = m.group(1)
+        # Google-News article pages expose the hero image as a googleusercontent thumbnail;
+        # request a large render (strip any trailing =wNN-hNN size directive first).
+        is_gthumb = "googleusercontent.com" in img_url or "gstatic.com" in img_url
+        if is_gthumb:
+            img_url = re.sub(r"=[-\w]+$", "", img_url) + "=w1280"
+        ir = requests.get(img_url, headers=ua, timeout=25)
         if "image" not in ir.headers.get("Content-Type", ""):
             return None
         im = Image.open(_io.BytesIO(ir.content))
-        if im.width < 600 or im.height < 350:
+        min_w, min_h = (500, 280) if is_gthumb else (600, 350)   # thumbs render a bit smaller
+        if im.width < min_w or im.height < min_h:
             return None
         out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
         im.convert("RGB").save(out_path, "JPEG", quality=94)
