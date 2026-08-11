@@ -17,7 +17,29 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any, Optional
+
+
+def _age_days(pub: str):
+    """Age of an article in days from its RSS pubDate / Atom published, or None if we
+    can't parse it. Used to drop STALE 'news' (a week-old story isn't news)."""
+    if not pub:
+        return None
+    dt = None
+    try:
+        dt = parsedate_to_datetime(pub)                       # RFC-822 (RSS pubDate)
+    except Exception:
+        try:
+            dt = datetime.fromisoformat(pub.replace("Z", "+00:00"))   # ISO-8601 (Atom)
+        except Exception:
+            return None
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return (datetime.now(timezone.utc) - dt).total_seconds() / 86400.0
 
 _UA = {"User-Agent": "Mozilla/5.0 (compatible; KiwinoyGamerTrends/1.0)"}
 
@@ -114,7 +136,8 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
             for it in _feed_titles(r.text, 25):
                 if any(k in it["title"].lower() for k in _MARVEL_KW):
                     cands.append({"title": it["title"], "source": f"news:{name}",
-                                  "kind": "news", "link": it.get("link", "")})
+                                  "kind": "news", "link": it.get("link", ""),
+                                  "pub": it.get("pub", "")})
         except Exception:
             continue
 
@@ -127,7 +150,8 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
             r = requests.get(url, headers=_UA, timeout=15)
             for it in _feed_titles(r.text, 5):
                 cands.append({"title": it["title"], "source": "gnews",
-                              "kind": "news", "link": it.get("link", "")})
+                              "kind": "news", "link": it.get("link", ""),
+                              "pub": it.get("pub", "")})
         except Exception:
             continue
 
@@ -137,7 +161,8 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
             r = requests.get(url, headers=_UA, timeout=15)
             for it in _feed_titles(r.text, news_per_feed):
                 cands.append({"title": it["title"], "source": f"news:{name}",
-                              "kind": "news", "link": it.get("link", "")})
+                              "kind": "news", "link": it.get("link", ""),
+                              "pub": it.get("pub", "")})
         except Exception:
             continue
 
@@ -161,9 +186,26 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
         except Exception:
             pass
 
-    # de-dup near-identical titles
-    seen, uniq = set(), []
+    # FRESHNESS GUARDRAIL: a week-old story isn't "news". Stamp each candidate's age and
+    # DROP news we can date as older than trends.max_age_days (default 7). Undatable items
+    # are kept (the analyst still judges recency) so we never silently lose everything.
+    try:
+        from core.config import CONFIG
+        max_age = float((CONFIG.raw().get("trends", {}) or {}).get("max_age_days", 7) or 7)
+    except Exception:
+        max_age = 7.0
+    fresh: list[dict] = []
     for c in cands:
+        age = _age_days(c.get("pub", ""))
+        c["age_days"] = None if age is None else round(age, 1)
+        if age is not None and age > max_age:
+            continue                                          # too old to post as news
+        fresh.append(c)
+
+    # de-dup near-identical titles (keep the FRESHEST when the same story repeats)
+    fresh.sort(key=lambda c: (c.get("age_days") is None, c.get("age_days") or 0.0))
+    seen, uniq = set(), []
+    for c in fresh:
         k = re.sub(r"[^a-z0-9 ]", "", c["title"].lower()).strip()
         if k and k not in seen:
             seen.add(k)
@@ -190,18 +232,29 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
             focus = str((CONFIG.raw().get("trends", {}) or {}).get("focus", "")).strip()
         except Exception:
             focus = ""
+    def _age_tag(c):
+        a = c.get("age_days")
+        return f"[{a:g}d ago]" if isinstance(a, (int, float)) else "[age?]"
     listing = "\n".join(
-        f"{i+1}. [{c.get('source','?')}] {c.get('title','')}" for i, c in enumerate(candidates[:80]))
+        f"{i+1}. {_age_tag(c)} [{c.get('source','?')}] {c.get('title','')}"
+        for i, c in enumerate(candidates[:80]))
     excl = ("\nALREADY POSTED (do NOT pick these or close variants): "
             + "; ".join(exclude[:40])) if exclude else ""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     beat = (f"THIS PAGE'S BEAT — pick ONLY topics that clearly fit it: {focus}\n\n"
             if focus else "")
     gline = (f"Our own Insomniac Marvel games are: {', '.join(games)}. " if games else "")
     prompt = (
         "You are a TREND ANALYST for a Marvel-focused fan Facebook page (KiwinoyGamer). "
-        f"{beat}{gline}Below are candidate topics scraped from news feeds. Pick the BEST "
-        f"{top_n} ON-BEAT topics to post about RIGHT NOW to maximize reach.\n\n"
+        f"TODAY is {today}. Each candidate is tagged with how many days ago it was published "
+        f"[Nd ago].\n\n{beat}{gline}Below are candidate topics scraped from news feeds. Pick "
+        f"the BEST {top_n} ON-BEAT topics to post about RIGHT NOW to maximize reach.\n\n"
         "Judge each on:\n"
+        "- FRESHNESS (HARD RULE): this is a NEWS page. Posting stale news makes us look late "
+        "and hurts the page. REJECT anything that isn't genuinely current — if it broke more "
+        "than ~7 days ago, or the underlying event/release already happened a while back and "
+        "is no longer being actively discussed, SKIP it even if it's on-beat. Strongly prefer "
+        "the last 48-72 hours. Do NOT phrase an old update as if it just happened.\n"
         "- FIT: does it clearly belong to the page's beat above? If NOT, DISCARD it — never "
         "pick an off-beat topic just to fill the list. Returning fewer (or zero) is correct.\n"
         "- STAGE: is it RISING / about-to-explode (BEST), already PEAKING (ok, but late), "
