@@ -112,11 +112,12 @@ def main() -> int:
     cands = trends.scout()
     posted = [] if a.dry_run else _load_posted()
     picks = trends.analyze(cands, games=games, exclude=posted, top_n=6)
-    for p in picks:                                        # map the pick to its source article link
+    for p in picks:                                        # map the pick to its source article
         try:
             si = int(p.get("source_index", 0))
             if 1 <= si <= len(cands):
                 p["source_link"] = cands[si - 1].get("link", "")
+                p["source_name"] = cands[si - 1].get("source", "")   # e.g. 'news:IGN'
         except Exception:
             pass
     print(f"[trend-post] {len(cands)} candidates -> {len(picks)} ranked picks "

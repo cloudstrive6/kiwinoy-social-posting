@@ -4,10 +4,14 @@ Given a pick {topic, angle, game, stage} from agents.trends.analyze(), it:
   1. COPYWRITER  -> an FB-native caption: hook + a value line + a question CTA + tags,
                     accurate to the topic (no fabricated stats), scroll-stopping.
   2. HEADLINE    -> a punchy <=8-word on-image headline.
-  3. TREND CARD  -> a 1080x1080 image: a dramatic on-theme gaming background (Gemini),
-                    a dark scrim, the bold headline, a red "TRENDING" pill, + the KG logo.
-  4. SCREEN      -> a vision critic checks the post+image are accurate to the topic,
-                    appealing, on-brand, mobile-legible, and not misleading.
+  3. NEWS CARD   -> a 1080x1350 (4:5) card: a REAL, topic-related scraped image (the source
+                    article's hero image, a web image search, or on-model official character
+                    art) under a top scrim, a NEWS kicker, the bold headline, a "VIA:
+                    <source>" attribution, + the KG logo. NO AI-generated background — an
+                    unrelated picture makes the post useless, so a topic with no usable real
+                    image is SKIPPED, not filled with a generic scene.
+  4. SCREEN      -> a vision critic checks the image genuinely depicts the topic, the post is
+                    accurate + on-brand, and the headline is mobile-legible + unclipped.
 
 direct(pick) runs all four and returns {caption, headline, image, screen, ok}. Never
 raises to the runner — it fails soft so a bad topic just doesn't produce a draft.
@@ -20,7 +24,22 @@ from typing import Any, Optional
 
 from core.config import CONFIG, ROOT
 
-CARD = 1080
+CARD = 1080          # card width
+CARDH = 1350         # card height (4:5 portrait — matches the news-card reference)
+
+
+def _source_label(raw: str) -> str:
+    """Human source name for the 'VIA:' attribution line. 'news:IGN' -> 'IGN'."""
+    raw = (raw or "").strip()
+    if ":" in raw:
+        pre, name = raw.split(":", 1)
+        if pre == "news":
+            return name.strip()
+        if pre == "youtube":
+            return "YouTube"
+        if pre == "gtrends":
+            return "Google Trends"
+    return name.strip() if raw else ""
 
 
 def _kg_logo_circular(size: int):
@@ -224,23 +243,23 @@ def _trim_black(img):
     return img
 
 
-def _cover_square(img, top_bias: bool = False):
-    """Cover-fit an RGB image to CARD×CARD. For a portrait image, a top_bias keeps the
-    HEAD (faces are near the top) instead of a blind centre crop that decapitates it."""
+def _cover(img, w: int, h: int, top_bias: bool = False):
+    """Cover-fit an RGB image to w×h. For a portrait source a top_bias keeps the HEAD
+    (faces sit near the top) instead of a blind centre crop that decapitates it."""
     from PIL import Image
     img = _trim_black(img)
-    s = max(CARD / img.width, CARD / img.height)
-    img = img.resize((int(img.width * s), int(img.height * s)), Image.LANCZOS)
-    ox = (img.width - CARD) // 2
-    oy = (int((img.height - CARD) * 0.08) if (top_bias and img.height > img.width)
-          else (img.height - CARD) // 2)
-    return img.crop((ox, oy, ox + CARD, oy + CARD))
+    s = max(w / img.width, h / img.height)
+    img = img.resize((max(1, int(img.width * s)), max(1, int(img.height * s))), Image.LANCZOS)
+    ox = (img.width - w) // 2
+    oy = (int((img.height - h) * 0.10) if (top_bias and img.height > img.width)
+          else (img.height - h) // 2)
+    return img.crop((ox, oy, ox + w, oy + h))
 
 
 def _render_on_dark(render_rgba, palette: Optional[list] = None):
-    """Compose a TRANSPARENT character render onto a dark themed canvas, FACE-FORWARD:
-    head near the top, body bleeding off the bottom (where the headline scrim sits). Fixes
-    the 'where's the face?' full-body center-crop."""
+    """Compose a TRANSPARENT character render onto a dark themed portrait canvas,
+    FACE-FORWARD: head near the top, body filling the frame. Used only for on-model
+    official CHARACTER art (a real render, not an AI scene)."""
     from PIL import Image, ImageColor, ImageDraw, ImageFilter
     from agents.thumbnail import _autocrop_alpha
     r = _autocrop_alpha(render_rgba)
@@ -250,100 +269,105 @@ def _render_on_dark(render_rgba, palette: Optional[list] = None):
             col = ImageColor.getrgb(palette[0])[:3]
     except Exception:
         pass
-    canvas = Image.new("RGBA", (CARD, CARD), (10, 12, 22, 255))
-    glow = Image.new("RGBA", (CARD, CARD), (0, 0, 0, 0))
-    ImageDraw.Draw(glow).ellipse([CARD * 0.08, -CARD * 0.2, CARD * 0.92, CARD * 0.62],
+    canvas = Image.new("RGBA", (CARD, CARDH), (10, 12, 22, 255))
+    glow = Image.new("RGBA", (CARD, CARDH), (0, 0, 0, 0))
+    ImageDraw.Draw(glow).ellipse([CARD * 0.06, CARDH * 0.02, CARD * 0.94, CARDH * 0.66],
                                  fill=col + (70,))
-    canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(130)))
-    th = int(CARD * 1.12)                                   # tall -> body bleeds off bottom
+    canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(150)))
+    th = int(CARDH * 0.96)                                  # near-full height, head up top
     rr = r.resize((max(1, int(r.width * th / r.height)), th), Image.LANCZOS)
     if rr.width > int(CARD * 0.98):
         rr = rr.resize((int(CARD * 0.98), max(1, int(rr.height * CARD * 0.98 / rr.width))),
                        Image.LANCZOS)
-    canvas.alpha_composite(rr, ((CARD - rr.width) // 2, int(CARD * 0.02)))
+    canvas.alpha_composite(rr, ((CARD - rr.width) // 2, int(CARDH * 0.06)))
     return canvas.convert("RGB")
 
 
+def _draw_centered_spaced(d, cx: int, y: int, text: str, font, fill, spacing: int = 6):
+    """Draw letter-spaced text horizontally centred on cx (Pillow has no tracking)."""
+    widths = [d.textlength(ch, font=font) for ch in text]
+    total = sum(widths) + spacing * (len(text) - 1)
+    x = cx - total / 2
+    for ch, wc in zip(text, widths):
+        d.text((x, y), ch, font=font, fill=fill)
+        x += wc + spacing
+
+
 def build_card(topic: str, game: str, headline: str, out_path,
-               palette: Optional[list] = None, bg_image=None) -> Optional[Path]:
-    """1080x1080 trend card. Background = the given `bg_image` (a real scraped image) if
-    provided — a transparent character render is composed FACE-FORWARD on a dark canvas,
-    a photo/scene is cover-cropped keeping the head — else a generated Gemini scene; then a
-    bottom scrim + bold headline + TRENDING pill + KG logo. Returns the JPEG path or None."""
+               palette: Optional[list] = None, bg_image=None, source: str = "") -> Optional[Path]:
+    """News-card (1080x1350, 4:5). REAL scraped `bg_image` REQUIRED — a transparent
+    character render is composed face-forward on a dark canvas, a photo/scene is
+    cover-cropped keeping the head. NO AI-scene fallback: without a usable real image this
+    returns None (the post is skipped rather than shipped with an unrelated picture). Adds a
+    top scrim + centred NEWS kicker + bold headline + 'VIA: <source>' attribution + KG logo.
+    """
     from PIL import Image, ImageDraw
     from agents import thumbnail as T
 
-    bg = None
-    if bg_image and Path(bg_image).exists():
-        try:
-            raw = Image.open(bg_image)
-            rgba = raw.convert("RGBA")
-            is_render = rgba.getchannel("A").getextrema()[0] < 245   # has real transparency
-            bg = (_render_on_dark(rgba, palette) if is_render
-                  else _cover_square(raw.convert("RGB"), top_bias=True))
-        except Exception:
-            bg = None
-    if bg is None:                                          # generated scene fallback
-        try:
-            bg = _cover_square(_gemini_bg(topic, game, palette))
-        except Exception as e:
-            print(f"[post_director] card bg failed ({e!r}).", flush=True)
-            return None
+    if not (bg_image and Path(bg_image).exists()):
+        return None
+    try:
+        raw = Image.open(bg_image)
+        rgba = raw.convert("RGBA")
+        is_render = rgba.getchannel("A").getextrema()[0] < 245   # true transparency = a cutout
+        bg = (_render_on_dark(rgba, palette) if is_render
+              else _cover(raw.convert("RGB"), CARD, CARDH, top_bias=True))
+    except Exception as e:
+        print(f"[post_director] card bg failed ({e!r}).", flush=True)
+        return None
     bg = bg.convert("RGBA")
-    # bottom scrim for headline legibility
-    scrim = Image.new("RGBA", (CARD, CARD), (0, 0, 0, 0))
+    cx = CARD // 2
+
+    # top scrim (headline zone) + a soft bottom scrim (logo/attribution legibility)
+    scrim = Image.new("RGBA", (CARD, CARDH), (0, 0, 0, 0))
     sd = ImageDraw.Draw(scrim)
-    for y in range(CARD):
-        a = int(235 * max(0.0, (y - CARD * 0.42) / (CARD * 0.58)) ** 1.3)
-        sd.line([(0, y), (CARD, y)], fill=(8, 10, 20, min(235, a)))
+    for y in range(CARDH):
+        top = int(232 * max(0.0, 1.0 - y / (CARDH * 0.52)) ** 1.15)
+        bot = int(150 * max(0.0, (y - CARDH * 0.82) / (CARDH * 0.18)) ** 1.4)
+        sd.line([(0, y), (CARD, y)], fill=(6, 8, 16, min(240, max(top, bot))))
     bg.alpha_composite(scrim)
     d = ImageDraw.Draw(bg)
 
-    # KG circular logo, TOP-right (kept clear of the bottom headline)
-    lg = _kg_logo_circular(120)
-    if lg is not None:
-        bg.alpha_composite(lg, (CARD - 120 - 48, 44))
+    YEL = (255, 209, 41)
+    # NEWS kicker (centred, letter-spaced)
+    kf = T._font(34)
+    _draw_centered_spaced(d, cx, 58, "NEWS", kf, YEL, spacing=10)
 
-    # red "TRENDING" pill, top-left — everything vertically CENTERED on the pill's mid
-    # line (anchor='lm'), with a drawn dot (the base font has no emoji glyph).
-    pf = T._font(40)
-    pill = "TRENDING"
-    tw = int(d.textlength(pill, font=pf))
-    asc, desc = pf.getmetrics()
-    dot = 22
-    padx, pady = 32, 18
-    inner = dot + 16 + tw
-    bw, bh = inner + padx * 2, (asc + desc) + pady * 2
-    x0, y0 = 48, 48
-    cy = y0 + bh // 2
-    d.rounded_rectangle([x0, y0, x0 + bw, y0 + bh], radius=bh // 2, fill=(214, 18, 18))
-    dx = x0 + padx
-    d.ellipse([dx, cy - dot // 2, dx + dot, cy + dot // 2], fill=(255, 210, 60))
-    d.text((dx + dot + 16, cy), pill, font=pf, fill=(255, 255, 255), anchor="lm")
-
-    # headline, wrapped, bottom-left, big + bold
+    # headline — centred, wrapped, big + bold (UPPERCASE), stroked for legibility
     words = headline.upper().split()
-    fs = 92
+    fs = 96
     while fs > 46:
         f = T._font(fs)
         lines, cur = [], ""
         for w in words:
             test = (cur + " " + w).strip()
-            if d.textbbox((0, 0), test, font=f)[2] <= CARD - 96:
+            if d.textbbox((0, 0), test, font=f)[2] <= CARD - 120:
                 cur = test
             else:
                 lines.append(cur); cur = w
         if cur:
             lines.append(cur)
-        if len(lines) <= 3:
+        if len(lines) <= 4:
             break
         fs -= 6
     f = T._font(fs)
-    lh = int(fs * 1.12)
-    y = CARD - 70 - lh * len(lines)
+    lh = int(fs * 1.06)
+    y = 120
     for ln in lines:
-        d.text((48, y), ln, font=f, fill=(255, 255, 255), stroke_width=3, stroke_fill=(0, 0, 0))
+        d.text((cx, y), ln, font=f, fill=(255, 255, 255), anchor="ma",
+               stroke_width=3, stroke_fill=(0, 0, 0))
         y += lh
+
+    # source attribution: "VIA: <SOURCE>" (centred, yellow, letter-spaced)
+    src = _source_label(source).upper()
+    if src:
+        y += 14
+        _draw_centered_spaced(d, cx, y, f"VIA: {src}", T._font(30), YEL, spacing=8)
+
+    # KG circular logo, bottom-right (like the reference's source badge)
+    lg = _kg_logo_circular(126)
+    if lg is not None:
+        bg.alpha_composite(lg, (CARD - 126 - 46, CARDH - 126 - 46))
 
     out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
     bg.convert("RGB").save(out_path, "JPEG", quality=92, optimize=True)
@@ -357,12 +381,16 @@ def screen(image, caption: str, topic: str) -> dict:
     from core import openai_client as ai
     from agents.content import extract_json
     prompt = (
-        "You are the POST DIRECTOR screening a Facebook gaming post before it goes to "
+        "You are the POST DIRECTOR screening a Facebook gaming NEWS card before it goes to "
         f"drafts. The intended TREND TOPIC is: {topic}\n\nThe CAPTION is:\n{caption}\n\n"
-        "Look at the attached image (a trend card). Approve ONLY if: (1) the image + "
-        "headline clearly relate to the topic; (2) nothing is misleading, fabricated, or "
-        "off-brand for a positive gaming page; (3) the headline text is fully readable and "
-        "not clipped; (4) it looks appealing/scroll-stopping on a phone. "
+        "Look at the attached image. The photo/artwork is what stops the scroll, so it MUST "
+        "genuinely depict THIS topic. Approve ONLY if ALL hold: (1) the background image is "
+        "a REAL, on-topic photo/still/character clearly about the topic (the RIGHT game, "
+        "character, person, or franchise) — REJECT a generic/abstract/AI-looking background, "
+        "a wrong or unrelated subject, or a real-world look-alike (e.g. a real spider for "
+        "'Spider-Man'); (2) nothing misleading, fabricated, or off-brand for a positive "
+        "gaming page; (3) OUR white headline is fully readable, not clipped, and not colliding "
+        "with any text already baked into the photo; (4) it looks appealing on a phone. "
         'Return STRICT JSON {"ok":bool,"score":1-10,"issues":[concise]}.')
     try:
         d = extract_json(ai.vision(prompt, [str(image)]))
@@ -382,35 +410,39 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
     try:
         res["caption"] = write_caption(topic, angle, game)
         res["headline"] = _headline(topic, angle)
+        source = str(pick.get("source_name", ""))
         slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40] or "trend"
-        # Card geometry is deterministic, but the Gemini background varies — retry once
-        # if the screener rejects the first roll (a fresh background usually fixes it).
-        best = None
-        # REAL images first, in reliability order, and let the SCREENER pick the relevant
-        # one (rejecting junk). Fallback chain ending in a generated Gemini scene:
-        #   1) official FANDOM game art (for KG franchises — reliable + on-model)
-        #   2) the SOURCE ARTICLE's own image (news-driven topics)
-        #   3) a best-effort web image search
-        #   4) Gemini scene (None)
+        # REAL, topic-related images ONLY — the image is what stops the scroll, so an
+        # unrelated picture makes the post useless. Sourced in relevance order and the
+        # vision SCREENER keeps the one that truly matches the topic (rejecting junk):
+        #   1) the SOURCE ARTICLE's own hero image (most on-topic for a news-driven trend)
+        #   2) a web image search for the topic/game
+        #   3) official FANDOM character art (on-model render, for our franchises)
+        # NO AI-generated fallback: if nothing real passes, we SKIP (ok stays False) so a
+        # useless/irrelevant card never ships.
         srcs: list = []
+        art = _article_image(str(pick.get("source_link", "")), out_dir / f"{slug}_article.jpg")
+        if art:
+            srcs.append(art)
+        srcs += scrape_topic_images(_card_query(topic, game), out_dir / f"{slug}_src", n=4)
         srcs += _game_art_images(game, out_dir / f"{slug}_art", n=3)
-        ai = _article_image(str(pick.get("source_link", "")), out_dir / f"{slug}_article.jpg")
-        if ai:
-            srcs.append(ai)
-        srcs += scrape_topic_images(_card_query(topic, game), out_dir / f"{slug}_src", n=3)
-        for bg_src in srcs + [None]:
-            img = build_card(topic, game, res["headline"], out_dir / f"{slug}.jpg",
-                             palette=palette, bg_image=bg_src)
+        best = None
+        for i, bg_src in enumerate(srcs):
+            img = build_card(topic, game, res["headline"], out_dir / f"{slug}_c{i}.jpg",
+                             palette=palette, bg_image=bg_src, source=source)
             if not img:
                 continue
             sc = screen(img, res.get("caption", ""), topic)
-            best = {"image": str(img), "screen": sc}
+            if best is None or sc.get("score", 0) > best["screen"].get("score", 0):
+                best = {"image": str(img), "screen": sc}
             if sc.get("ok"):
                 break
         if best:
             res["image"] = best["image"]
             res["screen"] = best["screen"]
             res["ok"] = bool(best["screen"].get("ok"))
+        else:
+            res["screen"] = {"ok": False, "score": 0, "issues": ["no real related image found"]}
     except Exception as e:
         res["error"] = repr(e)
     return res
