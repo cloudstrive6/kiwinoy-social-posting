@@ -104,6 +104,45 @@ def _fix_hashtags(text: str) -> str:
     return "\n".join(out)
 
 
+def fit_threads(caption: str, limit: int = 495) -> str:
+    """Trim a caption to Threads' ~500-char limit WITHOUT cutting mid-sentence (Threads
+    truncates longer posts mid-word). Keeps the HOOK + the QUESTION + the hashtags, and
+    fills the middle with as many WHOLE context sentences as fit."""
+    cap = (caption or "").strip()
+    if len(cap) <= limit:
+        return cap
+    blocks = [b.strip() for b in cap.split("\n\n") if b.strip()]
+    tags = blocks.pop() if blocks and blocks[-1].lstrip().startswith("#") else ""
+    # the closing CTA (usually a question) is the last remaining block — preserve it even
+    # when it ends in an emoji rather than '?'. Only treat it as the CTA when there's still
+    # a hook + some context before it (>=3 blocks) or it clearly asks something.
+    question = ""
+    if blocks and ("?" in blocks[-1] or len(blocks) >= 3):
+        question = blocks.pop()
+    hook = blocks[0] if blocks else cap
+    context = " ".join(blocks[1:]) if len(blocks) > 1 else ""
+    fixed = hook + (("\n\n" + question) if question else "")
+    reserve = ("\n\n" + tags) if tags else ""
+    avail = limit - len(fixed) - len(reserve) - 4
+    ctx = ""
+    if context and avail > 40:
+        for s in re.split(r"(?<=[.!?])\s+", context):
+            if len(ctx) + len(s) + 1 <= avail:
+                ctx = (ctx + " " + s).strip()
+            else:
+                break
+    out = hook + (("\n\n" + ctx) if ctx else "") + (("\n\n" + question) if question else "")
+    if tags:
+        while tags and len(out + "\n\n" + tags) > limit:      # drop trailing tags to fit
+            parts = tags.rsplit(" ", 1)
+            tags = parts[0] if len(parts) > 1 else ""
+        if tags:
+            out += "\n\n" + tags
+    if len(out) > limit:
+        out = out[:limit - 1].rstrip(" ,.;:-") + "…"
+    return out
+
+
 def verify_caption(topic: str, caption: str, game: str = "") -> dict:
     """Accuracy gate for AUTOPOST (no human review). An adversarial critic checks the
     caption for FABRICATED specifics — invented stats, dates, quotes, cast names, plot

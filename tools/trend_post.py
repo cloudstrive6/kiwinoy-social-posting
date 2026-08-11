@@ -177,7 +177,9 @@ def _publish(res: dict, pick: dict) -> bool:
             done.append("FB-FAIL"); print(f"   FB post failed: {e!r}", flush=True)
     if ap.get("threads", True):
         try:
-            publisher.run(caption, png, platform_keys=["threads"], is_draft=False)
+            # Threads has a ~500-char limit (it truncates longer posts mid-word) — send a
+            # cleanly-trimmed caption; Facebook above keeps the full-length one.
+            publisher.run(pd.fit_threads(caption), png, platform_keys=["threads"], is_draft=False)
             done.append("Threads")
         except Exception as e:
             done.append("Threads-FAIL"); print(f"   Threads post failed: {e!r}", flush=True)
