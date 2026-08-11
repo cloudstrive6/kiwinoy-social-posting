@@ -26,6 +26,7 @@ from core.config import CONFIG, ROOT
 
 CARD = 1080          # card width
 CARDH = 1350         # card height (4:5 portrait — matches the news-card reference)
+BRAND_CREDIT = "BOSS KG"   # our signature under the headline (in place of a news 'VIA:' line)
 
 
 def _source_label(raw: str) -> str:
@@ -294,12 +295,12 @@ def _draw_centered_spaced(d, cx: int, y: int, text: str, font, fill, spacing: in
 
 
 def build_card(topic: str, game: str, headline: str, out_path,
-               palette: Optional[list] = None, bg_image=None, source: str = "") -> Optional[Path]:
+               palette: Optional[list] = None, bg_image=None) -> Optional[Path]:
     """News-card (1080x1350, 4:5). REAL scraped `bg_image` REQUIRED — a transparent
     character render is composed face-forward on a dark canvas, a photo/scene is
     cover-cropped keeping the head. NO AI-scene fallback: without a usable real image this
     returns None (the post is skipped rather than shipped with an unrelated picture). Adds a
-    top scrim + centred NEWS kicker + bold headline + 'VIA: <source>' attribution + KG logo.
+    top scrim + centred NEWS kicker + bold headline + BOSS KG brand credit.
     """
     from PIL import Image, ImageDraw
     from agents import thumbnail as T
@@ -358,16 +359,11 @@ def build_card(topic: str, game: str, headline: str, out_path,
                stroke_width=3, stroke_fill=(0, 0, 0))
         y += lh
 
-    # source attribution: "VIA: <SOURCE>" (centred, yellow, letter-spaced)
-    src = _source_label(source).upper()
-    if src:
-        y += 14
-        _draw_centered_spaced(d, cx, y, f"VIA: {src}", T._font(30), YEL, spacing=8)
-
-    # KG circular logo, bottom-right (like the reference's source badge)
-    lg = _kg_logo_circular(126)
-    if lg is not None:
-        bg.alpha_composite(lg, (CARD - 126 - 46, CARDH - 126 - 46))
+    # KG brand credit under the headline (centred, yellow, letter-spaced) — this is our
+    # page, so our signature sits where a news outlet's 'VIA:' source line would; no
+    # separate logo badge (removed per brand preference).
+    y += 16
+    _draw_centered_spaced(d, cx, y, BRAND_CREDIT.upper(), T._font(34), YEL, spacing=10)
 
     out_path = Path(out_path); out_path.parent.mkdir(parents=True, exist_ok=True)
     bg.convert("RGB").save(out_path, "JPEG", quality=92, optimize=True)
@@ -410,7 +406,6 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
     try:
         res["caption"] = write_caption(topic, angle, game)
         res["headline"] = _headline(topic, angle)
-        source = str(pick.get("source_name", ""))
         slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40] or "trend"
         # REAL, topic-related images ONLY — the image is what stops the scroll, so an
         # unrelated picture makes the post useless. Sourced in relevance order and the
@@ -429,7 +424,7 @@ def direct(pick: dict, out_dir, *, palette: Optional[list] = None) -> dict:
         best = None
         for i, bg_src in enumerate(srcs):
             img = build_card(topic, game, res["headline"], out_dir / f"{slug}_c{i}.jpg",
-                             palette=palette, bg_image=bg_src, source=source)
+                             palette=palette, bg_image=bg_src)
             if not img:
                 continue
             sc = screen(img, res.get("caption", ""), topic)
