@@ -77,9 +77,31 @@ def write_caption(topic: str, angle: str, game: str = "") -> str:
         "- End with a QUESTION that invites comments (engagement is the goal).\n"
         "- Warm, hype, in-the-know community tone. 2-4 tasteful emojis. ~70-110 words for the "
         "body (longer than a one-liner, but still tight).\n"
-        "- Then 4-6 relevant hashtags on the last line.\n"
+        "- Then 4-6 relevant hashtags on the last line. Each hashtag is ONE word with NO "
+        "spaces or apostrophes (write #MarvelsSpiderMan2, never #Marvel's SpiderMan2).\n"
         "- No clickbait lies, no preamble, no markdown. Return ONLY the post text.")
-    return sanitize(_text(prompt)).strip()
+    return _fix_hashtags(sanitize(_text(prompt)).strip())
+
+
+def _fix_hashtags(text: str) -> str:
+    """Repair hashtags mangled by apostrophe/space stripping: '#Marvels SpiderMan2' ->
+    '#MarvelsSpiderMan2'. Joins a '#Word' immediately followed by CamelCase/Digit words on
+    the SAME line into one tag (a real next word starting lowercase is left alone)."""
+    import re
+
+    def _join(m):
+        tag = "#" + m.group(1)
+        for w in re.findall(r"[A-Z0-9]\w*", m.group(2)):
+            tag += w
+        return tag
+
+    out = []
+    for line in text.split("\n"):
+        if line.count("#") >= 2:            # the hashtag line only (avoid body '#1' etc.)
+            # a hashtag word, then one or more following Capitalised/Number words
+            line = re.sub(r"#(\w+)((?:\s+[A-Z0-9]\w*)+)", _join, line)
+        out.append(line)
+    return "\n".join(out)
 
 
 def _headline(topic: str, angle: str) -> str:
