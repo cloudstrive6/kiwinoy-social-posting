@@ -1142,12 +1142,17 @@ threads_posts:
 #   python run.py --youtube --parts "D:\Vids\The Last of Us 1 (Rendered)"
 youtube_longform:
   enabled: true
-  # STREAM-COPY concat (no re-encode): the source parts are ALREADY 4K/60 HDR10 H.264
-  # High10 from the capture, so byte-copy them together — near-instant + zero quality
-  # loss + HDR preserved. Re-encoding 10-bit H.264 on CPU (x264) is infeasible for a
-  # multi-hour 4K/60 video (days per part). Trade-off: no lower-third overlay / audio
-  # loudnorm (both need a decode+re-encode). Set false to go back to the HDR re-encode.
-  stream_copy: true
+  # ENCODE MODE. Two knobs:
+  #  - stream_copy: true  -> byte-copy the parts (near-instant, lossless) BUT it faithfully
+  #    copies the source's colour range; a FULL-range (pc) PQ capture then uploads to YouTube
+  #    as SDR (the FF7 Remake problem — no HDR option). Also skips overlays + loudnorm.
+  #  - stream_copy: false + encoder: nvenc -> GPU HEVC Main10 re-encode to LIMITED-range PQ
+  #    (RTX 3080, realtime-ish), the PROVEN canonical HDR10 that YouTube keeps as HDR
+  #    (validated on the SM2 test). Auto-converts full->limited range, re-enables the
+  #    lower-third + loudnorm. Use this for guaranteed HDR. encoder: x264 = CPU fallback
+  #    (adds mastering-display metadata but is infeasibly slow at 4K/60 for a full game).
+  stream_copy: false
+  encoder: nvenc            # nvenc (GPU HDR10, default) | x264 (CPU, slow) — used when stream_copy: false
   privacy: private            # 'private'+publish_at = scheduled; or 'public'/'unlisted'
   # Resumable-upload chunk size (MB). YouTube ACKs each chunk before the next sends, so
   # SMALL chunks pin throughput to chunk/ack-latency: 50 MB capped a 500 Mbps line at

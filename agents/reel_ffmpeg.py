@@ -656,6 +656,21 @@ def _measure_loudness(parts: list[Path], target_i: float = -14.0,
         return None
 
 
+def _color_range(path: Path) -> str:
+    """ffprobe the video's color_range ('tv'=limited, 'pc'=full, '' unknown)."""
+    import json
+    import subprocess
+    try:
+        r = subprocess.run(
+            ["ffprobe", "-v", "quiet", "-select_streams", "v:0",
+             "-show_entries", "stream=color_range", "-of", "json", str(path)],
+            capture_output=True, text=True, timeout=30)
+        st = (json.loads(r.stdout or "{}").get("streams") or [{}])[0]
+        return (st.get("color_range") or "").lower()
+    except Exception:
+        return ""
+
+
 def build_longform_hdr(
     parts: list[Path],
     out_path: Path,
@@ -672,6 +687,8 @@ def build_longform_hdr(
     logo_size: int = 480,
     audio_lufs: Optional[float] = -14.0,
     copy: bool = False,
+    encoder: str = "nvenc",
+    src_full_range: Optional[bool] = None,
     timeout: int = 36000,
 ) -> Path:
     """Concatenate the ordered 4K/60 HDR10 PART files into one full-game video and
@@ -790,6 +807,24 @@ def build_longform_hdr(
                 fc.append(f"[ca]loudnorm=I={I:.1f}:TP=-1.5:LRA=11[aout]")  # fallback
             alabel = "aout"
 
+        # FULL-range (pc) PQ sources upload to YouTube as SDR (the FF7 Remake problem);
+        # convert to LIMITED (tv) range so YouTube reads canonical HDR10. Auto-detected from
+        # the first part unless src_full_range is given. (SM2 is already tv -> no conversion.)
+        full = src_full_range
+        if full is None:
+            full = _color_range(parts[0]) in ("pc", "full", "jpeg")
+        # A concat filtergraph DROPS the frame's colour primaries/transfer, so the output
+        # -color_* flags alone leave the file without the PQ tag (YouTube then sees SDR).
+        # Re-assert ALL HDR10 tags in the graph via setparams (prepend a full->limited range
+        # remap first when the source is full-range). This is what makes YouTube keep HDR.
+        vtail = []
+        if full:
+            vtail.append("scale=w=iw:h=ih:in_range=full:out_range=tv")
+        vtail.append("setparams=color_primaries=bt2020:color_trc=smpte2084:"
+                     "colorspace=bt2020nc:range=tv")
+        fc.append(f"[{vlabel}]{','.join(vtail)}[vtag]")
+        vlabel = "vtag"
+
         # HDR10 static metadata in x264 units: chromaticity in 0.00002 steps,
         # luminance in 0.0001 cd/m^2 steps. Rec2020 primaries + D65; L max 1000, min 0.01.
         master = ("G(8500,39850)B(6550,2300)R(35400,14600)"
@@ -798,15 +833,26 @@ def build_longform_hdr(
                  f"transfer=smpte2084:colormatrix=bt2020nc:"
                  f"mastering-display={master}:cll=1000,200")
 
+        if str(encoder).lower() == "nvenc":
+            # FAST GPU HDR10 (RTX 3080): HEVC Main10, LIMITED-range PQ + bt2020 tags — the
+            # PROVEN fix (validated on the SM2 test: a tag-only HDR10 file plays back as HDR;
+            # NVENC can't write mastering-display/CLL but the colour tags are what YouTube
+            # reads). Re-encode also re-enables the lower-third overlay stream-copy skips, and
+            # is realtime-ish at 4K/60 vs libx264 high10 which is infeasible for a full game.
+            venc = ["-c:v", "hevc_nvenc", "-profile:v", "main10", "-pix_fmt", "p010le",
+                    "-rc", "vbr", "-b:v", bitrate, "-maxrate", "90M", "-bufsize", "126M",
+                    "-tag:v", "hvc1"]
+        else:                                              # CPU fallback (mastering metadata)
+            venc = ["-c:v", "libx264", "-profile:v", "high10", "-level", "5.2",
+                    "-pix_fmt", "yuv420p10le",
+                    "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate,
+                    "-bufsize", "126M", "-x264-params", x264p]
+
         args = inputs + [
             "-filter_complex", ";".join(fc),
-            "-map", f"[{vlabel}]", "-map", f"[{alabel}]",
-            "-c:v", "libx264", "-profile:v", "high10", "-level", "5.2",
-            "-pix_fmt", "yuv420p10le", "-r", fps,
+            "-map", f"[{vlabel}]", "-map", f"[{alabel}]", "-r", fps, *venc,
             "-color_primaries", "bt2020", "-color_trc", "smpte2084",
             "-colorspace", "bt2020nc", "-color_range", "tv",
-            "-b:v", bitrate, "-maxrate", bitrate, "-minrate", bitrate, "-bufsize", "126M",
-            "-x264-params", x264p,
             "-c:a", "aac", "-b:a", "384k",
             "-movflags", "+faststart", str(out_path),   # NO -shortest (keep full length)
         ]
