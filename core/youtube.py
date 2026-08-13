@@ -252,6 +252,21 @@ def set_title(video_id: str, title: str) -> None:
     print(f"[youtube] title updated on {video_id} -> {title}", flush=True)
 
 
+def set_privacy(video_id: str, privacy: str = "public") -> None:
+    """Change a video's privacy (public / unlisted / private). videos.update with
+    part='status' REPLACES the status, so fetch it, swap privacyStatus, and DROP any
+    scheduled publishAt (a leftover publishAt forces the video back to private)."""
+    yt = _service()
+    items = yt.videos().list(part="status", id=video_id).execute().get("items", [])
+    if not items:
+        raise RuntimeError(f"video not found: {video_id}")
+    st = dict(items[0]["status"])
+    st["privacyStatus"] = privacy
+    st.pop("publishAt", None)                       # clear a scheduled publish
+    yt.videos().update(part="status", body={"id": video_id, "status": st}).execute()
+    print(f"[youtube] privacy updated on {video_id} -> {privacy}", flush=True)
+
+
 def set_thumbnail(video_id: str, image) -> None:
     """Set/replace the custom thumbnail on an existing video."""
     from googleapiclient.http import MediaFileUpload
