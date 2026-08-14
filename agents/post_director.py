@@ -80,7 +80,7 @@ def write_caption(topic: str, angle: str, game: str = "") -> str:
         "- Then 4-6 relevant hashtags on the last line. Each hashtag is ONE word with NO "
         "spaces or apostrophes (write #MarvelsSpiderMan2, never #Marvel's SpiderMan2).\n"
         "- No clickbait lies, no preamble, no markdown. Return ONLY the post text.")
-    return _fix_hashtags(sanitize(_text(prompt)).strip())
+    return _reflow_caption(_fix_hashtags(sanitize(_text(prompt)).strip()))
 
 
 def _fix_hashtags(text: str) -> str:
@@ -106,31 +106,34 @@ def _fix_hashtags(text: str) -> str:
 
 def _reflow_caption(text: str) -> str:
     """Guarantee FB-friendly paragraph structure (hook / body / question / hashtags separated
-    by blank lines). If the text already has blank-line paragraphs it's returned unchanged;
-    if a rewrite flattened it into one block, rebuild the paragraphs so spacing never gets
-    lost on a post."""
+    by blank lines). Cloud LLMs often return the caption BODY as one run-together block with
+    only the hashtag line split off — so we separate the trailing hashtags FIRST and inspect
+    the BODY: if the body is already multi-paragraph keep it, else rebuild hook/context/
+    question. (The old check bailed on any '\\n\\n', which the hashtag line always satisfied,
+    so a flattened body was never fixed.)"""
     text = (text or "").strip()
-    if text.count("\n\n") >= 1:
-        return re.sub(r"\n{3,}", "\n\n", text)
-    text = re.sub(r"\s*\n\s*", " ", text).strip()             # collapse stray single newlines
+    if not text:
+        return text
+    parts0 = [b.strip() for b in text.split("\n\n") if b.strip()]
     tags = ""
-    m = re.search(r"((?:#\w+\s*)+)$", text)                    # pull a trailing hashtag run
-    if m:
-        tags = " ".join(re.findall(r"#\w+", m.group(1)))
-        text = text[:m.start()].strip()
-    sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
-    if sents:
-        qi = max((i for i, s in enumerate(sents) if "?" in s), default=-1)
-        question = " ".join(sents[qi:]) if qi >= 0 else ""
-        pre = sents[:qi] if qi >= 0 else sents
-        hook = pre[0] if pre else ""
-        body = " ".join(pre[1:]) if len(pre) > 1 else ""
-        parts = [p for p in (hook, body, question) if p]
-    else:
-        parts = [text] if text else []
-    out = "\n\n".join(parts)
-    if tags:
-        out = (out + "\n\n" + tags) if out else tags
+    if parts0 and parts0[-1].lstrip().startswith("#"):        # split off trailing hashtags
+        tags = parts0.pop()
+    body = "\n\n".join(parts0).strip()
+    if body.count("\n\n") >= 1:                               # body already paragraphed -> keep
+        out_body = re.sub(r"\n{3,}", "\n\n", body)
+    else:                                                     # flattened body -> rebuild
+        flat = re.sub(r"\s*\n\s*", " ", body).strip()
+        sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", flat) if s.strip()]
+        if sents:
+            qi = max((i for i, s in enumerate(sents) if "?" in s), default=-1)
+            question = " ".join(sents[qi:]) if qi >= 0 else ""
+            pre = sents[:qi] if qi >= 0 else sents
+            hook = pre[0] if pre else ""
+            ctx = " ".join(pre[1:]) if len(pre) > 1 else ""
+            out_body = "\n\n".join(p for p in (hook, ctx, question) if p)
+        else:
+            out_body = flat
+    out = out_body + (("\n\n" + tags) if tags else "")
     return out.strip()
 
 
