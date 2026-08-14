@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  return articles.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+const gmap: Record<string, string> = {
+  wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
+  mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel",
+};
+const gclass = gmap[(d.game || "").toLowerCase()] || "g-marvel";
+const nice = d.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+---
+<Base title={`${d.title} — KiwinoyGamer`} description={d.excerpt}>
+  <main class="wrap">
+    <article class="article">
+      <div class="a-head">
+        <div class="kicker">
+          <span class="pill news">{d.tag}</span>
+          <span class="eyebrow" style="color:var(--red)">{d.category}</span>
+        </div>
+        <h1>{d.title}</h1>
+        <div class="a-meta"><span>By {d.author}</span><span>•</span><span>{nice}</span></div>
+      </div>
+
+      <div class={`a-cover art ${gclass} ${d.cover ? "has-img" : ""}`}>
+        {d.cover && <img src={d.cover} alt={d.coverAlt} />}
+      </div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {d.sourceUrl && (
+        <p class="a-source">
+          Source: <a href={d.sourceUrl} target="_blank" rel="noopener nofollow">{d.sourceName ?? "Read more"}</a>.
+          KiwinoyGamer coverage is written independently; imagery belongs to its respective owners.
+        </p>
+      )}
+
+      <section class="news" id="subscribe" style="margin-top:40px" aria-label="Newsletter signup">
+        <span class="eyebrow">The KG Drop</span>
+        <h2>Never miss the next big drop</h2>
+        <p>Get our best gaming &amp; Marvel stories in your inbox. No spam, unsubscribe anytime.</p>
+        <form class="sub-form" onsubmit="event.preventDefault();this.reset();document.getElementById('t2').classList.add('on')">
+          <input type="text" placeholder="First name" autocomplete="given-name" required />
+          <input type="email" placeholder="you@email.com" autocomplete="email" required />
+          <button class="btn sub" type="submit">Join the list</button>
+        </form>
+        <p class="toast" id="t2">🎉 You're in! Check your inbox for a welcome email.</p>
+      </section>
+    </article>
+  </main>
+</Base>

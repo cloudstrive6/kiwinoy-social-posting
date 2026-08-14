@@ -1,0 +1,124 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+
+const gmap: Record<string, string> = {
+  wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
+  mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel",
+};
+const gclass = (game?: string) => gmap[(game || "").toLowerCase()] || "g-marvel";
+const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+const all = (await getCollection("articles", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const lead = all.find((a) => a.data.featured) ?? all[0];
+const rest = all.filter((a) => a.id !== lead?.id);
+const side = rest.slice(0, 3);
+const latest = rest.slice(0, 4);
+---
+<Base>
+  <main class="wrap">
+    {lead && (
+      <section class="hero" aria-label="Top stories">
+        <a class="lead art {gclass(lead.data.game)} {lead.data.cover ? 'has-img' : ''}" href={`/news/${lead.id}`}>
+          {lead.data.cover && <img src={lead.data.cover} alt={lead.data.coverAlt} />}
+          <div class="kicker">
+            <span class="pill news">{lead.data.tag}</span>
+            <span class="eyebrow" style="color:var(--gold)">{lead.data.category}</span>
+          </div>
+          <h1>{lead.data.title}</h1>
+          <p>{lead.data.excerpt}</p>
+          <div class="meta"><span class="by">By {lead.data.author}</span><span>•</span><span>{fmt(lead.data.date)}</span></div>
+        </a>
+        <div class="side">
+          {side.map((a) => (
+            <a class="scard" href={`/news/${a.id}`}>
+              <div class={`art ${gclass(a.data.game)} ${a.data.cover ? "has-img" : ""}`}>
+                {a.data.cover && <img src={a.data.cover} alt={a.data.coverAlt} />}
+              </div>
+              <div class="body"><span class="cat">{a.data.category}</span><h3>{a.data.title}</h3><span class="t">{fmt(a.data.date)}</span></div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="ad leader"><span class="lab">Advertisement</span><span class="dim">728 × 90 leaderboard</span></div>
+
+    <section class="sec" aria-label="Latest news">
+      <div class="sec-h"><span class="bar"></span><h2>Latest Drops</h2><a href="/category/news">All news →</a></div>
+      <div class="grid">
+        {latest.map((a) => (
+          <a class="card" href={`/news/${a.id}`}>
+            <div class={`art ${gclass(a.data.game)} ${a.data.cover ? "has-img" : ""}`}>
+              {a.data.cover && <img src={a.data.cover} alt={a.data.coverAlt} />}
+              <span class={`pill ${a.data.tag === "Hot" ? "red dot" : "news"}`}>{a.data.tag}</span>
+            </div>
+            <div class="body"><span class="cat">{a.data.category}</span><h3>{a.data.title}</h3><span class="t">{fmt(a.data.date)}</span></div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="follow" aria-label="Follow us on social">
+      <div class="follow-top">
+        <span class="bar" style="width:4px;height:26px;background:var(--red);border-radius:3px"></span>
+        <div><h2>Follow the action</h2><p>Reels, clips and the daily drop — hit follow so you never miss a moment.</p></div>
+      </div>
+      <div class="socgrid">
+        <div class="soc ig">
+          <div class="soc-h">
+            <span class="soc-ic ic-ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+            <div class="who"><b>@kiwinoygaming</b><span>Instagram</span></div><div class="cnt"><b>—</b><span>Followers</span></div>
+          </div>
+          <div class="thumbs"><div class="art g-spidey v"></div><div class="art g-wolv v"></div><div class="art g-mcu v"></div></div>
+          <a class="btn red" href="https://instagram.com/kiwinoygaming">Follow on Instagram</a>
+        </div>
+        <div class="soc tt">
+          <div class="soc-h">
+            <span class="soc-ic ic-tt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.9 4 4 4.2v2.8c-1.5 0-2.9-.4-4-1.1v6.4a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.1v2.9a3 3 0 1 0 2.1 2.9V3H16Z"/></svg></span>
+            <div class="who"><b>@kiwinoygamer</b><span>TikTok</span></div><div class="cnt"><b>—</b><span>Followers</span></div>
+          </div>
+          <div class="thumbs"><div class="art g-wolv v"></div><div class="art g-ps v"></div><div class="art g-spidey v"></div></div>
+          <a class="btn red" href="https://tiktok.com/@kiwinoygamer">Follow on TikTok</a>
+        </div>
+        <div class="soc yt">
+          <div class="soc-h">
+            <span class="soc-ic ic-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.3-.4-4.9a2.6 2.6 0 0 0-1.8-1.8C19.1 5 12 5 12 5s-7.1 0-8.8.3A2.6 2.6 0 0 0 1.4 7.1C1 8.7 1 12 1 12s0 3.3.4 4.9a2.6 2.6 0 0 0 1.8 1.8C4.9 19 12 19 12 19s7.1 0 8.8-.3a2.6 2.6 0 0 0 1.8-1.8C23 15.3 23 12 23 12ZM10 15V9l5 3Z"/></svg></span>
+            <div class="who"><b>KiwinoyGamer</b><span>YouTube</span></div><div class="cnt"><b>—</b><span>Subscribers</span></div>
+          </div>
+          <div class="thumbs"><div class="art g-ps"></div><div class="art g-wolv"></div></div>
+          <a class="btn red" href="https://youtube.com/@kiwinoygamer">Subscribe on YouTube</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="ad inline"><span class="lab">Advertisement</span><span class="dim">In-feed native / responsive</span></div>
+
+    <section class="news" id="subscribe" aria-label="Newsletter signup">
+      <span class="eyebrow">The KG Drop</span>
+      <h2>Get the biggest gaming &amp; Marvel news first</h2>
+      <p>One email, a few times a week. The stories that matter, no spam. Unsubscribe anytime.</p>
+      <form class="sub-form" id="sub-form">
+        <input id="sub-name" type="text" name="name" placeholder="First name" autocomplete="given-name" required />
+        <input id="sub-email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required />
+        <button class="btn sub" type="submit">Join the list</button>
+      </form>
+      <p class="fine">By subscribing you agree to our Privacy Policy. We'll never sell your data.</p>
+      <p class="toast" id="toast">🎉 You're in! Check your inbox for a welcome email.</p>
+    </section>
+  </main>
+
+  <script is:inline>
+    // Placeholder handler — swap for the MailerLite embed/API in the mailing-list phase.
+    document.getElementById("sub-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const n = document.getElementById("sub-name").value.trim();
+      const t = document.getElementById("toast");
+      t.textContent = `🎉 You're in${n ? ", " + n : ""}! Check your inbox for a welcome email.`;
+      t.classList.add("on");
+      e.target.reset();
+    });
+  </script>
+</Base>
