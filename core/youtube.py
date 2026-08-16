@@ -29,6 +29,17 @@ SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.force-ssl",
 ]
+
+# Transient network errors to RETRY (resumable upload continues from the last byte).
+# google.auth wraps a socket abort during a mid-upload TOKEN REFRESH as TransportError/
+# RefreshError — NOT a builtin OSError — so those slipped past the old handler and killed a
+# multi-hour upload (Avast intermittently resets the socket -> PermissionError(13)). Include
+# them here so the retry loop catches them too.
+try:
+    from google.auth.exceptions import TransportError as _GATransport, RefreshError as _GARefresh
+    _RETRY_NET: tuple = (ConnectionError, TimeoutError, OSError, _GATransport, _GARefresh)
+except Exception:  # pragma: no cover
+    _RETRY_NET = (ConnectionError, TimeoutError, OSError)
 AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 
@@ -164,11 +175,12 @@ def upload_video(
                 time.sleep(wait)
                 continue
             raise
-        except (ConnectionError, TimeoutError, OSError) as e:
+        except _RETRY_NET as e:
             if errs < 12:
                 errs += 1
                 wait = min(120, 2 ** errs)
-                print(f"[youtube] connection error ({e!r}) — retry {errs}/12 in {wait}s", flush=True)
+                print(f"[youtube] connection/auth error ({e!r}) — retry {errs}/12 in {wait}s "
+                      f"(resumes from last byte)", flush=True)
                 time.sleep(wait)
                 continue
             raise
