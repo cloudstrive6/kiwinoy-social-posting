@@ -43,6 +43,33 @@ DEST = REPO / "reels" / "assets" / "longform-fullgame" / "final-fantasy-7-remake
 ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
 
 
+def _reuse_old_thumbnail(new_id: str, old_id: str) -> bool:
+    """Put the OLD video's already-approved thumbnail on the NEW HDR upload — the longform
+    pipeline regenerates one on re-upload and can pick the wrong design (Part 1's re-upload
+    got Part 2's Aerith+Tifa thumb). Reusing the old one guarantees the approved look."""
+    import tempfile
+    try:
+        import truststore; truststore.inject_into_ssl()
+    except Exception:
+        pass
+    import requests
+    from core import youtube
+    try:
+        yt = youtube._service()
+        it = yt.videos().list(part="snippet", id=old_id).execute()["items"][0]
+        th = it["snippet"]["thumbnails"]
+        url = (th.get("maxres") or th.get("standard") or th.get("high"))["url"]
+        p = Path(tempfile.gettempdir()) / f"ff7_old_{old_id}.jpg"
+        p.write_bytes(requests.get(url, timeout=30).content)
+        youtube.set_thumbnail(new_id, str(p))
+        p.unlink(missing_ok=True)
+        print(f"[ff7] reused approved thumbnail from {old_id} on {new_id}", flush=True)
+        return True
+    except Exception as e:
+        print(f"[ff7] reuse old thumbnail failed ({e!r}) — pipeline thumb kept", flush=True)
+        return False
+
+
 def _awake(on=True):
     try:
         ctypes.windll.kernel32.SetThreadExecutionState(
@@ -95,6 +122,9 @@ def main() -> int:
             title=_T.format(n=n), description=_D.format(n=n),
             thumb_text=f"PART {n}", thumb_characters=g["chars"], privacy="public")
         url = (res or {}).get("url") or url
+        new_id = (res or {}).get("id") or (url.rsplit("/", 1)[-1] if "youtu" in str(url) else "")
+        if new_id:
+            _reuse_old_thumbnail(new_id, g["old"])   # keep the approved thumbnail, not a fresh one
         ok = True
         notify.telegram(f"✅ FF7R Part {n} HDR re-upload DONE — public once YouTube processes.\n{url}\n"
                         f"Give it a day, confirm the HDR quality option shows, then DELETE the old "
