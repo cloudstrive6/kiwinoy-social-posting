@@ -36,6 +36,20 @@ jobs:
         with:
           node-version: "20"
 
+      # Refresh the Boss KG video list (longform vs Shorts) before building — best-effort:
+      # if YouTube is unreachable, the previously committed site/src/data/videos.json is used.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Refresh YouTube videos
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          pip install --quiet google-api-python-client google-auth requests truststore pyyaml || true
+          python tools/site_videos.py --n 60 || echo "video refresh failed — using committed videos.json"
+
       - name: Install dependencies
         working-directory: site
         run: npm ci

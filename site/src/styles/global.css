@@ -214,5 +214,13 @@ footer.site{margin-top:56px; border-top:1px solid var(--border); background:var(
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
 @media (max-width:960px){.vgrid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:600px){.vgrid{grid-template-columns:1fr}}
+/* shorts (vertical 9:16) */
+.sgrid{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-top:24px}
+.sgrid .vcard{background:none; border:0}
+.sgrid .vthumb{aspect-ratio:9/16; border-radius:12px; border:1px solid var(--border)}
+.sgrid .vb{padding:9px 3px 0; font-size:12.5px; -webkit-line-clamp:2}
+.sgrid .play svg{width:46px}
+@media (max-width:960px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:600px){.sgrid{grid-template-columns:repeat(2,1fr)}}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto}}
