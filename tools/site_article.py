@@ -177,6 +177,14 @@ def main() -> int:
             print(f"\n===== {slug}.md =====\n{md}", flush=True)
         else:
             (ART_DIR / f"{slug}.md").write_text(md, encoding="utf-8")
+            # give it a cover scraped from the cited source (IGN-style press image)
+            try:
+                import subprocess
+                subprocess.run([sys.executable, str(Path(__file__).with_name("article_cover.py")),
+                                "--slug", slug], cwd=str(Path(__file__).resolve().parents[1]),
+                               timeout=90)
+            except Exception as e:
+                print(f"   cover step skipped ({e!r})", flush=True)
             print(f"   wrote {slug}.md  [{art.get('category')}]", flush=True)
             written.append(art["title"])
         existing.add(slug)

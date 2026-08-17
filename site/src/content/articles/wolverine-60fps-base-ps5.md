@@ -5,7 +5,7 @@ category: "Marvel's Wolverine"
 tag: "News"
 game: "wolverine"
 tags: ["Marvel's Wolverine", "Insomniac", "PS5", "60 FPS"]
-cover: ""
+cover: "/covers/wolverine-60fps-base-ps5.jpg"
 coverAlt: "Wolverine mid-fight against Hand ninjas"
 date: 2026-08-14
 author: "BOSS KG"

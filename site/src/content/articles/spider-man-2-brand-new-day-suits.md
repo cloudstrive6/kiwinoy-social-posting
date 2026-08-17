@@ -5,7 +5,7 @@ category: "PlayStation"
 tag: "News"
 game: "spider-man2"
 tags: ["Spider-Man 2", "Insomniac", "PS5", "PSSR", "Update"]
-cover: ""
+cover: "/covers/spider-man-2-brand-new-day-suits.jpg"
 coverAlt: "Spider-Man swinging through New York in the Advanced Suit"
 date: 2026-07-28
 author: "BOSS KG"

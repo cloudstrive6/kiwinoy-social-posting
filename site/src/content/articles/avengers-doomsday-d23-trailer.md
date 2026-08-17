@@ -5,7 +5,7 @@ category: "MCU"
 tag: "News"
 game: "mcu"
 tags: ["Avengers: Doomsday", "MCU", "Trailer", "Marvel Studios", "Doctor Doom"]
-cover: ""
+cover: "/covers/avengers-doomsday-d23-trailer.jpg"
 coverAlt: "Doctor Doom silhouette against the Avengers logo"
 date: 2026-08-14
 author: "BOSS KG"
