@@ -1,9 +1,10 @@
 name: KiwinoyGamer IG-Draft Poller
 
-# Lets the user TEXT the Telegram bot a draft command — "ig draft" / "threads draft <fmt>" /
-# "fb draft <fmt>" (optionally a game and/or a length, e.g. "fb draft triptych halo 30s") —
-# and have the reel rendered IN THE CLOUD, dropped into B2 drafts/<platform>/, and pinged
-# back — no PC needed. Polls Telegram every ~15 min.
+# Lets the user TEXT the Telegram bot a command — "ig draft" / "threads draft <fmt>" /
+# "fb draft <fmt>" (optionally a game and/or a length, e.g. "fb draft triptych halo 30s") to
+# render a reel IN THE CLOUD into B2 drafts/<platform>/, OR "approved" / "approve <keyword>" to
+# publish a drafted news article live and cross-post it to Facebook & Threads — no PC needed.
+# Polls Telegram every ~15 min.
 #
 # SAFETY: tools/telegram_poller.py honours ONLY messages from TELEGRAM_CHAT_ID (chat-id
 # gate). The actions are ig_draft.py / threads_draft.py / fb_draft.py = render + upload to a
@@ -19,7 +20,8 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write         # ig_draft records the used clip (gh_release marker)
+  contents: write         # ig_draft records the used clip; "approved" publishes an article
+  actions: write          # "approved" triggers the site deploy workflow
 
 jobs:
   poll:
@@ -50,9 +52,29 @@ jobs:
           pip install requests PyYAML python-dotenv truststore
           python tools/telegram_poller.py --check
 
-      # Everything below runs ONLY when the user actually texted a command.
+      # ── "approved <article>" path: publish a draft article + cross-post (Python only, no render deps) ──
+      - name: Install publish dependencies
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'approve'
+        run: pip install -r requirements.txt
+
+      - name: Publish the approved article
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'approve'
+        env:
+          ARG: ${{ steps.check.outputs.arg }}
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          if [ "$ARG" = "all" ]; then
+            python tools/publish_article.py --all
+          elif [ -n "$ARG" ]; then
+            python tools/publish_article.py --match "$ARG"
+          else
+            python tools/publish_article.py
+          fi
+
+      # ── draft-render path (IG / Threads / FB / TikTok): the heavy render deps ──
       - name: Install render dependencies
-        if: steps.check.outputs.fire == '1'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve'
         run: |
           pip install -r requirements.txt
           sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
@@ -60,7 +82,7 @@ jobs:
           npm install -g @anthropic-ai/claude-code
 
       - name: Render the draft (IG, Threads or FB)
-        if: steps.check.outputs.fire == '1'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve'
         env:
           KIND: ${{ steps.check.outputs.kind }}
           GAME: ${{ steps.check.outputs.game }}
@@ -83,10 +105,10 @@ jobs:
             python tools/ig_draft.py --game "$GAME" $SEC
           fi
 
-      - name: Tell the user if the render failed
+      - name: Tell the user if it failed
         if: failure() && steps.check.outputs.fire == '1'
         run: |
-          python -c "from core import notify; notify.telegram('⚠️ Sorry, the draft render hit an error. Text your command again to retry, or ask me in Claude Code.')"
+          python -c "from core import notify; notify.telegram('⚠️ Sorry, that command hit an error. Text it again to retry, or ask me in Claude Code.')"
 
       - name: Upload artifacts
         if: always() && steps.check.outputs.fire == '1'

@@ -187,8 +187,11 @@ def main() -> int:
         try:
             from core import notify
             lst = "\n".join(f"• {t}" for t in written)
-            notify.telegram(f"📝 {len(written)} new BOSS KG DRAFT article(s) — review, then tell me "
-                            f"which to publish:\n{lst}")
+            notify.telegram(
+                f"📝 {len(written)} new BOSS KG DRAFT article(s):\n{lst}\n\n"
+                "Reply \"approved\" to publish + auto-post it to Facebook & Threads (with a link "
+                "CTA). If more than one is pending, reply \"approve <keyword>\" (a word from the "
+                "title) or \"approve all\".")
         except Exception:
             pass
     return 0

@@ -13,6 +13,9 @@ Commands understood:
     "threads draft [format] [game] [Ns]"   -> Threads draft (default format: fill)
     "fb draft [format] [game] [Ns]"        -> Facebook draft (default format: classic)
     "tiktok draft [format] [game]"         -> TikTok in-app draft (default format: classic)
+    "approved" / "approve <keyword>" / "approve all"
+                                           -> publish a DRAFT news article live + cross-post it
+                                              to Facebook & Threads (tools/publish_article.py)
   formats: classic | triptych | fill | landscape;  e.g. "fb draft triptych halo 30s"
 
 Modes:
@@ -36,6 +39,7 @@ API = "https://api.telegram.org/bot{token}/{method}"
 IG_RE = re.compile(r"\big[\s_-]?draft\b", re.I)        # "ig draft" / "ig-draft" / "igdraft"
 TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thread draft"
 FB_RE = re.compile(r"\b(?:fb|facebook)\s+draft\b", re.I)  # "fb draft" / "facebook draft"
+APPROVE_RE = re.compile(r"\bapprove(?:d|s)?\b", re.I)  # "approve" / "approved" -> publish a draft article
 TT_RE = re.compile(r"\btik[\s_-]?tok\b", re.I)         # "tiktok" / "tik tok" / "tik-tok"
 # TikTok intent: the message says "tiktok" AND either "draft" or names a format (so a
 # stray mention like "check tiktok analytics" doesn't fire). e.g. "tiktok draft classic
@@ -102,11 +106,18 @@ def _fmt_from_text(text: str, default: str = "fill") -> str:
     return default
 
 
-def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "") -> None:
+def _approve_arg(text: str) -> str:
+    """The keyword after 'approve[d]' — a title/slug word, or 'all'. Sanitized for the shell."""
+    m = re.search(r"\bapprove(?:d|s)?\b\s*(.*)$", (text or "").strip(), re.I)
+    kw = (m.group(1) if m else "").strip()
+    return re.sub(r"[^\w\- ]", "", kw).strip()[:60]
+
+
+def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "", arg: str = "") -> None:
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a", encoding="utf-8") as fh:
-            fh.write(f"fire={fire}\nkind={kind}\ngame={game}\nseconds={seconds}\nfmt={fmt}\n")
+            fh.write(f"fire={fire}\nkind={kind}\ngame={game}\nseconds={seconds}\nfmt={fmt}\narg={arg}\n")
 
 
 def main() -> int:
@@ -128,7 +139,9 @@ def main() -> int:
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
-        if TH_RE.search(text):                           # distinct keywords -> exclusive
+        if APPROVE_RE.search(text):                      # "approved" -> publish a draft article
+            kind, cmd = "approve", text
+        elif TH_RE.search(text):                         # distinct keywords -> exclusive
             kind, cmd = "threads", text
         elif FB_RE.search(text):
             kind, cmd = "fb", text
@@ -141,6 +154,14 @@ def main() -> int:
     if not cmd:
         print("[poller] no draft command in this batch.", flush=True)
         _emit(0)
+        return 0
+    if kind == "approve":                                # publish an approved draft article
+        arg = _approve_arg(cmd)
+        print(f"[poller] APPROVE: {cmd!r} -> arg={arg!r}", flush=True)
+        if check:
+            notify.telegram("\U0001F680 Got it — publishing that article + posting it to Facebook "
+                            "& Threads now. I'll confirm here in a minute…")
+            _emit(1, "approve", arg=arg)
         return 0
     game, secs = _resolve_game(cmd), _seconds(cmd)
     if kind == "threads":

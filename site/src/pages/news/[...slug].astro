@@ -18,7 +18,7 @@ const gmap: Record<string, string> = {
 const gclass = gmap[(d.game || "").toLowerCase()] || "g-marvel";
 const nice = d.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 ---
-<Base title={`${d.title} — BOSS KG`} description={d.excerpt}>
+<Base title={`${d.title} — BOSS KG`} description={d.excerpt} image={d.cover || undefined}>
   <main class="wrap">
     <article class="article">
       <div class="a-head">

@@ -1,0 +1,52 @@
+name: Social stats (follower counts)
+
+# Refreshes the follower/subscriber counts on the home "Follow the action" strip.
+# YouTube is fetched via the Data API (reliable). TikTok + Instagram are scraped best-effort
+# (they bot-block cloud IPs, so a fetch may fail) — tools/social_stats.py keeps the last-known
+# real number when that happens, so the site never shows a dash. Commits site/src/data/socials.json
+# only when a number actually changed, then triggers a deploy so it goes live.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"          # once a day (UTC), offset from the other jobs
+  workflow_dispatch: {}
+
+concurrency:
+  group: social-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write                    # to trigger the deploy workflow
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install --quiet requests PyYAML python-dotenv truststore google-api-python-client google-auth
+
+      - name: Refresh follower counts
+        run: python tools/social_stats.py
+
+      - name: Commit + deploy if counts changed
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          if [ -n "$(git status --porcelain site/src/data/socials.json)" ]; then
+            git add site/src/data/socials.json
+            git commit -m "content: refresh social follower counts"
+            git push
+            gh workflow run deploy-site.yml || echo "deploy dispatch skipped"
+          else
+            echo "no follower-count change this run"
+          fi
