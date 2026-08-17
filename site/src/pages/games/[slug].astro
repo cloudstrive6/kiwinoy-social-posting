@@ -33,10 +33,10 @@ const empty = !articles.length && !vlong.length && !vshort.length;
           <div class="sec-h" style="margin:30px 0 0"><span class="bar"></span><h2>Full videos</h2><a href={CHANNEL_URL} rel="noopener">YouTube →</a></div>
           <div class="vgrid">
             {vlong.map((v) => (
-              <button class="vcard" data-vid={v.id} aria-label={`Play: ${v.title}`}>
+              <a class="vcard" href={`/watch/${v.slug}`}>
                 <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
                 <div class="vb">{v.title}</div>
-              </button>
+              </a>
             ))}
           </div>
         </>

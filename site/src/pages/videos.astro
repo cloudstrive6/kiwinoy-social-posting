@@ -22,13 +22,13 @@ const has = longform.length > 0 || shorts.length > 0;
 
       {feat && (
         <>
-          <button class="vfeat" data-vid={feat.id} aria-label={`Play: ${feat.title}`}>
+          <a class="vfeat" href={`/watch/${feat.slug}`} aria-label={feat.title}>
             <div class="vthumb">
               <img src={feat.thumb.replace("hqdefault", "sddefault")} alt={feat.title}
-                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/'+this.closest('[data-vid]').dataset.vid+'/hqdefault.jpg'" />
+                   onerror="this.onerror=null;this.src=this.src.replace('sddefault','hqdefault')" />
               <span class="play" set:html={PLAY}></span>
             </div>
-          </button>
+          </a>
           <h3 style="margin:16px 0 0; font-size:21px">{feat.title}</h3>
           <p style="color:var(--faint); font-size:13px; margin-top:6px; font-weight:600">Latest full video · {fmt(feat.published)}</p>
         </>
@@ -39,10 +39,10 @@ const has = longform.length > 0 || shorts.length > 0;
           <div class="sec-h" style="margin:38px 0 0"><span class="bar"></span><h2>Full videos</h2><span style="margin-left:auto;color:var(--faint);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Gameplay · 4K HDR</span></div>
           <div class="vgrid">
             {restLong.map((v) => (
-              <button class="vcard" data-vid={v.id} aria-label={`Play: ${v.title}`}>
+              <a class="vcard" href={`/watch/${v.slug}`}>
                 <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
                 <div class="vb">{v.title}</div>
-              </button>
+              </a>
             ))}
           </div>
         </>

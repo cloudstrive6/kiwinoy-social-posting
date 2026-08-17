@@ -70,7 +70,7 @@ const latest = rest.slice(0, 4);
         <div class="sec-h"><span class="bar"></span><h2>Latest from YouTube</h2><a href="/videos">All videos →</a></div>
         <div class="vgrid">
           {yt.map((v) => (
-            <a class="vcard" href={v.url} target="_blank" rel="noopener">
+            <a class="vcard" href={v.slug ? `/watch/${v.slug}` : v.url} target={v.slug ? undefined : "_blank"} rel="noopener">
               <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
               <div class="vb">{v.title}</div>
             </a>

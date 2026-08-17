@@ -1,0 +1,83 @@
+---
+import Base from "../../layouts/Base.astro";
+import { longform, CHANNEL_URL } from "../../lib/youtube.js";
+import { gameForText, gameBySlug } from "../../lib/games.js";
+
+export function getStaticPaths() {
+  return longform.map((v) => ({ params: { slug: v.slug }, props: { v } }));
+}
+
+const { v } = Astro.props;
+const gslug = gameForText(v.title);
+const game = gslug ? gameBySlug(gslug) : null;
+const related = longform.filter((x) => x.slug !== v.slug && gameForText(x.title) === gslug).slice(0, 4);
+const fmt = (d) => (d ? new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "");
+const desc = (v.blurb || `${v.title} — full gameplay from Boss KG.`).replace(/\s+/g, " ").slice(0, 155);
+const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
+const ld = {
+  "@context": "https://schema.org", "@type": "VideoObject",
+  name: v.title, description: v.blurb || v.title,
+  thumbnailUrl: [`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`],
+  uploadDate: v.published, contentUrl: v.url,
+  embedUrl: `https://www.youtube.com/embed/${v.id}`,
+};
+---
+<Base title={`${v.title} — BOSS KG`} description={desc}>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)}></script>
+  <main class="wrap">
+    <article class="article" style="max-width:920px">
+      <div class="a-head">
+        <div class="kicker">
+          <span class="pill news">Video</span>
+          {game && <a class="eyebrow" style="color:var(--red)" href={`/games/${game.slug}`}>{game.title}</a>}
+        </div>
+        <h1>{v.title}</h1>
+        <div class="a-meta"><span>By Boss KG</span><span>•</span><span>{fmt(v.published)}</span></div>
+      </div>
+
+      <button class="vfeat" data-vid={v.id} aria-label={`Play: ${v.title}`}>
+        <div class="vthumb" style="border-radius:var(--radius)">
+          <img src={v.thumb.replace("hqdefault", "sddefault")} alt={v.title}
+               onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/'+this.closest('[data-vid]').dataset.vid+'/hqdefault.jpg'" />
+          <span class="play" set:html={PLAY}></span>
+        </div>
+      </button>
+
+      <div class="prose" style="margin-top:26px">
+        {(v.blurb || desc).split(/\n\n+/).map((p) => <p>{p}</p>)}
+      </div>
+
+      <p class="a-source">
+        <a href={v.url} target="_blank" rel="noopener">Watch on YouTube</a> ·
+        <a href={CHANNEL_URL} rel="noopener">Subscribe to Boss KG</a>{game && <> · <a href={`/games/${game.slug}`}>More {game.title}</a></>}
+      </p>
+
+      {related.length > 0 && (
+        <>
+          <div class="sec-h" style="margin:34px 0 0"><span class="bar"></span><h2>More full videos</h2></div>
+          <div class="vgrid">
+            {related.map((r) => (
+              <a class="vcard" href={`/watch/${r.slug}`}>
+                <div class="vthumb"><img src={r.thumb} alt={r.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
+                <div class="vb">{r.title}</div>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </article>
+  </main>
+  <script is:inline>
+    document.querySelectorAll(".vfeat[data-vid]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.getAttribute("data-vid"), t = el.querySelector(".vthumb");
+        if (!id || !t || t.querySelector("iframe")) return;
+        const f = document.createElement("iframe");
+        f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+        f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        f.setAttribute("allowfullscreen", "");
+        t.innerHTML = ""; t.appendChild(f);
+      }, { once: true });
+    });
+  </script>
+</Base>

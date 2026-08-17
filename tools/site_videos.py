@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures as cf
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -80,9 +81,45 @@ def _classify(v: dict) -> dict:
     return {**v, "is_short": _is_short(v["id"]), "ready": _thumb_ready(v["id"])}
 
 
+BLURBS = Path(__file__).resolve().parents[1] / "site" / "src" / "data" / "video_blurbs.json"
+
+
+def _slug(title: str) -> str:
+    s = re.sub(r"[^a-z0-9]+", "-", (title or "").lower()).strip("-")
+    return s[:70].strip("-") or "video"
+
+
+def _load_blurbs() -> dict:
+    try:
+        return json.loads(BLURBS.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _gen_blurb(title: str) -> str:
+    """LLM SEO blurb for a long-form video; template fallback if no LLM is available."""
+    prompt = (
+        "Write a concise, engaging, SEO-friendly description (2 short paragraphs, ~70-100 words "
+        "total) for a YouTube gameplay video by the channel Boss KG. The video is no-commentary "
+        "gameplay, usually in 4K 60fps HDR. Describe what viewers will see and why it's worth "
+        f"watching. Video title: \"{title}\". Be accurate to what the title implies; do NOT invent "
+        "specific plot points you're unsure of. No hashtags, no emojis, no markdown.")
+    try:
+        from agents.content import _text
+        t = (_text(prompt, timeout=90) or "").strip()
+        if t and len(t) > 60 and "placeholder" not in t.lower():
+            return t
+    except Exception as e:
+        print(f"[site-videos] blurb LLM failed ({e!r}) — using template.", flush=True)
+    return (f"{title} — the full playthrough from Boss KG in 4K 60fps HDR, no commentary. "
+            "Settle in and watch every moment in crisp detail, exactly as it happened.")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=60)
+    ap.add_argument("--blurbs", action="store_true",
+                    help="generate LLM SEO blurbs for long-form videos (run locally; needs LLM keys)")
     a = ap.parse_args()
 
     vids = _uploads(a.n)
@@ -100,8 +137,26 @@ def main() -> int:
                "thumb": f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg"}
         (shorts if v["is_short"] else longform).append(rec)
 
-    data = {"longform": longform[:LONG_MAX], "shorts": shorts[:SHORT_MAX],
-            "counts": {"longform": len(longform), "shorts": len(shorts)}}
+    n_long, n_short = len(longform), len(shorts)
+    # long-form videos each get their own SEO page (/watch/<slug>): stable slug + cached blurb
+    longform = longform[:LONG_MAX]
+    blurbs = _load_blurbs()
+    seen = set()
+    for rec in longform:
+        base = _slug(rec["title"]); slug = base; i = 2
+        while slug in seen:
+            slug = f"{base}-{i}"; i += 1
+        seen.add(slug); rec["slug"] = slug
+        if a.blurbs and rec["id"] not in blurbs:
+            blurbs[rec["id"]] = _gen_blurb(rec["title"])
+            print(f"  blurb generated: {rec['title'][:48]}", flush=True)
+        rec["blurb"] = blurbs.get(rec["id"], "")
+    if a.blurbs:
+        BLURBS.parent.mkdir(parents=True, exist_ok=True)
+        BLURBS.write_text(json.dumps(blurbs, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    data = {"longform": longform, "shorts": shorts[:SHORT_MAX],
+            "counts": {"longform": n_long, "shorts": n_short}}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[site-videos] wrote {OUT.relative_to(OUT.parents[3])}: "
