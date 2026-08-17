@@ -161,15 +161,15 @@ nav.main a.active::after{content:""; display:block; height:2.5px; background:var
 .embed-grid .instagram-media,
 .embed-grid .tiktok-embed{margin:0 !important; flex:0 1 auto}
 
-/* newsletter */
-.news{margin-top:44px; border-radius:20px; padding:40px; position:relative; overflow:hidden;
+/* newsletter — scoped to section.news so it never collides with the `.pill.news` tag pill */
+section.news{margin-top:44px; border-radius:20px; padding:40px; position:relative; overflow:hidden;
   background:linear-gradient(135deg,#12172a,#0a0d16); border:1px solid var(--border)}
-.news::before{content:""; position:absolute; right:-8%; top:-40%; width:50%; height:180%;
+section.news::before{content:""; position:absolute; right:-8%; top:-40%; width:50%; height:180%;
   background:radial-gradient(closest-side, color-mix(in srgb,var(--red) 42%, transparent), transparent); filter:blur(20px)}
-.news>*{position:relative}
-.news .eyebrow{color:var(--gold)}
-.news h2{color:#fff; font-size:clamp(24px,3vw,34px); margin:12px 0 8px; max-width:16ch}
-.news p{color:#c7cede; margin:0 0 22px; max-width:52ch}
+section.news>*{position:relative}
+section.news .eyebrow{color:var(--gold)}
+section.news h2{color:#fff; font-size:clamp(24px,3vw,34px); margin:12px 0 8px; max-width:16ch}
+section.news p{color:#c7cede; margin:0 0 22px; max-width:52ch}
 form.sub-form{display:flex; gap:10px; flex-wrap:wrap; max-width:640px}
 form.sub-form input{flex:1 1 180px; min-width:0; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.16);
   color:#fff; padding:13px 15px; border-radius:11px; font-size:15px; font-family:inherit}
