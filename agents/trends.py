@@ -213,15 +213,30 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
     return uniq
 
 
+def _history_brief() -> str:
+    try:
+        from core.marvel_history import history_brief
+        return history_brief()
+    except Exception:
+        return ""
+
+
 def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
             exclude: Optional[list[str]] = None, top_n: int = 5,
-            focus: str = "") -> list[dict]:
+            focus: str = "", posted_log: str = "", history: str = "") -> list[dict]:
     """LLM Trend ANALYST: rank the candidates for the KG Facebook page, filtered to the
     page's BEAT (config trends.focus — currently MCU + Insomniac's Marvel games). Prefers
     RISING / pre-peak topics with high relevance + postability; returns the top_n each with
-    {topic, why_rising, stage, relevance, angle, game, source_index}. `exclude` = topic keys
-    already posted (skip them). Returns [] on parser failure (fail-safe). It is fine to
-    return FEWER than top_n (or none) if nothing on-beat is worth posting."""
+    {topic, why_rising, stage, relevance, angle, game, source_index}.
+
+    Awareness inputs (all optional):
+      - `exclude`     — posted topic KEYS (hard de-dup fallback).
+      - `posted_log`  — readable digest of what we've ALREADY posted (newest first).
+      - `history`     — established Marvel facts + when they became public; a topic that just
+                        restates one of these is NOT news even if a fresh article ran today.
+                        Defaults to core.marvel_history.history_brief() when not passed.
+
+    Returns [] on parser failure (fail-safe). Returning FEWER than top_n (or none) is fine."""
     from agents.content import _text, extract_json
     if not candidates:
         return []
@@ -232,14 +247,25 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
             focus = str((CONFIG.raw().get("trends", {}) or {}).get("focus", "")).strip()
         except Exception:
             focus = ""
+    if not history:
+        history = _history_brief()
     def _age_tag(c):
         a = c.get("age_days")
         return f"[{a:g}d ago]" if isinstance(a, (int, float)) else "[age?]"
     listing = "\n".join(
         f"{i+1}. {_age_tag(c)} [{c.get('source','?')}] {c.get('title','')}"
         for i, c in enumerate(candidates[:80]))
-    excl = ("\nALREADY POSTED (do NOT pick these or close variants): "
-            + "; ".join(exclude[:40])) if exclude else ""
+    # Prefer the readable posted-log; fall back to the bare key list.
+    if posted_log:
+        excl = ("\n\nWE ALREADY POSTED THESE (newest first) — do NOT pick any of them or a "
+                f"close variant:\n{posted_log}")
+    elif exclude:
+        excl = "\n\nALREADY POSTED (do NOT pick these or close variants): " + "; ".join(exclude[:40])
+    else:
+        excl = ""
+    known = ("\n\nALREADY ESTABLISHED / PUBLIC KNOWLEDGE — do NOT post any of these as if it's "
+             "news; they've been public since the dates shown. Only a GENUINELY NEW development "
+             f"on the topic is postable:\n{history}") if history else ""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     beat = (f"THIS PAGE'S BEAT — pick ONLY topics that clearly fit it: {focus}\n\n"
             if focus else "")
@@ -255,6 +281,13 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         "than ~7 days ago, or the underlying event/release already happened a while back and "
         "is no longer being actively discussed, SKIP it even if it's on-beat. Strongly prefer "
         "the last 48-72 hours. Do NOT phrase an old update as if it just happened.\n"
+        "- OLD FACT IN A FRESH ARTICLE (CRITICAL): news sites constantly publish roundups, "
+        "explainers and 'everything we know' pieces that RESTATE facts which have been public "
+        "for months or years. Judge the underlying DEVELOPMENT, not the article's publish "
+        "date. If the core fact is already in the ESTABLISHED list below, or is general "
+        "knowledge you've long known (e.g. a casting or release date announced long ago), it "
+        "is NOT news — SKIP it. Only a NEW twist on the topic (new trailer, new plot detail, "
+        "a change/delay, a just-released product) counts.\n"
         "- FIT: does it clearly belong to the page's beat above? If NOT, DISCARD it — never "
         "pick an off-beat topic just to fill the list. Returning fewer (or zero) is correct.\n"
         "- STAGE: is it RISING / about-to-explode (BEST), already PEAKING (ok, but late), "
@@ -263,12 +296,12 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         "- POSTABILITY: can we make an ACCURATE, engaging, non-controversial FB post + image "
         "about it? Skip pure politics, tragedies, adult, leaks/legally risky, or rumors you "
         "can't state accurately.\n\n"
-        f"CANDIDATES:\n{listing}{excl}\n\n"
+        f"CANDIDATES:\n{listing}{excl}{known}\n\n"
         'Return ONLY JSON: {"picks":[{"topic":"short clear topic","why_rising":"1 line",'
         '"stage":"rising|peaking|declining","relevance":1-10,"angle":"the specific post '
         'angle/hook for KG","game":"the MCU property or Insomniac game (or \'MCU\')",'
         '"source_index":the CANDIDATE NUMBER (integer) this pick is based on}]}. Order picks '
-        "best-first; include only ON-BEAT rising/peaking ones.")
+        "best-first; include only ON-BEAT, genuinely-new rising/peaking ones.")
     try:
         d = extract_json(_text(prompt, timeout=150))
         picks = d.get("picks", []) if isinstance(d, dict) else []
@@ -276,3 +309,38 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
     except Exception as e:
         print(f"[trends] analyst failed ({e!r}).", flush=True)
         return []
+
+
+def novelty_check(topic: str, angle: str = "", history: str = "") -> dict:
+    """Dedicated 'is this actually NEW?' gate, run before an autopost/draft goes out.
+
+    Catches the case the age filter can't: a genuinely-recent article that merely RESTATES
+    a long-known fact (e.g. "RDJ revealed as Doctor Doom" in 2026 — public since July 2024).
+    Returns {"new": bool, "known_since": str, "reason": str}. FAILS OPEN (new=True) on any
+    parser/LLM error so a flaky call never silently blocks the whole pipeline."""
+    from agents.content import _text, extract_json
+    if not history:
+        history = _history_brief()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    prompt = (
+        f"TODAY is {today}. You are a gate that stops a Marvel news page from posting OLD news "
+        "as if it just happened.\n\n"
+        f"FACTS ALREADY PUBLIC (since the dates shown):\n{history or '(none provided)'}\n\n"
+        f"PROPOSED POST TOPIC: {topic}\n"
+        f"ANGLE: {angle or '(none)'}\n\n"
+        "Decide whether this topic is a GENUINELY NEW development (a new trailer/footage, a "
+        "newly announced casting, a new/changed release date, a delay, a just-released "
+        "product) OR a RESTATEMENT of something already publicly known for weeks, months or "
+        "years — whether it's in the list above or is general knowledge from your own training. "
+        "If it merely re-reports a long-known casting, plot point or date, it is NOT new. When "
+        "genuinely unsure and it smells like an old, oft-repeated fact, treat it as OLD.\n"
+        'Return ONLY JSON: {"new": true|false, "known_since": "YYYY-MM or date or empty", '
+        '"reason": "one short line"}.')
+    try:
+        d = extract_json(_text(prompt, timeout=90))
+        if isinstance(d, dict) and "new" in d:
+            return {"new": bool(d.get("new")), "known_since": str(d.get("known_since", "")),
+                    "reason": str(d.get("reason", ""))}
+    except Exception as e:
+        print(f"[trends] novelty_check failed ({e!r}) — allowing.", flush=True)
+    return {"new": True, "known_since": "", "reason": "novelty check unavailable"}

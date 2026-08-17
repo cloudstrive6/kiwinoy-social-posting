@@ -74,24 +74,53 @@ def _rclone_env():
     return _b2_env(str(la.get("remote", "kgb2"))), str(la.get("remote", "kgb2"))
 
 
-def _load_posted() -> list[str]:
+def _today() -> str:
+    import datetime as _dt
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d")
+
+
+def _load_posted() -> list[dict]:
+    """Rich posted-topics log from B2 (newest last). Back-compat: legacy files are a plain
+    list of key strings — those are wrapped into minimal records so nothing is lost."""
     try:
         env, remote = _rclone_env()
         r = subprocess.run(["rclone", "cat", f"{remote}:{b2_store._bucket()}/{_LEDGER_KEY}"],
                            env=env, capture_output=True, text=True, timeout=60)
         if r.returncode == 0 and r.stdout.strip():
-            return list(json.loads(r.stdout))
+            data = json.loads(r.stdout)
+            recs: list[dict] = []
+            for x in data:
+                if isinstance(x, str):
+                    recs.append({"key": x, "topic": x, "date": ""})
+                elif isinstance(x, dict) and x.get("key"):
+                    recs.append(x)
+            return recs
     except Exception as e:
         print(f"[trend-post] posted-ledger read skipped ({e!r}).", flush=True)
     return []
 
 
-def _save_posted(keys: list[str]) -> None:
+def _posted_keys(recs: list[dict]) -> list[str]:
+    return [r.get("key", "") for r in recs if r.get("key")]
+
+
+def _posted_digest(recs: list[dict], n: int = 40) -> str:
+    """Readable 'already posted' block for the analyst — newest first, last n items."""
+    lines = []
+    for r in reversed(recs[-n:]):
+        d = r.get("date") or "?"
+        t = r.get("topic") or r.get("key") or ""
+        src = r.get("source") or ""
+        lines.append(f"- {d} · {t}" + (f" ({src})" if src else ""))
+    return "\n".join(lines)
+
+
+def _save_posted(recs: list[dict]) -> None:
     try:
         env, remote = _rclone_env()
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "_posted.json"
-            p.write_text(json.dumps(keys[-300:]), encoding="utf-8")   # cap history
+            p.write_text(json.dumps(recs[-300:], ensure_ascii=False), encoding="utf-8")  # cap history
             subprocess.run(["rclone", "copyto", str(p),
                             f"{remote}:{b2_store._bucket()}/{_LEDGER_KEY}"],
                            env=env, capture_output=True, timeout=60)
@@ -211,13 +240,28 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true", help="build only; no publish/Telegram")
     ap.add_argument("--draft", action="store_true",
                     help="force DRAFT-to-Telegram even if trends.autopost.enabled is true")
+    ap.add_argument("--show-log", action="store_true",
+                    help="print the posted-topics log (what's already been posted) and exit")
     a = ap.parse_args()
+
+    if a.show_log:
+        recs = _load_posted()
+        print(f"[trend-post] posted-topics log — {len(recs)} entries (newest first):\n"
+              + (_posted_digest(recs, n=len(recs)) or "  (empty)"), flush=True)
+        return 0
+
+    try:
+        from core.marvel_history import history_brief
+        history = history_brief()
+    except Exception:
+        history = ""
 
     games = list((CONFIG.reels.get("game_names", {}) or {}).values())
     print("[trend-post] scouting rising gaming trends…", flush=True)
     cands = trends.scout()
-    posted = [] if a.dry_run else _load_posted()
-    picks = trends.analyze(cands, games=games, exclude=posted, top_n=6)
+    posted = [] if a.dry_run else _load_posted()           # rich records (newest last)
+    picks = trends.analyze(cands, games=games, exclude=_posted_keys(posted),
+                           posted_log=_posted_digest(posted), history=history, top_n=6)
     for p in picks:                                        # map the pick to its source article
         try:
             si = int(p.get("source_index", 0))
@@ -257,6 +301,17 @@ def main() -> int:
         if a.dry_run:
             made += 1
             continue
+
+        # NOVELTY GATE: catch a genuinely-recent article that only RESTATES a long-known fact
+        # (e.g. "RDJ is Doctor Doom" — public since 2024). The age filter can't see this.
+        nv = trends.novelty_check(topic, pick.get("angle", ""), history)
+        if not nv.get("new", True):
+            since = nv.get("known_since") or "?"
+            print(f"   NOT NEW (known since {since}): {nv.get('reason')} -> skip", flush=True)
+            notify.telegram(f"🗞️ Trend skipped — not new (known since {since}): {topic}\n"
+                            f"{nv.get('reason')}")
+            continue
+
         if autopost:
             if _score(res) < min_score:            # higher bar: no human review
                 print(f"   below autopost bar ({_score(res)} < {min_score}) -> next pick",
@@ -266,7 +321,12 @@ def main() -> int:
                 continue
         else:
             _deliver(res, pick)
-        posted.append(_key(topic))
+        posted.append({                            # rich record for the posted-topics log
+            "key": _key(topic), "topic": topic, "date": _today(),
+            "stage": pick.get("stage", ""), "game": res.get("game", "") or pick.get("game", ""),
+            "source": pick.get("source_name", "") or "", "url": pick.get("source_link", "") or "",
+            "angle": pick.get("angle", ""),
+        })
         _save_posted(posted)
         made += 1
 
