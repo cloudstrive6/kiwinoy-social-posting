@@ -50,8 +50,17 @@ const path = Astro.url.pathname;
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6 12 13 2 6"/></svg>
             <span>Subscribe</span>
           </a>
+          <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </button>
         </div>
       </div>
+      <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
+        {nav.map((n) => (
+          <a href={n.href} class={path === n.href ? "active" : ""}>{n.label}</a>
+        ))}
+        <a class="sub-cta" href="/#subscribe">Subscribe</a>
+      </nav>
     </header>
 
     <slot />
@@ -81,5 +90,15 @@ const path = Astro.url.pathname;
       </div>
     </footer>
 
+    <script is:inline>
+      (function () {
+        var b = document.getElementById("hamburger"), m = document.getElementById("mobileMenu");
+        if (!b || !m) return;
+        b.addEventListener("click", function () {
+          var open = m.classList.toggle("open");
+          b.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>

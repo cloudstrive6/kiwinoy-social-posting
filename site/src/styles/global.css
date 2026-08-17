@@ -191,14 +191,40 @@ footer.site{margin-top:56px; border-top:1px solid var(--border); background:var(
   color:var(--faint); font-size:12.5px}
 .foot-b .dot{width:3px;height:3px;border-radius:50%;background:currentColor}
 
+/* mobile menu (hamburger) */
+.hamburger{display:none; width:40px; height:40px; border:1px solid transparent; background:none;
+  border-radius:9px; color:var(--text); cursor:pointer; place-items:center}
+.hamburger:hover{background:var(--surface-2)}
+.hamburger svg{width:23px; height:23px}
+.mobile-menu{display:none; border-top:1px solid var(--border); background:var(--bg)}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block; padding:14px 22px; font-weight:700; font-size:15.5px; color:var(--text);
+  border-bottom:1px solid var(--border)}
+.mobile-menu a.active{color:var(--red)}
+.mobile-menu a:hover{background:var(--surface-2)}
+.mobile-menu .sub-cta{margin:14px 22px 18px; text-align:center; border-bottom:0; border-radius:10px;
+  background:var(--red); color:#fff; font-weight:800}
+
 @media (max-width:960px){
-  .hero{grid-template-columns:1fr} .lead{min-height:380px}
+  .hero{grid-template-columns:1fr} .lead{min-height:360px}
   .grid{grid-template-columns:repeat(2,1fr)} .socgrid{grid-template-columns:1fr}
   .foot{grid-template-columns:1fr 1fr}
 }
+@media (max-width:820px){
+  nav.main{display:none}
+  .hamburger{display:grid}
+  .nav-in{height:60px}
+  .nav-right .btn.sub{display:none}
+}
 @media (max-width:600px){
-  nav.main{display:none} .nav-right .btn.sub span{display:none}
-  .grid{grid-template-columns:1fr} .foot{grid-template-columns:1fr} .news{padding:26px}
+  .wrap{padding:0 18px}
+  .grid{grid-template-columns:1fr} .news{padding:26px 20px}
+  .foot{grid-template-columns:1fr; gap:28px}
+  .foot-b{flex-direction:column; align-items:flex-start; gap:7px}
+  .foot-b .dot{display:none}
+  .lead{padding:22px} .lead h1{font-size:clamp(24px,7vw,33px)}
+  .article{padding-top:22px}
+  .sgrid{grid-template-columns:repeat(2,1fr)}
 }
 /* youtube embeds (facade -> click to play) */
 .vthumb{position:relative; aspect-ratio:16/9; background:#0b0f17; overflow:hidden}

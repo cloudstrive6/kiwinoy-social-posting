@@ -13,13 +13,17 @@ import Base from "../layouts/Base.astro";
     </section>
   </main>
   <style is:global>
-    :root{
+    /* redefine Pagefind's vars on .pagefind-ui itself (higher specificity than its own defaults) */
+    #search .pagefind-ui{
       --pagefind-ui-primary:var(--red); --pagefind-ui-text:var(--text);
       --pagefind-ui-background:var(--surface); --pagefind-ui-border:var(--border);
       --pagefind-ui-tag:var(--surface-2); --pagefind-ui-border-radius:12px; --pagefind-ui-font:var(--fbody);
     }
-    .pf .pagefind-ui__search-input{background:var(--surface); color:var(--text)}
-    .pf .pagefind-ui__result-title a{color:var(--text)}
+    #search .pagefind-ui__search-input{background:var(--surface); color:var(--text)}
+    #search .pagefind-ui__search-input::placeholder{color:var(--faint)}
+    #search .pagefind-ui__result-title a,
+    #search .pagefind-ui__result a{color:var(--text)}
+    #search .pagefind-ui__result-excerpt{color:var(--muted)}
   </style>
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
   <script is:inline>
