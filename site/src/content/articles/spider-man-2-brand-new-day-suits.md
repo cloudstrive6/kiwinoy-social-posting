@@ -7,7 +7,7 @@ game: "spider-man2"
 cover: ""
 coverAlt: "Spider-Man swinging through New York in the Advanced Suit"
 date: 2026-08-13
-author: "KiwinoyGamer"
+author: "BOSS KG"
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/"
 featured: false

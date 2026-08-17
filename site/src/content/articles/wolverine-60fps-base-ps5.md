@@ -7,7 +7,7 @@ game: "wolverine"
 cover: ""
 coverAlt: "Wolverine mid-fight against Hand ninjas"
 date: 2026-08-14
-author: "KiwinoyGamer"
+author: "BOSS KG"
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/"
 featured: true

@@ -5,7 +5,7 @@ export interface Props {
   description?: string;
 }
 const {
-  title = "KiwinoyGamer — Gaming & Marvel News",
+  title = "BOSS KG — Gaming & Marvel News",
   description = "The drop-first source for Marvel games, the MCU, and the biggest moments in gaming.",
 } = Astro.props;
 const nav = [
@@ -40,14 +40,14 @@ const path = Astro.url.pathname;
   <body>
     <header class="nav">
       <div class="wrap nav-in">
-        <a class="brand" href="/" aria-label="KiwinoyGamer home">
+        <a class="brand" href="/" aria-label="BOSS KG home">
           <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
             <defs><linearGradient id="kgm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3313E"/><stop offset="1" stop-color="#B3121C"/></linearGradient></defs>
             <path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="url(#kgm)"/>
             <path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="none" stroke="#FFD23C" stroke-width="1.4" opacity=".8"/>
             <text x="20" y="26" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="15" font-weight="800" fill="#fff">KG</text>
           </svg>
-          <div><b>Kiwinoy</b><span>Gamer</span></div>
+          <div><b>BOSS</b><span>KG</span></div>
         </a>
         <nav class="main" aria-label="Primary">
           {nav.map((n) => (
@@ -73,7 +73,7 @@ const path = Astro.url.pathname;
         <div class="about">
           <a class="brand" href="/">
             <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="url(#kgm)"/><path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="none" stroke="#FFD23C" stroke-width="1.4" opacity=".8"/><text x="20" y="26" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="15" font-weight="800" fill="#fff">KG</text></svg>
-            <div><b>Kiwinoy</b><span>Gamer</span></div>
+            <div><b>BOSS</b><span>KG</span></div>
           </a>
           <p>The drop-first source for Marvel games, the MCU, and the biggest moments in gaming.</p>
           <div class="socrow">
@@ -84,11 +84,11 @@ const path = Astro.url.pathname;
           </div>
         </div>
         <div><h4>Sections</h4><ul><li><a href="/category/marvel-games">Marvel Games</a></li><li><a href="/category/mcu">MCU</a></li><li><a href="/category/playstation">PlayStation</a></li><li><a href="/videos">Videos</a></li></ul></div>
-        <div><h4>KiwinoyGamer</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/advertise">Advertise</a></li><li><a href="/follow">Follow us</a></li></ul></div>
+        <div><h4>BOSS KG</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/advertise">Advertise</a></li><li><a href="/follow">Follow us</a></li></ul></div>
         <div><h4>Legal</h4><ul><li><a href="/privacy">Privacy Policy</a></li><li><a href="/terms">Terms of Use</a></li><li><a href="/editorial-standards">Editorial Standards</a></li></ul></div>
       </div>
       <div class="wrap foot-b">
-        <span>© {new Date().getFullYear()} KiwinoyGamer. All rights reserved.</span><span class="dot"></span>
+        <span>© {new Date().getFullYear()} BOSS KG. All rights reserved.</span><span class="dot"></span>
         <span>Made for gamers, by gamers.</span><span class="dot"></span>
         <span>All game &amp; film imagery belongs to their respective owners; used for editorial coverage.</span>
       </div>

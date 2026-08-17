@@ -7,7 +7,7 @@ game: "mcu"
 cover: ""
 coverAlt: "Doctor Doom silhouette against the Avengers logo"
 date: 2026-08-13
-author: "KiwinoyGamer"
+author: "BOSS KG"
 sourceName: "Collider"
 sourceUrl: "https://collider.com/"
 featured: false

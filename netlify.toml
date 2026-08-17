@@ -1,4 +1,4 @@
-# Netlify build config for the KiwinoyGamer website (Astro).
+# Netlify build config for the BOSS KG website (Astro).
 # The site lives in the `site/` subfolder of this repo; Netlify builds it in the cloud
 # (no local Node needed). Connect this repo in Netlify and it picks this up automatically.
 [build]

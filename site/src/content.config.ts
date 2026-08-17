@@ -14,7 +14,7 @@ const articles = defineCollection({
     cover: z.string().optional(),              // /images/... hero image (our card / official still)
     coverAlt: z.string().default(""),
     date: z.coerce.date(),
-    author: z.string().default("KiwinoyGamer"),
+    author: z.string().default("BOSS KG"),
     sourceName: z.string().optional(),         // outlet we credit (e.g. "IGN")
     sourceUrl: z.string().url().optional(),    // link back to the original report
     featured: z.boolean().default(false),

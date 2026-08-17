@@ -1,9 +1,9 @@
 {
-  "name": "kiwinoygamer-site",
+  "name": "bosskg-site",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "KiwinoyGamer — gaming & Marvel news website (Astro, deployed on Netlify).",
+  "description": "BOSS KG — gaming & Marvel news website (Astro, deployed on Netlify).",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
