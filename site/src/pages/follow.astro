@@ -20,13 +20,6 @@ const socials = [
   { key: "kick", name: "Kick", handle: "kiwinoy", url: "https://kick.com/kiwinoy", pc: "#53FC18", ink: "#0F1116" },
   { key: "trovo", name: "Trovo", handle: "Kiwinoy", url: "https://trovo.live/s/Kiwinoy", pc: "#19D66B", ink: "#0F1116" },
 ];
-// Featured posts (top clips) — embedded via each platform's official post embed.
-const IG = [
-  "https://www.instagram.com/reel/DayvcPIgbjx/",
-  "https://www.instagram.com/reel/Da9CZqMjoHR/",
-  "https://www.instagram.com/reel/DbisHPcT4PK/",
-];
-const TT = ["7674212728692673812", "7506479242209692946", "7508511521232784658"];
 ---
 <Base title="Follow — BOSS KG" description="Follow Boss KG on YouTube, Twitch, Kick, Facebook, TikTok, Instagram and Trovo for gameplay, streams, clips and the daily drop.">
   <main class="wrap">
@@ -51,24 +44,5 @@ const TT = ["7674212728692673812", "7506479242209692946", "7508511521232784658"]
       </div>
     </section>
 
-    <section class="sec" style="margin-top:44px" aria-label="Featured on Instagram">
-      <div class="sec-h"><span class="bar"></span><h2>On Instagram</h2><a href="https://www.instagram.com/kiwinoygaming" rel="noopener">@kiwinoygaming →</a></div>
-      <div class="embed-grid">
-        {IG.map((url) => (
-          <blockquote class="instagram-media" data-instgrm-permalink={url} data-instgrm-version="14"></blockquote>
-        ))}
-      </div>
-    </section>
-
-    <section class="sec" style="margin-top:34px" aria-label="Featured on TikTok">
-      <div class="sec-h"><span class="bar"></span><h2>On TikTok</h2><a href="https://www.tiktok.com/@kiwinoygamer" rel="noopener">@kiwinoygamer →</a></div>
-      <div class="embed-grid">
-        {TT.map((id) => (
-          <blockquote class="tiktok-embed" cite={`https://www.tiktok.com/@kiwinoygamer/video/${id}`} data-video-id={id}><section></section></blockquote>
-        ))}
-      </div>
-    </section>
   </main>
-  <script is:inline async src="//www.instagram.com/embed.js"></script>
-  <script is:inline async src="https://www.tiktok.com/embed.js"></script>
 </Base>
