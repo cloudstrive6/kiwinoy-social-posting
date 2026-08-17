@@ -196,4 +196,23 @@ footer.site{margin-top:56px; border-top:1px solid var(--border); background:var(
   nav.main{display:none} .nav-right .btn.sub span{display:none}
   .grid{grid-template-columns:1fr} .foot{grid-template-columns:1fr} .news{padding:26px}
 }
+/* youtube embeds (facade -> click to play) */
+.vthumb{position:relative; aspect-ratio:16/9; background:#0b0f17; overflow:hidden}
+.vthumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.vthumb iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.vthumb .play{position:absolute; inset:0; display:grid; place-items:center; transition:.15s}
+.vthumb .play svg{width:56px; height:auto; filter:drop-shadow(0 3px 10px rgba(0,0,0,.55))}
+.vfeat{width:100%; border:0; padding:0; background:none; cursor:pointer; display:block}
+.vfeat .vthumb{border-radius:var(--radius); box-shadow:var(--shadow)}
+.vfeat:hover .play{transform:scale(1.06)}
+.vgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:24px}
+.vcard{background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden;
+  display:flex; flex-direction:column; transition:.16s; cursor:pointer; text-align:left; padding:0; font:inherit; color:inherit}
+.vcard:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:color-mix(in srgb,var(--red) 40%, var(--border))}
+.vcard:hover .play{transform:scale(1.08)}
+.vcard .vb{padding:12px 13px 14px; font-size:14px; font-weight:700; line-height:1.32; color:var(--text);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+@media (max-width:960px){.vgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.vgrid{grid-template-columns:1fr}}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto}}

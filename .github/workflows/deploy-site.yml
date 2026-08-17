@@ -10,6 +10,9 @@ name: Deploy site (Netlify)
 # The Site ID below is public (it's in Netlify's deploy-status badge URL), so it's inlined.
 
 on:
+  # rebuild a few times a day so the site pulls the newest YouTube uploads (build-time fetch)
+  schedule:
+    - cron: "23 */8 * * *"
   push:
     branches: [main]
     paths:

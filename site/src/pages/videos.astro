@@ -1,21 +1,67 @@
 ---
 import Base from "../layouts/Base.astro";
-const channelUrl = "https://youtube.com/@kiwinoygamer";
+import { latestVideos, CHANNEL_URL } from "../lib/youtube.js";
+
+const vids = await latestVideos(13);
+const feat = vids[0];
+const rest = vids.slice(1);
+const fmt = (d) =>
+  d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
 ---
-<Base title="Videos — BOSS KG" description="4K 60fps HDR gameplay, walkthroughs and clips from BOSS KG.">
+<Base title="Videos — BOSS KG" description="4K 60fps HDR gameplay, walkthroughs, clips and reactions from BOSS KG.">
   <main class="wrap">
     <section class="sec" style="margin-top:34px">
-      <div class="sec-h"><span class="bar"></span><h2>Videos</h2><a href={channelUrl} rel="noopener">YouTube →</a></div>
-      <p style="color:var(--muted); margin:-6px 0 22px; max-width:62ch">
-        Full-game walkthroughs in 4K 60fps HDR, no commentary — plus clips and highlights.
-        The latest uploads land on our YouTube channel first.
-      </p>
-      <div class="art g-ps" style="aspect-ratio:16/9; border-radius:var(--radius); display:grid; place-items:center; box-shadow:var(--shadow)">
-        <a class="btn red" href={channelUrl} rel="noopener" style="text-decoration:none">▶ Watch on YouTube</a>
-      </div>
-      <p style="color:var(--faint); font-size:13px; margin-top:14px">
-        Embedded playlists are coming here soon. For now, catch every upload on the channel.
-      </p>
+      <div class="sec-h"><span class="bar"></span><h2>Videos</h2><a href={CHANNEL_URL} rel="noopener">Subscribe on YouTube →</a></div>
+
+      {feat ? (
+        <>
+          <button class="vfeat" data-vid={feat.id} aria-label={`Play: ${feat.title}`}>
+            <div class="vthumb">
+              <img src={feat.thumb.replace("hqdefault", "maxresdefault")} alt={feat.title}
+                   onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault')" />
+              <span class="play" set:html={PLAY}></span>
+            </div>
+          </button>
+          <h3 style="margin:16px 0 0; font-size:21px">{feat.title}</h3>
+          <p style="color:var(--faint); font-size:13px; margin-top:6px; font-weight:600">Latest upload · {fmt(feat.published)}</p>
+
+          {rest.length > 0 && (
+            <>
+              <div class="sec-h" style="margin:36px 0 0"><span class="bar"></span><h2>Recent uploads</h2></div>
+              <div class="vgrid">
+                {rest.map((v) => (
+                  <button class="vcard" data-vid={v.id} aria-label={`Play: ${v.title}`}>
+                    <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
+                    <div class="vb">{v.title}</div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <div class="art g-ps" style="aspect-ratio:16/9; border-radius:var(--radius); display:grid; place-items:center; box-shadow:var(--shadow); margin-top:8px">
+          <a class="btn red" href={CHANNEL_URL} rel="noopener" style="text-decoration:none">▶ Watch on YouTube</a>
+        </div>
+      )}
     </section>
   </main>
+
+  <script is:inline>
+    document.querySelectorAll(".vfeat[data-vid], .vcard[data-vid]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.getAttribute("data-vid");
+        const t = el.querySelector(".vthumb");
+        if (!id || !t || t.querySelector("iframe")) return;
+        const f = document.createElement("iframe");
+        f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+        f.title = "YouTube video player";
+        f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        f.setAttribute("allowfullscreen", "");
+        t.innerHTML = "";
+        t.appendChild(f);
+      }, { once: true });
+    });
+  </script>
 </Base>

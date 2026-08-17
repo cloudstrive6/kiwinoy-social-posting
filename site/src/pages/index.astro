@@ -1,6 +1,10 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
+import { latestVideos, CHANNEL_URL } from "../lib/youtube.js";
+
+const yt = await latestVideos(4);
+const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
 
 const gmap: Record<string, string> = {
   wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
@@ -61,6 +65,20 @@ const latest = rest.slice(0, 4);
       </div>
     </section>
 
+    {yt.length > 0 && (
+      <section class="sec" aria-label="Latest videos">
+        <div class="sec-h"><span class="bar"></span><h2>Latest from YouTube</h2><a href="/videos">All videos →</a></div>
+        <div class="vgrid">
+          {yt.map((v) => (
+            <a class="vcard" href={v.url} target="_blank" rel="noopener">
+              <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
+              <div class="vb">{v.title}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
     <section class="follow" aria-label="Follow us on social">
       <div class="follow-top">
         <span class="bar" style="width:4px;height:26px;background:var(--red);border-radius:3px"></span>
@@ -86,10 +104,14 @@ const latest = rest.slice(0, 4);
         <div class="soc yt">
           <div class="soc-h">
             <span class="soc-ic ic-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.3-.4-4.9a2.6 2.6 0 0 0-1.8-1.8C19.1 5 12 5 12 5s-7.1 0-8.8.3A2.6 2.6 0 0 0 1.4 7.1C1 8.7 1 12 1 12s0 3.3.4 4.9a2.6 2.6 0 0 0 1.8 1.8C4.9 19 12 19 12 19s7.1 0 8.8-.3a2.6 2.6 0 0 0 1.8-1.8C23 15.3 23 12 23 12ZM10 15V9l5 3Z"/></svg></span>
-            <div class="who"><b>KiwinoyGamer</b><span>YouTube</span></div><div class="cnt"><b>—</b><span>Subscribers</span></div>
+            <div class="who"><b>Boss KG</b><span>YouTube</span></div><div class="cnt"><b>394</b><span>Subscribers</span></div>
           </div>
-          <div class="thumbs"><div class="art g-ps"></div><div class="art g-wolv"></div></div>
-          <a class="btn red" href="https://youtube.com/@kiwinoygamer">Subscribe on YouTube</a>
+          <div class="thumbs">
+            {yt.length >= 2 ? yt.slice(0, 2).map((v) => (
+              <div class="art"><img src={v.thumb} alt={v.title} loading="lazy" /></div>
+            )) : (<><div class="art g-ps"></div><div class="art g-wolv"></div></>)}
+          </div>
+          <a class="btn red" href={CHANNEL_URL} rel="noopener">Subscribe on YouTube</a>
         </div>
       </div>
     </section>
