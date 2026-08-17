@@ -40,15 +40,19 @@ jobs:
       - name: Generate articles
         run: python tools/site_article.py --count "${{ github.event.inputs.count || '3' }}"
 
-      - name: Commit + deploy if anything new
+      # Re-pick the hero by trend buzz + recency (features the hottest live story today).
+      - name: Pick trending featured
+        run: python tools/site_featured.py || echo "featured pick skipped"
+
+      - name: Commit + deploy if anything changed
         run: |
           git config user.name "boss-kg-bot"
           git config user.email "bot@bosskg.com"
           if [ -n "$(git status --porcelain site/src/content/articles)" ]; then
             git add site/src/content/articles
-            git commit -m "content: auto-generated news article(s)"
+            git commit -m "content: news update (new articles / trending featured)"
             git push
             gh workflow run deploy-site.yml || echo "deploy dispatch skipped"
           else
-            echo "no new articles this run"
+            echo "no article or featured change this run"
           fi
