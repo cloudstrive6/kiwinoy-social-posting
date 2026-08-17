@@ -3,7 +3,13 @@
     "count": 395,
     "display": "395"
   },
-  "tiktok": {},
-  "instagram": {},
-  "updated": "2026-08-17"
+  "tiktok": {
+    "count": 12300,
+    "display": "12.3K"
+  },
+  "instagram": {
+    "count": 510,
+    "display": "510"
+  },
+  "updated": "2026-08-18"
 }
