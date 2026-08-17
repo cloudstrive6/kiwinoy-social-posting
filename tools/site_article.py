@@ -45,27 +45,51 @@ def _clean_source(name: str) -> str:
     return re.sub(r"^(news:|gnews)", "", name or "").strip() or "reports"
 
 
+def _fetch_text(url: str) -> str:
+    """Fetch the real source article and extract its paragraph text, so the writer rewrites
+    from FACTS rather than inventing them from a headline. Empty for unusable URLs."""
+    import html as _html
+    import urllib.request
+    if not url or "news.google.com" in url:
+        return ""                                  # google-news redirects give no article text
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        page = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", "replace")
+    except Exception:
+        return ""
+    page = re.sub(r"(?is)<(script|style|nav|header|footer|aside)[^>]*>.*?</\1>", " ", page)
+    paras = re.findall(r"(?is)<p[^>]*>(.*?)</p>", page)
+    text = " ".join(re.sub(r"(?s)<[^>]+>", " ", p) for p in paras)
+    return re.sub(r"\s+", " ", _html.unescape(text)).strip()[:4800]
+
+
 def _write_article(pick: dict, today: str) -> dict | None:
-    """LLM writes an accurate rewritten article for the pick; returns the article dict or None."""
-    src_name = _clean_source(pick.get("source_name", ""))
+    """Fetch the real source article and have the LLM rewrite ONLY from its facts — so we never
+    invent details from a headline. Returns the article dict, or None if the source can't be read."""
     src_url = pick.get("source_link", "")
+    source_text = _fetch_text(src_url)
+    if len(source_text) < 350:
+        print(f"   skip (no readable source): {pick.get('topic','')[:50]}", flush=True)
+        return None
+    src_name = _clean_source(pick.get("source_name", ""))
     prompt = (
-        "You are a news writer for BOSS KG, a gaming & Marvel site. Write an ORIGINAL, accurate "
-        "news article rewriting this story for our readers (IGN-style: informative, engaging).\n\n"
-        f"TODAY: {today}\nTOPIC: {pick.get('topic','')}\nANGLE: {pick.get('angle','')}\n"
-        f"SOURCE OUTLET: {src_name}\n\n"
-        "RULES:\n"
-        "- Be ACCURATE. Do NOT invent quotes, numbers, release dates, or plot details you are "
-        "not sure of. If a detail is a rumor or unconfirmed, say so and attribute it.\n"
-        "- Credit the reporting to the source outlet where appropriate.\n"
-        "- 4-6 short paragraphs, ~260-400 words. Plain paragraphs only — no markdown headings, "
-        "no hashtags, no emojis.\n"
-        "- Neutral-to-hype tone; never negative or clickbait-dishonest.\n\n"
-        'Return ONLY JSON: {"title":"clear compelling headline","excerpt":"1-2 sentence summary",'
-        '"category":"one of: Marvel Games | MCU | PlayStation | Gaming","game":"short property '
-        'key like spider-man2, wolverine, mcu, final-fantasy-7, halo (or \'mcu\')","tag":"one of: '
-        'News | Rumor | Preview | Hot","tags":["2-5 topical tags like \'Spider-Man 2\',\'PS5\'"],'
-        '"body":"paragraph 1\\n\\nparagraph 2\\n\\n..."}')
+        "You are a news writer for BOSS KG (a gaming & Marvel site). Rewrite the SOURCE ARTICLE "
+        "below into an original, accurate article for our readers (IGN-style: informative, "
+        f"engaging).\n\nTODAY: {today}\nSOURCE OUTLET: {src_name}\n\n"
+        f"=== SOURCE ARTICLE ===\n{source_text}\n=== END SOURCE ===\n\n"
+        "STRICT RULES:\n"
+        "- Use ONLY facts that appear in the SOURCE ARTICLE above. Do NOT add numbers, dates, "
+        "box-office figures, quotes, or plot details that are not in the source. If it isn't in "
+        "the source, do not state it.\n"
+        "- Get the medium right: a movie is a movie, a game is a game, a LEGO set is a toy — never "
+        "mislabel them.\n"
+        "- Attribute the reporting to the source outlet. Label rumors/leaks as unconfirmed.\n"
+        "- 4-6 short paragraphs, ~260-380 words. Plain paragraphs only — no markdown, hashtags or "
+        "emojis. Engaging but honest; never clickbait or invented hype.\n\n"
+        'Return ONLY JSON: {"title":"accurate headline","excerpt":"1-2 sentence summary",'
+        '"category":"one of: Marvel Games | MCU | PlayStation | Gaming","game":"short key like '
+        'spider-man2, wolverine, mcu, final-fantasy-7, halo (or \'mcu\')","tag":"News | Rumor | '
+        'Preview | Hot","tags":["2-5 topical tags"],"body":"para 1\\n\\npara 2\\n\\n..."}')
     try:
         d = extract_json(_text(prompt, timeout=150))
     except Exception as e:
@@ -78,7 +102,7 @@ def _write_article(pick: dict, today: str) -> dict | None:
     return d
 
 
-def _to_markdown(a: dict, today: str) -> str:
+def _to_markdown(a: dict, today: str, draft: bool = True) -> str:
     def y(v):
         return json.dumps(v, ensure_ascii=False)          # JSON strings are valid YAML
     tags = a.get("tags") or []
@@ -93,6 +117,8 @@ def _to_markdown(a: dict, today: str) -> str:
         f"date: {today}",
         'author: "BOSS KG"',
     ]
+    if draft:
+        fm.append("draft: true")                          # draft-first: review before it goes live
     if a.get("sourceName"):
         fm.append(f"sourceName: {y(a['sourceName'])}")
     if a.get("sourceUrl"):
@@ -105,6 +131,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--count", type=int, default=6)
     ap.add_argument("--dry", action="store_true")
+    ap.add_argument("--publish", action="store_true",
+                    help="write articles live (draft:false). Default is draft-first (review before publish).")
     a = ap.parse_args()
 
     ART_DIR.mkdir(parents=True, exist_ok=True)
@@ -123,12 +151,12 @@ def main() -> int:
         src = c.get("source") or ""
         return src == "gnews" or src.startswith(marvel_feeds) or any(k in t for k in kw)
 
-    picks = [{"topic": c["title"], "angle": "", "source_link": c.get("link", ""),
-              "source_name": c.get("source", "")}
-             for c in cands if _on_beat(c)][: max(8, a.count * 2)]
-    print(f"[site-article] {len(cands)} candidates -> {len(picks)} on-beat", flush=True)
+    picks = [{"topic": c["title"], "source_link": c.get("link", ""), "source_name": c.get("source", "")}
+             for c in cands
+             if _on_beat(c) and c.get("link") and "news.google.com" not in c.get("link", "")][: max(8, a.count * 2)]
+    print(f"[site-article] {len(cands)} candidates -> {len(picks)} on-beat (with direct source)", flush=True)
 
-    made = 0
+    made, written = 0, []
     for pick in picks:
         if made >= a.count:
             break
@@ -144,16 +172,25 @@ def main() -> int:
         if slug in existing:
             print(f"   skip (exists): {slug}", flush=True)
             continue
-        md = _to_markdown(art, today)
+        md = _to_markdown(art, today, draft=not a.publish)
         if a.dry:
             print(f"\n===== {slug}.md =====\n{md}", flush=True)
         else:
             (ART_DIR / f"{slug}.md").write_text(md, encoding="utf-8")
             print(f"   wrote {slug}.md  [{art.get('category')}]", flush=True)
+            written.append(art["title"])
         existing.add(slug)
         made += 1
 
     print(f"[site-article] done — {made} article(s).", flush=True)
+    if written and not a.publish:
+        try:
+            from core import notify
+            lst = "\n".join(f"• {t}" for t in written)
+            notify.telegram(f"📝 {len(written)} new BOSS KG DRAFT article(s) — review, then tell me "
+                            f"which to publish:\n{lst}")
+        except Exception:
+            pass
     return 0
 
 
