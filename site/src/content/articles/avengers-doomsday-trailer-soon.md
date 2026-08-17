@@ -4,6 +4,7 @@ excerpt: "Chatter around Marvel's next event film is heating up, with reports po
 category: "MCU"
 tag: "Rumor"
 game: "mcu"
+tags: ["Avengers: Doomsday", "MCU", "Trailer", "Marvel Studios"]
 cover: ""
 coverAlt: "Doctor Doom silhouette against the Avengers logo"
 date: 2026-08-13

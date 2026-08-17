@@ -4,6 +4,7 @@ excerpt: "Insomniac quietly dropped the Brand New Day and Marvel Tōkon suits at
 category: "PlayStation"
 tag: "News"
 game: "spider-man2"
+tags: ["Spider-Man 2", "Insomniac", "PS5", "PSSR", "Update"]
 cover: ""
 coverAlt: "Spider-Man swinging through New York in the Advanced Suit"
 date: 2026-08-13

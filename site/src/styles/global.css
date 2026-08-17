@@ -168,6 +168,10 @@ form.sub-form .btn{flex:0 0 auto; padding:13px 22px}
 .a-source{margin:30px 0; padding:16px 18px; border:1px solid var(--border); border-radius:12px;
   background:var(--surface-2); font-size:14px; color:var(--muted)}
 .a-source a{color:var(--red); font-weight:700}
+.a-tags{display:flex; flex-wrap:wrap; gap:8px; margin:26px 0 4px}
+.tag-chip{font-size:13px; font-weight:700; color:var(--muted); background:var(--surface);
+  border:1px solid var(--border); border-radius:999px; padding:5px 13px; transition:.15s}
+.tag-chip:hover{color:#fff; background:var(--red); border-color:var(--red)}
 
 /* footer */
 footer.site{margin-top:56px; border-top:1px solid var(--border); background:var(--surface-2)}

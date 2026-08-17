@@ -10,6 +10,7 @@ const articles = defineCollection({
     excerpt: z.string(),
     category: z.string().default("News"),      // Marvel Games | MCU | PlayStation | ...
     tag: z.string().default("News"),           // pill label: News | Preview | Rumor | Hot
+    tags: z.array(z.string()).default([]),     // topical tags: "Spider-Man 2", "trailer", "PS5", ...
     game: z.string().optional(),               // franchise/property for theming
     cover: z.string().optional(),              // /images/... hero image (our card / official still)
     coverAlt: z.string().default(""),

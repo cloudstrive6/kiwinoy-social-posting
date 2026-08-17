@@ -11,7 +11,7 @@ const {
 } = Astro.props;
 const nav = [
   { label: "News", href: "/" },
-  { label: "Marvel Games", href: "/category/marvel-games" },
+  { label: "Games", href: "/games" },
   { label: "MCU", href: "/category/mcu" },
   { label: "Videos", href: "/videos" },
   { label: "Follow", href: "/follow" },
@@ -43,6 +43,9 @@ const path = Astro.url.pathname;
           ))}
         </nav>
         <div class="nav-right">
+          <a class="iconbtn" href="/search" aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </a>
           <a class="btn sub" href="/#subscribe">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6 12 13 2 6"/></svg>
             <span>Subscribe</span>
@@ -67,7 +70,7 @@ const path = Astro.url.pathname;
             <a href="https://facebook.com/kiwinoygamer" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V7c0-1 .3-1.5 1.6-1.5H17V2.2C16.5 2.1 15.4 2 14.2 2 11.6 2 10 3.6 10 6.4V9H7.5v3.5H10V22h4v-9.5h2.7l.4-3.5H14Z"/></svg></a>
           </div>
         </div>
-        <div><h4>Sections</h4><ul><li><a href="/category/marvel-games">Marvel Games</a></li><li><a href="/category/mcu">MCU</a></li><li><a href="/category/playstation">PlayStation</a></li><li><a href="/videos">Videos</a></li></ul></div>
+        <div><h4>Sections</h4><ul><li><a href="/games">Games</a></li><li><a href="/category/mcu">MCU</a></li><li><a href="/videos">Videos</a></li><li><a href="/category/news">All news</a></li></ul></div>
         <div><h4>BOSS KG</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/advertise">Advertise</a></li><li><a href="/follow">Follow us</a></li></ul></div>
         <div><h4>Legal</h4><ul><li><a href="/privacy">Privacy Policy</a></li><li><a href="/terms">Terms of Use</a></li><li><a href="/editorial-standards">Editorial Standards</a></li></ul></div>
       </div>

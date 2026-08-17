@@ -4,6 +4,7 @@ excerpt: "Insomniac says 60fps with ray tracing is the default performance mode 
 category: "Marvel's Wolverine"
 tag: "News"
 game: "wolverine"
+tags: ["Marvel's Wolverine", "Insomniac", "PS5", "60 FPS"]
 cover: ""
 coverAlt: "Wolverine mid-fight against Hand ninjas"
 date: 2026-08-14

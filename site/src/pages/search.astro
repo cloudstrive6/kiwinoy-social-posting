@@ -1,0 +1,30 @@
+---
+import Base from "../layouts/Base.astro";
+// Search is powered by Pagefind, which indexes dist/ after `astro build`
+// (see package.json build script) and serves its UI + index from /pagefind/ at runtime.
+---
+<Base title="Search — BOSS KG" description="Search BOSS KG for games, news and videos.">
+  <main class="wrap">
+    <section class="sec" style="margin-top:34px; min-height:60vh">
+      <div class="sec-h"><span class="bar"></span><h2>Search</h2></div>
+      <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+      <div id="search" class="pf"></div>
+      <noscript><p style="color:var(--muted)">Search needs JavaScript enabled.</p></noscript>
+    </section>
+  </main>
+  <style is:global>
+    :root{
+      --pagefind-ui-primary:var(--red); --pagefind-ui-text:var(--text);
+      --pagefind-ui-background:var(--surface); --pagefind-ui-border:var(--border);
+      --pagefind-ui-tag:var(--surface-2); --pagefind-ui-border-radius:12px; --pagefind-ui-font:var(--fbody);
+    }
+    .pf .pagefind-ui__search-input{background:var(--surface); color:var(--text)}
+    .pf .pagefind-ui__result-title a{color:var(--text)}
+  </style>
+  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  <script is:inline>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.PagefindUI) new window.PagefindUI({ element: "#search", showSubResults: true, showImages: false });
+    });
+  </script>
+</Base>

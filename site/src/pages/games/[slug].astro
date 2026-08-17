@@ -1,0 +1,95 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { GAMES, gameBySlug, gameForText } from "../../lib/games.js";
+import { longform, shorts, CHANNEL_URL } from "../../lib/youtube.js";
+
+export function getStaticPaths() {
+  return GAMES.map((g) => ({ params: { slug: g.slug } }));
+}
+
+const { slug } = Astro.params;
+const g = gameBySlug(slug);
+const fmt = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
+
+const articles = (await getCollection("articles", ({ data }) => !data.draft))
+  .filter((a) => gameForText(a.data.game, a.data.category, a.data.title) === slug)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const vlong = longform.filter((v) => gameForText(v.title) === slug);
+const vshort = shorts.filter((v) => gameForText(v.title) === slug);
+const gmap = { wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey", mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel" };
+const gclass = (game) => gmap[(game || "").toLowerCase()] || g.art;
+const empty = !articles.length && !vlong.length && !vshort.length;
+---
+<Base title={`${g.title} — BOSS KG`} description={g.blurb}>
+  <main class="wrap">
+    <section class="sec" style="margin-top:34px">
+      <div class="sec-h"><span class="bar"></span><h2>{g.title}</h2><a href="/games">← All games</a></div>
+      <p style="color:var(--muted); margin:-6px 0 4px; max-width:62ch">{g.blurb}</p>
+
+      {vlong.length > 0 && (
+        <>
+          <div class="sec-h" style="margin:30px 0 0"><span class="bar"></span><h2>Full videos</h2><a href={CHANNEL_URL} rel="noopener">YouTube →</a></div>
+          <div class="vgrid">
+            {vlong.map((v) => (
+              <button class="vcard" data-vid={v.id} aria-label={`Play: ${v.title}`}>
+                <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
+                <div class="vb">{v.title}</div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {vshort.length > 0 && (
+        <>
+          <div class="sec-h" style="margin:34px 0 0"><span class="bar"></span><h2>Shorts</h2></div>
+          <div class="sgrid">
+            {vshort.map((v) => (
+              <button class="vcard" data-vid={v.id} aria-label={`Play Short: ${v.title}`}>
+                <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
+                <div class="vb">{v.title}</div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {articles.length > 0 && (
+        <>
+          <div class="sec-h" style="margin:36px 0 0"><span class="bar"></span><h2>Articles</h2></div>
+          <div class="grid">
+            {articles.map((a) => (
+              <a class="card" href={`/news/${a.id}`}>
+                <div class={`art ${gclass(a.data.game)} ${a.data.cover ? "has-img" : ""}`}>
+                  {a.data.cover && <img src={a.data.cover} alt={a.data.coverAlt} />}
+                  <span class={`pill ${a.data.tag === "Hot" ? "red dot" : "news"}`}>{a.data.tag}</span>
+                </div>
+                <div class="body"><span class="cat">{a.data.category}</span><h3>{a.data.title}</h3><span class="t">{fmt(a.data.date)}</span></div>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+
+      {empty && (
+        <p style="color:var(--muted); padding:30px 0">No {g.title} coverage yet — <a href="/" style="color:var(--red)">see the latest</a>, or <a href={CHANNEL_URL} rel="noopener" style="color:var(--red)">watch on YouTube</a>.</p>
+      )}
+    </section>
+  </main>
+
+  <script is:inline>
+    document.querySelectorAll(".vcard[data-vid]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.getAttribute("data-vid"), t = el.querySelector(".vthumb");
+        if (!id || !t || t.querySelector("iframe")) return;
+        const f = document.createElement("iframe");
+        f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+        f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        f.setAttribute("allowfullscreen", "");
+        t.innerHTML = ""; t.appendChild(f);
+      }, { once: true });
+    });
+  </script>
+</Base>
