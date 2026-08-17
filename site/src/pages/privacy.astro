@@ -1,0 +1,89 @@
+---
+import Base from "../layouts/Base.astro";
+const email = "hello@bosskg.com";
+const updated = "August 18, 2026";
+---
+<Base title="Privacy Policy — BOSS KG" description="How BOSS KG collects, uses and protects your information.">
+  <main class="wrap">
+    <article class="article">
+      <div class="a-head"><h1>Privacy Policy</h1></div>
+      <div class="prose">
+        <p><em>Last updated: {updated}</em></p>
+        <p>
+          This Privacy Policy explains how BOSS KG ("we", "us", "our") collects, uses and
+          safeguards information when you visit <strong>bosskg.com</strong> (the "Site").
+        </p>
+
+        <h2>Information we collect</h2>
+        <p>
+          <strong>Information you give us.</strong> If you subscribe to our newsletter, we
+          collect your first name and email address. If you email us, we receive whatever you
+          choose to send.
+        </p>
+        <p>
+          <strong>Information collected automatically.</strong> Like most websites, we and our
+          service providers use cookies and similar technologies to collect standard log data
+          (such as your browser type, device, approximate location and pages viewed) to operate
+          the Site, understand traffic and improve content.
+        </p>
+
+        <h2>Cookies</h2>
+        <p>
+          Cookies are small files stored on your device. We use them for essential Site
+          functionality, analytics, and advertising. You can control or delete cookies through
+          your browser settings; disabling some cookies may affect how the Site works.
+        </p>
+
+        <h2>Advertising</h2>
+        <p>
+          We may display advertising served by third-party networks, including Google. Third-party
+          vendors, including Google, use cookies to serve ads based on your prior visits to this
+          and other websites. Google's use of advertising cookies enables it and its partners to
+          serve ads to you based on your visits to our Site and/or other sites on the Internet.
+        </p>
+        <p>
+          You may opt out of personalised advertising by visiting
+          <a href="https://www.google.com/settings/ads" rel="noopener nofollow">Google Ads Settings</a>,
+          or opt out of some third-party vendors' use of cookies via
+          <a href="https://www.aboutads.info/choices/" rel="noopener nofollow">aboutads.info/choices</a>.
+        </p>
+
+        <h2>Email &amp; newsletter</h2>
+        <p>
+          Our newsletter is managed by a third-party email provider (MailerLite). We use your
+          name and email only to send you updates you asked for. Every email includes an
+          unsubscribe link, and you can opt out at any time.
+        </p>
+
+        <h2>How we use information</h2>
+        <p>
+          To operate and improve the Site, deliver our newsletter, measure and serve advertising,
+          respond to your messages, and keep the Site secure. We do not sell your personal
+          information.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          Depending on where you live, you may have rights to access, correct or delete your
+          personal data, or to object to certain processing. To make a request, email
+          <a href={`mailto:${email}`}>{email}</a>.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+          The Site is not directed to children under 13, and we do not knowingly collect personal
+          information from them.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          We may update this policy from time to time. Material changes will be reflected by the
+          "Last updated" date above.
+        </p>
+
+        <h2>Contact</h2>
+        <p>Questions? Email <a href={`mailto:${email}`}>{email}</a>.</p>
+      </div>
+    </article>
+  </main>
+</Base>

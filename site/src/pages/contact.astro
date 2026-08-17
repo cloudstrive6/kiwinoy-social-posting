@@ -1,0 +1,33 @@
+---
+import Base from "../layouts/Base.astro";
+const email = "hello@bosskg.com";
+---
+<Base title="Contact — BOSS KG" description="Get in touch with BOSS KG — enquiries, tips and corrections.">
+  <main class="wrap">
+    <article class="article">
+      <div class="a-head"><h1>Contact</h1></div>
+      <div class="prose">
+        <p>
+          Got a tip, a correction, or a business enquiry? We'd love to hear from you.
+        </p>
+        <h2>Email</h2>
+        <p><a href={`mailto:${email}`}>{email}</a></p>
+        <h2>Social</h2>
+        <p>
+          The fastest way to reach us is a DM on any of our channels —
+          <a href="/follow">find them all on the Follow page</a>.
+        </p>
+        <h2>Corrections</h2>
+        <p>
+          We aim to get things right. If you spot an error in a story, email us with the
+          headline and the correction and we'll review it promptly. See our
+          <a href="/editorial-standards">Editorial Standards</a>.
+        </p>
+        <h2>Advertising</h2>
+        <p>
+          Interested in reaching our audience? See <a href="/advertise">Advertise</a>.
+        </p>
+      </div>
+    </article>
+  </main>
+</Base>

@@ -1,0 +1,57 @@
+---
+import Base from "../layouts/Base.astro";
+const email = "hello@bosskg.com";
+const updated = "August 18, 2026";
+---
+<Base title="Editorial Standards — BOSS KG" description="How BOSS KG researches, writes, sources and corrects its coverage.">
+  <main class="wrap">
+    <article class="article">
+      <div class="a-head"><h1>Editorial Standards</h1></div>
+      <div class="prose">
+        <p><em>Last updated: {updated}</em></p>
+        <p>
+          BOSS KG covers Marvel games, the MCU and gaming news for fans. These standards explain
+          how we work so you know what to expect from our coverage.
+        </p>
+
+        <h2>Independence</h2>
+        <p>
+          We are an independent, fan-run brand. We are not affiliated with, endorsed by, or
+          sponsored by any publisher, studio or platform we cover. Sponsored content, when it
+          appears, is clearly labelled.
+        </p>
+
+        <h2>Sourcing &amp; attribution</h2>
+        <p>
+          Our news posts are original write-ups of developments reported across the industry. When
+          a story originates with another outlet or an official source, we credit and link to it so
+          you can read the original reporting. We distinguish confirmed news from rumours and
+          speculation, and we label rumours as such.
+        </p>
+
+        <h2>Accuracy &amp; corrections</h2>
+        <p>
+          We aim to be accurate and fair. When we get something wrong, we fix it and note
+          significant corrections. Spotted an error? Email
+          <a href={`mailto:${email}`}>{email}</a> with the headline and the correction.
+        </p>
+
+        <h2>Imagery</h2>
+        <p>
+          Game and film imagery, screenshots, key art and trademarks belong to their respective
+          owners and are used for editorial identification and commentary. We do not claim
+          ownership of these materials.
+        </p>
+
+        <h2>AI &amp; production</h2>
+        <p>
+          We may use tools to help research, draft and produce coverage, but editorial decisions
+          and this Site's standards are ours. We do not publish fabricated quotes or events.
+        </p>
+
+        <h2>Contact</h2>
+        <p>Questions about our standards? Email <a href={`mailto:${email}`}>{email}</a>.</p>
+      </div>
+    </article>
+  </main>
+</Base>

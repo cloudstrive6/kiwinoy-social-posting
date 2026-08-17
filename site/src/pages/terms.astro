@@ -1,0 +1,64 @@
+---
+import Base from "../layouts/Base.astro";
+const email = "hello@bosskg.com";
+const updated = "August 18, 2026";
+---
+<Base title="Terms of Use — BOSS KG" description="The terms that govern your use of bosskg.com.">
+  <main class="wrap">
+    <article class="article">
+      <div class="a-head"><h1>Terms of Use</h1></div>
+      <div class="prose">
+        <p><em>Last updated: {updated}</em></p>
+        <p>
+          By accessing or using <strong>bosskg.com</strong> (the "Site") you agree to these
+          Terms of Use. If you do not agree, please do not use the Site.
+        </p>
+
+        <h2>Content &amp; accuracy</h2>
+        <p>
+          Our content is provided for general information and entertainment. We work to be
+          accurate but make no warranty that content is complete, current or error-free. News
+          coverage may reference rumours or reporting by others, which we attribute where
+          appropriate. See our <a href="/editorial-standards">Editorial Standards</a>.
+        </p>
+
+        <h2>Intellectual property</h2>
+        <p>
+          Original text and graphics we create are owned by BOSS KG. All third-party trademarks,
+          game and film titles, characters, artwork and screenshots remain the property of their
+          respective owners and are used here for identification and editorial commentary under
+          applicable fair-use principles. We claim no ownership of, or affiliation with, those
+          properties.
+        </p>
+
+        <h2>Acceptable use</h2>
+        <p>
+          You agree not to misuse the Site, including attempting to disrupt it, scrape it at scale,
+          or use it for unlawful purposes.
+        </p>
+
+        <h2>Third-party links</h2>
+        <p>
+          The Site links to third-party websites and services we don't control. We're not
+          responsible for their content or practices.
+        </p>
+
+        <h2>Disclaimer &amp; liability</h2>
+        <p>
+          The Site is provided "as is" without warranties of any kind. To the fullest extent
+          permitted by law, BOSS KG is not liable for any damages arising from your use of the
+          Site.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          We may update these Terms from time to time; the "Last updated" date reflects the
+          latest version. Continued use of the Site means you accept the current Terms.
+        </p>
+
+        <h2>Contact</h2>
+        <p>Questions? Email <a href={`mailto:${email}`}>{email}</a>.</p>
+      </div>
+    </article>
+  </main>
+</Base>

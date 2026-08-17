@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+const channelUrl = "https://youtube.com/@kiwinoygamer";
+---
+<Base title="Videos — BOSS KG" description="4K 60fps HDR gameplay, walkthroughs and clips from BOSS KG.">
+  <main class="wrap">
+    <section class="sec" style="margin-top:34px">
+      <div class="sec-h"><span class="bar"></span><h2>Videos</h2><a href={channelUrl} rel="noopener">YouTube →</a></div>
+      <p style="color:var(--muted); margin:-6px 0 22px; max-width:62ch">
+        Full-game walkthroughs in 4K 60fps HDR, no commentary — plus clips and highlights.
+        The latest uploads land on our YouTube channel first.
+      </p>
+      <div class="art g-ps" style="aspect-ratio:16/9; border-radius:var(--radius); display:grid; place-items:center; box-shadow:var(--shadow)">
+        <a class="btn red" href={channelUrl} rel="noopener" style="text-decoration:none">▶ Watch on YouTube</a>
+      </div>
+      <p style="color:var(--faint); font-size:13px; margin-top:14px">
+        Embedded playlists are coming here soon. For now, catch every upload on the channel.
+      </p>
+    </section>
+  </main>
+</Base>

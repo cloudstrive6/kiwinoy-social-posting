@@ -1,0 +1,32 @@
+---
+import Base from "../layouts/Base.astro";
+// Real, live accounts. Site brand is BOSS KG; the handles stay as the existing channels.
+const socials = [
+  { key: "ig", name: "Instagram", handle: "@kiwinoygaming", url: "https://instagram.com/kiwinoygaming", cta: "Follow on Instagram" },
+  { key: "tt", name: "TikTok", handle: "@kiwinoygamer", url: "https://tiktok.com/@kiwinoygamer", cta: "Follow on TikTok" },
+  { key: "yt", name: "YouTube", handle: "BOSS KG", url: "https://youtube.com/@kiwinoygamer", cta: "Subscribe on YouTube" },
+  { key: "fb", name: "Facebook", handle: "BOSS KG", url: "https://facebook.com/kiwinoygamer", cta: "Follow on Facebook" },
+];
+---
+<Base title="Follow — BOSS KG" description="Follow BOSS KG on YouTube, TikTok, Instagram and Facebook for gameplay, clips and the daily drop.">
+  <main class="wrap">
+    <section class="follow" style="margin-top:34px" aria-label="Follow us on social">
+      <div class="follow-top">
+        <span class="bar" style="width:4px;height:26px;background:var(--red);border-radius:3px"></span>
+        <div><h2>Follow the action</h2><p>Gameplay, clips and the daily drop — hit follow so you never miss a moment.</p></div>
+      </div>
+      <div class="socgrid">
+        {socials.map((s) => (
+          <div class={`soc ${s.key}`}>
+            <div class="soc-h">
+              <span class="soc-ic" style="background:var(--red)"><b>KG</b></span>
+              <div class="who"><b>{s.handle}</b><span>{s.name}</span></div>
+              <div class="cnt"><b>—</b><span>Followers</span></div>
+            </div>
+            <a class="btn red" href={s.url} rel="noopener">{s.cta}</a>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Base>

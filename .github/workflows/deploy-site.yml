@@ -1,0 +1,58 @@
+name: Deploy site (Netlify)
+
+# Builds the Astro site in site/ and deploys it to the Netlify project "bosskg"
+# using the Netlify CLI + an auth token — NO GitHub App / OAuth involved.
+#
+# One-time setup (done by you): create a Netlify personal access token
+#   Netlify → avatar → User settings → Applications → Personal access tokens → New token
+# then add it to this repo's Secrets as NETLIFY_AUTH_TOKEN
+#   GitHub repo → Settings → Secrets and variables → Actions → New repository secret.
+# The Site ID below is public (it's in Netlify's deploy-status badge URL), so it's inlined.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "netlify.toml"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch: {}
+
+# Never run two site deploys at once; cancel an in-progress one if a newer push lands.
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: site
+        run: npm ci
+
+      - name: Build
+        working-directory: site
+        run: npm run build
+
+      - name: Deploy to Netlify
+        working-directory: site
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: 20342fd3-c5fd-4908-a79c-06233163ff71
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::error::NETLIFY_AUTH_TOKEN secret is not set. Add it in repo Settings → Secrets → Actions."
+            exit 1
+          fi
+          npx --yes netlify-cli@17 deploy \
+            --prod \
+            --dir dist \
+            --site "$NETLIFY_SITE_ID" \
+            --message "CI deploy: ${GITHUB_SHA::7}"
