@@ -29,7 +29,7 @@ const latest = rest.slice(0, 4);
   <main class="wrap">
     {lead && (
       <section class="hero" aria-label="Top stories">
-        <a class="lead art {gclass(lead.data.game)} {lead.data.cover ? 'has-img' : ''}" href={`/news/${lead.id}`}>
+        <a class={`lead art ${gclass(lead.data.game)} ${lead.data.cover ? 'has-img' : ''}`} href={`/news/${lead.id}`}>
           {lead.data.cover && <img src={lead.data.cover} alt={lead.data.coverAlt} />}
           <div class="kicker">
             <span class="pill news">{lead.data.tag}</span>
