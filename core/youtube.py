@@ -92,8 +92,22 @@ def _creds():
         client_id=CONFIG.youtube_client_id, client_secret=CONFIG.youtube_client_secret,
         token_uri=TOKEN_URI, scopes=SCOPES,
     )
-    creds.refresh(Request())
-    return creds
+    # RETRY the token refresh — Avast intermittently resets the socket to the OAuth token
+    # endpoint (TransportError wrapping PermissionError(13)), which would otherwise kill a
+    # multi-hour upload right here, before a single byte is sent (bit FF7 Part 2 twice).
+    import time as _t
+    last = None
+    for attempt in range(8):
+        try:
+            creds.refresh(Request())
+            return creds
+        except _RETRY_NET as e:
+            last = e
+            wait = min(60, 2 ** attempt)
+            print(f"[youtube] token refresh failed ({e!r}) — retry {attempt + 1}/8 in {wait}s",
+                  flush=True)
+            _t.sleep(wait)
+    raise YouTubeError(f"YouTube token refresh failed after 8 retries: {last!r}")
 
 
 def _service():
