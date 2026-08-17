@@ -28,26 +28,17 @@ const path = Astro.url.pathname;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z' fill='%23F3313E'/%3E%3C/svg%3E" />
-    <!-- Set the theme before paint to avoid a flash -->
-    <script is:inline>
-      (function () {
-        const s = localStorage.getItem("kg-theme");
-        if (s) document.documentElement.setAttribute("data-theme", s);
-      })();
-    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2096%2096'%3E%3Crect%20width='96'%20height='96'%20rx='22'%20fill='%23FF3D46'/%3E%3Ctext%20x='48'%20y='61'%20text-anchor='middle'%20font-family='Georgia,serif'%20font-size='46'%20font-weight='700'%20fill='%230F1116'%3EKG%3C/text%3E%3Crect%20x='30'%20y='71'%20width='36'%20height='6'%20rx='3'%20fill='%230F1116'/%3E%3C/svg%3E" />
   </head>
   <body>
     <header class="nav">
       <div class="wrap nav-in">
         <a class="brand" href="/" aria-label="BOSS KG home">
-          <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
-            <defs><linearGradient id="kgm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3313E"/><stop offset="1" stop-color="#B3121C"/></linearGradient></defs>
-            <path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="url(#kgm)"/>
-            <path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="none" stroke="#FFD23C" stroke-width="1.4" opacity=".8"/>
-            <text x="20" y="26" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="15" font-weight="800" fill="#fff">KG</text>
+          <svg class="logo" viewBox="0 10 260 84" role="img" aria-label="BOSS KG">
+            <text x="72" y="27" text-anchor="middle" letter-spacing="16" font-family="Helvetica Neue,Segoe UI,system-ui,Arial,sans-serif" font-size="15" font-weight="800" fill="currentColor">BOSS</text>
+            <text x="72" y="90" text-anchor="middle" letter-spacing="-1" font-family="Georgia,'Times New Roman',serif" font-size="60" font-weight="700" fill="currentColor">KG</text>
+            <rect x="150" y="60" width="80" height="8" rx="4" fill="#FF3D46"/>
           </svg>
-          <div><b>BOSS</b><span>KG</span></div>
         </a>
         <nav class="main" aria-label="Primary">
           {nav.map((n) => (
@@ -55,9 +46,6 @@ const path = Astro.url.pathname;
           ))}
         </nav>
         <div class="nav-right">
-          <button class="iconbtn" id="theme" aria-label="Toggle light/dark theme">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
-          </button>
           <a class="btn sub" href="/#subscribe">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6 12 13 2 6"/></svg>
             <span>Subscribe</span>
@@ -72,8 +60,11 @@ const path = Astro.url.pathname;
       <div class="wrap foot">
         <div class="about">
           <a class="brand" href="/">
-            <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="url(#kgm)"/><path d="M20 2 34.6 10.4V29.6L20 38 5.4 29.6V10.4Z" fill="none" stroke="#FFD23C" stroke-width="1.4" opacity=".8"/><text x="20" y="26" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="15" font-weight="800" fill="#fff">KG</text></svg>
-            <div><b>BOSS</b><span>KG</span></div>
+            <svg class="logo" viewBox="0 10 260 84" role="img" aria-label="BOSS KG">
+              <text x="72" y="27" text-anchor="middle" letter-spacing="16" font-family="Helvetica Neue,Segoe UI,system-ui,Arial,sans-serif" font-size="15" font-weight="800" fill="currentColor">BOSS</text>
+              <text x="72" y="90" text-anchor="middle" letter-spacing="-1" font-family="Georgia,'Times New Roman',serif" font-size="60" font-weight="700" fill="currentColor">KG</text>
+              <rect x="150" y="60" width="80" height="8" rx="4" fill="#FF3D46"/>
+            </svg>
           </a>
           <p>The drop-first source for Marvel games, the MCU, and the biggest moments in gaming.</p>
           <div class="socrow">
@@ -94,15 +85,5 @@ const path = Astro.url.pathname;
       </div>
     </footer>
 
-    <script is:inline>
-      document.getElementById("theme")?.addEventListener("click", () => {
-        const root = document.documentElement;
-        const dark = matchMedia("(prefers-color-scheme:dark)").matches;
-        const cur = root.getAttribute("data-theme") || (dark ? "dark" : "light");
-        const next = cur === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        localStorage.setItem("kg-theme", next);
-      });
-    </script>
   </body>
 </html>

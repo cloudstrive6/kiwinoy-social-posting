@@ -1,31 +1,15 @@
+/* BOSS KG — Direction B "Signal": a committed dark, tech-editorial identity.
+   Dark-only by design (like IGN); red is the single accent (no gold). */
 :root{
-  --bg:#EEF1F6; --surface:#FFFFFF; --surface-2:#F4F6FA; --raise:#FFFFFF;
-  --border:#DEE4EE; --text:#0F1420; --muted:#586074; --faint:#8A93A6;
-  --red:#E11D2A; --red-ink:#FFFFFF; --gold:#F2B705; --gold-ink:#1A1206;
-  --shadow:0 1px 2px rgba(16,22,34,.06), 0 12px 30px -12px rgba(16,22,34,.18);
+  --bg:#0F1116; --surface:#171A21; --surface-2:#12151B; --raise:#1C2029;
+  --border:#242932; --text:#EDEFF3; --muted:#9AA0AC; --faint:#6C727E;
+  --red:#FF3D46; --red-ink:#0F1116; --gold:#FF3D46; --gold-ink:#0F1116;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 22px 50px -20px rgba(0,0,0,.7);
   --radius:14px; --maxw:1200px;
-  --fdisplay:"Segoe UI","SF Pro Display",system-ui,-apple-system,Arial,sans-serif;
-  --fbody:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#080B11; --surface:#121826; --surface-2:#0E1420; --raise:#161D2C;
-    --border:#232C3D; --text:#ECEFF5; --muted:#8B95A9; --faint:#6B7488;
-    --red:#F3313E; --gold:#FFD23C;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 40px -16px rgba(0,0,0,.6);
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#080B11; --surface:#121826; --surface-2:#0E1420; --raise:#161D2C;
-  --border:#232C3D; --text:#ECEFF5; --muted:#8B95A9; --faint:#6B7488;
-  --red:#F3313E; --gold:#FFD23C;
-  --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 40px -16px rgba(0,0,0,.6);
-}
-:root[data-theme="light"]{
-  --bg:#EEF1F6; --surface:#FFFFFF; --surface-2:#F4F6FA; --raise:#FFFFFF;
-  --border:#DEE4EE; --text:#0F1420; --muted:#586074; --faint:#8A93A6;
-  --red:#E11D2A; --gold:#F2B705;
-  --shadow:0 1px 2px rgba(16,22,34,.06), 0 12px 30px -12px rgba(16,22,34,.18);
+  --fdisplay:"Helvetica Neue","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --fbody:"Helvetica Neue","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --fserif:Georgia,"Times New Roman",serif;
+  color-scheme:dark;
 }
 
 *{box-sizing:border-box}
@@ -41,7 +25,7 @@ h1,h2,h3{margin:0; font-family:var(--fdisplay); font-weight:800; line-height:1.0
 
 .pill{display:inline-flex; align-items:center; gap:7px; font-size:11px; font-weight:800;
   letter-spacing:.12em; text-transform:uppercase; padding:5px 11px; border-radius:6px}
-.pill.news{background:var(--gold); color:var(--gold-ink)}
+.pill.news{background:var(--surface); color:var(--muted); border:1px solid var(--border)}
 .pill.red{background:var(--red); color:var(--red-ink)}
 .pill.dot::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.9}
 
@@ -49,9 +33,9 @@ h1,h2,h3{margin:0; font-family:var(--fdisplay); font-weight:800; line-height:1.0
 header.nav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--bg) 86%, transparent);
   backdrop-filter:saturate(1.4) blur(12px); border-bottom:1px solid var(--border)}
 .nav-in{display:flex; align-items:center; gap:22px; height:66px}
-.brand{display:flex; align-items:center; gap:11px; font-family:var(--fdisplay); font-weight:800; font-size:19px}
-.brand .mark{width:34px; height:34px; flex:0 0 auto}
-.brand b{color:var(--text)} .brand span{color:var(--red)}
+.brand{display:flex; align-items:center; gap:11px; color:var(--text)}
+.brand .logo{height:40px; width:auto; display:block}
+footer.site .brand .logo{height:44px}
 nav.main{display:flex; gap:4px; margin-left:8px}
 nav.main a{font-weight:700; font-size:14.5px; color:var(--muted); padding:9px 12px; border-radius:8px; transition:.15s}
 nav.main a:hover{color:var(--text); background:var(--surface-2)}
