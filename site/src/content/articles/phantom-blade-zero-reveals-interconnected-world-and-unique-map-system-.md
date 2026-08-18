@@ -8,7 +8,7 @@ game: "phantom-blade-zero"
 cover: "/covers/phantom-blade-zero-reveals-interconnected-world-and-unique-map-system-.jpg"
 date: 2026-08-18
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/action/phantom-blade-zero-finally-shows-off-its-interconnected-game-world-with-exploration-guided-by-8-authentic-hand-painted-chinese-ink-wash-maps/"
 ---
