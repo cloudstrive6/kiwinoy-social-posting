@@ -50,8 +50,8 @@ jobs:
         run: |
           git config user.name "boss-kg-bot"
           git config user.email "bot@bosskg.com"
-          if [ -n "$(git status --porcelain site/src/content/articles)" ]; then
-            git add site/src/content/articles
+          if [ -n "$(git status --porcelain site/src/content/articles site/public/covers)" ]; then
+            git add site/src/content/articles site/public/covers
             git commit -m "content: news update (new articles / trending featured)"
             git push
             gh workflow run deploy-site.yml || echo "deploy dispatch skipped"

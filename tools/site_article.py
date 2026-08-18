@@ -104,7 +104,10 @@ def _write_article(pick: dict, today: str) -> dict | None:
         "the source, do not state it.\n"
         "- Get the medium right: a movie is a movie, a game is a game, a LEGO set is a toy — never "
         "mislabel them.\n"
-        "- Attribute the reporting to the source outlet. Label rumors/leaks as unconfirmed.\n"
+        "- Do NOT end with an inline '(Reporting via X)', 'according to <outlet>', or a trailing "
+        "byline — the source outlet is credited automatically in a separate Source line below the "
+        "article, so an inline one is redundant. Just write the story. Label rumors/leaks as "
+        "unconfirmed.\n"
         "- 4-6 short paragraphs, ~260-380 words. Plain paragraphs only — no markdown, hashtags or "
         "emojis. Engaging but honest; never clickbait or invented hype.\n\n"
         'Return ONLY JSON: {"title":"accurate headline","excerpt":"1-2 sentence summary",'

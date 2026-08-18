@@ -134,9 +134,9 @@ def _run(cmd: list[str]) -> tuple[int, str]:
 
 
 def _git_publish(paths: list[Path]) -> None:
-    """Commit the flipped article(s), push, and trigger a deploy. Best-effort."""
+    """Commit the flipped article(s) + their covers, push, and trigger a deploy. Best-effort."""
     rels = [str(p.relative_to(ROOT)).replace("\\", "/") for p in paths]
-    _run(["git", "add", *rels])
+    _run(["git", "add", *rels, "site/public/covers"])
     code, out = _run(["git", "commit", "-m", "content: publish approved article(s)"])
     if code != 0 and "nothing to commit" not in out:
         print(f"   git commit: {out.strip()[:200]}", flush=True)
@@ -161,8 +161,9 @@ def _wait_live(url: str, timeout: int = 300) -> bool:
     return False
 
 
-def _post(caps: dict, url: str, title: str) -> list[str]:
-    """Post FB + Threads. Returns a list of human-readable results."""
+def _post(caps: dict, url: str, title: str, slug: str) -> list[str]:
+    """Post FB + Threads (text + link) and an Instagram STORY (cover + link-in-bio CTA).
+    Returns a list of human-readable results."""
     from agents import publisher
     results = []
     try:
@@ -177,6 +178,21 @@ def _post(caps: dict, url: str, title: str) -> list[str]:
     except Exception as e:
         results.append(f"⚠️ Threads failed: {e}")
         print(f"   Threads post failed: {e!r}", flush=True)
+    # Instagram STORY — the article cover on a 9:16 canvas with the "Read the full story /
+    # Tap the link in bio" CTA (IG blocks API links, so the story drives to the bio link).
+    try:
+        cover = ROOT / "site" / "public" / "covers" / f"{slug}.jpg"
+        if cover.exists():
+            from agents import post_director as pd
+            story = pd.story_canvas_bytes(str(cover))     # CTA comes from config trends.autopost
+            publisher.run_ig_story_image(title[:120], story)
+            results.append("✅ Instagram Story")
+        else:
+            results.append("⚠️ IG Story skipped (no cover)")
+            print("   IG Story skipped: no cover image", flush=True)
+    except Exception as e:
+        results.append(f"⚠️ IG Story failed: {e}")
+        print(f"   IG Story failed: {e!r}", flush=True)
     return results
 
 
@@ -222,7 +238,7 @@ def main() -> int:
         print("  deploying… waiting for the page to go live", flush=True)
         live = _wait_live(url)
         print(f"  live={live}", flush=True)
-        results = _post(caps, url, title)
+        results = _post(caps, url, title, slug)
 
         from core import notify
         notify.telegram(
