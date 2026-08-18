@@ -21,11 +21,13 @@ const all = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const lead = all.find((a) => a.data.featured) ?? all[0];
+// Everything except the CURRENT hero. This is intentional: the hero isn't duplicated in the
+// feed below it, but excluding only the *current* lead means a story that gets rotated OUT of
+// the hero (when a new trend takes over) automatically re-appears in Latest Drops if it's still
+// recent enough to be in the slice.
 const rest = all.filter((a) => a.id !== lead?.id);
 const side = rest.slice(0, 3);
-// Latest Drops = the full recent feed (newest first), INCLUDING the featured/hero story so
-// every article reliably gets a card here; the hero is just a visual highlight of the top one.
-const latest = all.slice(0, 8);
+const latest = rest.slice(0, 8);
 ---
 <Base>
   <main class="wrap">
