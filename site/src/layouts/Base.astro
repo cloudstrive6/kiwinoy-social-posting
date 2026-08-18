@@ -115,5 +115,41 @@ const path = Astro.url.pathname;
         });
       })();
     </script>
+
+    <!-- Newsletter signup — wires every .sub-form on the page to the MailerLite function. -->
+    <script is:inline>
+      document.querySelectorAll("form.sub-form").forEach(function (form) {
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          var email = (form.querySelector('input[type="email"]') || {}).value || "";
+          var name = (form.querySelector('input[type="text"]') || {}).value || "";
+          email = email.trim(); name = name.trim();
+          var toast =
+            (form.parentElement && form.parentElement.querySelector(".toast")) ||
+            (form.closest("section") && form.closest("section").querySelector(".toast")) ||
+            document.querySelector(".toast");
+          var btn = form.querySelector('button[type="submit"]') || form.querySelector("button");
+          if (!email) return;
+          if (btn) btn.disabled = true;
+          var ok = false;
+          try {
+            var r = await fetch("/.netlify/functions/subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: name, email: email }),
+            });
+            ok = r.ok;
+          } catch (err) {}
+          if (toast) {
+            toast.textContent = ok
+              ? "🎉 You're in" + (name ? ", " + name : "") + "! Check your inbox to confirm."
+              : "⚠️ Hmm, that didn't work — please try again in a moment.";
+            toast.classList.add("on");
+          }
+          if (ok && form.reset) form.reset();
+          if (btn) btn.disabled = false;
+        });
+      });
+    </script>
   </body>
 </html>

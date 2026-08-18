@@ -1,0 +1,8 @@
+# Netlify config for the BOSS KG site. The static site is built to dist/ (deploy uses --dir dist),
+# and the newsletter signup runs as a serverless function in netlify/functions/.
+[build]
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

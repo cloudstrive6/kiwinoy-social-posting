@@ -148,15 +148,4 @@ const latest = rest.slice(0, 8);
     </section>
   </main>
 
-  <script is:inline>
-    // Placeholder handler — swap for the MailerLite embed/API in the mailing-list phase.
-    document.getElementById("sub-form")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const n = document.getElementById("sub-name").value.trim();
-      const t = document.getElementById("toast");
-      t.textContent = `🎉 You're in${n ? ", " + n : ""}! Check your inbox for a welcome email.`;
-      t.classList.add("on");
-      e.target.reset();
-    });
-  </script>
 </Base>

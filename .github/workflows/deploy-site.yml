@@ -71,5 +71,6 @@ jobs:
           npx --yes netlify-cli@17 deploy \
             --prod \
             --dir dist \
+            --functions netlify/functions \
             --site "$NETLIFY_SITE_ID" \
             --message "CI deploy: ${GITHUB_SHA::7}"
