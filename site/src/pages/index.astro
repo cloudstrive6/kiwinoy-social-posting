@@ -23,7 +23,9 @@ const all = (await getCollection("articles", ({ data }) => !data.draft))
 const lead = all.find((a) => a.data.featured) ?? all[0];
 const rest = all.filter((a) => a.id !== lead?.id);
 const side = rest.slice(0, 3);
-const latest = rest.slice(0, 4);
+// Latest Drops = the full recent feed (newest first), INCLUDING the featured/hero story so
+// every article reliably gets a card here; the hero is just a visual highlight of the top one.
+const latest = all.slice(0, 8);
 ---
 <Base>
   <main class="wrap">
