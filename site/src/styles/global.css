@@ -124,7 +124,8 @@ nav.main a.active::after{content:""; display:block; height:2.5px; background:var
 .follow-top h2{font-size:24px}
 .follow-top p{margin:0; color:var(--muted); max-width:52ch}
 .socgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); margin-top:20px}
-.soc{background:var(--surface); padding:22px}
+.soc{background:var(--surface); padding:22px; display:flex; flex-direction:column}
+.soc .btn{margin-top:auto}   /* pin Follow/Subscribe to the bottom so all 3 align */
 .soc-h{display:flex; align-items:center; gap:12px; margin-bottom:16px}
 .soc-ic{width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; flex:0 0 auto}
 .soc-ic svg{width:23px; height:23px}

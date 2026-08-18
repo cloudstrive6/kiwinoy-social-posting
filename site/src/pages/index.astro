@@ -119,9 +119,9 @@ const latest = rest.slice(0, 4);
             <div class="who"><b>Boss KG</b><span>YouTube</span></div><div class="cnt"><b>{ytSubs ?? "—"}</b><span>Subscribers</span></div>
           </div>
           <div class="thumbs">
-            {yt.length >= 2 ? yt.slice(0, 2).map((v) => (
-              <div class="art"><img src={v.thumb} alt={v.title} loading="lazy" /></div>
-            )) : (<><div class="art g-ps"></div><div class="art g-wolv"></div></>)}
+            {yt.length ? yt.slice(0, 4).map((v) => (
+              <a class="art" href={v.slug ? `/watch/${v.slug}` : v.url} target={v.slug ? undefined : "_blank"} rel="noopener"><img src={v.thumb} alt={v.title} loading="lazy" /></a>
+            )) : (<><div class="art g-ps"></div><div class="art g-wolv"></div><div class="art g-spidey"></div><div class="art g-mcu"></div></>)}
           </div>
           <a class="btn red" href={CHANNEL_URL} rel="noopener">Subscribe on YouTube</a>
         </div>
