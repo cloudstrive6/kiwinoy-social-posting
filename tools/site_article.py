@@ -41,6 +41,27 @@ def _slug(t: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", (t or "").lower()).strip("-")[:70] or "story"
 
 
+_STOP = {"the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "at", "is", "are",
+         "its", "it", "new", "with", "this", "that", "from", "was", "has", "have", "but",
+         "not", "will", "after", "amp", "s"}
+
+
+def _tokens(text: str) -> set[str]:
+    """Significant lowercase word set, for near-duplicate topic detection."""
+    return {w for w in re.sub(r"[^a-z0-9 ]", " ", (text or "").lower()).split()
+            if len(w) > 2 and w not in _STOP}
+
+
+def _near_dup(topic: str, existing_keys: list[set]) -> bool:
+    """True if `topic` shares >=60% of its significant words with an already-written article —
+    so two outlets (or two runs) covering the SAME event don't both become articles."""
+    tk = _tokens(topic)
+    if not tk:
+        return False
+    return any(ek and len(tk & ek) / max(1, min(len(tk), len(ek))) >= 0.6
+               for ek in existing_keys)
+
+
 def _clean_source(name: str) -> str:
     return re.sub(r"^(news:|gnews)", "", name or "").strip() or "reports"
 
@@ -137,6 +158,7 @@ def main() -> int:
 
     ART_DIR.mkdir(parents=True, exist_ok=True)
     existing = {p.stem for p in ART_DIR.glob("*.md")}
+    existing_keys = [_tokens(s.replace("-", " ")) for s in existing]  # topic-dedupe signatures
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
 
     print("[site-article] scouting current news …", flush=True)
@@ -160,6 +182,9 @@ def main() -> int:
         if made >= a.count:
             break
         topic = pick.get("topic", "")
+        if _near_dup(topic, existing_keys):          # same event, different outlet/headline
+            print(f"   skip (duplicate topic): {topic[:60]}", flush=True)
+            continue
         nv = trends.novelty_check(topic, pick.get("angle", ""))
         if not nv.get("new", True):
             print(f"   skip (not new, {nv.get('known_since')}): {topic}", flush=True)
@@ -168,8 +193,8 @@ def main() -> int:
         if not art:
             continue
         slug = _slug(art["title"])
-        if slug in existing:
-            print(f"   skip (exists): {slug}", flush=True)
+        if slug in existing or _near_dup(art["title"], existing_keys):
+            print(f"   skip (exists/dup): {slug}", flush=True)
             continue
         md = _to_markdown(art, today, draft=not a.publish)
         if a.dry:
@@ -187,6 +212,7 @@ def main() -> int:
             print(f"   wrote {slug}.md  [{art.get('category')}]", flush=True)
             written.append(art["title"])
         existing.add(slug)
+        existing_keys.append(_tokens(art["title"]))
         made += 1
 
     print(f"[site-article] done — {made} article(s).", flush=True)
