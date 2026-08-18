@@ -141,15 +141,14 @@ def main() -> int:
 
     print("[site-article] scouting current news …", flush=True)
     cands = trends.scout()
-    # Keep it light + robust: keyword-filter to the Marvel beat instead of one heavy ranking
-    # LLM call (the scout already dates + de-dups; freshest come first).
-    kw = trends._MARVEL_KW
-    marvel_feeds = ("news:ScreenRant", "news:Collider", "news:CBR", "news:ComicBook")
-
+    # BROAD BEAT (per user 2026-08-18): all major video-game news + the MCU, matching the site's
+    # scope ("video games, the MCU, and the biggest moments in gaming"). Accept any FRESH news
+    # candidate — the scout already covers the big gaming outlets (IGN, GameSpot, Eurogamer, PC
+    # Gamer, Polygon, Push Square, VG247) + the Marvel feeds + focused Google-News searches, and
+    # already drops week-old stories. The novelty + readable-source gates below keep quality up.
     def _on_beat(c):
-        t = (c.get("title") or "").lower()
         src = c.get("source") or ""
-        return src == "gnews" or src.startswith(marvel_feeds) or any(k in t for k in kw)
+        return src == "gnews" or src.startswith("news:")
 
     picks = [{"topic": c["title"], "source_link": c.get("link", ""), "source_name": c.get("source", "")}
              for c in cands
@@ -191,15 +190,23 @@ def main() -> int:
         made += 1
 
     print(f"[site-article] done — {made} article(s).", flush=True)
-    if written and not a.publish:
+    if not a.dry and not a.publish:
         try:
             from core import notify
-            lst = "\n".join(f"• {t}" for t in written)
-            notify.telegram(
-                f"📝 {len(written)} new BOSS KG DRAFT article(s):\n{lst}\n\n"
-                "Reply \"approved\" to publish + auto-post it to Facebook & Threads (with a link "
-                "CTA). If more than one is pending, reply \"approve <keyword>\" (a word from the "
-                "title) or \"approve all\".")
+            if written:
+                lst = "\n".join(f"• {t}" for t in written)
+                notify.telegram(
+                    f"📝 {len(written)} new BOSS KG DRAFT article(s):\n{lst}\n\n"
+                    "Reply \"approved\" to publish + auto-post it to Facebook & Threads (with a link "
+                    "CTA). If more than one is pending, reply \"approve <keyword>\" (a word from the "
+                    "title) or \"approve all\".")
+            else:
+                # HEARTBEAT: even on a quiet day, confirm the check ran so silence never looks
+                # like a breakage (per user 2026-08-18).
+                notify.telegram(
+                    f"🔎 BOSS KG news check ran: scanned {len(cands)} stories, {len(picks)} on-beat "
+                    "— nothing fresh + verifiable enough to draft today. I'll ping the moment "
+                    "there's a real story to approve.")
         except Exception:
             pass
     return 0
