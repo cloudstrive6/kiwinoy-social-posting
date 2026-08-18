@@ -108,8 +108,15 @@ def _write_article(pick: dict, today: str) -> dict | None:
         "byline — the source outlet is credited automatically in a separate Source line below the "
         "article, so an inline one is redundant. Just write the story. Label rumors/leaks as "
         "unconfirmed.\n"
-        "- 4-6 short paragraphs, ~260-380 words. Plain paragraphs only — no markdown, hashtags or "
-        "emojis. Engaging but honest; never clickbait or invented hype.\n\n"
+        "- HOUSE STYLE (match it): open with a strong 1-paragraph lede, then 1-2 short sections "
+        "each introduced by a '## Subheading' that fits the story (e.g. '## Why this matters', "
+        "'## What to expect', '## The big picture'). **Bold** the key facts — dates, names, "
+        "numbers, the headline claim. ~320-450 words.\n"
+        "- END with a short *italic* engagement question inviting readers to reply on our socials, "
+        "e.g. '*What are you most hyped for — the combat, the story, or the tech? Let us know across "
+        "our socials.*'\n"
+        "- Markdown is allowed for '## ' headings, '**bold**', and that one closing '*italic*' line "
+        "ONLY. No hashtags or emojis. Engaging but honest; never clickbait or invented hype.\n\n"
         'Return ONLY JSON: {"title":"accurate headline","excerpt":"1-2 sentence summary",'
         '"category":"one of: Marvel Games | MCU | PlayStation | Gaming","game":"short key like '
         'spider-man2, wolverine, mcu, final-fantasy-7, halo (or \'mcu\')","tag":"News | Rumor | '

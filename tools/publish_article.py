@@ -161,35 +161,52 @@ def _wait_live(url: str, timeout: int = 300) -> bool:
     return False
 
 
-def _post(caps: dict, url: str, title: str, slug: str) -> list[str]:
-    """Post FB + Threads (text + link) and an Instagram STORY (cover + link-in-bio CTA).
+def _build_card(title: str, game: str, slug: str):
+    """Build the shared BOSS KG news card (headline + brand over the article cover), like the
+    auto-posts. Returns (card_path, card_bytes) or (None, None) if no cover is available."""
+    cover = ROOT / "site" / "public" / "covers" / f"{slug}.jpg"
+    if not cover.exists():
+        return None, None
+    try:
+        import tempfile
+        from agents import post_director as pd
+        out = Path(tempfile.gettempdir()) / f"bosskg_card_{slug}.jpg"
+        if pd.build_card(title, game or "", title, out, bg_image=str(cover)):
+            return out, out.read_bytes()
+    except Exception as e:
+        print(f"   card build failed: {e!r}", flush=True)
+    return None, None
+
+
+def _post(caps: dict, url: str, title: str, slug: str, game: str) -> list[str]:
+    """Post the news CARD (graphic + headline) with the caption + link CTA to Facebook + Threads,
+    and an Instagram STORY (same card on a 9:16 canvas + link-in-bio CTA) — like the auto-posts.
     Returns a list of human-readable results."""
     from agents import publisher
-    results = []
+    card_path, card = _build_card(title, game, slug)
+    tag = "" if card else " (text only — no cover)"
     try:
-        publisher.run(caps["facebook"], None, platform_keys=["facebook"])
-        results.append("✅ Facebook")
+        publisher.run(caps["facebook"], card, platform_keys=["facebook"])
+        results = ["✅ Facebook" + tag]
     except Exception as e:
-        results.append(f"⚠️ Facebook failed: {e}")
+        results = [f"⚠️ Facebook failed: {e}"]
         print(f"   FB post failed: {e!r}", flush=True)
     try:
-        publisher.run_threads(caps["threads"])
-        results.append("✅ Threads")
+        publisher.run(caps["threads"], card, platform_keys=["threads"])
+        results.append("✅ Threads" + tag)
     except Exception as e:
         results.append(f"⚠️ Threads failed: {e}")
         print(f"   Threads post failed: {e!r}", flush=True)
-    # Instagram STORY — the article cover on a 9:16 canvas with the "Read the full story /
-    # Tap the link in bio" CTA (IG blocks API links, so the story drives to the bio link).
+    # Instagram STORY — the card on a 9:16 canvas with the "Read the full story / Tap the link in
+    # bio" CTA (IG blocks API links, so the story drives to the bio link).
     try:
-        cover = ROOT / "site" / "public" / "covers" / f"{slug}.jpg"
-        if cover.exists():
-            from agents import post_director as pd
-            story = pd.story_canvas_bytes(str(cover))     # CTA comes from config trends.autopost
-            publisher.run_ig_story_image(title[:120], story)
+        from agents import post_director as pd
+        img = str(card_path) if card_path else str(ROOT / "site" / "public" / "covers" / f"{slug}.jpg")
+        if Path(img).exists():
+            publisher.run_ig_story_image(title[:120], pd.story_canvas_bytes(img))
             results.append("✅ Instagram Story")
         else:
             results.append("⚠️ IG Story skipped (no cover)")
-            print("   IG Story skipped: no cover image", flush=True)
     except Exception as e:
         results.append(f"⚠️ IG Story failed: {e}")
         print(f"   IG Story failed: {e!r}", flush=True)
@@ -238,7 +255,7 @@ def main() -> int:
         print("  deploying… waiting for the page to go live", flush=True)
         live = _wait_live(url)
         print(f"  live={live}", flush=True)
-        results = _post(caps, url, title, slug)
+        results = _post(caps, url, title, slug, str(fm.get("game", "")))
 
         from core import notify
         notify.telegram(
