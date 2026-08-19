@@ -76,10 +76,12 @@
 
     function close() {
       if (closed) return;
+      closed = true;                                 // set the flag *inside* close, after the guard
+      cleanup();
       pop.classList.remove("on");
       document.documentElement.style.overflow = "";
       setTimeout(function () { pop.hidden = true; }, 280);
-      if (!subscribed()) remember(false);           // start the 10-day cooldown
+      if (!subscribed()) remember(false);            // start the dismiss cooldown
     }
 
     // ---- triggers ----
@@ -99,12 +101,13 @@
       window.removeEventListener("scroll", onScroll);
     }
 
-    // ---- close handlers ----
+    // ---- close handlers (click covers taps too; add touchend for stubborn iOS Safari) ----
     pop.querySelectorAll("[data-nl-close]").forEach(function (el) {
-      el.addEventListener("click", function () { closed = true; cleanup(); close(); });
+      el.addEventListener("click", close);
+      el.addEventListener("touchend", function (e) { e.preventDefault(); close(); }, { passive: false });
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && shown && !pop.hidden) { closed = true; cleanup(); close(); }
+      if (e.key === "Escape" && shown && !pop.hidden) close();
     });
 
     // ---- light focus trap ----
@@ -139,10 +142,9 @@
       } catch (err) {}
       if (ok) {
         remember(true);                             // subscribed → never show again
-        cleanup();
         pop.querySelector(".nl-pop-body").hidden = true;
         pop.querySelector(".nl-pop-done").hidden = false;
-        setTimeout(function () { closed = true; close(); }, 3400);
+        setTimeout(close, 3400);
       } else {
         btn.disabled = false; btn.textContent = "Try again";
         var er = form.parentElement.querySelector(".nl-pop-err");
