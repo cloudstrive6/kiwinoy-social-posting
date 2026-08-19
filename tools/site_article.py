@@ -158,6 +158,52 @@ def _to_markdown(a: dict, today: str, draft: bool = True) -> str:
     return "\n".join(fm) + "\n\n" + a["body"].strip() + "\n"
 
 
+def draft_topic(topic: str, source_link: str, source_name: str = "", *,
+                publish: bool = False, notify_tg: bool = False) -> str | None:
+    """Draft ONE blog article for a specific topic — used by the trend pipeline to turn an
+    auto-posted trend into a reviewable blog draft. Grounds on the source, dedupes vs existing
+    articles, writes the .md (draft-first) + a scraped cover. Returns the title, or None if it
+    couldn't (no readable/direct source, not-new, duplicate topic, or a write failure)."""
+    ART_DIR.mkdir(parents=True, exist_ok=True)
+    if not source_link or "news.google.com" in source_link:
+        return None
+    existing = {p.stem for p in ART_DIR.glob("*.md")}
+    keys = [_tokens(s.replace("-", " ")) for s in existing]
+    if _near_dup(topic, keys):
+        print(f"   [blog] skip (duplicate topic): {topic[:60]}", flush=True)
+        return None
+    try:
+        if not trends.novelty_check(topic).get("new", True):
+            print(f"   [blog] skip (not new): {topic[:60]}", flush=True)
+            return None
+    except Exception:
+        pass
+    today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
+    art = _write_article({"topic": topic, "source_link": source_link, "source_name": source_name}, today)
+    if not art:
+        return None
+    slug = _slug(art["title"])
+    if slug in existing or _near_dup(art["title"], keys):
+        print(f"   [blog] skip (exists/dup): {slug}", flush=True)
+        return None
+    (ART_DIR / f"{slug}.md").write_text(_to_markdown(art, today, draft=not publish), encoding="utf-8")
+    try:
+        import subprocess
+        subprocess.run([sys.executable, str(Path(__file__).with_name("article_cover.py")),
+                        "--slug", slug], cwd=str(Path(__file__).resolve().parents[1]), timeout=90)
+    except Exception as e:
+        print(f"   [blog] cover skipped ({e!r})", flush=True)
+    print(f"   [blog] drafted {slug}.md  [{art.get('category')}]", flush=True)
+    if notify_tg:
+        try:
+            from core import notify
+            notify.telegram(f"📝 Also drafted a BOSS KG blog for this trend:\n• {art['title']}\n\n"
+                            "Reply \"approved\" to publish it live + auto-post to FB/Threads/IG Story.")
+        except Exception:
+            pass
+    return art["title"]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--count", type=int, default=6)

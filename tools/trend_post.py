@@ -321,6 +321,14 @@ def main() -> int:
                 continue
         else:
             _deliver(res, pick)
+        # TREND -> BLOG: a trend worth posting also becomes a reviewable blog DRAFT (grounded
+        # on the same source, deduped vs existing articles), pinged to Telegram for "approved".
+        try:
+            from tools.site_article import draft_topic
+            draft_topic(topic, pick.get("source_link", ""), pick.get("source_name", ""),
+                        notify_tg=True)
+        except Exception as e:
+            print(f"   [blog] draft skipped ({e!r})", flush=True)
         posted.append({                            # rich record for the posted-topics log
             "key": _key(topic), "topic": topic, "date": _today(),
             "stage": pick.get("stage", ""), "game": res.get("game", "") or pick.get("game", ""),

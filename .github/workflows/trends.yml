@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write         # commit the blog draft a trend spins up (trend -> blog link)
 
 jobs:
   trend:
@@ -56,3 +56,16 @@ jobs:
       - name: Generate trend draft(s)
         run: |
           python tools/trend_post.py --count "${{ github.event.inputs.count || '1' }}"
+
+      - name: Commit any blog draft the trend spun up
+        if: always()
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          if [ -n "$(git status --porcelain site/src/content/articles site/public/covers)" ]; then
+            git add site/src/content/articles site/public/covers
+            git commit -m "content: blog draft from trend auto-post"
+            git push
+          else
+            echo "no blog draft to commit this run"
+          fi
