@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
+import NewsletterModal from "../components/NewsletterModal.astro";
 export interface Props {
   title?: string;
   description?: string;
@@ -104,6 +105,8 @@ const path = Astro.url.pathname;
         <span>All game &amp; film imagery belongs to their respective owners; used for editorial coverage.</span>
       </div>
     </footer>
+
+    <NewsletterModal />
 
     <script is:inline>
       (function () {

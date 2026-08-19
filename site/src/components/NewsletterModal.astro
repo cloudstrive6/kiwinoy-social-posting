@@ -1,0 +1,154 @@
+---
+// BOSS KG newsletter opt-in popup (exit-intent / delayed / scroll-depth).
+// Frequency-capped so a visitor isn't nagged: dismiss = 10-day cooldown, subscribe = never again.
+// Single email field (lowest friction) → reuses the existing /.netlify/functions/subscribe endpoint.
+---
+<div class="nl-pop" id="nlPop" role="dialog" aria-modal="true" aria-labelledby="nlPopTitle" hidden>
+  <div class="nl-pop-backdrop" data-nl-close></div>
+  <div class="nl-pop-card">
+    <span class="nl-pop-topline" aria-hidden="true"></span>
+    <button class="nl-pop-x" aria-label="Close" data-nl-close>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+
+    <div class="nl-pop-body">
+      <span class="nl-pop-eyebrow">◆ The KG Drop</span>
+      <h2 id="nlPopTitle">Don’t miss the next big drop.</h2>
+      <p class="nl-pop-sub">Get the biggest <b>gaming</b> &amp; <b>MCU</b> news <b>before it trends</b> — straight to your inbox.</p>
+      <ul class="nl-pop-list">
+        <li><span>🎮</span> New games, trailers &amp; release dates first</li>
+        <li><span>🎬</span> MCU breakdowns &amp; the leaks that actually matter</li>
+        <li><span>⚡</span> A few emails a week. No spam, ever.</li>
+      </ul>
+      <form class="nl-pop-form" id="nlPopForm" novalidate>
+        <input type="email" name="email" placeholder="you@email.com" autocomplete="email" required aria-label="Email address" />
+        <button type="submit">Get the Drop →</button>
+      </form>
+      <p class="nl-pop-fine">Join thousands of gamers in the KG crew. Unsubscribe anytime.</p>
+      <button class="nl-pop-nope" data-nl-close>Maybe later</button>
+    </div>
+
+    <div class="nl-pop-done" hidden>
+      <div class="nl-pop-check">✓</div>
+      <h2>You’re in! 🎮</h2>
+      <p>Check your inbox to confirm — the next drop is on its way.</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var pop = document.getElementById("nlPop");
+    if (!pop) return;
+
+    var KEY = "kg_nl_pop";        // { t: <ms>, sub: <bool> }
+    var DAYS = 7;                 // dismiss cooldown (subscribers are never shown again)
+    var DELAY = 18000;            // ms before the timed trigger fires
+    var SCROLL_AT = 0.55;         // fraction of page scrolled (mobile-friendly trigger)
+
+    function state() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+    function subscribed() { var s = state(); return !!(s && s.sub); }
+    function suppressed() {
+      var s = state();
+      if (!s) return false;
+      if (s.sub) return true;                       // already subscribed → never again
+      return (Date.now() - s.t) < DAYS * 864e5;     // within cooldown window
+    }
+    function remember(sub) {
+      try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), sub: !!sub })); } catch (e) {}
+    }
+
+    if (suppressed()) return;     // don't even arm the triggers
+
+    var shown = false, closed = false;
+
+    function open() {
+      if (shown || suppressed()) return;
+      shown = true;
+      pop.hidden = false;
+      requestAnimationFrame(function () { pop.classList.add("on"); });
+      document.documentElement.style.overflow = "hidden";
+      var inp = pop.querySelector('input[type="email"]');
+      if (inp && window.matchMedia("(min-width:700px)").matches) {
+        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 320);
+      }
+    }
+
+    function close() {
+      if (closed) return;
+      pop.classList.remove("on");
+      document.documentElement.style.overflow = "";
+      setTimeout(function () { pop.hidden = true; }, 280);
+      if (!subscribed()) remember(false);           // start the 10-day cooldown
+    }
+
+    // ---- triggers ----
+    var timer = setTimeout(open, DELAY);
+
+    function onExit(e) { if (e.clientY <= 0) { clearTimeout(timer); open(); } }   // desktop exit-intent
+    document.addEventListener("mouseout", onExit);
+
+    function onScroll() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      if (h > 0 && (window.scrollY / h) > SCROLL_AT) { clearTimeout(timer); open(); }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    function cleanup() {
+      document.removeEventListener("mouseout", onExit);
+      window.removeEventListener("scroll", onScroll);
+    }
+
+    // ---- close handlers ----
+    pop.querySelectorAll("[data-nl-close]").forEach(function (el) {
+      el.addEventListener("click", function () { closed = true; cleanup(); close(); });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && shown && !pop.hidden) { closed = true; cleanup(); close(); }
+    });
+
+    // ---- light focus trap ----
+    pop.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      var f = [].slice.call(pop.querySelectorAll("button, input")).filter(function (el) {
+        return !el.disabled && el.offsetParent !== null;
+      });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    // ---- submit ----
+    var form = document.getElementById("nlPopForm");
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var inp = form.querySelector('input[type="email"]');
+      var email = (inp.value || "").trim();
+      if (!email) { inp.focus(); return; }
+      var btn = form.querySelector("button");
+      btn.disabled = true; btn.textContent = "Joining…";
+      var ok = false;
+      try {
+        var r = await fetch("/.netlify/functions/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email }),
+        });
+        ok = r.ok;
+      } catch (err) {}
+      if (ok) {
+        remember(true);                             // subscribed → never show again
+        cleanup();
+        pop.querySelector(".nl-pop-body").hidden = true;
+        pop.querySelector(".nl-pop-done").hidden = false;
+        setTimeout(function () { closed = true; close(); }, 3400);
+      } else {
+        btn.disabled = false; btn.textContent = "Try again";
+        var er = form.parentElement.querySelector(".nl-pop-err");
+        if (!er) { er = document.createElement("p"); er.className = "nl-pop-err"; form.insertAdjacentElement("afterend", er); }
+        er.textContent = "Hmm, that didn’t work — please try again in a moment.";
+      }
+    });
+  })();
+</script>
