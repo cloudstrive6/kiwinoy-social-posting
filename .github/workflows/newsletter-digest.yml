@@ -23,6 +23,9 @@ on:
       force:
         description: "Ignore the 'already sent this week' guard (true/false)"
         default: "false"
+      test:
+        description: "One-off TEST send: unique name + [TEST] subject, does NOT consume the weekly slot (true/false)"
+        default: "false"
 
 concurrency:
   group: newsletter-digest
@@ -49,5 +52,6 @@ jobs:
           ARGS="--days ${{ github.event.inputs.days || '7' }}"
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          if [ "${{ github.event.inputs.test }}" = "true" ]; then ARGS="$ARGS --test"; fi
           echo "running: python -m tools.rss_digest $ARGS"
           python -m tools.rss_digest $ARGS

@@ -202,6 +202,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--days", type=int, default=7, help="look-back window in days (default 7)")
     ap.add_argument("--dry-run", action="store_true", help="build + preview only; no API calls, no send")
     ap.add_argument("--force", action="store_true", help="ignore the 'already sent this week' guard")
+    ap.add_argument("--test", action="store_true",
+                    help="send a one-off TEST campaign (unique name + [TEST] subject) — a real "
+                         "end-to-end send that does NOT consume the weekly guard")
     args = ap.parse_args(argv)
 
     try:
@@ -218,6 +221,10 @@ def main(argv: list[str] | None = None) -> int:
     iso = now.isocalendar()
     name = f"KG Drop — Weekly Digest {iso.year}-W{iso.week:02d}"
     subject = subject_for(items)
+    if args.test:
+        # Unique name so it never collides with the real weekly guard; flagged subject.
+        name += f" · test {now.strftime('%m%d-%H%M')}"
+        subject = "[TEST] " + subject
     html = build_html(items)
     vids = sum(1 for i in items if i["is_video"])
     print(f"[digest] {len(items)} item(s) this week ({len(items) - vids} article(s), {vids} video(s)) "
@@ -242,7 +249,7 @@ def main(argv: list[str] | None = None) -> int:
               "Actions secrets (Settings -> Secrets and variables -> Actions).", flush=True)
         return 1
 
-    if not args.force and already_sent(key, name):
+    if not (args.force or args.test) and already_sent(key, name):
         print(f"[digest] '{name}' already exists — skipping (no double-send).", flush=True)
         return 0
 
