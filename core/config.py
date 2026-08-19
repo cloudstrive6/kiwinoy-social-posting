@@ -123,6 +123,17 @@ class _Config:
     def telegram_chat_id(self) -> str:
         return self._key("TELEGRAM_CHAT_ID")
 
+    # MailerLite (newsletter). API key is env-only; the group id is public and
+    # defaults to the "The KG Drop" group. Used by tools/rss_digest.py (the free
+    # weekly RSS-digest send that stands in for MailerLite's premium RSS campaign).
+    @property
+    def mailerlite_api_key(self) -> str:
+        return self._key("MAILERLITE_API_KEY")
+
+    @property
+    def mailerlite_group_id(self) -> str:
+        return self._key("MAILERLITE_GROUP_ID") or "196212114956748135"
+
     # Backblaze B2 (long-form 4K HDR source archive, via rclone). Env-only.
     @property
     def b2_key_id(self) -> str:

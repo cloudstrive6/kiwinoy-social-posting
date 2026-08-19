@@ -1,0 +1,53 @@
+name: Weekly newsletter digest
+
+# The FREE stand-in for MailerLite's (premium) RSS campaign. Once a week it reads
+# bosskg.com/rss.xml and, if >=1 article/video published in the last 7 days, sends
+# a branded digest as a MailerLite regular campaign to the "The KG Drop" group.
+# Only sends when there's new content; idempotent (named by ISO week -> no double-send).
+#
+# One-time setup: add MAILERLITE_API_KEY to this repo's Actions secrets
+#   (Settings -> Secrets and variables -> Actions). It currently lives only in the
+#   Netlify site env. MAILERLITE_GROUP_ID is optional (defaults to the public group id).
+
+on:
+  schedule:
+    - cron: "0 2 * * 0"          # Sundays 02:00 UTC = 10:00 AM Manila (PH prime weekend catch-up)
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Look-back window in days"
+        default: "7"
+      dry_run:
+        description: "Build + preview only, do NOT send (true/false)"
+        default: "false"
+      force:
+        description: "Ignore the 'already sent this week' guard (true/false)"
+        default: "false"
+
+concurrency:
+  group: newsletter-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    env:
+      MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY }}
+      MAILERLITE_GROUP_ID: ${{ secrets.MAILERLITE_GROUP_ID }}   # optional; falls back to the public group id
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send weekly digest
+        run: |
+          ARGS="--days ${{ github.event.inputs.days || '7' }}"
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          echo "running: python -m tools.rss_digest $ARGS"
+          python -m tools.rss_digest $ARGS
