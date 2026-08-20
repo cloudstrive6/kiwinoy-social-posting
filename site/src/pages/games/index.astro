@@ -19,7 +19,8 @@ const rows = GAMES.map((g) => ({
       <div class="grid">
         {rows.map((g) => (
           <a class="card" href={`/games/${g.slug}`}>
-            <div class={`art ${g.art}`} style="aspect-ratio:16/10; display:flex; align-items:flex-end; padding:14px">
+            <div class={`art ${g.art} ${g.cover ? "has-img" : ""}`} style="aspect-ratio:16/10; display:flex; align-items:flex-end; padding:14px">
+              {g.cover && <img src={g.cover} alt={`${g.title} key art`} loading="eager" decoding="async" />}
               <span class="pill news">{g.videos} videos · {g.articles} articles</span>
             </div>
             <div class="body">
