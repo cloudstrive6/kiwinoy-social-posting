@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-director-responds-to-gameplay-criticism-after-lates.jpg"
 date: 2026-08-20
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/director-of-marvels-wolverine-responds-after-extended-gameplay-footage-sparks-backlash"
 ---
