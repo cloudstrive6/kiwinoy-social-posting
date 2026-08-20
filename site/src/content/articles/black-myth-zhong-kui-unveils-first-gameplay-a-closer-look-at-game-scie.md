@@ -8,7 +8,7 @@ game: "black-myth-zhong-kui"
 cover: "/covers/black-myth-zhong-kui-unveils-first-gameplay-a-closer-look-at-game-scie.jpg"
 date: 2026-08-20
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/stunning-black-myth-zhong-kui-gameplay-trailer-gives-us-a-closer-look-at-the-new-protagonist-combat-and-a-truly-impressive-parry"
 ---
