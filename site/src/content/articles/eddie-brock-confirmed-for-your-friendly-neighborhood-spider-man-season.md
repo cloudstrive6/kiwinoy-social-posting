@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/eddie-brock-confirmed-for-your-friendly-neighborhood-spider-man-season.jpg"
 date: 2026-08-20
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/your-friendly-neighborhood-spider-man-just-confirmed-major-villain-for-season-2/"
 ---
