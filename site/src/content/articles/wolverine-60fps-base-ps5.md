@@ -11,7 +11,7 @@ date: 2026-08-14
 author: "BOSS KG"
 sourceName: "Push Square"
 sourceUrl: "https://www.pushsquare.com/news/2026/08/the-game-feels-super-smooth-wolverine-will-run-at-60fps-with-ray-tracing-on-base-ps5"
-featured: true
+featured: false
 draft: false
 ---
 
