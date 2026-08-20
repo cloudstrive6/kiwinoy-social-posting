@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-gets-limited-edition-ps5-gear-ahead-of-launch.jpg"
 date: 2026-08-20
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/marvel-wolverine-limited-edition-ps5-hardware-where-to-buy-uk"
 ---
