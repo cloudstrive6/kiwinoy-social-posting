@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/sony-accused-of-blocking-discounted-marvel-s-wolverine-pre-orders-on-b.jpg"
 date: 2026-08-21
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/08/sony-accused-of-blocking-marvels-wolverine-discounts-in-brazil"
 ---
