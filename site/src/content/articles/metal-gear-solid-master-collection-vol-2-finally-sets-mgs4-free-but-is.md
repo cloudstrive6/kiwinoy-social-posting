@@ -8,7 +8,7 @@ game: "metal-gear-solid"
 cover: "/covers/metal-gear-solid-master-collection-vol-2-finally-sets-mgs4-free-but-is.jpg"
 date: 2026-08-21
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/reviews/ps5/metal-gear-solid-master-collection-vol-2"
 ---
