@@ -8,7 +8,7 @@ game: "marvel-tokon"
 cover: "/covers/marvel-tokon-fighting-souls-drops-major-performance-patch-for-pc-and-p.jpg"
 date: 2026-08-21
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/marvel-tokon-fighting-souls-update-ps5-pc-august-21/"
 ---
