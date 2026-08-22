@@ -8,7 +8,7 @@ game: "arc-raiders"
 cover: "/covers/arc-raiders-delays-future-expeditions-until-early-2027-for-major-overh.jpg"
 date: 2026-08-22
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/hoping-for-a-huge-october-surprise-but-not-holding-my-breath-arc-raiders-players-torn-after-embark-delays-future-expeditions-until-early-2027"
 ---
