@@ -78,9 +78,16 @@ def _grad(w: int, h: int, top_a: int, bot_a: int) -> Image.Image:
     return out
 
 
-def build(game: str, title: str | None) -> Path:
+def build(game: str, title: str | None, art_path: str | None = None,
+          out_name: str | None = None) -> Path:
     key = ART_KEY.get(game, game)
-    art = Image.open(_first_art(key)).convert("RGB")
+    if art_path:
+        src = Path(art_path)
+        if not src.exists():
+            src = ROOT / art_path                    # allow a repo-relative path
+    else:
+        src = _first_art(key)
+    art = Image.open(src).convert("RGB")
     canvas = _cover(art, W, H)
     canvas = ImageEnhance.Brightness(canvas).enhance(0.9)
     canvas = ImageEnhance.Contrast(canvas).enhance(1.05)
@@ -157,7 +164,7 @@ def build(game: str, title: str | None) -> Path:
     canvas = Image.alpha_composite(canvas, ring)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out = OUT_DIR / f"{game}-live.png"
+    out = OUT_DIR / f"{out_name or f'{game}-live'}.png"
     canvas.convert("RGB").save(out, "PNG")
     print(f"[live-thumb] wrote {out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
     return out
@@ -167,8 +174,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Render a YouTube LIVE thumbnail from game art.")
     ap.add_argument("--game", default="halo", help="game slug (default: halo)")
     ap.add_argument("--title", default=None, help="optional extra title line (e.g. a mode)")
+    ap.add_argument("--art", default=None,
+                    help="explicit art file to use instead of the folder's preferred image")
+    ap.add_argument("--out", default=None,
+                    help="output filename stem (default: <game>-live)")
     a = ap.parse_args()
-    build(a.game, a.title)
+    build(a.game, a.title, a.art, a.out)
     return 0
 
 
