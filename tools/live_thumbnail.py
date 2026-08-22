@@ -46,11 +46,16 @@ ART_KEY = {
 
 def _first_art(key: str) -> Path:
     d = ART_DIR / key
+    imgs: list[Path] = []
     for pat in ("*.jpg", "*.jpeg", "*.png", "*.webp"):
-        files = sorted(d.glob(pat))
-        if files:
-            return files[0]
-    raise SystemExit(f"[live-thumb] no key art found in {d}")
+        imgs += sorted(d.glob(pat))
+    if not imgs:
+        raise SystemExit(f"[live-thumb] no key art found in {d}")
+    # Prefer a designated hero image named "*main*" (e.g. ff7remake game-art-main.jpg).
+    for im in imgs:
+        if "main" in im.stem.lower():
+            return im
+    return imgs[0]
 
 
 def _cover(im: Image.Image, w: int, h: int) -> Image.Image:
