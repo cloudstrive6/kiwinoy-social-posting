@@ -11,7 +11,7 @@ date: 2026-08-14
 author: "BOSS KG"
 sourceName: "Variety"
 sourceUrl: "https://variety.com/2026/film/news/avengers-doomsday-trailer-d23-1236817670/"
-featured: true
+featured: false
 draft: false
 ---
 
