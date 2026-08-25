@@ -47,7 +47,7 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          pip install --quiet google-api-python-client google-auth requests truststore pyyaml || true
+          pip install --quiet google-api-python-client google-auth requests truststore pyyaml python-dotenv || true
           python tools/site_videos.py --n 60 || echo "video refresh failed — using committed videos.json"
 
       - name: Install dependencies
