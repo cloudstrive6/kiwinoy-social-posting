@@ -897,21 +897,53 @@ def run_gameplay_reel(
     elif youtube_only:
         # DEDICATED YouTube Shorts track (decoupled from the FB/IG feed, per user 2026-07-30)
         # so YT works through clips NOT-YET-on-YT independently (incl. the FB/IG/TikTok
-        # backlog). 1080p SDR reel via PfM, trimmed to YouTube's Shorts cap.
+        # backlog). Uploads via the YouTube DATA API (not Post for Me) so we get the video id
+        # back and can file it into its game's playlist immediately — the bosskg.com Games
+        # section files videos by playlist membership. See [[site-video-game-filing]].
+        from core import youtube as yt_api
+        g = brief.get("game") or game or ""
+        yc = CONFIG.reels.get("youtube", {}) or {}
         pmax = (CONFIG.reels.get("platform_max_seconds", {}) or {})
         yt_cap = float(pmax.get("youtube", 179) or 0)      # <=179s -> stays a SHORT (>180 = long-form)
-        yt_bytes = video_bytes
+        yt_path = reel_path
         if yt_cap and actual and actual > yt_cap + 0.3:    # trim ANYTHING over the Shorts cap
-            trimmed = run_dir / "reel_yt.mp4"
-            reel_ffmpeg.trim_seconds(reel_path, trimmed, yt_cap)   # stream-copy, lands <= yt_cap
-            yt_bytes = trimmed.read_bytes()
-        log(f"Publishing to YouTube (dedicated Shorts track, <={min(actual or yt_cap, yt_cap):.0f}s)...")
-        res = publisher.run_reel(caption=caption, video_bytes=yt_bytes,
-                                 scheduled_at=scheduled_at, targets=["youtube"])
-        result["published"] = bool(res)
-        result["youtube_result"] = res
-        if res:
-            _record_post(pick_platforms, res)                           # ['youtube']
+            yt_path = run_dir / "reel_yt.mp4"
+            reel_ffmpeg.trim_seconds(reel_path, yt_path, yt_cap)   # stream-copy, lands <= yt_cap
+        gname = (CONFIG.reels.get("game_names", {}) or {}).get(g, "") or g
+        title = ((f"{hook} | {gname} #Shorts" if hook else f"{gname} #Shorts") if gname
+                 else (f"{hook} #Shorts" if hook else "#Shorts"))[:100]
+        if layout == "fill":                               # caption already carries its hashtags
+            desc = f"{caption}\n\n#Shorts".strip()
+        else:
+            gtags = " ".join(content._reel_hashtags({"game": g}))
+            desc = f"{caption}\n\n#Shorts {gtags}".strip()
+        ghash = [str(h).lstrip("#") for h in
+                 (CONFIG.reels.get("game_hashtags", {}) or {}).get(g, []) if str(h).strip()]
+        seen, yt_tags = set(), []      # 1080p60 SDR track -> no 4K/HDR tags (those are the pillar's)
+        for t in ghash + ["gaming", "gameplay", "60fps", "PS5", "shorts"]:
+            if t.lower() not in seen:
+                seen.add(t.lower()); yt_tags.append(t)
+        priv = str(yc.get("privacy", "public")).lower()
+        log(f"Publishing to YouTube via the Data API (dedicated Shorts track, "
+            f"<={min(actual or yt_cap, yt_cap):.0f}s, privacy={priv}"
+            f"{', scheduled ' + scheduled_at if scheduled_at else ''})...")
+        api = yt_api.upload_video(
+            str(yt_path), title=title, description=desc, tags=yt_tags,
+            privacy=priv, publish_at=scheduled_at,
+            category_id=str(yc.get("category_id", "20")),
+            made_for_kids=bool(yc.get("made_for_kids", False)))
+        vid = api.get("id", "")
+        result["published"] = bool(vid)
+        result["youtube_result"] = api
+        result["video_id"] = vid
+        result["url"] = f"https://youtu.be/{vid}" if vid else ""
+        if vid:
+            log(f"Done: {result['url']}")
+            pl = (yc.get("playlists", {}) or {}).get(g)          # file into its game playlist
+            if pl:
+                log(f"Filing into the {g} playlist...")
+                result["playlisted"] = yt_api.add_to_playlist(vid, pl)
+            _record_post(pick_platforms, api)                           # ['youtube']
             if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['youtube']
                 log(f"Marked clip used (youtube): {clip_id}")
             else:
@@ -2420,6 +2452,14 @@ def run_youtube_short(
         result["url"] = f"https://youtu.be/{vid}" if vid else ""
         log(f"Done ({layout}): {result['url']}")
         published_any = published_any or bool(vid)
+
+        # File the Short into its game's YouTube playlist — the bosskg.com Games section
+        # files videos by playlist membership, so this makes the Short appear on its game
+        # page automatically (best-effort: never blocks the post). See [[site-video-game-filing]].
+        pl = ((CONFIG.reels.get("youtube", {}) or {}).get("playlists", {}) or {}).get(game)
+        if vid and pl:
+            log(f"Adding to {game} playlist...")
+            result["playlisted"] = yt_api.add_to_playlist(vid, pl)
 
     if tiktok:
         # Cross-post the SAME 4K HDR render to TikTok via Post for Me (DRAFT — you publish

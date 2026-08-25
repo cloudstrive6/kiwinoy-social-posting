@@ -209,6 +209,38 @@ def upload_video(
     return resp
 
 
+def add_to_playlist(video_id: str, playlist_id: str) -> bool:
+    """Add a video to one of the channel's playlists (idempotent-ish: skips if already in).
+
+    The site files each video onto its game page by playlist membership, so adding a freshly
+    posted Short to its game's playlist makes it appear on that game page automatically. Works
+    for private/scheduled videos too — it shows once the video goes public. Best-effort: logs
+    and returns False on any error rather than failing the post."""
+    if not video_id or not playlist_id:
+        return False
+    yt = _service()
+    try:
+        # Already a member? (cheap check — avoids duplicate entries on re-runs)
+        tok = None
+        while True:
+            r = yt.playlistItems().list(part="contentDetails", playlistId=playlist_id,
+                                        maxResults=50, pageToken=tok).execute()
+            if any(it.get("contentDetails", {}).get("videoId") == video_id for it in r.get("items", [])):
+                print(f"[youtube] already in playlist {playlist_id}", flush=True)
+                return True
+            tok = r.get("nextPageToken")
+            if not tok:
+                break
+        yt.playlistItems().insert(part="snippet", body={
+            "snippet": {"playlistId": playlist_id,
+                        "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
+        print(f"[youtube] added {video_id} -> playlist {playlist_id}", flush=True)
+        return True
+    except Exception as e:
+        print(f"[youtube] playlist add failed ({e!r}) — video still posted, just not filed.", flush=True)
+        return False
+
+
 def list_uploads(max_items: int = 300) -> list[dict[str, Any]]:
     """List the channel's own uploads (incl. PRIVATE/scheduled) with status + publishAt.
 

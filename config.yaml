@@ -407,6 +407,18 @@ reels:
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
     enabled: true
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
+    # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
+    # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership
+    # (see [[site-video-game-filing]]), so this keeps game pages complete automatically. Key =
+    # reels game key (game_hashtags keys); value = playlist ID. Add a key here per new game.
+    playlists:
+      spider-man1: "PLNaUg314KDjCc6Ne2lPY5RcUr5s3pSQra"            # Marvel's Spider-Man
+      spider-man-miles-morales: "PLdRIAcj5Bt0o"                    # Marvel's Spider-Man: Miles Morales
+      spider-man2: "PLNaUg314KDjCegrKRjy5nkOq452nmS0wR"            # Marvel's Spider-Man 2
+      ff7remake: "PLNaUg314KDjAdrIyTvFlBUtBSE_dGeWl9"              # Final Fantasy 7 Remake
+      thelastofus1: "PLNaUg314KDjBpEy08LBfJC27s_zX1YhPZ"          # The Last of Us: Part 1
+      thelastofus2: "PLNaUg314KDjCz9WvDJ_E1qCYRYIY1sxII"          # The Last of Us: Part 2 (Cinematics - Shorts)
+      halo: "PLNaUg314KDjDAR_htqkCz4UeEf778eQZo"                  # Halo: Combat Evolved Anniversary
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity
