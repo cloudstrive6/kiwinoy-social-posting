@@ -189,20 +189,23 @@ def generic_game_caption(game: str, max_tags: int = 5) -> str:
     game hashtags. Threads uses #GamingThreads only (handled by the publisher)."""
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
     prompt = f"""Write a short, generic hype caption for a gameplay reel of the game
-"{gname}". It is NOT about a specific moment — it celebrates the game/its vibe overall.
+"{gname}". It is NOT about a specific moment and the clip was NOT reviewed — so it must
+celebrate the ENERGY/FEEL only and NEVER claim anything specific that happens on screen.
 
-Match THIS style exactly (title line, 1-2 vibe lines, then the game name):
+Match THIS shape (a punchy title line, 1-2 vibe lines about the energy, then the game name).
+The example below is only for SHAPE — do NOT copy its words:
 ---
-Spiderman Cinematic Parkour ✨
-Fluid movement, wall runs, and cinematic flow ✨
-Marvel's Spider-Man turns NYC into a parkour playground.
-Marvel's Spider-Man Remastered 💗
+Locked In ✨
+Pure momentum, edge to edge — no filler, all payoff.
+{gname} 💗
 ---
 
 Rules:
-- 3-4 short lines total. First line = a punchy title (1 tasteful emoji ok).
-- 1-2 lines on the vibe/feel of the game (generic, not a specific scene).
-- Final line = the game's proper name (a heart or sparkle emoji ok).
+- 3 short lines total. First line = a punchy title (1 tasteful emoji ok).
+- Middle line = the vibe/energy ONLY. Do NOT name any specific action, move, weapon,
+  character, or place (NO "swinging", "web-slinging", "parkour", "traversal", "driving",
+  "NYC"/"the city", boss names, etc.) — this caption must never claim what's on screen.
+- Final line = the game's proper name "{gname}" (a heart or sparkle emoji ok).
 - NO hashtags (added separately), no quotes, no preamble. Return ONLY the caption."""
     raw = _text(prompt)
     body = "\n".join(l.strip() for l in sanitize(raw).strip().splitlines() if l.strip())[:400]
@@ -370,12 +373,16 @@ def _verify_descriptive(caption: str, observation: str) -> tuple[bool, str]:
         "ALLOWED to name the game and use hype/marketing/vibe words — do NOT flag that.\n\n"
         f"OBSERVER'S FACTUAL READ OF THE CLIP:\n{observation}\n\n"
         f'CAPTION TO CHECK:\n"{caption}"\n\n'
-        "Mark it BAD ONLY if the described ACTION or setting doesn't match the video:\n"
-        "1. It states/implies a specific action or place the observation does NOT support "
-        "(e.g. 'swinging'/'web-slinging'/'parkour'/'flying'/'gliding' when the clip is a "
-        "GROUND fight; a location/object that isn't there).\n"
-        "2. It CONTRADICTS what is happening on screen.\n"
-        "Generic vibe/energy words are fine. Judge the ACTION accuracy only.\n"
+        "Mark it BAD if the caption names or implies ANY action, move, or setting the "
+        "observation does NOT support — EVEN IF other parts of the caption are accurate:\n"
+        "1. A single unsupported action/place makes it BAD (e.g. 'swinging'/'web-slinging'/"
+        "'parkour'/'traversal'/'flying'/'gliding'/'driving' when the clip is a GROUND fight; "
+        "'NYC'/'the city'/a rooftop when the clip is indoors; any location/object not shown).\n"
+        "2. Do NOT excuse a false action just because another clause is true — 'snappy combat' "
+        "being real does NOT make an added 'seamless swinging' acceptable.\n"
+        "3. It CONTRADICTS what is happening on screen.\n"
+        "Generic energy/vibe words with NO specific action (e.g. 'pure momentum', 'locked in') "
+        "are fine. Judge the ACTION/SETTING accuracy only.\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
@@ -429,23 +436,26 @@ def _descriptive_caption(observation: str, gname: str, avoid: str = "") -> str:
     GROUNDED in the observer's read of THIS clip, so the hype matches what's actually
     on screen (no inventing 'swinging' on a ground-fight clip)."""
     prompt = f"""Write a short, punchy HYPE caption for a gameplay reel of "{gname}", GROUNDED in
-what ACTUALLY happens in THIS clip. Do NOT invent actions that aren't shown — e.g. do not say
-"swinging"/"web-slinging" if the clip is a ground fight; describe the action that's really there.
+what ACTUALLY happens in THIS clip. Every action, move, and place you mention MUST come from the
+observation below — never from your prior knowledge of the game.
 
 WHAT'S ON SCREEN (an observer's factual read of THIS clip):
 {observation}
 
-Match THIS style exactly (a punchy title line, 1-2 vibe lines, then the game name):
+The caption has this SHAPE only (punchy title line, 1-2 vibe lines, then the game name). The
+example shows SHAPE, not words — do NOT reuse its wording, and note it is deliberately action-free:
 ---
-Spiderman Cinematic Parkour ✨
-Fluid movement, wall runs, and cinematic flow ✨
-Marvel's Spider-Man turns NYC into a parkour playground.
-Marvel's Spider-Man Remastered 💗
+<punchy title describing THE ACTUAL on-screen moment> ✨
+<1-2 lines on the feel of THAT specific action — only what the observation supports>
+{gname} 💗
 ---
 
 Rules:
-- 3-4 short lines total. First line = a punchy title (1 tasteful emoji ok) that fits the ACTUAL on-screen action.
-- 1-2 vibe lines about the feel of THIS specific moment/action (accurate to the clip, not generic).
+- First line = a punchy title (1 tasteful emoji ok) that fits the ACTUAL on-screen action.
+- 1-2 vibe lines about THIS specific moment (accurate to the clip, not generic).
+- Do NOT name any action, move, or place the observation does NOT show. If the clip is a fight,
+  do NOT say "swinging"/"web-slinging"/"parkour"/"traversal"; if there is no city skyline, do NOT
+  say "NYC"/"the city". When unsure, stay on feeling/energy words rather than naming a move.
 - Final line = the game's proper name "{gname}" (a heart or sparkle emoji ok).
 - NO hashtags (added separately), no quotes, no preamble. Return ONLY the caption.""" + (
         f"\n- AVOID (a prior draft was wrong): {avoid}" if avoid else "")
@@ -517,7 +527,7 @@ def _observe_clip(cands: list, gname: str) -> str:
     from core import claude_code, openai_client
 
     instruction = (
-        f"These are {len(cands)} frames (in order) from ONE short {gname} gameplay "
+        f"These are {len(cands)} frames (in order) from ONE short gameplay "
         "clip.\nDescribe ONLY what you can literally SEE — do not guess names or "
         "backstory. Cover, in 3-5 plain sentences:\n"
         "- SETTING/location (indoor lab, rooftop, street, snow, etc.)\n"

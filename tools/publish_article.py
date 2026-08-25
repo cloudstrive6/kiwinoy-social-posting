@@ -101,7 +101,8 @@ def _captions(fm: dict, body: str, url: str) -> dict:
         "- Use ONLY facts from the article — do not invent numbers, dates, or quotes.\n"
         "- Tone: hype but honest, never clickbait or fabricated. No spoilers of the payoff.\n"
         "- FACEBOOK: 2-4 short sentences, engaging hook first, may use 1-3 relevant hashtags.\n"
-        "- THREADS: punchy, under 380 characters, NO hashtags.\n"
+        "- THREADS: 2-3 SHORT paragraphs, each separated by a BLANK LINE (an empty line between "
+        "them) so it's easy to read — never one solid block. Under ~300 characters total, NO hashtags.\n"
         "- Do NOT put the link inside your text — the CTA + link are appended automatically.\n\n"
         'Return ONLY JSON: {"facebook":"...","threads":"..."}'
     )
@@ -117,11 +118,16 @@ def _captions(fm: dict, body: str, url: str) -> dict:
         fb = f"{title}\n\n{excerpt}".strip()
     if not th:
         th = (excerpt or title)[:360]
-    # Strip any stray link/hashtags the model added to Threads, then append the CTA + link.
+    # Strip any stray link/hashtags the model added to Threads (fit_threads also keeps its
+    # blank-line paragraphs), then append the CTA + link — budgeting for the CTA + URL so the
+    # FINAL post stays within Threads' 500-char limit (the CTA+URL were previously appended
+    # with no re-check, so a long article slug pushed the total over 500 and got truncated).
     from agents.post_director import fit_threads
-    th = fit_threads(th, limit=380)
+    th_suffix = f"\n\n👉 Full story (link): {url}"
+    body_cap = max(1, min(380, 497 - len(th_suffix)))    # body + suffix <= 497 (< 500)
+    th = fit_threads(th, limit=body_cap)
     fb_final = f"{fb}\n\n👉 Read the full story: {url}"
-    th_final = f"{th}\n\n👉 Full story (link): {url}"
+    th_final = f"{th}{th_suffix}"
     return {"facebook": fb_final, "threads": th_final}
 
 
