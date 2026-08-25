@@ -58,7 +58,7 @@ const empty = !articles.length && !vlong.length && !vshort.length;
 
       {articles.length > 0 && (
         <>
-          <div class="sec-h" style="margin:36px 0 0"><span class="bar"></span><h2>Articles</h2></div>
+          <div class="sec-h" style="margin-top:36px"><span class="bar"></span><h2>Articles</h2></div>
           <div class="grid">
             {articles.map((a) => (
               <a class="card" href={`/news/${a.id}`}>
