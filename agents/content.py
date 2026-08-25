@@ -169,7 +169,8 @@ MOMENT / HOOK: {brief.get('hook') or brief.get('hook_idea') or brief.get('angle'
 
 Rules:
 - ONE short line, about 3 to 10 words. Punchy, like a caption to a clip moment
-  (e.g. "Fisk is caught", "Best swing in the game", "This boss almost had me").
+  (e.g. "Caught him mid-escape", "That takedown was clean", "This boss almost had me").
+  Fit the ACTUAL moment above — do not default to swinging/traversal wording.
 - It can be natural Taglish if it fits.
 - No hashtags, no emojis, no quotes, no preamble. Just the line.
 
@@ -616,8 +617,9 @@ def _caption_with_lore(observation: str, game: str, gname: str, taglish: bool) -
         "First, silently work out WHICH character / location / story moment this is "
         "by matching the description against the game's story above. Respect the "
         "'DON'T CONFUSE' notes. Then write ONE short caption (3 to 8 words), like a "
-        "clip title. Examples: \"Fisk is caught\", \"Best web-swing in the game\", "
-        "\"This boss almost had me\".\n"
+        "clip title that fits THIS clip's actual action. Examples (for shape only — do not "
+        "reuse the wording or the action): \"Caught him mid-escape\", \"That takedown was "
+        "clean\", \"This boss almost had me\".\n"
         "ACCURACY RULES:\n"
         "- Name a character ONLY if the story above makes it clear who it is; "
         "otherwise say \"Spider-Man\" or just describe the action.\n"
