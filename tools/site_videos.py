@@ -32,8 +32,10 @@ import requests                       # noqa: E402
 from core import youtube              # noqa: E402
 
 UPLOADS = "UUeHnkTv_uA_dUgryYUPa-Dg"   # Boss KG uploads playlist (UU + channel id tail)
+CHANNEL_ID = "UCeHnkTv_uA_dUgryYUPa-Dg"
 OUT = Path(__file__).resolve().parents[1] / "site" / "src" / "data" / "videos.json"
-LONG_MAX, SHORT_MAX = 12, 18
+LONG_MAX, SHORT_MAX = 24, 300   # generous — the per-game pages need every game's videos;
+#                                 the Videos landing slices to a display count of its own.
 
 
 def _uploads(n: int) -> list[dict]:
@@ -52,6 +54,47 @@ def _uploads(n: int) -> list[dict]:
         if not token:
             break
     return items
+
+
+def _playlist_map() -> tuple[dict[str, list[str]], dict[str, dict]]:
+    """Returns (pmap, meta):
+      pmap  = videoId -> [playlist titles it belongs to]
+      meta  = videoId -> {"title", "published"}  (so playlist videos OLDER than the recent
+              uploads scan can still be pulled into the site's list).
+    The site files each video into a game by its GAME PLAYLIST (authoritative, matched via
+    lib/games.js), falling back to the video title — so clean per-game playlists on YouTube
+    = correct, complete filing on the site regardless of how old the upload is."""
+    yt = youtube._service()
+    pls: list[tuple[str, str]] = []
+    token = None
+    while True:
+        r = yt.playlists().list(part="snippet", channelId=CHANNEL_ID,
+                                maxResults=50, pageToken=token).execute()
+        pls += [(p["id"], p["snippet"]["title"]) for p in r.get("items", [])]
+        token = r.get("nextPageToken")
+        if not token:
+            break
+    out: dict[str, list[str]] = {}
+    meta: dict[str, dict] = {}
+    for pid, ptitle in pls:
+        tok = None
+        while True:
+            r = yt.playlistItems().list(part="snippet,contentDetails", playlistId=pid,
+                                        maxResults=50, pageToken=tok).execute()
+            for it in r.get("items", []):
+                cd, sn = it.get("contentDetails", {}), it.get("snippet", {})
+                vid = cd.get("videoId")
+                if not vid:
+                    continue
+                out.setdefault(vid, []).append(ptitle)
+                meta.setdefault(vid, {"title": sn.get("title", ""),
+                                      "published": cd.get("videoPublishedAt")
+                                      or sn.get("publishedAt", "")})
+            tok = r.get("nextPageToken")
+            if not tok:
+                break
+    print(f"[site-videos] mapped {len(pls)} playlists -> {len(out)} videos", flush=True)
+    return out, meta
 
 
 _UA = {"User-Agent": "Mozilla/5.0"}
@@ -123,7 +166,22 @@ def main() -> int:
     a = ap.parse_args()
 
     vids = _uploads(a.n)
-    print(f"[site-videos] scanning {len(vids)} uploads ...", flush=True)
+
+    try:
+        pmap, pmeta = _playlist_map()           # videoId -> [playlist titles] (game filing)
+    except Exception as e:
+        print(f"[site-videos] playlist map failed ({e!r}) — filing by title only.", flush=True)
+        pmap, pmeta = {}, {}
+
+    # Union: recent uploads + every playlist member (so a game's OLDER videos, which fall
+    # outside the recent-uploads window, still appear on that game's page).
+    have = {v["id"] for v in vids}
+    for vid, m in pmeta.items():
+        if vid not in have:
+            vids.append({"id": vid, "title": m["title"], "published": m["published"]})
+            have.add(vid)
+
+    print(f"[site-videos] scanning {len(vids)} videos (uploads + playlists) ...", flush=True)
     with cf.ThreadPoolExecutor(max_workers=8) as ex:
         vids = list(ex.map(_classify, vids))
     skipped = sum(1 for v in vids if not v["ready"])
@@ -135,8 +193,13 @@ def main() -> int:
         rec = {"id": v["id"], "title": v["title"], "published": (v["published"] or "")[:10],
                "url": f"https://www.youtube.com/watch?v={v['id']}",
                "thumb": f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg"}
+        pls = pmap.get(v["id"])
+        if pls:
+            rec["playlists"] = pls
         (shorts if v["is_short"] else longform).append(rec)
 
+    longform.sort(key=lambda r: r.get("published") or "", reverse=True)
+    shorts.sort(key=lambda r: r.get("published") or "", reverse=True)
     n_long, n_short = len(longform), len(shorts)
     # long-form videos each get their own SEO page (/watch/<slug>): stable slug + cached blurb
     longform = longform[:LONG_MAX]

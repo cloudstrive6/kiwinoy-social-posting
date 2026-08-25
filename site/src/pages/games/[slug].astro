@@ -1,7 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { getCollection } from "astro:content";
-import { GAMES, gameBySlug, gameForText } from "../../lib/games.js";
+import { GAMES, gameBySlug, gameForText, gameForVideo } from "../../lib/games.js";
 import { longform, shorts, CHANNEL_URL } from "../../lib/youtube.js";
 
 export function getStaticPaths() {
@@ -16,8 +16,8 @@ const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6
 const articles = (await getCollection("articles", ({ data }) => !data.draft))
   .filter((a) => gameForText(a.data.game, a.data.category, a.data.title) === slug)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const vlong = longform.filter((v) => gameForText(v.title) === slug);
-const vshort = shorts.filter((v) => gameForText(v.title) === slug);
+const vlong = longform.filter((v) => gameForVideo(v) === slug);
+const vshort = shorts.filter((v) => gameForVideo(v) === slug);
 const gmap = { wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey", mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel" };
 const gclass = (game) => gmap[(game || "").toLowerCase()] || g.art;
 const empty = !articles.length && !vlong.length && !vshort.length;

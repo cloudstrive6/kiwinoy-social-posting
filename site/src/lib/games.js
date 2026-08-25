@@ -12,14 +12,16 @@ export const GAMES = [
     match: ["mister negative", "martin li", "sinister six", "doctor octopus", "otto octavius",
             "spider-man remastered", "peter parker", "spider-man", "spider man", "spiderman"],
     exclude: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
-              "miles morales", "symbiote", "venom", "kraven", "sandman", "lizard", "harry", "anti-venom"] },
+              "miles morales", "miles", "symbiote", "venom", "kraven", "sandman", "lizard", "harry", "anti-venom", "wraith"] },
   { slug: "spider-man-miles", title: "Marvel's Spider-Man: Miles Morales", art: "g-spidey", cover: "/game-art/spider-man-miles.jpg",
     blurb: "Miles Morales steps up as Harlem's Spider-Man.",
-    match: ["miles morales"] },
+    match: ["miles morales", "miles", "uncle aaron", "prowler", "phin", "tinkerer", "roxxon", "harlem"],
+    exclude: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
+              "symbiote", "venom", "anti-venom", "kraven"] },
   { slug: "spider-man-2", title: "Marvel's Spider-Man 2", art: "g-spidey", cover: "/game-art/spider-man-2.webp",
     blurb: "Peter and Miles vs. Venom and the symbiote invasion.",
     match: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
-            "symbiote", "venom", "kraven", "sandman", "lizard", "harry osborn", "harry", "anti-venom"] },
+            "symbiote", "venom", "kraven", "sandman", "lizard", "harry osborn", "harry", "anti-venom", "wraith"] },
   { slug: "wolverine", title: "Marvel's Wolverine", art: "g-wolv", cover: "/game-art/wolverine.jpg",
     blurb: "Insomniac's brutal, first solo Wolverine game.",
     match: ["wolverine", "logan", "x-men", "weapon x"] },
@@ -43,6 +45,16 @@ export function gameForText(...parts) {
     if (g.match.some((k) => t.includes(k))) return g.slug;
   }
   return null;
+}
+
+// File a video into a game: prefer its GAME PLAYLIST title (authoritative — set on YouTube),
+// falling back to the video title only when it isn't in a recognized game playlist.
+export function gameForVideo(v) {
+  for (const p of v?.playlists || []) {
+    const g = gameForText(p);
+    if (g) return g;
+  }
+  return gameForText(v?.title || "");
 }
 
 export const gameBySlug = (slug) => GAMES.find((g) => g.slug === slug) || null;

@@ -4,6 +4,7 @@ import { longform, shorts, CHANNEL_URL } from "../lib/youtube.js";
 
 const feat = longform[0];
 const restLong = longform.slice(1);
+const gridShorts = shorts.slice(0, 30);   // landing shows a recent set; per-game pages use all
 const fmt = (d) =>
   d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
 const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
@@ -52,7 +53,7 @@ const has = longform.length > 0 || shorts.length > 0;
         <>
           <div class="sec-h" style="margin:44px 0 0"><span class="bar"></span><h2>Shorts</h2><span style="margin-left:auto;color:var(--faint);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Vertical clips</span></div>
           <div class="sgrid">
-            {shorts.map((v) => (
+            {gridShorts.map((v) => (
               <button class="vcard" data-vid={v.id} data-short="1" aria-label={`Play Short: ${v.title}`}>
                 <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
                 <div class="vb">{v.title}</div>

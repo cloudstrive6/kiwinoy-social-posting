@@ -1,7 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { getCollection } from "astro:content";
-import { GAMES, gameForText } from "../../lib/games.js";
+import { GAMES, gameForText, gameForVideo } from "../../lib/games.js";
 import { longform, shorts } from "../../lib/youtube.js";
 
 const arts = await getCollection("articles", ({ data }) => !data.draft);
@@ -9,7 +9,7 @@ const vids = [...longform, ...shorts];
 const rows = GAMES.map((g) => ({
   ...g,
   articles: arts.filter((a) => gameForText(a.data.game, a.data.category, a.data.title) === g.slug).length,
-  videos: vids.filter((v) => gameForText(v.title) === g.slug).length,
+  videos: vids.filter((v) => gameForVideo(v) === g.slug).length,
 }));
 ---
 <Base title="Games — BOSS KG" description="Every game we cover: Marvel's Spider-Man, Wolverine, Final Fantasy VII, Halo and more.">
