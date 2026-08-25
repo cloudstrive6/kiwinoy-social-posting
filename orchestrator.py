@@ -912,7 +912,9 @@ def run_gameplay_reel(
         gname = (CONFIG.reels.get("game_names", {}) or {}).get(g, "") or g
         title = ((f"{hook} | {gname} #Shorts" if hook else f"{gname} #Shorts") if gname
                  else (f"{hook} #Shorts" if hook else "#Shorts"))[:100]
-        if layout == "fill":                               # caption already carries its hashtags
+        # The caption already carries its own hashtags (both fill + hook/caption builders),
+        # so only append the game hashtags when it somehow doesn't — avoids duplicating them.
+        if "#" in caption:
             desc = f"{caption}\n\n#Shorts".strip()
         else:
             gtags = " ".join(content._reel_hashtags({"game": g}))
@@ -2428,7 +2430,7 @@ def run_youtube_short(
     # 5) upload as a Short via the YouTube Data API (#Shorts in title + description).
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
     title = f"{hook} - {gname.upper()} [4K HDR] #Shorts"[:100]
-    if layout == "fill":                         # caption already carries its hashtags
+    if "#" in caption:                           # caption already carries its own hashtags
         desc = f"{caption}\n\n#Shorts".strip()
     else:
         gtags = " ".join(content._reel_hashtags({"game": game}))
