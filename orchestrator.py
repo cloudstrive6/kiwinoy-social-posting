@@ -924,27 +924,47 @@ def run_gameplay_reel(
             if t.lower() not in seen:
                 seen.add(t.lower()); yt_tags.append(t)
         priv = str(yc.get("privacy", "public")).lower()
-        log(f"Publishing to YouTube via the Data API (dedicated Shorts track, "
-            f"<={min(actual or yt_cap, yt_cap):.0f}s, privacy={priv}"
-            f"{', scheduled ' + scheduled_at if scheduled_at else ''})...")
-        api = yt_api.upload_video(
-            str(yt_path), title=title, description=desc, tags=yt_tags,
-            privacy=priv, publish_at=scheduled_at,
-            category_id=str(yc.get("category_id", "20")),
-            made_for_kids=bool(yc.get("made_for_kids", False)))
-        vid = api.get("id", "")
-        result["published"] = bool(vid)
-        result["youtube_result"] = api
-        result["video_id"] = vid
-        result["url"] = f"https://youtu.be/{vid}" if vid else ""
-        if vid:
-            log(f"Done: {result['url']}")
-            pl = (yc.get("playlists", {}) or {}).get(g)          # file into its game playlist
-            if pl:
-                log(f"Filing into the {g} playlist...")
-                result["playlisted"] = yt_api.add_to_playlist(vid, pl)
-            _record_post(pick_platforms, api)                           # ['youtube']
-            if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['youtube']
+        # Prefer the Data API (gives us the video id -> playlist filing). If the channel OAuth
+        # secrets aren't set (or the upload errors), fall back to Post for Me so posting never
+        # breaks — the fallback just can't file into a playlist (no id comes back).
+        use_api = bool(getattr(CONFIG, "youtube_client_id", "") and getattr(CONFIG, "youtube_refresh_token", ""))
+        posted = False
+        if use_api:
+            log(f"Publishing to YouTube via the Data API (dedicated Shorts track, "
+                f"<={min(actual or yt_cap, yt_cap):.0f}s, privacy={priv}"
+                f"{', scheduled ' + scheduled_at if scheduled_at else ''})...")
+            try:
+                api = yt_api.upload_video(
+                    str(yt_path), title=title, description=desc, tags=yt_tags,
+                    privacy=priv, publish_at=scheduled_at,
+                    category_id=str(yc.get("category_id", "20")),
+                    made_for_kids=bool(yc.get("made_for_kids", False)))
+                vid = api.get("id", "")
+                result["youtube_result"] = api
+                result["video_id"] = vid
+                result["url"] = f"https://youtu.be/{vid}" if vid else ""
+                posted = bool(vid)
+                if vid:
+                    log(f"Done: {result['url']}")
+                    pl = (yc.get("playlists", {}) or {}).get(g)      # file into its game playlist
+                    if pl:
+                        log(f"Filing into the {g} playlist...")
+                        result["playlisted"] = yt_api.add_to_playlist(vid, pl)
+            except Exception as e:
+                log(f"Data-API upload failed ({e!r}) — falling back to Post for Me this run.")
+                use_api = False
+        if not use_api:
+            yt_bytes = Path(yt_path).read_bytes()
+            log("Publishing to YouTube via Post for Me (no playlist filing — add the YOUTUBE_* "
+                "secrets to enable Data-API upload + auto-playlisting)...")
+            res = publisher.run_reel(caption=caption, video_bytes=yt_bytes,
+                                     scheduled_at=scheduled_at, targets=["youtube"])
+            result["youtube_result"] = res
+            posted = bool(res)
+        result["published"] = posted
+        if posted:
+            _record_post(pick_platforms, result.get("youtube_result"))     # ['youtube']
+            if reel_composer.mark_clip_used(clip_id, pick_platforms):       # ['youtube']
                 log(f"Marked clip used (youtube): {clip_id}")
             else:
                 log(f"WARNING: YouTube posted but FAILED to record clip used ({clip_id}) — may repeat.")
