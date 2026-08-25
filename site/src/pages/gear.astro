@@ -1,0 +1,104 @@
+---
+import Base from "../layouts/Base.astro";
+
+// BOSS KG "Gear We Use" — affiliate landing page. Each item links out to a retailer via an
+// AFFILIATE link, so a purchase earns BOSS KG a small commission at no cost to the buyer.
+//
+// HOW TO FINALISE (once your affiliate accounts are approved):
+//   1) Replace each item's `url` with YOUR affiliate link for that product.
+//      - Amazon Associates: the product's "Get Link" (SiteStripe) short URL (has your tag).
+//      - GFuel / brand programs: your referral/affiliate link (often carries your code).
+//   2) Swap names/blurbs to match the gear you ACTUALLY use/recommend (authenticity sells).
+//   3) Delete any row you don't want. Add rows freely.
+// Until a real link is set, `url: "#"` renders a disabled "Link coming soon" button.
+//
+// LEGAL: the disclosure banner below is required (FTC / platform rules) — keep it.
+
+const GEAR = [
+  { cat: "Console",    name: "PlayStation 5",                 note: "The heart of the setup — every 4K/60 HDR playthrough starts here.", retailer: "Amazon", url: "#" },
+  { cat: "Controller", name: "DualSense Wireless Controller", note: "Haptics + adaptive triggers. The default PS5 pad we play on.",       retailer: "Amazon", url: "#" },
+  { cat: "Controller", name: "DualSense Edge",                note: "Pro pad: back paddles, remappable inputs, adjustable sticks.",       retailer: "Amazon", url: "#" },
+  { cat: "Capture",    name: "Elgato HD60 X",                 note: "How the gameplay gets recorded in crisp 4K60 HDR.",                  retailer: "Amazon", url: "#" },
+  { cat: "Audio",      name: "PULSE Elite Wireless Headset",  note: "Lossless PS5 audio so you hear every cue in the mix.",               retailer: "Amazon", url: "#" },
+  { cat: "Display",    name: "4K 120Hz Gaming TV",            note: "HDR + high refresh — the way these games are meant to look.",        retailer: "Amazon", url: "#" },
+  { cat: "Comfort",    name: "Gaming Chair",                  note: "Long playthroughs are kinder on the back with a real chair.",        retailer: "Amazon", url: "#" },
+  { cat: "Storage",    name: "PS5 NVMe SSD (with heatsink)",  note: "More room for big installs without deleting your backlog.",          retailer: "Amazon", url: "#" },
+  { cat: "Fuel",       name: "GFUEL Energy",                  note: "The grind fuel — use our code at checkout for a discount.",          retailer: "GFUEL",  url: "#" },
+];
+
+const cats = [...new Set(GEAR.map((g) => g.cat))];
+---
+<Base title="Gear — BOSS KG" description="The gear Boss KG uses to record and play — controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
+  <main class="wrap">
+    <section class="sec" style="margin-top:34px">
+      <div class="sec-h"><span class="bar"></span><h2>Gear we use</h2></div>
+      <p style="color:var(--muted); margin:-6px 0 0; max-width:64ch">
+        The kit behind the 4K/60 HDR gameplay — plus the odd thing that just makes the grind better.
+        Everything here is stuff we'd actually recommend.
+      </p>
+
+      <p class="gear-disc" role="note">
+        <strong>Heads up:</strong> some links below are affiliate links. If you buy through them,
+        BOSS KG may earn a small commission — at <strong>no extra cost to you</strong>. It's a free
+        way to support the channel. We only list gear we'd genuinely stand behind.
+      </p>
+
+      {cats.map((c) => (
+        <>
+          <div class="sec-h" style="margin:30px 0 0"><span class="bar"></span><h3 style="font-size:18px">{c}</h3></div>
+          <div class="gear-grid">
+            {GEAR.filter((g) => g.cat === c).map((g) => (
+              <div class="gear-card">
+                <span class="gear-cat">{g.cat}</span>
+                <h4>{g.name}</h4>
+                <p>{g.note}</p>
+                {g.url && g.url !== "#" ? (
+                  <a class="gear-btn" href={g.url} rel="sponsored nofollow noopener" target="_blank">View on {g.retailer} →</a>
+                ) : (
+                  <span class="gear-btn is-soon" aria-disabled="true">Link coming soon</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      ))}
+
+      <p style="color:var(--faint); font-size:13px; margin-top:34px; max-width:64ch">
+        Prices and availability are set by the retailer and can change. As an affiliate, BOSS KG
+        earns from qualifying purchases. Product names and brands belong to their respective owners.
+      </p>
+    </section>
+  </main>
+
+  <style>
+    .gear-disc {
+      margin: 16px 0 4px; padding: 13px 16px; border-radius: 12px;
+      background: color-mix(in srgb, var(--red) 12%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--red) 35%, var(--border));
+      color: var(--text); font-size: 14px; line-height: 1.5; max-width: 70ch;
+    }
+    .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .gear-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
+    }
+    .gear-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
+    .gear-cat {
+      align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--red);
+      background: color-mix(in srgb, var(--red) 14%, transparent);
+      padding: 3px 9px; border-radius: 999px;
+    }
+    .gear-card h4 { font-size: 17px; margin: 2px 0 0; }
+    .gear-card p { color: var(--muted); font-size: 13.5px; line-height: 1.45; flex: 1; margin: 0; }
+    .gear-btn {
+      align-self: flex-start; margin-top: 6px; font-weight: 800; font-size: 13.5px;
+      text-decoration: none; padding: 9px 15px; border-radius: 10px;
+      background: var(--red); color: #fff; transition: .16s;
+    }
+    .gear-btn:hover { filter: brightness(1.08); }
+    .gear-btn.is-soon { background: color-mix(in srgb, var(--faint) 30%, var(--surface)); color: var(--faint); cursor: default; }
+    @media (max-width: 960px) { .gear-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .gear-grid { grid-template-columns: 1fr; } }
+  </style>
+</Base>
