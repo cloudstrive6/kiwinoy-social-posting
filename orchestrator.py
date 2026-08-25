@@ -912,13 +912,7 @@ def run_gameplay_reel(
         gname = (CONFIG.reels.get("game_names", {}) or {}).get(g, "") or g
         title = ((f"{hook} | {gname} #Shorts" if hook else f"{gname} #Shorts") if gname
                  else (f"{hook} #Shorts" if hook else "#Shorts"))[:100]
-        # The caption already carries its own hashtags (both fill + hook/caption builders),
-        # so only append the game hashtags when it somehow doesn't — avoids duplicating them.
-        if "#" in caption:
-            desc = f"{caption}\n\n#Shorts".strip()
-        else:
-            gtags = " ".join(content._reel_hashtags({"game": g}))
-            desc = f"{caption}\n\n#Shorts {gtags}".strip()
+        desc = _short_description(caption, gname, g)
         ghash = [str(h).lstrip("#") for h in
                  (CONFIG.reels.get("game_hashtags", {}) or {}).get(g, []) if str(h).strip()]
         seen, yt_tags = set(), []      # 1080p60 SDR track -> no 4K/HDR tags (those are the pillar's)
@@ -2228,6 +2222,31 @@ def run_youtube_longform(
 # post fresh footage first) AND a monotonic post counter (so classic<->triptych keeps
 # alternating even after the pool is exhausted and clips start getting reused).
 
+def _short_description(caption: str, game_name: str, game_key: str) -> str:
+    """YouTube Short description, laid out as three blocks:
+
+        <caption text>
+
+        <game full name>
+
+        <hashtags> #Shorts
+
+    The caption already carries its own hashtags, so we lift them onto their own bottom line
+    (falling back to the game's hashtag set if the caption somehow has none) and always end
+    with #Shorts."""
+    import re
+    tags = re.findall(r"#\w+", caption or "")
+    body = re.sub(r"\s*#\w+", "", caption or "").strip()
+    if not tags:
+        tags = [h if h.startswith("#") else f"#{h}" for h in content._reel_hashtags({"game": game_key})]
+    seen, htags = set(), []
+    for h in tags + ["#Shorts"]:
+        if h and h.lower() not in seen:
+            seen.add(h.lower()); htags.append(h)
+    parts = [p for p in [body, (game_name or "").strip(), " ".join(htags)] if p]
+    return "\n\n".join(parts).strip()
+
+
 _SHORT_VID_EXTS = {".mp4", ".mov", ".mkv", ".m4v"}
 
 
@@ -2430,11 +2449,7 @@ def run_youtube_short(
     # 5) upload as a Short via the YouTube Data API (#Shorts in title + description).
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
     title = f"{hook} - {gname.upper()} [4K HDR] #Shorts"[:100]
-    if "#" in caption:                           # caption already carries its own hashtags
-        desc = f"{caption}\n\n#Shorts".strip()
-    else:
-        gtags = " ".join(content._reel_hashtags({"game": game}))
-        desc = f"{caption}\n\n#Shorts {gtags}".strip()
+    desc = _short_description(caption, gname, game)
     result: dict[str, Any] = {
         "kind": "youtube_short", "game": game, "clip_id": clip_id, "layout": layout,
         "hook": hook, "caption": caption, "target_seconds": target,
