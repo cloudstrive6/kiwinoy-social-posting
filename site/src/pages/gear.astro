@@ -15,15 +15,15 @@ import Base from "../layouts/Base.astro";
 // LEGAL: the disclosure banner below is required (FTC / platform rules) — keep it.
 
 const GEAR = [
-  { cat: "Console",    name: "PlayStation 5 Pro (2TB)",      note: "The main rig — every 4K/60 HDR playthrough runs here.",             retailer: "Amazon", url: "https://amzn.to/4gBrxEo" },
-  { cat: "Controller", name: "DualSense — Chroma Pearl",     note: "The everyday PS5 pad: haptics + adaptive triggers.",                retailer: "Amazon", url: "https://amzn.to/45SI81t" },
-  { cat: "Controller", name: "DualSense Edge",               note: "Pro pad — back paddles, remappable inputs, tunable sticks.",        retailer: "Amazon", url: "https://amzn.to/4qzh8xn" },
-  { cat: "Capture",    name: "Elgato 4K Pro (Internal)",     note: "Internal PCIe card with 8K60 passthrough — the main capture.",      retailer: "Amazon", url: "https://amzn.to/4qEPZcr" },
-  { cat: "Capture",    name: "Elgato 4K X",                  note: "External HDMI 2.1, 4K144 ultra-low-latency capture.",               retailer: "Amazon", url: "https://amzn.to/4izZJCG" },
-  { cat: "Capture",    name: "Elgato Cam Link 4K",           note: "Turns a DSLR / camera into a clean facecam feed.",                  retailer: "Amazon", url: "https://amzn.to/3UhsqdS" },
-  { cat: "Audio",      name: "SteelSeries Arctis Nova 7P",   note: "Wireless Gen 2 — 2.4GHz + Bluetooth, 50+ hr battery.",              retailer: "Amazon", url: "https://amzn.to/4y84KXX" },
-  { cat: "Display",    name: 'LG C5 65" OLED evo 4K',        note: "OLED, 4K/120Hz, Dolby Vision — how these games should look.",       retailer: "Amazon", url: "https://amzn.to/4xp7lNc" },
-  { cat: "Storage",    name: "WD_BLACK SN850P 4TB (PS5)",    note: "Officially licensed PS5 expansion, up to 7,300MB/s, heatsink.",     retailer: "Amazon", url: "https://amzn.to/4izZTdg" },
+  { cat: "Console",    name: "PlayStation 5 Pro (2TB)",      note: "The main rig — every 4K/60 HDR playthrough runs here.",             retailer: "Amazon", url: "https://amzn.to/4gBrxEo", img: "/gear/console.jpg" },
+  { cat: "Controller", name: "DualSense — Chroma Pearl",     note: "The everyday PS5 pad: haptics + adaptive triggers.",                retailer: "Amazon", url: "https://amzn.to/45SI81t", img: "/gear/controller.jpg" },
+  { cat: "Controller", name: "DualSense Edge",               note: "Pro pad — back paddles, remappable inputs, tunable sticks.",        retailer: "Amazon", url: "https://amzn.to/4qzh8xn", img: "/gear/controller-edge.jpg" },
+  { cat: "Capture",    name: "Elgato 4K Pro (Internal)",     note: "Internal PCIe card with 8K60 passthrough — the main capture.",      retailer: "Amazon", url: "https://amzn.to/4qEPZcr", img: "/gear/capture-4kpro.jpg" },
+  { cat: "Capture",    name: "Elgato 4K X",                  note: "External HDMI 2.1, 4K144 ultra-low-latency capture.",               retailer: "Amazon", url: "https://amzn.to/4izZJCG", img: "/gear/capture-4kx.jpg" },
+  { cat: "Capture",    name: "Elgato Cam Link 4K",           note: "Turns a DSLR / camera into a clean facecam feed.",                  retailer: "Amazon", url: "https://amzn.to/3UhsqdS", img: "/gear/capture-camlink.jpg" },
+  { cat: "Audio",      name: "SteelSeries Arctis Nova 7P",   note: "Wireless Gen 2 — 2.4GHz + Bluetooth, 50+ hr battery.",              retailer: "Amazon", url: "https://amzn.to/4y84KXX", img: "/gear/headset.jpg" },
+  { cat: "Display",    name: 'LG C5 65" OLED evo 4K',        note: "OLED, 4K/120Hz, Dolby Vision — how these games should look.",       retailer: "Amazon", url: "https://amzn.to/4xp7lNc", img: "/gear/display.jpg" },
+  { cat: "Storage",    name: "WD_BLACK SN850P 4TB (PS5)",    note: "Officially licensed PS5 expansion, up to 7,300MB/s, heatsink.",     retailer: "Amazon", url: "https://amzn.to/4izZTdg", img: "/gear/storage.jpg" },
   { cat: "Fuel",       name: "GFUEL Energy",                 note: "The grind fuel — code + link coming once approved.",                retailer: "GFUEL",  url: "#" },
 ];
 
@@ -50,6 +50,7 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
           <div class="gear-grid">
             {GEAR.filter((g) => g.cat === c).map((g) => (
               <div class="gear-card">
+                {g.img && <div class="gear-img"><img src={g.img} alt={g.name} loading="lazy" /></div>}
                 <span class="gear-cat">{g.cat}</span>
                 <h4>{g.name}</h4>
                 <p>{g.note}</p>
@@ -85,6 +86,11 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
       padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
     }
     .gear-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
+    .gear-img {
+      background: #fff; border-radius: 10px; height: 168px; margin-bottom: 4px;
+      display: flex; align-items: center; justify-content: center; padding: 14px; overflow: hidden;
+    }
+    .gear-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .gear-cat {
       align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .09em;
       text-transform: uppercase; color: var(--red);
