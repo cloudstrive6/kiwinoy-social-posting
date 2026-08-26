@@ -910,8 +910,11 @@ def run_gameplay_reel(
             yt_path = run_dir / "reel_yt.mp4"
             reel_ffmpeg.trim_seconds(reel_path, yt_path, yt_cap)   # stream-copy, lands <= yt_cap
         gname = (CONFIG.reels.get("game_names", {}) or {}).get(g, "") or g
-        title = ((f"{hook} | {gname} #Shorts" if hook else f"{gname} #Shorts") if gname
-                 else (f"{hook} #Shorts" if hook else "#Shorts"))[:100]
+        # FILL reels have no on-screen hook, so fall back to the caption's first line for the
+        # title (e.g. "Free Fall Over the Skyline") instead of just the bare game name.
+        title_hook = (hook or "").strip() or (caption.splitlines()[0].strip() if caption else "")
+        title = ((f"{title_hook} | {gname} #Shorts" if title_hook else f"{gname} #Shorts") if gname
+                 else (f"{title_hook} #Shorts" if title_hook else "#Shorts"))[:100]
         desc = _short_description(caption, gname, g)
         ghash = [str(h).lstrip("#") for h in
                  (CONFIG.reels.get("game_hashtags", {}) or {}).get(g, []) if str(h).strip()]
@@ -2243,8 +2246,19 @@ def _short_description(caption: str, game_name: str, game_key: str) -> str:
     for h in tags + ["#Shorts"]:
         if h and h.lower() not in seen:
             seen.add(h.lower()); htags.append(h)
-    parts = [p for p in [body, (game_name or "").strip(), " ".join(htags)] if p]
-    return "\n\n".join(parts).strip()
+    parts = [body] if body else []
+    # Game name on its own line — but the FILL descriptive caption already CLOSES with
+    # "<Game> 💗", so only add it when the body doesn't already end with the game name
+    # (otherwise it shows up twice).
+    gname = (game_name or "").strip()
+    last_line = body.splitlines()[-1] if body.splitlines() else ""
+    if gname and gname.lower() not in last_line.lower():
+        parts.append(gname)
+    cta = str((CONFIG.reels.get("gear_cta", "") or "")).strip()   # e.g. "🎮 My gear & setup → https://bosskg.com/gear"
+    if cta:
+        parts.append(cta)
+    parts.append(" ".join(htags))
+    return "\n\n".join(p for p in parts if p).strip()
 
 
 _SHORT_VID_EXTS = {".mp4", ".mov", ".mkv", ".m4v"}

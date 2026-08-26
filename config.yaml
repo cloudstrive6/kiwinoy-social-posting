@@ -680,6 +680,9 @@ reels:
   # 15+ tags gets the post's tags ignored. Enforced in agents/content.py.
   max_hashtags: 5
   brand_hashtag: "#KiwinoyGaming"    # the consistent channel/brand tag (the '1 brand' slot)
+  # Affiliate CTA appended to every YouTube Short description (its own line, above the
+  # hashtags). Drives clicks to the /gear affiliate page. Set to "" to disable.
+  gear_cta: "🎮 My gear & setup → https://bosskg.com/gear"
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
   caption:
