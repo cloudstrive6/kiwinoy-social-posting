@@ -15,15 +15,16 @@ import Base from "../layouts/Base.astro";
 // LEGAL: the disclosure banner below is required (FTC / platform rules) — keep it.
 
 const GEAR = [
-  { cat: "Console",    name: "PlayStation 5",                 note: "The heart of the setup — every 4K/60 HDR playthrough starts here.", retailer: "Amazon", url: "#" },
-  { cat: "Controller", name: "DualSense Wireless Controller", note: "Haptics + adaptive triggers. The default PS5 pad we play on.",       retailer: "Amazon", url: "#" },
-  { cat: "Controller", name: "DualSense Edge",                note: "Pro pad: back paddles, remappable inputs, adjustable sticks.",       retailer: "Amazon", url: "#" },
-  { cat: "Capture",    name: "Elgato HD60 X",                 note: "How the gameplay gets recorded in crisp 4K60 HDR.",                  retailer: "Amazon", url: "#" },
-  { cat: "Audio",      name: "PULSE Elite Wireless Headset",  note: "Lossless PS5 audio so you hear every cue in the mix.",               retailer: "Amazon", url: "#" },
-  { cat: "Display",    name: "4K 120Hz Gaming TV",            note: "HDR + high refresh — the way these games are meant to look.",        retailer: "Amazon", url: "#" },
-  { cat: "Comfort",    name: "Gaming Chair",                  note: "Long playthroughs are kinder on the back with a real chair.",        retailer: "Amazon", url: "#" },
-  { cat: "Storage",    name: "PS5 NVMe SSD (with heatsink)",  note: "More room for big installs without deleting your backlog.",          retailer: "Amazon", url: "#" },
-  { cat: "Fuel",       name: "GFUEL Energy",                  note: "The grind fuel — use our code at checkout for a discount.",          retailer: "GFUEL",  url: "#" },
+  { cat: "Console",    name: "PlayStation 5 Pro (2TB)",      note: "The main rig — every 4K/60 HDR playthrough runs here.",             retailer: "Amazon", url: "https://amzn.to/4gBrxEo" },
+  { cat: "Controller", name: "DualSense — Chroma Pearl",     note: "The everyday PS5 pad: haptics + adaptive triggers.",                retailer: "Amazon", url: "https://amzn.to/45SI81t" },
+  { cat: "Controller", name: "DualSense Edge",               note: "Pro pad — back paddles, remappable inputs, tunable sticks.",        retailer: "Amazon", url: "https://amzn.to/4qzh8xn" },
+  { cat: "Capture",    name: "Elgato 4K Pro (Internal)",     note: "Internal PCIe card with 8K60 passthrough — the main capture.",      retailer: "Amazon", url: "https://amzn.to/4qEPZcr" },
+  { cat: "Capture",    name: "Elgato 4K X",                  note: "External HDMI 2.1, 4K144 ultra-low-latency capture.",               retailer: "Amazon", url: "https://amzn.to/4izZJCG" },
+  { cat: "Capture",    name: "Elgato Cam Link 4K",           note: "Turns a DSLR / camera into a clean facecam feed.",                  retailer: "Amazon", url: "https://amzn.to/3UhsqdS" },
+  { cat: "Audio",      name: "SteelSeries Arctis Nova 7P",   note: "Wireless Gen 2 — 2.4GHz + Bluetooth, 50+ hr battery.",              retailer: "Amazon", url: "https://amzn.to/4y84KXX" },
+  { cat: "Display",    name: 'LG C5 65" OLED evo 4K',        note: "OLED, 4K/120Hz, Dolby Vision — how these games should look.",       retailer: "Amazon", url: "https://amzn.to/4xp7lNc" },
+  { cat: "Storage",    name: "WD_BLACK SN850P 4TB (PS5)",    note: "Officially licensed PS5 expansion, up to 7,300MB/s, heatsink.",     retailer: "Amazon", url: "https://amzn.to/4izZTdg" },
+  { cat: "Fuel",       name: "GFUEL Energy",                 note: "The grind fuel — code + link coming once approved.",                retailer: "GFUEL",  url: "#" },
 ];
 
 const cats = [...new Set(GEAR.map((g) => g.cat))];
@@ -64,8 +65,9 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
       ))}
 
       <p style="color:var(--faint); font-size:13px; margin-top:34px; max-width:64ch">
-        Prices and availability are set by the retailer and can change. As an affiliate, BOSS KG
-        earns from qualifying purchases. Product names and brands belong to their respective owners.
+        <strong>As an Amazon Associate I earn from qualifying purchases.</strong>
+        Prices and availability are set by the retailer and can change. Product names and brands
+        belong to their respective owners.
       </p>
     </section>
   </main>
