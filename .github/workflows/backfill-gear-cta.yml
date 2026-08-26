@@ -1,0 +1,42 @@
+name: Backfill Gear CTA (YouTube descriptions)
+
+# TEMPORARY one-off: append the Gear affiliate CTA (config reels.gear_cta) to EXISTING
+# YouTube video descriptions in small daily batches. Idempotent — skips videos that already
+# have it — so it just keeps chipping away until the whole back-catalogue is done, then no-ops.
+#
+# Timing/size: runs at 06:00 UTC — LATE in the YouTube quota day (quota resets ~07:00 UTC at
+# midnight US-Pacific), AFTER the day's Shorts uploads (00:30/08:30/16:30 UTC), with a small
+# per-run limit — so it only consumes LEFTOVER quota and can never starve the daily uploads.
+# The script also stops cleanly on quotaExceeded as a backstop.
+#
+# REMOVE this workflow once the catalogue is fully backfilled (it will just no-op until then).
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Max descriptions to update this run"
+        default: "60"
+
+concurrency:
+  group: backfill-gear-cta
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Append Gear CTA (daily batch)
+        run: |
+          pip install --quiet google-api-python-client google-auth requests truststore pyyaml python-dotenv || true
+          python tools/backfill_gear_cta.py --limit "${{ github.event.inputs.limit || 60 }}"
