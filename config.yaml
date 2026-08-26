@@ -683,6 +683,11 @@ reels:
   # Affiliate CTA appended to every YouTube Short description (its own line, above the
   # hashtags). Drives clicks to the /gear affiliate page. Set to "" to disable.
   gear_cta: "🎮 My gear & setup → https://bosskg.com/gear"
+  # IG/TikTok have no clickable caption links, so this "link in bio" CTA is appended to the
+  # IG + TikTok caption on every Nth reel only (rotates — keeps most captions clean, not
+  # spammy). NOTE: the gear link must be in your IG/TikTok BIO for this to go anywhere.
+  gear_cta_social: "🎮 My gear & setup → Link in bio"
+  gear_cta_every: 4                  # append the social CTA to every 4th reel (0 = disable)
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
   caption:

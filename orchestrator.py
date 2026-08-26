@@ -870,6 +870,9 @@ def run_gameplay_reel(
                if h and h.lower().lstrip("#") not in caption.lower()]
         if add:
             tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
+        _cta = _social_gear_cta(n)                       # every-Nth-reel "link in bio" nudge
+        if _cta:
+            tt_caption = f"{tt_caption.rstrip()}\n\n{_cta}"
         via = str((CONFIG.raw().get("tiktok", {}) or {}).get("via", "zernio")).lower()
         if via == "postforme":
             log("Publishing to TikTok via Post for Me (DRAFT — publish manually in-app; "
@@ -1083,6 +1086,9 @@ def run_gameplay_reel(
         ig_cap = None
         if layout in ("classic", "triptych") and "#gamingreels" not in caption.lower():
             ig_cap = f"{caption} #gamingreels"
+        _cta = _social_gear_cta(n)                       # every-Nth-reel "link in bio" nudge (IG only)
+        if _cta:
+            ig_cap = f"{(ig_cap or caption).rstrip()}\n\n{_cta}"
         for dur, plats in sorted(groups.items(), reverse=True):
             tcap = threads_cap if "threads" in plats else None
             icap = ig_cap if "instagram" in plats else None
@@ -2224,6 +2230,17 @@ def run_youtube_longform(
 # CI. A tiny per-game ledger tracks which 4K clips have been used for a Short (so we
 # post fresh footage first) AND a monotonic post counter (so classic<->triptych keeps
 # alternating even after the pool is exhausted and clips start getting reused).
+
+def _social_gear_cta(n: int) -> str:
+    """The IG/TikTok 'link in bio' gear CTA — but only on every Nth reel (rotates, so it's a
+    light nudge rather than a CTA on every post). Returns '' when it's not this reel's turn,
+    or when disabled. `n` is the track's own used-clip counter (already computed per reel)."""
+    cta = str((CONFIG.reels.get("gear_cta_social", "") or "")).strip()
+    every = int(CONFIG.reels.get("gear_cta_every", 0) or 0)
+    if not cta or every <= 0:
+        return ""
+    return cta if (n % every == 0) else ""
+
 
 def _short_description(caption: str, game_name: str, game_key: str) -> str:
     """YouTube Short description, laid out as three blocks:
