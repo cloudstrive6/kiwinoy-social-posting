@@ -84,14 +84,17 @@ def _fetch_text(url: str) -> str:
     return re.sub(r"\s+", " ", _html.unescape(text)).strip()[:4800]
 
 
-def _write_article(pick: dict, today: str) -> dict | None:
+def _write_article(pick: dict, today: str, source_text: str | None = None) -> dict | None:
     """Fetch the real source article and have the LLM rewrite ONLY from its facts — so we never
-    invent details from a headline. Returns the article dict, or None if the source can't be read."""
+    invent details from a headline. Returns the article dict, or None if the source can't be read.
+    If `source_text` is supplied (e.g. a current-headlines digest for a free-text topic), it's
+    used as the grounding directly instead of fetching a URL."""
     src_url = pick.get("source_link", "")
-    source_text = _fetch_text(src_url)
-    if len(source_text) < 350:
-        print(f"   skip (no readable source): {pick.get('topic','')[:50]}", flush=True)
-        return None
+    if source_text is None:
+        source_text = _fetch_text(src_url)
+        if len(source_text) < 350:
+            print(f"   skip (no readable source): {pick.get('topic','')[:50]}", flush=True)
+            return None
     src_name = _clean_source(pick.get("source_name", ""))
     prompt = (
         "You are a news writer for BOSS KG (a gaming & Marvel site). Rewrite the SOURCE ARTICLE "
@@ -159,13 +162,15 @@ def _to_markdown(a: dict, today: str, draft: bool = True) -> str:
 
 
 def draft_topic(topic: str, source_link: str, source_name: str = "", *,
-                publish: bool = False, notify_tg: bool = False) -> str | None:
+                publish: bool = False, notify_tg: bool = False,
+                source_text: str | None = None) -> str | None:
     """Draft ONE blog article for a specific topic — used by the trend pipeline to turn an
-    auto-posted trend into a reviewable blog draft. Grounds on the source, dedupes vs existing
-    articles, writes the .md (draft-first) + a scraped cover. Returns the title, or None if it
-    couldn't (no readable/direct source, not-new, duplicate topic, or a write failure)."""
+    auto-posted trend into a reviewable blog draft. Grounds on the source (or on `source_text`
+    when given, e.g. a headlines digest for a free-text topic), dedupes vs existing articles,
+    writes the .md (draft-first) + a scraped cover. Returns the title, or None if it couldn't
+    (no readable/direct source, not-new, duplicate topic, or a write failure)."""
     ART_DIR.mkdir(parents=True, exist_ok=True)
-    if not source_link or "news.google.com" in source_link:
+    if source_text is None and (not source_link or "news.google.com" in source_link):
         return None
     existing = {p.stem for p in ART_DIR.glob("*.md")}
     keys = [_tokens(s.replace("-", " ")) for s in existing]
@@ -179,7 +184,8 @@ def draft_topic(topic: str, source_link: str, source_name: str = "", *,
     except Exception:
         pass
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
-    art = _write_article({"topic": topic, "source_link": source_link, "source_name": source_name}, today)
+    art = _write_article({"topic": topic, "source_link": source_link, "source_name": source_name},
+                         today, source_text=source_text)
     if not art:
         return None
     slug = _slug(art["title"])
@@ -204,13 +210,74 @@ def draft_topic(topic: str, source_link: str, source_name: str = "", *,
     return art["title"]
 
 
+def _research_topic(topic: str) -> tuple[str, str, str]:
+    """Ground a free-text TOPIC in CURRENT reality: pull the top real headlines for it from
+    Google News, and return (digest, top_outlet_name, top_outlet_url). The digest is what the
+    writer is allowed to state — so a bare title still becomes a fact-checkable article instead
+    of guesswork. Returns ('', '', '') if there's no current coverage."""
+    import html as _html
+    from urllib.parse import quote_plus
+    import requests
+    try:
+        url = ("https://news.google.com/rss/search?q=" + quote_plus(topic)
+               + "&hl=en-US&gl=US&ceid=US:en")
+        xml = requests.get(url, timeout=25, headers={"User-Agent": "Mozilla/5.0"}).text
+    except Exception as e:
+        print(f"   [blog] news search failed ({e!r})", flush=True)
+        return "", "", ""
+    lines, top_name, top_url = [], "", ""
+    for it in re.findall(r"<item>(.*?)</item>", xml, re.S)[:8]:
+        tm = re.search(r"<title>(.*?)</title>", it, re.S)
+        sm = re.search(r'<source[^>]*url="([^"]*)"[^>]*>(.*?)</source>', it, re.S)
+        title = _html.unescape(re.sub(r"<[^>]+>", "", tm.group(1)).strip()) if tm else ""
+        outlet = _html.unescape(sm.group(2).strip()) if sm else ""
+        if title.lower().endswith(" - " + outlet.lower()):
+            title = title[: -(len(outlet) + 3)].strip()
+        if not title:
+            continue
+        lines.append(f"- {title}" + (f"  ({outlet})" if outlet else ""))
+        if not top_name and outlet:
+            top_name, top_url = outlet, (sm.group(1) if sm else "")
+    if len(lines) < 2:
+        return "", "", ""
+    digest = ("RECENT HEADLINES ABOUT THIS TOPIC (real coverage from the last few days — treat "
+              "these as the ONLY facts you may state):\n" + "\n".join(lines))
+    return digest, top_name, top_url
+
+
+def draft_one_topic(topic: str, *, publish: bool = False) -> str | None:
+    """Draft ONE blog for a user-supplied topic/title (from the Telegram command). Grounds it in
+    current headlines so it stays accurate, then reuses draft_topic() (writer + cover + notify)."""
+    topic = (topic or "").strip()
+    if len(topic) < 4:
+        return None
+    digest, outlet, outlet_url = _research_topic(topic)
+    if not digest:
+        try:
+            from core import notify
+            notify.telegram(f"⚠️ I couldn't find current coverage for “{topic[:80]}”, so I didn't "
+                            "write it (I won't post from guesswork). Try a more specific or current angle.")
+        except Exception:
+            pass
+        print(f"   [blog] no coverage found for: {topic[:60]}", flush=True)
+        return None
+    print(f"   [blog] topic={topic[:60]!r} outlet={outlet}", flush=True)
+    return draft_topic(topic, outlet_url, outlet, publish=publish, notify_tg=True, source_text=digest)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--count", type=int, default=6)
+    ap.add_argument("--topic", default="", help="draft ONE blog for this specific topic/title (Telegram command)")
     ap.add_argument("--dry", action="store_true")
     ap.add_argument("--publish", action="store_true",
                     help="write articles live (draft:false). Default is draft-first (review before publish).")
     a = ap.parse_args()
+
+    if a.topic:                                          # Telegram "create a blog post <topic>"
+        title = draft_one_topic(a.topic, publish=a.publish)
+        print(f"[site-article] topic blog: {('drafted ' + title) if title else 'nothing written'}", flush=True)
+        return 0
 
     ART_DIR.mkdir(parents=True, exist_ok=True)
     existing = {p.stem for p in ART_DIR.glob("*.md")}

@@ -72,9 +72,30 @@ jobs:
             python tools/publish_article.py
           fi
 
+      # ── "create a blog post <topic>" path: research + draft a site article (Python only) ──
+      - name: Install blog dependencies
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'blog'
+        run: pip install -r requirements.txt
+
+      - name: Draft the blog article
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'blog'
+        env:
+          ARG: ${{ steps.check.outputs.arg }}
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          python tools/site_article.py --topic "$ARG"
+          if [ -n "$(git status --porcelain site/src/content/articles site/public/covers)" ]; then
+            git add site/src/content/articles site/public/covers
+            git commit -m "content: draft blog from Telegram topic"
+            git push
+          else
+            echo "no article written (no source / duplicate / not-new)"
+          fi
+
       # ── draft-render path (IG / Threads / FB / TikTok): the heavy render deps ──
       - name: Install render dependencies
-        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog'
         run: |
           pip install -r requirements.txt
           sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
@@ -82,7 +103,7 @@ jobs:
           npm install -g @anthropic-ai/claude-code
 
       - name: Render the draft (IG, Threads or FB)
-        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog'
         env:
           KIND: ${{ steps.check.outputs.kind }}
           GAME: ${{ steps.check.outputs.game }}

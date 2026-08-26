@@ -16,6 +16,10 @@ Commands understood:
     "approved" / "approve <keyword>" / "approve all"
                                            -> publish a DRAFT news article live + cross-post it
                                               to Facebook & Threads (tools/publish_article.py)
+    "create a blog post <topic>" / "blog: <topic>"
+                                           -> research + draft a BOSS KG blog article for that
+                                              topic (draft-first; tools/site_article.py --topic).
+                                              Reply "approved" after to publish + cross-post it.
   formats: classic | triptych | fill | landscape;  e.g. "fb draft triptych halo 30s"
 
 Modes:
@@ -40,6 +44,7 @@ IG_RE = re.compile(r"\big[\s_-]?draft\b", re.I)        # "ig draft" / "ig-draft"
 TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thread draft"
 FB_RE = re.compile(r"\b(?:fb|facebook)\s+draft\b", re.I)  # "fb draft" / "facebook draft"
 APPROVE_RE = re.compile(r"\bapprove(?:d|s)?\b", re.I)  # "approve" / "approved" -> publish a draft article
+BLOG_RE = re.compile(r"\bblog\b", re.I)                # "create a blog post <topic>" -> draft a site article
 TT_RE = re.compile(r"\btik[\s_-]?tok\b", re.I)         # "tiktok" / "tik tok" / "tik-tok"
 # TikTok intent: the message says "tiktok" AND either "draft" or names a format (so a
 # stray mention like "check tiktok analytics" doesn't fire). e.g. "tiktok draft classic
@@ -106,6 +111,19 @@ def _fmt_from_text(text: str, default: str = "fill") -> str:
     return default
 
 
+def _blog_topic(text: str) -> str:
+    """The topic/title for a blog command: a quoted title wins, else the text after
+    'topic/about/on/of', else the message minus the command words. Single-line + shell-safe."""
+    t = (text or "").strip()
+    m = re.search(r'["“”\'‘’]([^"“”\'‘’]{4,150})["“”\'‘’]', t)          # quoted title
+    if not m:
+        m = re.search(r'\b(?:topic|about|on|regarding|of this topic|of|:)\s+(.{4,150})$', t, re.I)
+    topic = (m.group(1) if m else
+             re.sub(r'(?i)\b(create|write|make|generate|please|a|an|the|me|blog|post|article|of|this|for)\b', ' ', t))
+    topic = re.sub(r'[\r\n`$\\]+', ' ', topic.strip())                  # single line + shell-safe
+    return re.sub(r'\s{2,}', ' ', topic).strip(' "\'“”:-')[:150]
+
+
 def _approve_arg(text: str) -> str:
     """The keyword after 'approve[d]' — a title/slug word, or 'all'. Sanitized for the shell."""
     m = re.search(r"\bapprove(?:d|s)?\b\s*(.*)$", (text or "").strip(), re.I)
@@ -141,6 +159,8 @@ def main() -> int:
         text = (msg.get("text") or "").strip()
         if APPROVE_RE.search(text):                      # "approved" -> publish a draft article
             kind, cmd = "approve", text
+        elif BLOG_RE.search(text):                       # "create a blog post <topic>" -> draft article
+            kind, cmd = "blog", text
         elif TH_RE.search(text):                         # distinct keywords -> exclusive
             kind, cmd = "threads", text
         elif FB_RE.search(text):
@@ -162,6 +182,20 @@ def main() -> int:
             notify.telegram("\U0001F680 Got it — publishing that article + posting it to Facebook "
                             "& Threads now. I'll confirm here in a minute…")
             _emit(1, "approve", arg=arg)
+        return 0
+    if kind == "blog":                                   # draft a site article for a topic
+        topic = _blog_topic(cmd)
+        print(f"[poller] BLOG: {cmd!r} -> topic={topic!r}", flush=True)
+        if not topic or len(topic) < 4:
+            if check:
+                notify.telegram("\U0001F914 What topic? Try: create a blog post \"Your Title Here\".")
+            _emit(0)
+            return 0
+        if check:
+            notify.telegram(f"\U0001F4DD Got it — researching + drafting a blog on “{topic}”. "
+                            "I'll ping you with the draft in a few minutes (then reply \"approved\" to "
+                            "publish it live + post to FB/Threads/IG).")
+            _emit(1, "blog", arg=topic)
         return 0
     game, secs = _resolve_game(cmd), _seconds(cmd)
     if kind == "threads":
