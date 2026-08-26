@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-goes-gold-shows-off-gold-claws-for-digital-deluxe-e.jpg"
 date: 2026-08-22
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/gaming/news/marvel-wolverine-game-release-confirmed-gold/"
