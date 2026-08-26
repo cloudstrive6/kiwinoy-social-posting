@@ -20,7 +20,7 @@ const socials = [
   { key: "twitch", name: "Twitch", handle: "kiwinoy", url: "https://www.twitch.tv/kiwinoy", pc: "#9146FF", ink: "#fff" },
   { key: "kick", name: "Kick", handle: "kiwinoy", url: "https://kick.com/kiwinoy", pc: "#53FC18", ink: "#0F1116" },
   { key: "trovo", name: "Trovo", handle: "Kiwinoy", url: "https://trovo.live/s/Kiwinoy", pc: "#19D66B", ink: "#0F1116" },
-  { key: "discord", name: "Discord", handle: "KG Crew", url: "https://discord.gg/JxJ7ZYnXM", pc: "#5865F2", ink: "#fff" },
+  { key: "discord", name: "Discord", handle: "KG Crew", url: "https://discord.gg/JxJ7ZYnXM", pc: "#5865F2", ink: "#fff", cta: "Join" },
 ];
 ---
 <Base title="Follow — BOSS KG" description="Follow Boss KG on YouTube, Twitch, Kick, Facebook, TikTok, Instagram and Trovo for gameplay, streams, clips and the daily drop.">
@@ -40,7 +40,7 @@ const socials = [
             </div>
             <div class="nm">{s.name}</div>
             <div class="hd">{s.handle}</div>
-            <span class="soc-follow">Follow</span>
+            <span class="soc-follow">{s.cta || "Follow"}</span>
           </a>
         ))}
       </div>
