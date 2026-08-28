@@ -8,7 +8,7 @@ game: "metro-2039"
 cover: "/covers/metro-2039-hands-on-brutal-survival-no-filler-and-relentless-tension.jpg"
 date: 2026-08-26
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/metro-2039-the-first-hands-on-preview"
 ---
