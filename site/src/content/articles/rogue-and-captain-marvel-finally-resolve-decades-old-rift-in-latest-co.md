@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/rogue-and-captain-marvel-finally-resolve-decades-old-rift-in-latest-co.jpg"
 date: 2026-08-24
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/comics/feature/rogue-finally-rights-a-massive-wrong-and-captain-marvels-response-changes-everything/"
 ---
