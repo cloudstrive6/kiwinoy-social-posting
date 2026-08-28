@@ -8,7 +8,7 @@ game: "afterworld"
 cover: "/covers/paradox-reveals-afterworld-a-post-apocalyptic-grand-strategy-adventure.jpg"
 date: 2026-08-25
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/strategy/paradoxs-next-grand-strategy-game-is-taking-cues-from-fallout-and-mad-max/"
 ---
