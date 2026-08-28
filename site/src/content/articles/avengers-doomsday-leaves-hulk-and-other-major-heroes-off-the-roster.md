@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/avengers-doomsday-leaves-hulk-and-other-major-heroes-off-the-roster.jpg"
 date: 2026-08-28
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/i-need-avengers-doomsday-to-address-spider-man-brand-new-days-surprising-end-for-one-hero/"
 ---
