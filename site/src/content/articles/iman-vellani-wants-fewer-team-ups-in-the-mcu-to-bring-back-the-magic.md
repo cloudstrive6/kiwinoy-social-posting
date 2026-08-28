@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/iman-vellani-wants-fewer-team-ups-in-the-mcu-to-bring-back-the-magic.jpg"
 date: 2026-08-23
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/marvel-stars-proposed-change-to-the-mcu-has-fans-divided/"
 ---
