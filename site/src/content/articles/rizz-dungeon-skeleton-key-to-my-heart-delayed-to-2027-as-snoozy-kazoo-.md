@@ -8,7 +8,7 @@ game: "rizz-dungeon"
 cover: "/covers/rizz-dungeon-skeleton-key-to-my-heart-delayed-to-2027-as-snoozy-kazoo-.jpg"
 date: 2026-08-23
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/rpg/the-dungeoncrawler-where-you-really-can-roll-to-seduce-the-dragon-has-been-delayed-until-next-year/"
 ---
