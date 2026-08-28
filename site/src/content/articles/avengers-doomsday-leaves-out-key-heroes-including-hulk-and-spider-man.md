@@ -8,6 +8,7 @@ game: "mcu"
 cover: "/covers/avengers-doomsday-leaves-out-key-heroes-including-hulk-and-spider-man.jpg"
 date: 2026-08-28
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/i-need-avengers-doomsday-to-address-spider-man-brand-new-days-surprising-end-for-one-hero/"
