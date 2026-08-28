@@ -8,7 +8,7 @@ game: "witcher-3"
 cover: "/covers/the-witcher-3-returns-with-songs-of-the-past-expansion-and-full-remast.jpg"
 date: 2026-08-26
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/the-witcher/we-saw-the-witcher-3-songs-of-the-past-in-action-and-the-full-game-remaster-thats-coming-this-year-too/"
 ---
