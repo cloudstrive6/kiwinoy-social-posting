@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/marvel-s-what-if-x-men-1-unleashes-the-most-powerful-cassandra-nova-ye.jpg"
 date: 2026-08-27
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/comics/feature/marvel-just-made-one-of-the-x-mens-most-terrifying-villains-even-more-dangerous-and-the-mcu-may-have-a-problem/"
 ---
