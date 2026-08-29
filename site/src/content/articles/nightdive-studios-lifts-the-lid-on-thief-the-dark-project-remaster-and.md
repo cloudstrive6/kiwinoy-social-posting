@@ -8,7 +8,7 @@ game: "thief"
 cover: "/covers/nightdive-studios-lifts-the-lid-on-thief-the-dark-project-remaster-and.jpg"
 date: 2026-08-24
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/sim/nightdives-thief-remaster-unearths-a-very-very-out-of-date-version-control-repository-with-the-wildest-things-to-say-about-the-code/"
 ---
