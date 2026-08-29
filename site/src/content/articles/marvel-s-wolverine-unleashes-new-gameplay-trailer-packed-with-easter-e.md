@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-unleashes-new-gameplay-trailer-packed-with-easter-e.jpg"
 date: 2026-08-28
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/marvel-wolverine-game-ps5-trailer-suits-meme/"
 ---
