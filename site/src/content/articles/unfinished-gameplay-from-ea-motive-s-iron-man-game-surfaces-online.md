@@ -8,7 +8,7 @@ game: "iron-man"
 cover: "/covers/unfinished-gameplay-from-ea-motive-s-iron-man-game-surfaces-online.jpg"
 date: 2026-08-28
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/ea-motives-iron-man-game-trailer-seemingly-leaked-with-early-look-at-gameplay"
 ---
