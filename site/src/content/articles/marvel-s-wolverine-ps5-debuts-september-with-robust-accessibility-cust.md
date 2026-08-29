@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-ps5-debuts-september-with-robust-accessibility-cust.jpg"
 date: 2026-08-28
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/08/new-marvels-wolverine-ps5-trailer-breaks-down-gameplay-features-accessibility-options-more"
 ---
