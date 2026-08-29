@@ -8,6 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-ps5-gameplay-deep-dive-reveals-upgrades-outfits-and.jpg"
 date: 2026-08-29
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "reports"
 sourceUrl: "https://www.pushsquare.com/news/2026/08/new-marvels-wolverine-ps5-trailer-breaks-down-gameplay-features-accessibility-options-more"
