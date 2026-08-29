@@ -8,7 +8,7 @@ game: "alien-isolation-2"
 cover: "/covers/alien-isolation-2-s-demo-captures-classic-tension-and-next-gen-thrills.jpg"
 date: 2026-08-29
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/features/hands-on-alien-isolation-2-was-my-favourite-ps5-game-at-gamescom"
 ---
