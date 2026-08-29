@@ -8,7 +8,7 @@ game: "resident-evil"
 cover: "/covers/resident-evil-30th-anniversary-exhibition-to-feature-life-sized-lady-d.jpg"
 date: 2026-08-28
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/capcom-is-making-life-sized-statues-of-lady-dimitrescu-and-albert-wesker-and-the-internet-is-being-totally-normal-about-it"
 ---
