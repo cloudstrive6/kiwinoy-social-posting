@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/why-the-x-men-s-mcu-debut-must-avoid-the-trap-of-nostalgia.jpg"
 date: 2026-08-31
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/comics/feature/the-x-men-have-a-nostalgia-problem-and-the-mcu-needs-to-avoid-it/"
 ---
