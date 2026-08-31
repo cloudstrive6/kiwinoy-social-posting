@@ -187,9 +187,13 @@ def main() -> int:
     skipped = sum(1 for v in vids if not v["ready"])
 
     longform, shorts = [], []
+    seen_ids = set()
     for v in vids:
         if not v["ready"]:                      # still processing / no thumbnail -> skip
             continue
+        if v["id"] in seen_ids:                 # same video from uploads twice (API repeat / re-upload) -> once
+            continue
+        seen_ids.add(v["id"])
         rec = {"id": v["id"], "title": v["title"], "published": (v["published"] or "")[:10],
                "url": f"https://www.youtube.com/watch?v={v['id']}",
                "thumb": f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg"}
