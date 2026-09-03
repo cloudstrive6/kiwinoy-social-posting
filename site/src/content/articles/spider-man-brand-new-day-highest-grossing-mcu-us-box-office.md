@@ -11,7 +11,7 @@ date: 2026-08-25
 author: "BOSS KG"
 sourceName: "GamesRadar+"
 sourceUrl: "https://www.gamesradar.com/entertainment/marvel-movies/spider-man-brand-new-day-is-officially-the-highest-grossing-marvel-movie-at-the-us-box-office-after-dethroning-avengers-endgame/"
-featured: true
+featured: false
 draft: false
 ---
 
