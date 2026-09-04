@@ -6,7 +6,7 @@ tag: "Hot"
 tags: ["Final Fantasy VII", "Final Fantasy VII Revelation", "FF7 Remake", "Square Enix", "Release Date", "State of Play", "PS5", "Xbox", "Nintendo Switch 2", "PC"]
 game: "final-fantasy-7"
 cover: "/covers/final-fantasy-vii-revelation-release-date-april-2027.jpg"
-coverAlt: "Final Fantasy VII key art — Cloud Strife"
+coverAlt: "Final Fantasy VII Revelation official key art"
 date: 2026-09-04
 author: "BOSS KG"
 sourceName: "Video Games Chronicle"
