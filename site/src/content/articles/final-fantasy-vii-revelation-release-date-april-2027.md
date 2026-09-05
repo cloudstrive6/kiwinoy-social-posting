@@ -11,7 +11,7 @@ date: 2026-09-04
 author: "BOSS KG"
 sourceName: "Video Games Chronicle"
 sourceUrl: "https://www.videogameschronicle.com/news/final-fantasy-7-remake-part-3-is-called-final-fantasy-7-revelation-will-be-released-on-all-platforms-simultaneously/"
-featured: true
+featured: false
 draft: false
 ---
 
