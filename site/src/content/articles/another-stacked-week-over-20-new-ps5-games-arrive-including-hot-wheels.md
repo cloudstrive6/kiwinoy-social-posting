@@ -8,7 +8,7 @@ game: "ps5"
 cover: "/covers/another-stacked-week-over-20-new-ps5-games-arrive-including-hot-wheels.jpg"
 date: 2026-09-05
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/guides/these-21plus-ps5-games-are-coming-out-next-week-7th-13th-september"
 ---
