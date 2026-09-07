@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
 
 // BOSS KG "Gear We Use" — affiliate landing page. Each item links out to a retailer via an
 // AFFILIATE link, so a purchase earns BOSS KG a small commission at no cost to the buyer.
@@ -31,6 +32,12 @@ const GEAR = [
 ];
 
 const cats = [...new Set(GEAR.map((g) => g.cat))];
+
+// Gear guides & reviews (our own articles) — surface them at the top of the Gear page.
+// Auto-pulls any published article filed under the "Hardware" category, newest first.
+const guides = (await getCollection("articles"))
+  .filter((a) => !a.data.draft && a.data.category === "Hardware")
+  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date));
 ---
 <Base title="Gear — BOSS KG" description="The gear Boss KG uses to record and play — controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
   <main class="wrap">
@@ -46,6 +53,23 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
         BOSS KG may earn a small commission — at <strong>no extra cost to you</strong>. It's a free
         way to support the channel. We only list gear we'd genuinely stand behind.
       </p>
+
+      {guides.length > 0 && (
+        <>
+          <div class="sec-h" style="margin:28px 0 0"><span class="bar"></span><h3 style="font-size:18px">Guides &amp; reviews</h3></div>
+          <p style="color:var(--muted); margin:-4px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear below.</p>
+          <div class="guide-grid">
+            {guides.map((a) => (
+              <a class="guide-card" href={`/news/${a.id}`}>
+                {a.data.cover && <div class="guide-img"><img src={a.data.cover} alt={a.data.coverAlt || a.data.title} loading="lazy" /></div>}
+                <span class="gear-cat">{a.data.tag}</span>
+                <h4>{a.data.title}</h4>
+                <span class="guide-more">Read →</span>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
 
       {cats.map((c) => (
         <>
@@ -83,6 +107,20 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
       border: 1px solid color-mix(in srgb, var(--red) 35%, var(--border));
       color: var(--text); font-size: 14px; line-height: 1.5; max-width: 70ch;
     }
+    .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0 4px; }
+    .guide-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
+      text-decoration: none; color: var(--text);
+    }
+    .guide-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
+    .guide-img {
+      background: #fff; border-radius: 10px; height: 150px; display: flex; align-items: center;
+      justify-content: center; padding: 10px; overflow: hidden;
+    }
+    .guide-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .guide-card h4 { font-size: 15.5px; margin: 0; line-height: 1.3; }
+    .guide-more { color: var(--red); font-weight: 800; font-size: 13px; margin-top: auto; }
     .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
     .gear-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
@@ -109,7 +147,7 @@ const cats = [...new Set(GEAR.map((g) => g.cat))];
     }
     .gear-btn:hover { filter: brightness(1.08); }
     .gear-btn.is-soon { background: color-mix(in srgb, var(--faint) 30%, var(--surface)); color: var(--faint); cursor: default; }
-    @media (max-width: 960px) { .gear-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .gear-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 960px) { .gear-grid, .guide-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .gear-grid, .guide-grid { grid-template-columns: 1fr; } }
   </style>
 </Base>
