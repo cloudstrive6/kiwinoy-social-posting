@@ -27,7 +27,7 @@ const GEAR = [
   { cat: "Storage",    name: "WD_BLACK SN850P 4TB (PS5)",    note: "Officially licensed PS5 expansion, up to 7,300MB/s, heatsink.",     retailer: "Amazon", url: "https://amzn.to/4izZTdg", img: "/gear/storage.jpg" },
   { cat: "Fuel",       name: "DUBBY Energy",                 note: "Jitterless clean energy — use code BOSSKG for 10% off.",             retailer: "Dubby",  url: "https://www.dubby.gg/discount/BossKG?ref=ohipluqb", img: "/gear/dubby.jpg" },
   { cat: "Fuel",       name: "GFUEL Energy",                 note: "The grind fuel — code + link coming once approved.",                retailer: "GFUEL",  url: "#" },
-  { cat: "Drops",      name: "LuxDrop",                      note: "Spin the wheel for a free Welcome Bonus on sign-up — win PS5s, skins & tech. 18+. Claim with my link.", retailer: "LuxDrop", url: "https://luxdrop.com/r/bosskg" },
+  { cat: "Drops",      name: "LuxDrop — Claim your Welcome Bonus", note: "Spin the wheel for a free Welcome Bonus on sign-up — win PS5s, skins & tech. 18+. Claim with my link.", retailer: "LuxDrop", url: "https://luxdrop.com/r/bosskg", card: "/gear/luxdrop-card.jpg" },
   { cat: "Creators",   name: "Trybe",                        note: "The platform I use to land paid brand & UGC deals — join with my link.",           retailer: "Trybe",   url: "https://jointrybe.com/r/HAGTVAG9" },
 ];
 
@@ -57,7 +57,7 @@ const guides = (await getCollection("articles"))
       {guides.length > 0 && (
         <>
           <div class="sec-h" style="margin:28px 0 0"><span class="bar"></span><h3 style="font-size:18px">Guides &amp; reviews</h3></div>
-          <p style="color:var(--muted); margin:-4px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear below.</p>
+          <p style="color:var(--muted); margin:10px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear below.</p>
           <div class="guide-grid">
             {guides.map((a) => (
               <a class="guide-card" href={`/news/${a.id}`}>
@@ -76,17 +76,23 @@ const guides = (await getCollection("articles"))
           <div class="sec-h" style="margin:30px 0 0"><span class="bar"></span><h3 style="font-size:18px">{c}</h3></div>
           <div class="gear-grid">
             {GEAR.filter((g) => g.cat === c).map((g) => (
-              <div class="gear-card">
-                {g.img && <div class="gear-img"><img src={g.img} alt={g.name} loading="lazy" /></div>}
-                <span class="gear-cat">{g.cat}</span>
-                <h4>{g.name}</h4>
-                <p>{g.note}</p>
-                {g.url && g.url !== "#" ? (
-                  <a class="gear-btn" href={g.url} rel="sponsored nofollow noopener" target="_blank">View on {g.retailer} →</a>
-                ) : (
-                  <span class="gear-btn is-soon" aria-disabled="true">Link coming soon</span>
-                )}
-              </div>
+              g.card ? (
+                <a class="gear-card gear-card--full" href={g.url} rel="sponsored nofollow noopener" target="_blank" aria-label={g.name}>
+                  <img src={g.card} alt={g.name} loading="lazy" />
+                </a>
+              ) : (
+                <div class="gear-card">
+                  {g.img && <div class="gear-img"><img src={g.img} alt={g.name} loading="lazy" /></div>}
+                  <span class="gear-cat">{g.cat}</span>
+                  <h4>{g.name}</h4>
+                  <p>{g.note}</p>
+                  {g.url && g.url !== "#" ? (
+                    <a class="gear-btn" href={g.url} rel="sponsored nofollow noopener" target="_blank">View on {g.retailer} →</a>
+                  ) : (
+                    <span class="gear-btn is-soon" aria-disabled="true">Link coming soon</span>
+                  )}
+                </div>
+              )
             ))}
           </div>
         </>
@@ -127,6 +133,8 @@ const guides = (await getCollection("articles"))
       padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
     }
     .gear-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
+    .gear-card--full { padding: 0; overflow: hidden; text-decoration: none; }
+    .gear-card--full img { display: block; width: 100%; height: auto; border-radius: 14px; }
     .gear-img {
       background: #fff; border-radius: 10px; height: 168px; margin-bottom: 4px;
       display: flex; align-items: center; justify-content: center; padding: 14px; overflow: hidden;
