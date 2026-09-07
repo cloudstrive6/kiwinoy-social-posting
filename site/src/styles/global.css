@@ -106,7 +106,10 @@ nav.main a.active::after{content:""; display:block; height:2.5px; background:var
   background:radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 60%)}
 .affad:hover{transform:translateY(-2px); border-color:color-mix(in srgb, var(--accent) 55%, var(--border))}
 .affad.leader{height:104px; margin:20px 0} .affad.inline{height:130px; margin:8px 0}
+.affad-left{display:flex; align-items:center; gap:16px; min-width:0; position:relative; z-index:1}
+.affad-img{flex:none; height:78px; width:62px; object-fit:cover; object-position:center 58%; border-radius:9px; border:1px solid rgba(255,255,255,.16)}
 .affad .l{display:flex; flex-direction:column; gap:5px; position:relative; z-index:1; min-width:0}
+@media(max-width:560px){.affad-img{display:none}}
 .affad .tag{font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:800; color:var(--faint)}
 .affad .name{font-weight:900; font-size:27px; line-height:1; letter-spacing:.01em}
 .affad .name b{color:var(--accent)}
