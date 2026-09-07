@@ -42,22 +42,10 @@ const guides = (await getCollection("articles"))
 <Base title="Gear — BOSS KG" description="The gear Boss KG uses to record and play — controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
   <main class="wrap">
     <section class="sec" style="margin-top:34px">
-      <div class="sec-h"><span class="bar"></span><h2>Gear we use</h2></div>
-      <p style="color:var(--muted); margin:-6px 0 0; max-width:64ch">
-        The kit behind the 4K/60 HDR gameplay — plus the odd thing that just makes the grind better.
-        Everything here is stuff we'd actually recommend.
-      </p>
-
-      <p class="gear-disc" role="note">
-        <strong>Heads up:</strong> some links below are affiliate links. If you buy through them,
-        BOSS KG may earn a small commission — at <strong>no extra cost to you</strong>. It's a free
-        way to support the channel. We only list gear we'd genuinely stand behind.
-      </p>
-
       {guides.length > 0 && (
         <>
-          <div class="sec-h" style="margin:28px 0 0"><span class="bar"></span><h3 style="font-size:18px">Guides &amp; reviews</h3></div>
-          <p style="color:var(--muted); margin:10px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear below.</p>
+          <div class="sec-h"><span class="bar"></span><h2>Guides &amp; reviews</h2></div>
+          <p style="color:var(--muted); margin:10px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear we use.</p>
           <div class="guide-grid">
             {guides.map((a) => (
               <a class="guide-card" href={`/news/${a.id}`}>
@@ -70,6 +58,18 @@ const guides = (await getCollection("articles"))
           </div>
         </>
       )}
+
+      <div class="sec-h" style="margin:38px 0 0"><span class="bar"></span><h2>Gear we use</h2></div>
+      <p style="color:var(--muted); margin:10px 0 0; max-width:64ch">
+        The kit behind the 4K/60 HDR gameplay — plus the odd thing that just makes the grind better.
+        Everything here is stuff we'd actually recommend.
+      </p>
+
+      <p class="gear-disc" role="note">
+        <strong>Heads up:</strong> some links below are affiliate links. If you buy through them,
+        BOSS KG may earn a small commission — at <strong>no extra cost to you</strong>. It's a free
+        way to support the channel. We only list gear we'd genuinely stand behind.
+      </p>
 
       {cats.map((c) => (
         <>
