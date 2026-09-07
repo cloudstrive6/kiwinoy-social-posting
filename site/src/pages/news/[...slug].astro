@@ -30,7 +30,7 @@ const nice = d.date.toLocaleDateString("en-US", { month: "long", day: "numeric",
         <div class="a-meta"><span>By {d.author}</span><span>•</span><span>{nice}</span></div>
       </div>
 
-      <div class={`a-cover art ${gclass} ${d.cover ? "has-img" : ""}`}>
+      <div class={`a-cover art ${gclass} ${d.cover ? "has-img" : ""} ${d.category === "Hardware" ? "contain" : ""}`}>
         {d.cover && <img src={d.cover} alt={d.coverAlt} />}
       </div>
 
