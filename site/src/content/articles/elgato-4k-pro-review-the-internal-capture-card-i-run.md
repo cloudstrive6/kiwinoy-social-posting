@@ -9,7 +9,7 @@ coverAlt: "Elgato 4K Pro internal PCIe capture card"
 date: 2026-09-07
 author: "BOSS KG"
 featured: false
-draft: true
+draft: false
 ---
 
 If you're capturing console gameplay in 4K/60 HDR, the capture card is the single most important — and most misunderstood — piece of the chain. Get it wrong and you lose HDR, add input lag, or drop frames over long sessions. The **Elgato 4K Pro** is the card recording every playthrough on the channel, and here's the honest breakdown of why, plus the one thing to check before you buy.
@@ -29,7 +29,7 @@ For someone doing multi-hour hard-difficulty playthroughs, "does it stay stable 
 
 ## The one catch before you buy
 
-This is an **internal** card, so **you need a desktop PC with a free PCIe slot.** If you're on a laptop or a mini-PC, this isn't the one for you — that's exactly the case where I reach for the **Elgato 4K X** instead (external, HDMI 2.1, 4K144, low latency). Same clean capture, no slot required, at the cost of a USB connection.
+This is an **internal** card, so **you need a desktop PC with a free PCIe slot.** If you're on a laptop or a mini-PC, this isn't the one for you — that's exactly the case where I reach for the **[Elgato 4K X](/gear)** instead (external, HDMI 2.1, 4K144, low latency). Same clean capture, no slot required, at the cost of a USB connection.
 
 So the decision is really: **desktop with a slot → 4K Pro. Anything else → 4K X.**
 
@@ -41,6 +41,6 @@ The 4K Pro is for anyone serious about recording or streaming console gameplay a
 
 It's the least glamorous piece of my setup and one of the most important — a capture card you install once and then forget about, which is the highest compliment you can pay one. It holds 4K60 HDR cleanly for as long as I record, passes a lag-free signal to my display, and doesn't make me think about it. That's exactly what you want from capture.
 
-Exact model (plus the 4K X external option) is on my **[gear page](/gear)** — affiliate links that support the channel at no cost to you.
+It's the capture card in my **[full 4K/60 HDR setup](/news/how-i-capture-4k-60-hdr-gameplay-on-ps5-my-full-setup)**. Exact model (plus the 4K X external option) is on my **[gear page](/gear)** — affiliate links that support the channel at no cost to you.
 
 *Internal or external for your setup? If you're unsure which fits your PC, ask and I'll point you the right way.*

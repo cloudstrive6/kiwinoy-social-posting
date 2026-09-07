@@ -9,7 +9,7 @@ coverAlt: "Sony DualSense Edge pro controller for PS5"
 date: 2026-09-07
 author: "BOSS KG"
 featured: false
-draft: true
+draft: false
 ---
 
 The **DualSense Edge** is Sony's pro controller — roughly three times the price of a standard DualSense — and the question everyone asks is simple: is it actually worth it, or are you paying for features you'll never touch? I've used it as my daily driver on the channel through some genuinely punishing playthroughs, so here's the honest version.
@@ -48,6 +48,6 @@ And the one that quietly matters most: **replaceable stick modules.** Standard c
 
 For me it's a keeper — the paddles and trigger stops changed how I play the hard runs, and the replaceable modules make it feel less like a luxury and more like the *last* controller I'll buy for a while. It's a pro tool at a pro price. If you're the kind of player who'll actually use what it adds, it's worth it. If you're not, it's a lot of money for a heavier controller.
 
-You can find the exact model on my **[gear page](/gear)** (affiliate link — supports the channel at no cost to you).
+It's a core part of my **[full 4K/60 HDR capture setup](/news/how-i-capture-4k-60-hdr-gameplay-on-ps5-my-full-setup)**, and you can find the exact model on my **[gear page](/gear)** (affiliate link — supports the channel at no cost to you).
 
 *Running the Edge yourself? Tell me what you've got mapped to your paddles.*

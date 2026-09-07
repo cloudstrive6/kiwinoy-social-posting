@@ -9,7 +9,7 @@ coverAlt: "PlayStation 5 Pro — the BOSS KG capture setup"
 date: 2026-09-07
 author: "BOSS KG"
 featured: false
-draft: true
+draft: false
 ---
 
 Every 4K/60 HDR playthrough on the channel runs through the same chain. People ask about it constantly, so here's the whole thing — the exact gear, why each piece is in the setup, and how it fits together. If you're trying to record or stream console gameplay that actually looks like the game (not a compressed, washed-out version of it), this is the blueprint I'd hand you.
@@ -20,11 +20,11 @@ The trap most people fall into is losing quality *somewhere* in the chain — a 
 
 ## The console — PlayStation 5 Pro
 
-Everything starts on the **PS5 Pro**. The extra GPU headroom and PSSR upscaling mean more games hold a genuine 4K/60 target instead of dropping to a blurry performance mode, which matters a lot when you're capturing — you're recording the *best* version of each game, not a compromise. It's the main rig, and it's on for hours at a time, so the storage and thermals below matter just as much as the raw power.
+Everything starts on the **[PS5 Pro](/gear)**. The extra GPU headroom and PSSR upscaling mean more games hold a genuine 4K/60 target instead of dropping to a blurry performance mode, which matters a lot when you're capturing — you're recording the *best* version of each game, not a compromise. It's the main rig, and it's on for hours at a time, so the storage and thermals below matter just as much as the raw power.
 
 ## Capture — Elgato 4K Pro (internal) + 4K X (external)
 
-This is the heart of it. My primary capture is the **Elgato 4K Pro**, an internal PCIe card. Going internal means no USB bandwidth bottleneck and no extra latency — the PS5 signal comes in, passes through to my display with 8K60 passthrough headroom, and records 4K60 HDR10 cleanly in the background. Because it's on the PCIe bus, it stays rock-solid over long sessions.
+This is the heart of it. My primary capture is the **[Elgato 4K Pro](/news/elgato-4k-pro-review-the-internal-capture-card-i-run)**, an internal PCIe card. Going internal means no USB bandwidth bottleneck and no extra latency — the PS5 signal comes in, passes through to my display with 8K60 passthrough headroom, and records 4K60 HDR10 cleanly in the background. Because it's on the PCIe bus, it stays rock-solid over long sessions.
 
 I keep an **Elgato 4K X** in the setup too as the external option — HDMI 2.1, 4K144, ultra-low latency — for when I need to capture off a second machine or move the rig. Between the two I can capture basically anything without dropping HDR.
 
@@ -36,7 +36,7 @@ I play and monitor on the **LG C5 OLED**. Two reasons. First, OLED with proper D
 
 ## Control — DualSense Edge
 
-The everyday pad is the **DualSense Edge**. Back paddles and remappable inputs keep my thumbs on the sticks during the moments that actually make the clip, and the tunable triggers/sticks let me dial each game in. On hard-difficulty runs where one input costs you the fight, the paddles genuinely earn their place. (Full review of it coming separately.)
+The everyday pad is the **[DualSense Edge](/news/dualsense-edge-review-is-the-pro-controller-worth-it)**. Back paddles and remappable inputs keep my thumbs on the sticks during the moments that actually make the clip, and the tunable triggers/sticks let me dial each game in. On hard-difficulty runs where one input costs you the fight, the paddles genuinely earn their place. (Full review [here](/news/dualsense-edge-review-is-the-pro-controller-worth-it).)
 
 ## Audio — SteelSeries Arctis Nova 7P
 
