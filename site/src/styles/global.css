@@ -98,6 +98,23 @@ nav.main a.active::after{content:""; display:block; height:2.5px; background:var
 .ad .lab{font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; font-weight:800}
 .ad .dim{font-size:12px}
 .ad.leader{height:104px; margin:20px 0} .ad.inline{height:130px; margin:8px 0}
+/* Affiliate banners (fill the ad slots) */
+.affad{display:flex; align-items:center; justify-content:space-between; gap:18px; text-decoration:none;
+  color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:0 26px;
+  position:relative; overflow:hidden; background:var(--surface); transition:.16s}
+.affad::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 60%)}
+.affad:hover{transform:translateY(-2px); border-color:color-mix(in srgb, var(--accent) 55%, var(--border))}
+.affad.leader{height:104px; margin:20px 0} .affad.inline{height:130px; margin:8px 0}
+.affad .l{display:flex; flex-direction:column; gap:5px; position:relative; z-index:1; min-width:0}
+.affad .tag{font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:800; color:var(--faint)}
+.affad .name{font-weight:900; font-size:27px; line-height:1; letter-spacing:.01em}
+.affad .name b{color:var(--accent)}
+.affad .sub{color:var(--muted); font-size:13.5px}
+.affad .cta{flex:none; position:relative; z-index:1; font-weight:800; font-size:14px; white-space:nowrap;
+  padding:12px 20px; border-radius:10px; background:var(--accent); color:#0F1116}
+.affad.luxdrop{--accent:#F5B841} .affad.trybe{--accent:#4C82F7}
+@media(max-width:560px){.affad .sub{display:none} .affad .name{font-size:21px} .affad{padding:0 16px}}
 
 /* section headers */
 .sec{margin-top:40px}
