@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/rare-1980-wolverine-trading-card-from-argentina-hits-3-000-at-auction.jpg"
 date: 2026-09-08
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/collectibles/news/this-wolverine-rookie-card-is-surprisingly-valuable-and-its-not-because-of-the-marvel-hero/"
 ---
