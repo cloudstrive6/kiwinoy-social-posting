@@ -289,6 +289,9 @@ def main() -> int:
     # Dedicated TikTok track: TLOU2-only gameplay reel, posts ONLY to TikTok (Zernio).
     if args.tiktok:
         tk = (CONFIG.reels.get("tiktok", {}) or {})
+        if not tk.get("enabled", True):
+            print("[tiktok] reels.tiktok.enabled is false — TikTok track paused, skipping.", flush=True)
+            return 0
         return _with_backup(
             "tiktok", "TikTok draft", args.backup, args.dry_run,
             lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
@@ -370,6 +373,9 @@ def main() -> int:
             return 1
 
     track = "reel" if args.reel else ("carousel" if args.carousel else "post")
+    if track == "reel" and not CONFIG.reels.get("enabled", True):
+        print("[reel] reels.enabled is false — FB/IG feed reels paused, skipping.", flush=True)
+        return 0
     if args.all:
         slot_ids = [int(s["id"]) for s in _slots_for(track)]
     elif args.auto:

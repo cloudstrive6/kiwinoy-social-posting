@@ -371,7 +371,10 @@ platforms:
 # a day. Each reel is a 12-15s 9:16 MP4 with Ken Burns motion + animated
 # storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
-  enabled: true
+  enabled: false   # PAUSED 2026-09-14 (user): all Spider-Man 2 feed reels paused to
+                   # pivot to Marvel's Wolverine. Wolverine footage not added yet — flip
+                   # back to true AND set footage.prefer_override.games: [wolverine] once
+                   # the clips are in. Gated by run.py (skips the --reel run cleanly).
   # Backup-trigger self-heal: a 2nd cron-job.org job fires ~15 min after each reel
   # slot hitting run.py --reel --backup. It posts a make-up ONLY if no reel posted
   # within window_minutes (i.e. the primary cron->GitHub trigger was dropped by a
@@ -405,7 +408,8 @@ reels:
     # NOTE: YouTube previously throttled the channel's Shorts reach from bulk auto-posting
     # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
-    enabled: true
+    enabled: false   # PAUSED 2026-09-14 (user): SM2 Shorts paused for the Wolverine pivot.
+                     # Re-enable once Wolverine footage is added.
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
     # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
     # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership
@@ -709,6 +713,9 @@ reels:
   # posts ONLY the game below to TikTok (via Zernio), alternating classic<->triptych
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
+    enabled: false       # PAUSED 2026-09-14 (user): SM2 TikTok track paused for the Wolverine
+                         # pivot. Gated by run.py (--tiktok skips cleanly). Re-enable + set
+                         # game: wolverine once Wolverine footage is added.
     game: spider-man2    # Marvel's Spider-Man 2 (resumed 2026-07-27 per user; Halo launch push paused.
                          # Was halo 2026-07-24; TLOU2 gameplays paused on TikTok 2026-07-05).
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
