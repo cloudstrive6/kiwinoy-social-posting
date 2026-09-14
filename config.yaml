@@ -633,6 +633,7 @@ reels:
     spider-man1: "Marvel's Spider-Man"
     spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
     spider-man2: "Marvel's Spider-Man 2"
+    wolverine: "Marvel's Wolverine"
     general: 'this game'
   # ONE fitting emoji per game. Used for the GAME-TITLE line that sits between the
   # caption body and the hashtags on CLASSIC/TRIPTYCH reel captions (FB/IG/TikTok,
@@ -642,6 +643,7 @@ reels:
     spider-man1: "🕸️"
     spider-man-miles-morales: "🕸️"
     spider-man2: "🕸️"
+    wolverine: "🗡️"
     ff7: "⚔️"
     ff7remake: "⚔️"
     thelastofus2: "🍄"
@@ -666,6 +668,7 @@ reels:
     spider-man1: ["#MarvelsSpiderManRemastered", "#SpiderMan", "#SpiderManPS5", "#marvel", "#gamingreels"]
     spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan", "#PS5", "#gamingreels"]
     spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#SpiderMan", "#PS5", "#gamingreels"]
+    wolverine: ["#MarvelsWolverine", "#Wolverine", "#Insomniac", "#PS5", "#gamingreels"]
     ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth", "#FinalFantasy", "#gaming"]
     ff7remake: ["#FF7Remake", "#FinalFantasyVIIRemake", "#FinalFantasy", "#FF7", "#gaming"]
     thelastofus2: ["#thelastofuspart2", "#thelastofus", "#TLOU2", "#PS5", "#gaming"]

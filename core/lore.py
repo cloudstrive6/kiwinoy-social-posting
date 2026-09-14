@@ -341,6 +341,32 @@ GAME_LORE["halo"] = (
 )
 
 
+GAME_LORE["wolverine"] = (
+    "MARVEL'S WOLVERINE (Insomniac Games, PS5) — a MATURE-rated, brutal third-person "
+    "action game. SINGLE playable hero: you ALWAYS play LOGAN, codename WOLVERINE. Name "
+    "him confidently as 'Wolverine' or 'Logan'.\n"
+    "WHO HE IS (established Marvel canon — safe to state). Signature powers/tells you CAN "
+    "read on screen:\n"
+    "- CLAWS: three retractable blades that snap out of the BACK of each hand — his "
+    "iconic move. His skeleton AND claws are laced with indestructible ADAMANTIUM metal.\n"
+    "- HEALING FACTOR: wounds close fast; he shrugs off damage that would kill anyone "
+    "else. Combat is visceral, bloody, close-quarters slashing + a feral BERSERKER RAGE.\n"
+    "- Heightened animal senses; a world-weary lone-wolf antihero (cigars, whiskey, a "
+    "reluctant code) tied to the X-MEN and the wider mutant world (Marvel universe).\n"
+    "STORY-CAUTION (CRITICAL — this game's SPECIFIC plot, villains, allies and locations "
+    "are NOT assumed here): caption the ACTION you SEE plus Logan himself. Do NOT invent "
+    "or NAME specific antagonists (e.g. Sabretooth, Omega Red, Mystique, Weapon X), allies "
+    "(Xavier, Jean, other X-Men), factions or story beats UNLESS the clip's VISUALS or "
+    "SUBTITLES UNMISTAKABLY show them. Generic soldiers / mercs / thugs = just 'enemies' "
+    "or 'hunters', never a guessed named faction.\n"
+    "TIMELINE: treat Logan as an ALREADY fully-powered Wolverine with his adamantium "
+    "claws — never write it's 'before the adamantium', an origin, or him 'getting' his "
+    "powers unless the clip unmistakably depicts that.\n"
+    "DON'T FABRICATE: no invented quotes, character names or plot. When unsure, hook the "
+    "raw brutality — the claws, the healing, the rage — never a made-up detail."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
@@ -349,6 +375,7 @@ def lore_for(game: str) -> str:
 # Keyword -> lore key, for tracks (like Threads) that don't know the game up
 # front. First match wins; order from most specific to least.
 _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("wolverine", ("wolverine", "logan", "james howlett", "marvel's wolverine", "adamantium")),
     ("spider-man2", ("spider-man 2", "spiderman 2", "marvel's spider-man 2")),
     ("spider-man-miles-morales", ("miles morales",)),
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
