@@ -8,6 +8,7 @@ game: "starcraft"
 cover: "/covers/blizzard-unveils-starcraft-open-world-shooter-at-blizzcon-2026-launchi.jpg"
 date: 2026-09-13
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/starcraft-open-world-shooter-announced-blizzcon-2026"
