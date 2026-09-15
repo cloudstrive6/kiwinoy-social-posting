@@ -350,9 +350,13 @@ def sync_b2(delete_local: bool = True, only_game: str | None = None) -> None:
     src = (base / only_game) if only_game else base
     dst = f"{remote}:{bucket}/{prefix}" + (f"/{only_game}" if only_game else "")
     verb = "move" if delete_local else "copy"   # move = verified copy + free local
+    # Keep each game's folder alive: NEVER move the .gitkeep, so the source folder
+    # never fully empties and rclone (move) can't remove the directory. Without this
+    # the whole folder vanishes after a sync (unlike the legacy release-path sync(),
+    # which only ever touched video files). --exclude .gitkeep matches at any depth.
     args = ["rclone", verb, str(src), dst,
             "--min-age", "2m", "--transfers", "4", "--b2-chunk-size", "100M",
-            "--exclude", ".cache/**", "--exclude", "*.part",
+            "--exclude", ".cache/**", "--exclude", "*.part", "--exclude", ".gitkeep",
             "-v", "--stats", "20s", "--stats-one-line"]
     print(f"[b2 sync] {verb} {src} -> {dst}", flush=True)
     rc = subprocess.run(args, env=env).returncode
