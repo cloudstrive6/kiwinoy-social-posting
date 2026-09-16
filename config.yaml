@@ -51,8 +51,7 @@ trends:
   autopost:
     enabled: true
     facebook: true
-    threads: false          # PAUSED 2026-09-16 (user): all Threads auto-posting off (trend
-                            # autoposts stay on FB). Set true to resume Threads.
+    threads: true
     instagram_story: true
     min_score: 8            # only auto-post cards the screener scores >= this
     # CTA rendered on the IG STORY only (NOT on the FB/Threads card). IG blocks API text/
@@ -347,9 +346,10 @@ platforms:
   video_post_to:
   - facebook
   - instagram
-  # - threads   # PAUSED 2026-09-16 (user): ALL Threads automatic posting paused. Feed reels
-  #             no longer fan out to Threads. (Was briefly resumed 2026-09-15 for the
-  #             Wolverine pivot.) Uncomment to resume.
+  # - threads   # PAUSED 2026-09-16 (user): REELS no longer fan out to Threads. (Was briefly
+  #             resumed 2026-09-15 for the Wolverine pivot.) NOTE: this pauses ONLY the reel
+  #             feed -> Threads; trend autoposts still go to Threads (trends.autopost.threads).
+  #             Uncomment to resume reels -> Threads.
   # STABLE references — these never change when you disconnect/reconnect an
   # account in Post for Me. account_ids() resolves them to the live spc_ id at
   # runtime, so a reconnect NEVER needs a config edit. (Set each account's
