@@ -656,19 +656,40 @@ def _measure_loudness(parts: list[Path], target_i: float = -14.0,
         return None
 
 
-def _color_range(path: Path) -> str:
-    """ffprobe the video's color_range ('tv'=limited, 'pc'=full, '' unknown)."""
+def _probe_color(path: Path) -> dict:
+    """ffprobe the video's color tags: {range, transfer, primaries} (lowercased, '' if unknown)."""
     import json
     import subprocess
     try:
         r = subprocess.run(
-            ["ffprobe", "-v", "quiet", "-select_streams", "v:0",
-             "-show_entries", "stream=color_range", "-of", "json", str(path)],
+            ["ffprobe", "-v", "quiet", "-select_streams", "v:0", "-show_entries",
+             "stream=color_range,color_transfer,color_primaries", "-of", "json", str(path)],
             capture_output=True, text=True, timeout=30)
         st = (json.loads(r.stdout or "{}").get("streams") or [{}])[0]
-        return (st.get("color_range") or "").lower()
+        return {"range": (st.get("color_range") or "").lower(),
+                "transfer": (st.get("color_transfer") or "").lower(),
+                "primaries": (st.get("color_primaries") or "").lower()}
     except Exception:
-        return ""
+        return {"range": "", "transfer": "", "primaries": ""}
+
+
+def _color_range(path: Path) -> str:
+    """ffprobe the video's color_range ('tv'=limited, 'pc'=full, '' unknown)."""
+    return _probe_color(path)["range"]
+
+
+def is_hdr_source(path: Path) -> bool:
+    """True iff the file carries an HDR transfer function (PQ or HLG)."""
+    return _probe_color(path)["transfer"] in ("smpte2084", "arib-std-b67")
+
+
+def is_youtube_hdr_ready(path: Path) -> bool:
+    """True iff the file is CANONICAL YouTube HDR10/HLG: PQ or HLG transfer + BT.2020
+    primaries + LIMITED (tv) range. A FULL-range (pc) PQ file is NOT ready — YouTube reads
+    it as SDR (the 'FF7 Remake' problem). This is the pre-upload gate for long-form HDR."""
+    c = _probe_color(path)
+    return (c["transfer"] in ("smpte2084", "arib-std-b67")
+            and c["primaries"] == "bt2020" and c["range"] == "tv")
 
 
 def build_longform_hdr(
@@ -709,6 +730,16 @@ def build_longform_hdr(
     missing = [str(p) for p in parts if not p.exists()]
     if not parts or missing:
         raise ReelFfmpegError(f"longform parts missing: {missing or 'none provided'}")
+
+    # A FULL/unknown-range HDR source uploads to YouTube as SDR. Stream-copy would carry
+    # that through untouched, so REFUSE to stream-copy it — force the re-encode path, which
+    # remaps full->tv + re-asserts the HDR10 tags. Stream-copy of an already-tv HDR source
+    # (or plain SDR) stays allowed (fast + lossless). This is the FF7 Remake fix.
+    if copy and is_hdr_source(parts[0]) and _color_range(parts[0]) != "tv":
+        print(f"[longform] stream-copy requested but source HDR range is "
+              f"'{_color_range(parts[0]) or 'unknown'}' (NOT tv) — YouTube would show SDR. "
+              f"Forcing a re-encode with the full->tv HDR10 fix instead.", flush=True)
+        copy = False
 
     if copy:
         # STREAM-COPY concat (no re-encode): near-instant + byte-perfect HDR preserved.

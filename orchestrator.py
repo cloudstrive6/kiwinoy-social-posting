@@ -2053,6 +2053,37 @@ def run_youtube_longform(
             copy=bool(yl.get("stream_copy", False)),
             encoder=str(yl.get("encoder", "nvenc")))
 
+    # HDR SAFETY GATE (per user 2026-09-17 — the FF7 Remake 'uploads as SDR' incident):
+    # the final file MUST be canonical tv-range HDR10 if it carries an HDR transfer, or
+    # YouTube silently shows it as SDR. This catches a stream-copied or REUSED full-range
+    # concat that skipped the full->tv conversion. If it's HDR but not tv-range-ready,
+    # re-encode it (auto full->tv) before upload; if that still fails, ABORT + Telegram
+    # rather than post an SDR-looking video.
+    if reel_ffmpeg.is_hdr_source(out) and not reel_ffmpeg.is_youtube_hdr_ready(out):
+        log(f"HDR GATE: {out.name} is HDR but NOT tv-range canonical (YouTube would show "
+            f"SDR) — re-encoding with the full->tv fix before upload...")
+        try:
+            fixed = run_dir / "fullgame_hdrfix.mp4"
+            reel_ffmpeg.build_longform_hdr(
+                [out], fixed, encoder=str(yl.get("encoder", "nvenc")),
+                bitrate=str(yl.get("bitrate", "63M")), audio_lufs=None)
+            if not reel_ffmpeg.is_youtube_hdr_ready(fixed):
+                raise RuntimeError("re-encode did not yield tv-range HDR10")
+            out = fixed
+            log("HDR GATE: fixed -> tv-range HDR10 OK.")
+        except Exception as e:
+            log(f"HDR GATE FAILED: {e!r} — ABORTING upload (would post as SDR).")
+            try:
+                from core import notify as _nt
+                _nt.telegram("⚠️ Long-form YouTube upload ABORTED — the render would show as "
+                             f"SDR on YouTube (HDR range not tv) and auto-fix failed. Title: {title}")
+            except Exception:
+                pass
+            return {"kind": "youtube_longform", "published": False,
+                    "skipped": "hdr_gate_failed", "error": str(e)}
+    elif reel_ffmpeg.is_hdr_source(out):
+        log("HDR GATE: canonical tv-range HDR10 confirmed.")
+
     log("Generating thumbnail variants...")
     import re as _re
 
