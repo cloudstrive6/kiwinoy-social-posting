@@ -45,6 +45,10 @@ TH_RE = re.compile(r"\bthreads?\s+draft\b", re.I)      # "threads draft" / "thre
 FB_RE = re.compile(r"\b(?:fb|facebook)\s+draft\b", re.I)  # "fb draft" / "facebook draft"
 APPROVE_RE = re.compile(r"\bapprove(?:d|s)?\b", re.I)  # "approve" / "approved" -> publish a draft article
 BLOG_RE = re.compile(r"\bblog\b", re.I)                # "create a blog post <topic>" -> draft a site article
+# "drafts" / "list drafts" / "show pending" / "backlog" -> READ-ONLY list of pending draft
+# articles. WHOLE-message match so it never collides with "ig draft" / "tiktok draft".
+DRAFTS_RE = re.compile(r"^\s*(?:list|show|check)?\s*(?:all\s+|my\s+|the\s+)?(?:pending\s+)?"
+                       r"(?:drafts|drafted articles|articles|backlog|pending)\s*[?.!]*\s*$", re.I)
 TT_RE = re.compile(r"\btik[\s_-]?tok\b", re.I)         # "tiktok" / "tik tok" / "tik-tok"
 # TikTok intent: the message says "tiktok" AND either "draft" or names a format (so a
 # stray mention like "check tiktok analytics" doesn't fire). e.g. "tiktok draft classic
@@ -168,7 +172,9 @@ def main() -> int:
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
-        if APPROVE_RE.search(text):                      # "approved" -> publish a draft article
+        if DRAFTS_RE.match(text):                        # "drafts" -> list the pending backlog
+            kind, cmd = "drafts", text
+        elif APPROVE_RE.search(text):                    # "approved" -> publish a draft article
             kind, cmd, amsg = "approve", text, msg
         elif BLOG_RE.search(text):                       # "create a blog post <topic>" -> draft article
             kind, cmd = "blog", text
@@ -185,6 +191,11 @@ def main() -> int:
     if not cmd:
         print("[poller] no draft command in this batch.", flush=True)
         _emit(0)
+        return 0
+    if kind == "drafts":                                 # READ-ONLY backlog listing
+        print(f"[poller] DRAFTS: {cmd!r} -> list pending drafts", flush=True)
+        if check:
+            _emit(1, "drafts")
         return 0
     if kind == "approve":                                # publish an approved draft article
         arg = _approve_arg(cmd)

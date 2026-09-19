@@ -257,6 +257,29 @@ def _notify_pending(pending) -> None:
                     f"{lst}{more}")
 
 
+def _notify_list(pending) -> None:
+    """READ-ONLY backlog listing for the Telegram "drafts" command: EVERY pending draft,
+    newest first, numbered, with its date + a reply keyword. Split into several messages so
+    a long backlog never hits Telegram's 4096-char limit. Publishes nothing."""
+    from core import notify
+    if not pending:
+        notify.telegram("📭 No draft articles pending — the backlog is empty.")
+        return
+    items = _newest_first(pending)
+    lines = [f"{i}. {fm.get('title','?')}  ({str(fm.get('date',''))[:10]})\n    ↳ approve {_hint(p)}"
+             for i, (p, fm, _) in enumerate(items, 1)]
+    head = (f"🗂 {len(items)} pending draft article(s), newest first. To publish one: REPLY "
+            "\"approved\" to its draft message, or send the ↳ line.\n\n")
+    chunk = head
+    for ln in lines:
+        if len(chunk) + len(ln) + 1 > 3800:
+            notify.telegram(chunk.rstrip())
+            chunk = ""
+        chunk += ln + "\n"
+    if chunk.strip():
+        notify.telegram(chunk.rstrip())
+
+
 def _notify_ambiguous(match: str, hits) -> None:
     """A keyword matched SEVERAL drafts — publish NOTHING and ask which one (only an explicit
     "approve all" may publish more than one)."""
@@ -272,9 +295,15 @@ def main() -> int:
     ap.add_argument("--match", default="", help="keyword to pick the pending draft (slug or title)")
     ap.add_argument("--all", action="store_true", help="publish every pending draft")
     ap.add_argument("--dry", action="store_true", help="show captions; do not publish/post/push")
+    ap.add_argument("--list", action="store_true",
+                    help="READ-ONLY: Telegram the full pending-draft backlog (publishes nothing)")
     a = ap.parse_args()
 
     pending = _pending()
+    if a.list:
+        print(f"[publish] listing {len(pending)} pending draft(s).", flush=True)
+        _notify_list(pending)
+        return 0
     targets = _select(pending, a.match, a.all)
     if not targets:
         print(f"[publish] no matching draft (pending={len(pending)}, match={a.match!r}).", flush=True)
