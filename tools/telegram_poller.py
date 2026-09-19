@@ -128,7 +128,18 @@ def _approve_arg(text: str) -> str:
     """The keyword after 'approve[d]' — a title/slug word, or 'all'. Sanitized for the shell."""
     m = re.search(r"\bapprove(?:d|s)?\b\s*(.*)$", (text or "").strip(), re.I)
     kw = (m.group(1) if m else "").strip()
-    return re.sub(r"[^\w\- ]", "", kw).strip()[:60]
+    return re.sub(r"[^\w\- ]", "", kw).strip()[:150]
+
+
+def _replied_title(msg: dict) -> str:
+    """If the approve message is a Telegram REPLY to a bot draft notice, return the article
+    title from that notice (its single '• <title>' line), sanitized like _approve_arg. A notice
+    listing SEVERAL drafts is ambiguous -> '' (publish_article then asks which one)."""
+    rt = ((msg or {}).get("reply_to_message") or {}).get("text") or ""
+    bullets = [ln.strip()[1:].strip() for ln in rt.splitlines() if ln.strip().startswith("•")]
+    if len(bullets) != 1:
+        return ""
+    return re.sub(r"[^\w\- ]", "", bullets[0]).strip()[:150]
 
 
 def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "", arg: str = "") -> None:
@@ -151,14 +162,14 @@ def main() -> int:
         _emit(0)
         return 0
     max_uid = max(int(u.get("update_id", 0)) for u in updates)
-    kind, cmd = "", ""
+    kind, cmd, amsg = "", "", {}
     for u in updates:                                    # keep the LATEST matching command (either kind)
         msg = u.get("message") or u.get("edited_message") or {}
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
         if APPROVE_RE.search(text):                      # "approved" -> publish a draft article
-            kind, cmd = "approve", text
+            kind, cmd, amsg = "approve", text, msg
         elif BLOG_RE.search(text):                       # "create a blog post <topic>" -> draft article
             kind, cmd = "blog", text
         elif TH_RE.search(text):                         # distinct keywords -> exclusive
@@ -177,10 +188,17 @@ def main() -> int:
         return 0
     if kind == "approve":                                # publish an approved draft article
         arg = _approve_arg(cmd)
-        print(f"[poller] APPROVE: {cmd!r} -> arg={arg!r}", flush=True)
+        # A REPLY to a draft notice targets exactly that article (unless it says "all").
+        replied = _replied_title(amsg)
+        if replied and arg.lower() != "all":
+            arg = replied
+        print(f"[poller] APPROVE: {cmd!r} -> arg={arg!r} (reply={bool(replied)})", flush=True)
         if check:
-            notify.telegram("\U0001F680 Got it — publishing that article + posting it to Facebook "
-                            "& Threads now. I'll confirm here in a minute…")
+            what = (f"“{arg}”" if replied else
+                    "every pending draft" if arg.lower() == "all" else
+                    f"the draft matching “{arg}”" if arg else "the pending draft")
+            notify.telegram(f"\U0001F680 Got it — publishing {what} + posting to Facebook, "
+                            "Threads & IG Story. I'll confirm here in a minute…")
             _emit(1, "approve", arg=arg)
         return 0
     if kind == "blog":                                   # draft a site article for a topic

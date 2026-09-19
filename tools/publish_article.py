@@ -65,15 +65,39 @@ def _pending() -> list[tuple[Path, dict, str]]:
     return out
 
 
+def _squash(s: str) -> str:
+    """Lowercase + drop EVERY non-alphanumeric, so "Marvel's ... 1.9 Million" (title),
+    "marvel-s-...-1-9-million" (slug) and "Marvels ... 19 Million" (the poller's sanitized
+    text) all compare equal."""
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
 def _select(pending, match: str, take_all: bool):
     if take_all:
         return pending
     if match:
-        m = match.lower().strip()
-        hit = [(p, fm, b) for (p, fm, b) in pending
-               if m in p.stem.lower() or m in str(fm.get("title", "")).lower()]
-        return hit
+        m = _squash(match)
+        if not m:
+            return []
+        # An EXACT title/slug (e.g. a reply to the draft notice) wins outright.
+        exact = [(p, fm, b) for (p, fm, b) in pending
+                 if m in (_squash(p.stem), _squash(str(fm.get("title", ""))))]
+        if exact:
+            return exact
+        return [(p, fm, b) for (p, fm, b) in pending
+                if m in _squash(p.stem) or m in _squash(str(fm.get("title", "")))]
     return pending[:1] if len(pending) == 1 else []
+
+
+def _hint(p: Path) -> str:
+    """A short, near-unique reply keyword for a draft: its first 4 slug words."""
+    return " ".join(p.stem.split("-")[:4])
+
+
+def _newest_first(items):
+    """Order drafts by their frontmatter date (file mtimes are meaningless in a CI checkout)."""
+    return sorted(items, key=lambda t: (str(t[1].get("date", "")), t[0].stat().st_mtime),
+                  reverse=True)
 
 
 def _flip_live(path: Path) -> bool:
@@ -224,10 +248,23 @@ def _notify_pending(pending) -> None:
     if not pending:
         notify.telegram("🤔 No draft articles are pending — nothing to publish.")
         return
-    lst = "\n".join(f"• {fm.get('title','?')}  —  reply: approve {p.stem.split('-')[0]}"
-                    for (p, fm, _) in pending[:8])
-    notify.telegram("🤔 Which article? Reply e.g. \"approve <keyword>\" (a word from the title/slug), "
-                    f"or \"approve all\". Pending:\n{lst}")
+    items = _newest_first(pending)
+    lst = "\n".join(f"• {fm.get('title','?')}  —  reply: approve {_hint(p)}"
+                    for (p, fm, _) in items[:15])
+    more = f"\n…and {len(items) - 15} more." if len(items) > 15 else ""
+    notify.telegram("🤔 Which article? Easiest: REPLY \"approved\" directly to that article's draft "
+                    "message. Or send one of these (or \"approve all\"). Pending, newest first:\n"
+                    f"{lst}{more}")
+
+
+def _notify_ambiguous(match: str, hits) -> None:
+    """A keyword matched SEVERAL drafts — publish NOTHING and ask which one (only an explicit
+    "approve all" may publish more than one)."""
+    from core import notify
+    lst = "\n".join(f"• {fm.get('title','?')}  —  reply: approve {_hint(p)}"
+                    for (p, fm, _) in _newest_first(hits)[:15])
+    notify.telegram(f"✋ “{match}” matches {len(hits)} drafts, so I published NOTHING. Which one? "
+                    f"Reply \"approved\" to its draft message, or send:\n{lst}")
 
 
 def main() -> int:
@@ -243,6 +280,14 @@ def main() -> int:
         print(f"[publish] no matching draft (pending={len(pending)}, match={a.match!r}).", flush=True)
         if not a.dry:
             _notify_pending(pending)
+        return 0
+    if len(targets) > 1 and not a.all:
+        # SAFETY (per user 2026-09-19): "approve Marvel" once matched every Marvel draft and
+        # published them ALL. A keyword must pick exactly one; only "approve all" bulk-publishes.
+        print(f"[publish] ambiguous match {a.match!r} -> {len(targets)} drafts; publishing none.",
+              flush=True)
+        if not a.dry:
+            _notify_ambiguous(a.match, targets)
         return 0
 
     for path, fm, body in targets:
