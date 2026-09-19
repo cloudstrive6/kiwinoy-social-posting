@@ -114,11 +114,13 @@ def _game_art(game: Optional[str], alt: Optional[int] = None) -> Optional[Any]:
     return None
 
 
-def _game_art_footage(game: Optional[str], alt: Optional[int] = None) -> Optional[Any]:
+def _game_art_footage(game: Optional[str], alt: Optional[int] = None,
+                      track: str = "all") -> Optional[Any]:
     """A looping TITLE-SCREEN art VIDEO for the triptych's BOTTOM panel — OVERRIDES the
     static _game_art image when present. Videos live on B2 under ``art-footage/<game>/``
     (uploaded via tools/art_footage.py; ~5 min title-screen recordings with the game
-    logo). Rotates like _game_art via `alt` (multiple videos per game cycle). Returns a
+    logo). Rotates PER TRACK (`track` = facebook/instagram/tiktok/youtube) so each platform
+    cycles its own loops; an explicit `alt` index overrides (4K Shorts). Returns a
     downloaded local Path, or None -> the caller falls back to the static _game_art image."""
     if not game:
         return None
@@ -138,9 +140,9 @@ def _game_art_footage(game: Optional[str], alt: Optional[int] = None) -> Optiona
                     # LEAST-RECENTLY-USED across ALL tracks -> strict A,B,C,A rotation
                     # (was random.choice: repeats ~1 in 3 and could starve a loop).
                     from core import gh_release as _g
-                    nm = _g.next_art_footage(key, [c["name"] for c in items])
+                    nm = _g.next_art_footage(key, [c["name"] for c in items], track)
                     pick = next((c for c in items if c["name"] == nm), None)
-                    how = "LRU rotation"
+                    how = f"{track} rotation"
                     if pick is None:
                         pick, how = random.choice(items), "random (rotation state unavailable)"
                 print(f"[art-footage] {key}: {pick['name']} ({how}; {len(items)} loop(s))",
@@ -770,7 +772,9 @@ def run_gameplay_reel(
     ig_rotated = ((not tiktok_only) and ("rotated" in layouts)
                   and (n % 3 == 2) and layout != "fill")
     art = _game_art(brief.get("game")) if layout == "triptych" else None
-    art_video = _game_art_footage(brief.get("game")) if layout == "triptych" else None
+    _art_track = "tiktok" if tiktok_only else ("youtube" if youtube_only else "instagram")
+    art_video = (_game_art_footage(brief.get("game"), track=_art_track)
+                 if layout == "triptych" else None)
     # TikTok export: MATCH the FB/IG/Threads feed encode by default (per user 2026-07-07).
     # The 30 Mbps "hi" spec backfired on TikTok's PUBLIC API transcode (proven: high bitrate
     # degrades worse). Set reels.tiktok.hi_bitrate: true to restore the 30M browser-upload spec.
@@ -1041,6 +1045,18 @@ def run_gameplay_reel(
                 if layout == "triptych" or not fb_art:
                     if not fb_art and layout != "triptych":
                         log("FB triptych: no game art for this game — using the shared render.")
+                    if layout == "triptych" and art_video:
+                        # FB shows the SHARED triptych's loop -> count it on FB's own rotation
+                        # so FB's next own pick moves past it (no back-to-back repeat on FB).
+                        try:
+                            from core import gh_release as _g
+                            # (art_video is already a pathlib.Path; orchestrator has no
+                            # module-level Path import, so don't call Path() here.)
+                            _g.mark_art_footage(str(brief.get("game") or ""),
+                                                getattr(art_video, "name", str(art_video)),
+                                                "facebook")
+                        except Exception:
+                            pass
                 elif layout == "fill":
                     fb_clip, fb_cid = reel_composer.pick_unused_clip(brief["game"], ["facebook"])
                     if fb_clip:
@@ -1050,7 +1066,7 @@ def run_gameplay_reel(
                         fb_src = run_dir / "reel_fb_triptych.mp4"
                         reel_ffmpeg.build_gameplay_triptych(
                             fb_clip, fb_src, hook=fb_story_hook, game_art=fb_art,
-                            game_art_video=_game_art_footage(brief.get("game")),
+                            game_art_video=_game_art_footage(brief.get("game"), track="facebook"),
                             top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
                             fps=fps, w=rw, h=rh, target_seconds=fb_tgt, music=_reel_music(),
                             anim_logo=_anim_logo())
@@ -1063,7 +1079,7 @@ def run_gameplay_reel(
                     fb_src = run_dir / "reel_fb_triptych.mp4"
                     reel_ffmpeg.build_gameplay_triptych(
                         clip_path, fb_src, hook=hook, game_art=fb_art,
-                        game_art_video=_game_art_footage(brief.get("game")),
+                        game_art_video=_game_art_footage(brief.get("game"), track="facebook"),
                         top_image=_game_screenshot(brief.get("game")), logo=_reel_logo(),
                         fps=fps, w=rw, h=rh, target_seconds=target, music=_reel_music(),
                         anim_logo=_anim_logo())

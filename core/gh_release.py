@@ -643,29 +643,51 @@ def reset_quote_images() -> bool:
     return _write_json_asset(QIMAGE_USED, {"used": []})
 
 
-# TRIPTYCH TITLE-SCREEN ROTATION (per user 2026-09-19): {game: {video_name: last_used_ts}}.
-# Shared by EVERY track (feed/IG, FB, TikTok, YouTube) so a game's art-footage loops rotate
-# strictly (A, B, C, A...) instead of a random pick that repeats / starves a loop.
+# TRIPTYCH TITLE-SCREEN ROTATION (per user 2026-09-19): {game: {track: {video: last_used_ts}}}.
+# PER TRACK (facebook / instagram / tiktok / youtube): each platform's audience only sees its
+# OWN feed, so each platform rotates its loops strictly (A, B, C, A...) on its own. A single
+# shared rotation did NOT do that — interleaved tracks left FB seeing A then A again.
 ART_ROTATION_ASSET = "_art_footage_rotation.json"
 
 
-def next_art_footage(game_key: str, names: list[str]) -> Optional[str]:
-    """Least-recently-used pick among a game's triptych title-screen videos (never-used
-    first, then oldest; name breaks ties), and RECORD it. Returns None when the rotation
-    state is unreachable (can't read AND can't write) so the caller falls back to random
-    rather than getting stuck on the first video."""
-    if not names:
-        return None
+def _art_rotation_state():
+    """(raw, state) — state normalised to {game: {track: {name: ts}}}; the pre-per-track flat
+    {game: {name: ts}} layout is discarded (it only lived a few hours)."""
     raw = _read_json_asset(ART_ROTATION_ASSET)
     st = raw if isinstance(raw, dict) else {}
-    last = {n: float(ts) for n, ts in (st.get(game_key) or {}).items() if n in names}
+    for g, v in list(st.items()):
+        if not isinstance(v, dict) or any(not isinstance(x, dict) for x in v.values()):
+            st[g] = {}
+    return raw, st
+
+
+def next_art_footage(game_key: str, names: list[str], track: str = "all") -> Optional[str]:
+    """Least-recently-used pick FOR THIS TRACK among a game's triptych title-screen videos
+    (never-used first, then oldest; name breaks ties), and RECORD it. Returns None when the
+    rotation state is unreachable (can't read AND can't write) so the caller falls back to
+    random rather than getting stuck on the first video."""
+    if not names:
+        return None
+    raw, st = _art_rotation_state()
+    g = st.setdefault(game_key, {})
+    last = {n: float(ts) for n, ts in (g.get(track) or {}).items() if n in names}
     pick = min(sorted(names), key=lambda n: last.get(n, 0.0))
     last[pick] = time.time()
-    st[game_key] = last                      # (videos no longer on B2 drop out naturally)
+    g[track] = last                          # (videos no longer on B2 drop out naturally)
     ok = _write_json_asset(ART_ROTATION_ASSET, st)
     if raw is None and not ok:
         return None
     return pick
+
+
+def mark_art_footage(game_key: str, name: str, track: str) -> bool:
+    """Record that `track` SHOWED `name` without picking it (e.g. Facebook reusing the shared
+    feed triptych), so that track's own next pick rotates past it."""
+    if not name:
+        return False
+    _, st = _art_rotation_state()
+    st.setdefault(game_key, {}).setdefault(track, {})[name] = time.time()
+    return _write_json_asset(ART_ROTATION_ASSET, st)
 
 
 STORY_QUOTES_ASSET = "_quote_story_used.json"

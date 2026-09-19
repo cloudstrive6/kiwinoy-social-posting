@@ -579,7 +579,8 @@ reels:
     # layout, which becomes classic<->fill for these games); FACEBOOK keeps its
     # triptych-only override, and TikTok / YouTube are unaffected. Empty list / game
     # removed = triptych stays for that game on IG.
-    ig_exclude_triptych_games: [spider-man1, spider-man-miles-morales, spider-man2]
+    # wolverine added 2026-09-19 (per user): IG gets classic <-> full-bleed fill only.
+    ig_exclude_triptych_games: [spider-man1, spider-man-miles-morales, spider-man2, wolverine]
     # Large clips (>100MB, up to 2GB) live as assets on a GitHub Release instead
     # of in the repo (which caps files at 100MB). Upload them with:
     #   python tools/footage.py upload <game> <path-to-clip.mp4>
