@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-slashes-onto-ps5-after-years-in-development.jpg"
 date: 2026-09-16
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://www.pushsquare.com/features/poll-are-you-playing-marvels-wolverine-on-ps5"
 ---
