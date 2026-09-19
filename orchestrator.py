@@ -132,7 +132,19 @@ def _game_art_footage(game: Optional[str], alt: Optional[int] = None) -> Optiona
                 continue
             items = sorted(b2_store.list_art_footage(key), key=lambda c: c["name"])
             if items:
-                pick = items[alt % len(items)] if alt is not None else random.choice(items)
+                if alt is not None:                    # explicit cycle index (4K Shorts track)
+                    pick, how = items[alt % len(items)], f"alt {alt}"
+                else:
+                    # LEAST-RECENTLY-USED across ALL tracks -> strict A,B,C,A rotation
+                    # (was random.choice: repeats ~1 in 3 and could starve a loop).
+                    from core import gh_release as _g
+                    nm = _g.next_art_footage(key, [c["name"] for c in items])
+                    pick = next((c for c in items if c["name"] == nm), None)
+                    how = "LRU rotation"
+                    if pick is None:
+                        pick, how = random.choice(items), "random (rotation state unavailable)"
+                print(f"[art-footage] {key}: {pick['name']} ({how}; {len(items)} loop(s))",
+                      flush=True)
                 return b2_store.download_footage(pick, cache)
     except Exception as e:
         print(f"[art-footage] resolve failed ({e!r}) — using the static art image.", flush=True)
