@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-players-debate-scent-trail-feature-calling-for-opti.jpg"
 date: 2026-09-12
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://www.ign.com/articles/wolverine-developer-insomniac-says-logans-scent-trail-isnt-always-on-amid-fart-gas-toggle-requests"
 ---
