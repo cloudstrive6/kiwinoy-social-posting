@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-reveals-controversial-projectile-attack-ahead-of-la.jpg"
 date: 2026-09-07
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/a-new-wolverine-ps5-projectile-move-has-marvel-fans-divided-but-there-is-comic-precedence/"
 ---
