@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-sparks-fan-debate-over-lady-deathstrike-s-new-desig.jpg"
 date: 2026-09-06
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/09/wolverine-ps5s-lady-deathstrike-design-sparks-psylocke-confusion"
 ---
