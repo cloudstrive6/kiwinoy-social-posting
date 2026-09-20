@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/insomniac-confirms-no-ai-generated-assets-in-marvel-s-wolverine-after-.jpg"
 date: 2026-09-20
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/insomniac-says-marvels-wolverine-uses-no-generative-ai-after-fans-spot-strange-signs-in-game"
 ---
