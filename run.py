@@ -211,6 +211,11 @@ def main() -> int:
                    help="(with --youtube-short) force 'classic' or 'triptych' (else alternates)")
     p.add_argument("--clip", default=None,
                    help="(with --youtube-short) explicit 4K HDR clip file (else fresh-first from the pool)")
+    p.add_argument("--hook", default=None,
+                   help="(with --reel/--tiktok/--youtube-reel) force the ON-SCREEN hook text")
+    p.add_argument("--caption", default=None,
+                   help="(with --reel/--tiktok/--youtube-reel) force the caption BODY "
+                        "(the game-title line + hashtags are still appended)")
     p.add_argument("--title", help="(with --youtube) explicit video title (overrides the auto title)")
     p.add_argument("--description", help="(with --youtube) explicit description (overrides the auto one)")
     p.add_argument("--thumb-text", help="(with --youtube) thumbnail overlay words, e.g. 'SEPHIROTH BOSS' (default FULL GAME)")
@@ -297,7 +302,8 @@ def main() -> int:
             lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
                                       scheduled_at=args.schedule_at,
                                       game=str(tk.get("game", "thelastofus2")), tiktok_only=True,
-                                      layout_override=args.layout, clip_override=args.clip))
+                                      layout_override=args.layout, clip_override=args.clip,
+                                      hook_override=args.hook, caption_override=args.caption))
 
     # Dedicated YouTube Shorts track (decoupled from the FB/IG feed, per user 2026-07-30):
     # posts ONLY to YouTube, picking clips fresh on YouTube (works the FB/IG/TikTok backlog).
@@ -320,7 +326,8 @@ def main() -> int:
                     print(f"[youtube-reel] using PINNED clip: {clip} (layout={lay or 'auto'})", flush=True)
             return run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
                                      scheduled_at=args.schedule_at, youtube_only=True,
-                                     layout_override=lay, clip_override=clip)
+                                     layout_override=lay, clip_override=clip,
+                                     hook_override=args.hook, caption_override=args.caption)
 
         return _with_backup("youtube_reel", "YouTube reel", args.backup, args.dry_run, _run_yt)
 
@@ -408,7 +415,11 @@ def main() -> int:
     posted_any = False
     for sid in slot_ids:
         try:
-            res = runner(sid, dry_run=args.dry_run, scheduled_at=args.schedule_at)
+            kw = {}
+            if track == "reel":          # only the gameplay reel runner takes these overrides
+                kw = {"layout_override": args.layout, "clip_override": args.clip,
+                      "hook_override": args.hook, "caption_override": args.caption}
+            res = runner(sid, dry_run=args.dry_run, scheduled_at=args.schedule_at, **kw)
             if isinstance(res, dict) and res.get("published"):
                 posted_any = True
         except Exception as e:  # keep going on the other slots

@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import random
 from datetime import datetime, timezone
+from pathlib import Path        # module-level: --clip (local file) raised NameError without it
 from typing import Any, Optional, Sequence
 
 from agents import (
@@ -465,6 +466,10 @@ def run_reel_slot(
     slot_id: int,
     dry_run: bool = False,
     scheduled_at: Optional[str] = None,
+    layout_override: Optional[str] = None,
+    clip_override: Optional[str] = None,
+    hook_override: Optional[str] = None,
+    caption_override: Optional[str] = None,
 ) -> dict[str, Any]:
     """Dispatch a reel slot by its `kind`.
 
@@ -475,7 +480,9 @@ def run_reel_slot(
     slot = CONFIG.reel_slot(slot_id)
     kind = str(slot.get("kind", "hype")).lower()
     if kind == "gameplay":
-        return run_gameplay_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
+        return run_gameplay_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at,
+                                 layout_override=layout_override, clip_override=clip_override,
+                                 hook_override=hook_override, caption_override=caption_override)
     if kind == "commentary":
         return run_commentary_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
     return _run_hype_reel(slot_id, dry_run=dry_run, scheduled_at=scheduled_at)
@@ -602,6 +609,8 @@ def run_gameplay_reel(
     youtube_only: bool = False,        # publish ONLY to YouTube (its own decoupled track)
     layout_override: Optional[str] = None,  # force a specific layout (classic/triptych/fill/rotated)
     clip_override: Optional[str] = None,     # force a SPECIFIC footage clip by filename (re-post/refire)
+    hook_override: Optional[str] = None,     # force the ON-SCREEN hook text (skips the AI writer)
+    caption_override: Optional[str] = None,  # force the caption BODY (title line + hashtags still added)
 ) -> dict[str, Any]:
     """Gameplay-only reel: one standalone clip + a static hook caption (no VO).
 
@@ -751,6 +760,17 @@ def run_gameplay_reel(
             clip_path, brief.get("game", ""), taglish=False, with_game_title=True)
         brief["hook"] = hook  # record the clip-grounded hook (replaces the generic one)
         log(f"Game: {brief.get('subject')} | Hook: {hook}")
+    # MANUAL OVERRIDES (--hook / --caption): a hand-written hook/caption for a one-off post.
+    # The caption override is the BODY only — compose_reel_caption still appends the usual
+    # "<Game Title> <emoji>" line + hashtags, so it matches every other reel.
+    if hook_override is not None:
+        hook = str(hook_override).strip()
+        brief["hook"] = hook
+        log(f"Hook forced by override: {hook!r}")
+    if caption_override is not None:
+        caption = content.compose_reel_caption(str(caption_override).strip(),
+                                               brief.get("game", ""), with_game_title=True)
+        log(f"Caption forced by override (body: {str(caption_override).strip()!r})")
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")

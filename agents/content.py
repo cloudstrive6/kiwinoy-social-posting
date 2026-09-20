@@ -942,18 +942,24 @@ def hook_and_caption_from_video(
         hook = "Wait for it"
     if not line:
         line = "Watch this clip"
+    return hook, compose_reel_caption(line, game, with_game_title)
+
+
+def compose_reel_caption(body: str, game: str = "", with_game_title: bool = False) -> str:
+    """Assemble a reel caption the house way: BODY, then the '<Game Title> <emoji>' line,
+    then the brand-capped hashtags. with_game_title=True for classic/triptych reels
+    (FB/IG/TikTok); off for callers like the YouTube Short description that want the plain
+    body+hashtags. Shared by the AI writer AND a manual `--caption` override, so a
+    hand-written body still gets the usual title line + hashtags."""
     tags = _reel_tags_with_brand(game)
-    # with_game_title=True (classic/triptych reels -> FB/IG/TikTok) inserts the game
-    # title + emoji between the body and the hashtags. Off by default so other callers
-    # (e.g. the YouTube Short description) keep the plain body+hashtags caption.
-    parts = [line]
+    parts = [str(body or "").strip()]
     if with_game_title:
         gt = game_title_line(game)
         if gt:
             parts.append(gt)
     if tags:
         parts.append(" ".join(tags))
-    return hook, "\n\n".join(parts).strip()
+    return "\n\n".join(p for p in parts if p).strip()
 
 
 def youtube_longform_meta(game: str = "", gname: str = "") -> dict:
