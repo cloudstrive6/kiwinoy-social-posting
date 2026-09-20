@@ -8,7 +8,7 @@ game: "wolverine"
 cover: "/covers/marvel-s-wolverine-slices-past-1-9-million-sales-in-just-three-days.jpg"
 date: 2026-09-19
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/marvel-wolverine-sales-ps5-physical-controversial-reviews"
