@@ -295,9 +295,16 @@ class B2RangeReader(io.RawIOBase):
     resumable upload (googleapiclient MediaIoBaseUpload seeks + reads one chunk at a time,
     and re-seeks on a retry) without ever landing on the runner's small disk."""
 
+    # READ-AHEAD (fix 2026-09-22): http.client streams a request body 8 KB at a time, so
+    # without a buffer every 8 KB became its own B2 request (~65,000 per 512 MB chunk) and
+    # the first real upload sent NOTHING in 6 hours. Fetch big blocks, serve reads from RAM.
+    _BLOCK = 64 * 1024 * 1024
+
     def __init__(self, url: str, size: int):
         super().__init__()
         self.url, self.size, self.pos = url, int(size), 0
+        self._bstart, self._buf = -1, b""
+        self.requests = 0                                   # B2 GETs made (for diagnostics)
 
     def readable(self) -> bool:
         return True
@@ -313,24 +320,39 @@ class B2RangeReader(io.RawIOBase):
         self.pos = max(0, base + int(offset))
         return self.pos
 
-    def read(self, n: int = -1) -> bytes:
-        if self.pos >= self.size:
-            return b""
-        end = self.size - 1 if (n is None or n < 0) else min(self.size - 1, self.pos + n - 1)
+    def _fetch(self, start: int) -> None:
+        """Load the block [start, start+_BLOCK) into the buffer (retries with backoff)."""
+        end = min(self.size - 1, start + self._BLOCK - 1)
         err = None
         for attempt in range(8):
             try:
-                r = requests.get(self.url, headers={"Range": f"bytes={self.pos}-{end}"},
+                self.requests += 1
+                r = requests.get(self.url, headers={"Range": f"bytes={start}-{end}"},
                                  timeout=900)
-                if r.status_code in (200, 206):
-                    data = r.content
-                    self.pos += len(data)
-                    return data
-                err = f"HTTP {r.status_code}"
+                if r.status_code in (200, 206) and len(r.content) == end - start + 1:
+                    self._bstart, self._buf = start, r.content
+                    return
+                err = f"HTTP {r.status_code} ({len(r.content)} bytes)"
             except requests.RequestException as e:
                 err = repr(e)
             time.sleep(min(60, 2 ** attempt))
-        raise IOError(f"B2 range read {self.pos}-{end} failed: {err}")
+        raise IOError(f"B2 range read {start}-{end} failed: {err}")
+
+    def read(self, n: int = -1) -> bytes:
+        if self.pos >= self.size:
+            return b""
+        if n is None or n < 0:
+            n = self.size - self.pos
+        out = bytearray()
+        while n > 0 and self.pos < self.size:
+            if not (self._bstart <= self.pos < self._bstart + len(self._buf)):
+                self._fetch(self.pos)
+            off = self.pos - self._bstart
+            piece = self._buf[off: off + n]
+            out += piece
+            self.pos += len(piece)
+            n -= len(piece)
+        return bytes(out)
 
     def readinto(self, b) -> int:
         data = self.read(len(b))
