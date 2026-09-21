@@ -84,11 +84,17 @@ def _order_ts(item: dict) -> float:
     return (item.get("mtime_ms") or item.get("upload_ms") or 0) / 1000.0
 
 
+_NGPLUS_RE = re.compile(r"new\s*game\s*(?:\+|plus)|\bng\s*\+|\bng[-_ ]?plus\b", re.I)
+
+
 def _enrich(f: dict) -> dict:
     stem = Path(f["name"]).stem
     base, run = _base_game(f["game"])
+    if _NGPLUS_RE.search(stem):                  # "Wolverine - New Game+ (...)" in a plain folder
+        run = "New Game Plus"
     pm = _PART_RE.search(stem)
     return {**f, "stem": stem, "base": base, "run_label": run,
+            "series": f"{base}|{run}",           # parts are numbered PER series (NG+ vs normal)
             "part_no": int(pm.group(1)) if pm else None,
             "suit": _suit(stem), "order": _order_ts(f)}
 
@@ -147,12 +153,14 @@ def build_queue(files: list[dict], ledger: dict, priority: list[str]) -> list[di
         per.setdefault(it["game"], []).append(it)
     ordered: dict[str, list[dict]] = {}
     for game, its in per.items():
-        parts = sorted([i for i in its if i["kind"] == "parts"],
-                       key=lambda i: (i["part_no"] if i["part_no"] is not None else 10**6, i["order"]))
-        running = float("-inf")
-        for p in parts:                                   # monotonic effective time for parts
-            running = max(running, p["order"])
-            p["eff"] = running
+        parts = [i for i in its if i["kind"] == "parts"]
+        for series in {i["series"] for i in parts}:        # monotonic time PER series
+            running = float("-inf")
+            for p in sorted((i for i in parts if i["series"] == series),
+                            key=lambda i: (i["part_no"] if i["part_no"] is not None else 10**6,
+                                           i["order"])):
+                running = max(running, p["order"])
+                p["eff"] = running
         segs = [dict(i, eff=i["order"]) for i in its if i["kind"] == "segments"]
         ordered[game] = sorted(parts + segs, key=lambda i: (i["eff"], i["kind"] != "parts"))
     out: list[dict] = []
@@ -162,16 +170,29 @@ def build_queue(files: list[dict], ledger: dict, priority: list[str]) -> list[di
     return out + rest
 
 
-def _part_numbers(files: list[dict]) -> dict[str, int]:
-    """Parts without 'Part N' in the filename get their position within the game's parts."""
+def _part_numbers(files: list[dict], ledger: Optional[dict] = None) -> dict[str, int]:
+    """Part number for every part: 'Part N' from the filename if present, else the next
+    number in its SERIES (e.g. wolverine|New Game Plus) after every part already booked in
+    the ledger — so numbering never restarts when old sources are cleaned off B2."""
     nums: dict[str, int] = {}
+    used: dict[str, set] = {}
+    for k, v in (ledger or {}).items():
+        if not k.startswith("__") and v.get("part_no") and v.get("series"):
+            nums[k] = int(v["part_no"])
+            used.setdefault(v["series"], set()).add(int(v["part_no"]))
     by: dict[str, list[dict]] = {}
-    for f in (_enrich(x) for x in files if x["kind"] == "parts"):
-        by.setdefault(f["game"], []).append(f)
-    for its in by.values():
+    for f in (_enrich(x) for x in files if x["kind"] == "parts" and x["key"] not in nums):
+        by.setdefault(f["series"], []).append(f)
+    for series, its in by.items():
         its.sort(key=lambda i: (i["part_no"] if i["part_no"] is not None else 10**6, i["order"]))
-        for n, it in enumerate(its, 1):
-            nums[it["key"]] = it["part_no"] or n
+        taken = used.get(series, set()) | {i["part_no"] for i in its if i["part_no"]}
+        nxt = max(taken | {0}) + 1
+        for it in its:
+            if it["part_no"]:
+                nums[it["key"]] = it["part_no"]
+            else:
+                nums[it["key"]] = nxt
+                nxt += 1
     return nums
 
 
@@ -562,7 +583,7 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     if entry.get("title"):                               # resume: reuse the booked metadata
         meta = {k: entry[k] for k in ("title", "description", "tags") if k in entry}
     else:
-        part_no = _part_numbers(files).get(it["key"]) if it["kind"] == "parts" else None
+        part_no = _part_numbers(files, ledger).get(it["key"]) if it["kind"] == "parts" else None
         obs = observe(frames, gname) if frames else ""
         dialogue = sample_dialogue(url, dur, gname) if dur else ""
         meta = write_meta(it, part_no, obs, dialogue)
@@ -579,6 +600,9 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
         log(f"DRY RUN — nothing uploaded. Review: {run_dir}")
         return {"dry_run": True, "dir": str(run_dir), **meta}
 
+    if it["kind"] == "parts" and not entry.get("part_no"):
+        entry = {**entry, "part_no": _part_numbers(files, ledger).get(it["key"]),
+                 "series": it["series"]}
     ledger[it["key"]] = {**entry, "status": "uploading", "publish_at": publish_at,
                          "title": meta["title"], "description": meta["description"],
                          "tags": meta["tags"], "game": it["game"], "kind": it["kind"],
