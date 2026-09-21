@@ -406,6 +406,11 @@ GAME_LORE["wolverine"] = (
 )
 
 
+# The FF7 bible covers the whole compilation (OG, Remake, Rebirth, Revelation), so the
+# Remake-trilogy game keys share it (added 2026-09-21 for the 4K60 long-form folders).
+GAME_LORE["ff7remake"] = GAME_LORE["ff7rebirth"] = GAME_LORE["ff7"]
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")

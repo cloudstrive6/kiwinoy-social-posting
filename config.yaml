@@ -637,7 +637,11 @@ reels:
     nte: 'Neverness to Everness'
     ff7: 'Final Fantasy VII'          # the ORIGINAL PS1 game
     ff7remake: 'Final Fantasy VII Remake'
+    ff7rebirth: 'Final Fantasy VII Rebirth'      # added 2026-09-21 (4K60 long-form folders)
     re: 'Resident Evil'
+    re2: 'Resident Evil 2'                       # added 2026-09-21 (4K60 long-form folders)
+    re3: 'Resident Evil 3'
+    re4: 'Resident Evil 4'
     halo: 'Halo: Campaign Evolved'
     thelastofus2: 'The Last of Us Part II'
     spider-man1: "Marvel's Spider-Man"
@@ -656,8 +660,12 @@ reels:
     wolverine: "🗡️"
     ff7: "⚔️"
     ff7remake: "⚔️"
+    ff7rebirth: "⚔️"
     thelastofus2: "🍄"
     re: "🧟"
+    re2: "🧟"
+    re3: "🧟"
+    re4: "🧟"
     halo: "🪖"
     mlbb: "⚔️"
     dota2: "⚔️"
@@ -685,6 +693,10 @@ reels:
     thelastofus1: ["#thelastofus", "#TLOU", "#thelastofusremastered", "#PS5", "#gaming"]
     halo: ["#Halo", "#HaloCampaignEvolved", "#MasterChief", "#PS5", "#gamingreels"]
     re: ["#ResidentEvil", "#RE", "#survivalhorror", "#gaming", "#PS5"]
+    re2: ["#ResidentEvil2", "#RE2", "#ResidentEvil", "#survivalhorror", "#gaming"]
+    re3: ["#ResidentEvil3", "#RE3", "#ResidentEvil", "#survivalhorror", "#gaming"]
+    re4: ["#ResidentEvil4", "#RE4", "#ResidentEvil", "#survivalhorror", "#gaming"]
+    ff7rebirth: ["#FF7Rebirth", "#FinalFantasyVIIRebirth", "#FinalFantasy", "#FF7", "#gaming"]
     genshin: ["#GenshinImpact", "#Genshin", "#gaming", "#gachagame", "#gamingreels"]
     hsr: ["#HonkaiStarRail", "#StarRail", "#HSR", "#gaming", "#gachagame"]
     mlbb: ["#MobileLegends", "#MLBB", "#MobileLegendsBangBang", "#gaming", "#esports"]
