@@ -17,8 +17,10 @@ hiccup simply falls back to the GitHub Release, local clips, or AI stills.
 from __future__ import annotations
 
 import base64
+import io
 import os
 import threading
+import time
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import quote
@@ -240,6 +242,100 @@ def presigned_url(key: str, valid_seconds: int = 7 * 24 * 3600) -> Optional[str]
         return f"{auth['downloadUrl']}/file/{bucket}/{quote(key, safe='/')}?Authorization={tok}"
     except Exception:
         return None
+
+
+# ------------------------------------------------ 4K60 LONG-FORM library (per user 2026-09-21)
+# Layout on B2: 4k60fps/<game-folder>/<parts|segments>/<file>. Uploaded by
+# tools/longform_sync.py (rclone keeps the file's modified time as fileInfo
+# src_last_modified_millis), consumed by agents/longform_auto.py which streams each file
+# STRAIGHT to YouTube (no re-render, no local disk).
+LONGFORM_PREFIX = "4k60fps"
+
+
+def list_longform() -> list[dict[str, Any]]:
+    """Every long-form source file on B2: [{key, name, game, kind, size, file_id,
+    mtime_ms, upload_ms}], kind in {'parts','segments'}. Folder placeholders are skipped."""
+    out: list[dict[str, Any]] = []
+    for f in _list_names(f"{LONGFORM_PREFIX}/"):
+        if f.get("action") not in (None, "upload"):
+            continue
+        key = f.get("fileName", "")
+        bits = key.split("/")
+        if len(bits) != 4 or bits[2] not in ("parts", "segments"):
+            continue
+        if Path(bits[3]).suffix.lower() not in VIDEO_EXTS:
+            continue
+        info = f.get("fileInfo") or {}
+        out.append({
+            "key": key, "name": bits[3], "game": bits[1], "kind": bits[2],
+            "size": int(f.get("contentLength") or 0), "file_id": f.get("fileId", ""),
+            "mtime_ms": int(info.get("src_last_modified_millis") or 0),
+            "upload_ms": int(f.get("uploadTimestamp") or 0),
+        })
+    return out
+
+
+def delete_file(key: str, file_id: str) -> bool:
+    """Delete one file version from B2 (the long-form 15-day post-upload cleanup)."""
+    auth = _authorize()
+    if not auth or not key or not file_id:
+        return False
+    try:
+        r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_delete_file_version",
+                          headers={"Authorization": auth["token"]},
+                          json={"fileName": key, "fileId": file_id}, timeout=_TIMEOUT)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
+class B2RangeReader(io.RawIOBase):
+    """A READ-ONLY, SEEKABLE file object over a private B2 object, served by HTTP Range
+    requests against a presigned URL. Lets a multi-GB video stream straight into YouTube's
+    resumable upload (googleapiclient MediaIoBaseUpload seeks + reads one chunk at a time,
+    and re-seeks on a retry) without ever landing on the runner's small disk."""
+
+    def __init__(self, url: str, size: int):
+        super().__init__()
+        self.url, self.size, self.pos = url, int(size), 0
+
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return True
+
+    def tell(self) -> int:
+        return self.pos
+
+    def seek(self, offset: int, whence: int = 0) -> int:
+        base = {0: 0, 1: self.pos, 2: self.size}[whence]
+        self.pos = max(0, base + int(offset))
+        return self.pos
+
+    def read(self, n: int = -1) -> bytes:
+        if self.pos >= self.size:
+            return b""
+        end = self.size - 1 if (n is None or n < 0) else min(self.size - 1, self.pos + n - 1)
+        err = None
+        for attempt in range(8):
+            try:
+                r = requests.get(self.url, headers={"Range": f"bytes={self.pos}-{end}"},
+                                 timeout=900)
+                if r.status_code in (200, 206):
+                    data = r.content
+                    self.pos += len(data)
+                    return data
+                err = f"HTTP {r.status_code}"
+            except requests.RequestException as e:
+                err = repr(e)
+            time.sleep(min(60, 2 ** attempt))
+        raise IOError(f"B2 range read {self.pos}-{end} failed: {err}")
+
+    def readinto(self, b) -> int:
+        data = self.read(len(b))
+        b[:len(data)] = data
+        return len(data)
 
 
 if __name__ == "__main__":  # self-test against the real bucket

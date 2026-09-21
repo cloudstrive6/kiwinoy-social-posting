@@ -131,21 +131,31 @@ def upload_video(
     # speed — 50 MB chunks capped a 500 Mbps connection at ~19 Mbps. BIG chunks amortise the
     # per-chunk ACK wait: 512 MB is ~10x the data per ACK. Must be a multiple of 256 KB.
     chunk_mb: int = 512,
+    stream=None,                      # a SEEKABLE file object (e.g. b2_store.B2RangeReader)
+    resume_uri: Optional[str] = None,  # continue a previous run's resumable session
+    on_progress=None,                 # callback(session_uri, bytes_confirmed) after each chunk
 ) -> dict[str, Any]:
     """Resumable-upload a video; optionally schedule it + set a custom thumbnail.
 
     publish_at (RFC3339 UTC, e.g. '2026-07-01T12:00:00Z') schedules the video —
     privacy is forced to 'private' until then. Returns the API response (incl.
     'id'); the watch URL is https://youtu.be/<id>.
+
+    stream= uploads from a seekable file object instead of `path` (the 4K long-form track
+    streams straight from B2). resume_uri + on_progress let a job that runs out of time
+    hand the session to the NEXT run, which asks YouTube how many bytes it already has and
+    continues from there instead of starting over.
     """
     import time
 
+    import requests
     from googleapiclient.errors import HttpError
-    from googleapiclient.http import MediaFileUpload
+    from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 
-    path = Path(path)
-    if not path.exists():
-        raise YouTubeError(f"video not found: {path}")
+    if stream is None:
+        path = Path(path)
+        if not path.exists():
+            raise YouTubeError(f"video not found: {path}")
 
     status: dict[str, Any] = {
         "privacyStatus": privacy,
@@ -165,10 +175,34 @@ def upload_video(
     }
 
     yt = _service()
-    media = MediaFileUpload(str(path), chunksize=max(1, chunk_mb) * 1024 * 1024,
-                            resumable=True, mimetype="video/*")
+    csize = max(1, chunk_mb) * 1024 * 1024
+    if stream is not None:
+        media = MediaIoBaseUpload(stream, mimetype="video/*", chunksize=csize, resumable=True)
+    else:
+        media = MediaFileUpload(str(path), chunksize=csize, resumable=True, mimetype="video/*")
     req = yt.videos().insert(part="snippet,status", body=body, media_body=media)
     resp = None
+    if resume_uri:
+        # Ask YouTube how much of the previous session it already holds.
+        total = media.size()
+        try:
+            chk = requests.put(resume_uri, headers={"Content-Range": f"bytes */{total}",
+                                                    "Content-Length": "0"}, timeout=60)
+        except requests.RequestException as e:
+            chk = None
+            print(f"[youtube] resume status check failed ({e!r}) — starting fresh", flush=True)
+        if chk is not None and chk.status_code in (200, 201):
+            resp = chk.json()                              # it had already finished
+            print("[youtube] previous session had already completed", flush=True)
+        elif chk is not None and chk.status_code == 308:
+            rng = chk.headers.get("Range", "")             # e.g. "bytes=0-1073741823"
+            done = int(rng.split("-")[-1]) + 1 if "-" in rng else 0
+            req.resumable_uri, req.resumable_progress = resume_uri, done
+            print(f"[youtube] RESUMING session at {done / 1e9:.2f} / {total / 1e9:.2f} GB",
+                  flush=True)
+        else:
+            print(f"[youtube] previous session unusable "
+                  f"({getattr(chk, 'status_code', 'n/a')}) — starting fresh", flush=True)
     errs = 0
     while resp is None:
         try:
@@ -179,6 +213,11 @@ def upload_video(
             prog, resp = req.next_chunk(num_retries=6)
             if prog:
                 print(f"[youtube] upload {int(prog.progress() * 100)}%", flush=True)
+            if on_progress and resp is None and getattr(req, "resumable_uri", None):
+                try:
+                    on_progress(req.resumable_uri, int(getattr(req, "resumable_progress", 0)))
+                except Exception as e:                   # never let bookkeeping kill an upload
+                    print(f"[youtube] progress callback failed ({e!r})", flush=True)
             errs = 0
         except HttpError as e:
             if getattr(e, "resp", None) is not None and e.resp.status in (500, 502, 503, 504) and errs < 12:
@@ -333,6 +372,23 @@ def set_thumbnail(video_id: str, image) -> None:
         videoId=video_id, media_body=MediaFileUpload(str(image))
     ).execute()
     print(f"[youtube] thumbnail updated on {video_id}", flush=True)
+
+
+def video_status(video_ids: list[str]) -> dict[str, dict[str, str]]:
+    """{video_id: {'upload': uploadStatus, 'privacy': privacyStatus}} (1 quota unit per 50).
+    A video missing from the result no longer exists. Used before deleting source footage."""
+    out: dict[str, dict[str, str]] = {}
+    ids = [v for v in video_ids if v]
+    if not ids:
+        return out
+    yt = _service()
+    for i in range(0, len(ids), 50):
+        r = yt.videos().list(part="status", id=",".join(ids[i:i + 50])).execute()
+        for it in r.get("items", []) or []:
+            st = it.get("status") or {}
+            out[it["id"]] = {"upload": st.get("uploadStatus", ""),
+                             "privacy": st.get("privacyStatus", "")}
+    return out
 
 
 if __name__ == "__main__":

@@ -409,6 +409,10 @@ reels:
     # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
     enabled: true    # WOLVERINE Shorts LIVE 2026-09-15 (user). Was paused for the pivot.
+    # QUOTA (2026-09-21): Shorts go through Post for Me so the YouTube Data API quota
+    # (default 10,000 units/day) is left for the 3/day 4K60 long-forms (longform_auto).
+    # Switch back to data_api once the quota increase is granted (restores playlist filing).
+    via: postforme
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
     # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
     # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership
@@ -1316,3 +1320,21 @@ tiktok:
   disable_comment: false
   disable_duet: false
   disable_stitch: false
+
+# AUTOMATED 4K 60FPS LONG-FORM YOUTUBE (per user 2026-09-21) — agents/longform_auto.py +
+# .github/workflows/longform.yml. Drop 4K60 SDR files (Elgato, HDR off) into
+#   reels/assets/4k60fps/<game>/parts/      full playthrough, ~30-60 min each, in order
+#   reels/assets/4k60fps/<game>/segments/   standalone moments, ~10-45 min each
+# ('<game>-ngplus' folder = "New Game Plus" titles). `python tools/longform_sync.py` moves
+# them to B2; the cloud then uploads 3/day STRAIGHT from B2 (no re-render, no local disk),
+# oldest recording first, each going public at its NZ slot. Suit in a title ONLY if the
+# filename has it ("Wolverine Part 3 - Classic Brown Suit.mp4"). Telegram "prioritise <game>".
+longform_auto:
+  enabled: true            # LIVE 2026-09-21 — skips quietly while the B2 queue is empty
+  timezone: Pacific/Auckland
+  slots_local: ["23:00", "07:00", "15:00"]   # public times, every 8h (NZ; DST-aware)
+  lead_hours: 6.5          # book a slot at least this far ahead = the upload's time budget
+  delete_after_days: 15    # delete the B2 source this long after a CONFIRMED upload
+  run_label: Walkthrough   # parts title word for normal folders
+  chunk_mb: 512            # resumable-upload chunk (bigger = faster vs YouTube's per-chunk ack)
+  max_attempts: 3          # park + Telegram after this many failed uploads of one file

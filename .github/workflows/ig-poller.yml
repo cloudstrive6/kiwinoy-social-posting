@@ -54,8 +54,15 @@ jobs:
 
       # ── "approved <article>" path: publish a draft article + cross-post (Python only, no render deps) ──
       - name: Install publish dependencies
-        if: steps.check.outputs.fire == '1' && (steps.check.outputs.kind == 'approve' || steps.check.outputs.kind == 'drafts')
+        if: steps.check.outputs.fire == '1' && (steps.check.outputs.kind == 'approve' || steps.check.outputs.kind == 'drafts' || steps.check.outputs.kind == 'prioritise')
         run: pip install -r requirements.txt
+
+      # ── "prioritise <game>" path: reorder the 4K60 long-form upload queue ──
+      - name: Set long-form queue priority
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'prioritise'
+        env:
+          ARG: ${{ steps.check.outputs.arg }}
+        run: python run.py --longform-prioritise "$ARG"
 
       # ── "drafts" path: READ-ONLY list of the pending draft backlog to Telegram ──
       - name: List pending draft articles
@@ -100,7 +107,7 @@ jobs:
 
       # ── draft-render path (IG / Threads / FB / TikTok): the heavy render deps ──
       - name: Install render dependencies
-        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog' && steps.check.outputs.kind != 'drafts'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog' && steps.check.outputs.kind != 'drafts' && steps.check.outputs.kind != 'prioritise'
         run: |
           pip install -r requirements.txt
           sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
@@ -108,7 +115,7 @@ jobs:
           npm install -g @anthropic-ai/claude-code
 
       - name: Render the draft (IG, Threads or FB)
-        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog' && steps.check.outputs.kind != 'drafts'
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind != 'approve' && steps.check.outputs.kind != 'blog' && steps.check.outputs.kind != 'drafts' && steps.check.outputs.kind != 'prioritise'
         env:
           KIND: ${{ steps.check.outputs.kind }}
           GAME: ${{ steps.check.outputs.game }}

@@ -176,6 +176,15 @@ def main() -> int:
         help="dedicated YouTube Shorts reel (decoupled from the FB/IG feed): posts ONLY to YouTube, "
              "picking clips not-yet-on-YouTube (incl. the FB/IG/TikTok backlog)",
     )
+    g.add_argument("--longform-auto", dest="longform_auto", action="store_true",
+                   help="4K60 long-form track: upload the next queued B2 file into the next "
+                        "publish slot (or resume one); --dry-run analyses + writes metadata only")
+    g.add_argument("--longform-cleanup", dest="longform_cleanup", action="store_true",
+                   help="4K60 long-form: delete B2 sources N days after a confirmed upload")
+    g.add_argument("--longform-prioritise", dest="longform_prioritise", metavar="GAME",
+                   help="4K60 long-form: put a game folder first in the queue ('clear' resets)")
+    p.add_argument("--key", default=None,
+                   help="(with --longform-auto) force one B2 key, e.g. 4k60fps/wolverine/parts/x.mp4")
     p.add_argument("--reel", action="store_true", help="use the reels track")
     p.add_argument("--backup", action="store_true",
                    help="backup trigger: only post if the primary missed this slot "
@@ -361,6 +370,27 @@ def main() -> int:
         except Exception as e:
             print(f"[yt-short] ERROR: {e}", file=sys.stderr, flush=True)
             return 1
+
+    # 4K60 long-form YouTube track (agents/longform_auto.py).
+    if args.longform_auto:
+        from agents import longform_auto
+        try:
+            longform_auto.run_once(dry_run=args.dry_run, only_key=args.key)
+            return 0
+        except Exception as e:
+            print(f"[longform] ERROR: {e}", file=sys.stderr, flush=True)
+            return 1
+    if args.longform_cleanup:
+        from agents import longform_auto
+        longform_auto.cleanup(dry_run=args.dry_run)
+        return 0
+    if args.longform_prioritise is not None:
+        from agents import longform_auto
+        from core import notify
+        msg = longform_auto.set_priority(args.longform_prioritise)
+        print(f"[longform] {msg}", flush=True)
+        notify.telegram(f"🎬 {msg}")
+        return 0
 
     # Motivational quote card -> Facebook.
     if args.quote:

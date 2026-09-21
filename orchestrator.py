@@ -966,6 +966,12 @@ def run_gameplay_reel(
         # secrets aren't set (or the upload errors), fall back to Post for Me so posting never
         # breaks — the fallback just can't file into a playlist (no id comes back).
         use_api = bool(getattr(CONFIG, "youtube_client_id", "") and getattr(CONFIG, "youtube_refresh_token", ""))
+        # QUOTA (per user 2026-09-21): reels.youtube.via: postforme sends the Shorts through
+        # Post for Me so they DON'T spend the YouTube Data API quota (default 10,000/day); the
+        # 3/day 4K60 long-forms need ~5,000 of it and Shorts took ~4,950. Trade-off: no
+        # playlist filing for Shorts. Flip back to data_api once the quota increase lands.
+        if str(yc.get("via", "data_api")).lower() == "postforme":
+            use_api = False
         posted = False
         if use_api:
             log(f"Publishing to YouTube via the Data API (dedicated Shorts track, "

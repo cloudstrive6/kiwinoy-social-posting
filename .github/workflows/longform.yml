@@ -1,0 +1,96 @@
+name: KiwinoyGamer 4K60 Long-Form Uploads
+
+# Automated 4K 60FPS long-form YouTube track (per user 2026-09-21) — agents/longform_auto.py.
+# Streams the next queued B2 file (4k60fps/<game>/{parts,segments}/) STRAIGHT into YouTube:
+# no re-render, no local disk. Publishes 3/day at config longform_auto.slots_local (NZ time,
+# DST-aware): each video is uploaded early as PRIVATE + publishAt, so it goes public exactly at
+# its slot however long the upload takes.
+#
+# Runs every 4h; each run books the next 8h slot only if nothing has claimed it yet, so it's
+# exactly 3/day, with no pre-filling days ahead. An upload that outlives the 6h job limit
+# records its session, and the next run RESUMES it from the last confirmed byte.
+on:
+  schedule:
+    - cron: "20 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (analyse + write title/description/thumbnail, no upload)? true/false"
+        required: false
+        default: "false"
+      key:
+        description: "Optional: force one B2 key, e.g. 4k60fps/wolverine/parts/Wolverine Part 1.mp4"
+        required: false
+        default: ""
+
+concurrency:
+  group: kiwinoy-longform
+  cancel-in-progress: false      # never kill an upload in progress
+
+# The upload ledger + queue priority live as small JSON assets on the 'footage' release.
+permissions:
+  contents: write
+
+jobs:
+  longform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355          # GitHub's hard cap is 360; a longer upload resumes next run
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}   # dialogue transcription (Scribe)
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install ffmpeg (frame grabs + dialogue sampling over HTTP; no re-render)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Install Claude Code CLI (vision + title/description writer + fact-check)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Upload the next long-form video (or resume one)
+        env:
+          DRY: ${{ github.event.inputs.dry_run }}
+          KEY: ${{ github.event.inputs.key }}
+        run: |
+          ARGS=""
+          if [ "$DRY" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ -n "$KEY" ]; then
+            python run.py --longform-auto $ARGS --key "$KEY"
+          else
+            python run.py --longform-auto $ARGS
+          fi
+
+      - name: Delete B2 sources 15 days after a confirmed upload
+        if: always() && github.event.inputs.dry_run != 'true'
+        run: python run.py --longform-cleanup
+
+      - name: Upload run artifacts (title, description, thumbnail, frames)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: longform-${{ github.run_id }}
+          path: output/*_longform/
+          retention-days: 14
+          if-no-files-found: ignore

@@ -20,6 +20,10 @@ Commands understood:
                                            -> research + draft a BOSS KG blog article for that
                                               topic (draft-first; tools/site_article.py --topic).
                                               Reply "approved" after to publish + cross-post it.
+    "drafts" / "list drafts" / "pending"   -> READ-ONLY list of every pending draft article
+    "prioritise <game>" / "prioritise clear"
+                                           -> put a game first in the 4K60 long-form YouTube
+                                              upload queue (agents/longform_auto.py)
   formats: classic | triptych | fill | landscape;  e.g. "fb draft triptych halo 30s"
 
 Modes:
@@ -47,6 +51,8 @@ APPROVE_RE = re.compile(r"\bapprove(?:d|s)?\b", re.I)  # "approve" / "approved" 
 BLOG_RE = re.compile(r"\bblog\b", re.I)                # "create a blog post <topic>" -> draft a site article
 # "drafts" / "list drafts" / "show pending" / "backlog" -> READ-ONLY list of pending draft
 # articles. WHOLE-message match so it never collides with "ig draft" / "tiktok draft".
+# "prioritise wolverine" / "prioritize halo" / "priority clear" -> 4K60 long-form queue order.
+PRIORITY_RE = re.compile(r"^\s*priori(?:tise|tize|ty)\b[\s:]*(.*)$", re.I)
 DRAFTS_RE = re.compile(r"^\s*(?:list|show|check)?\s*(?:all\s+|my\s+|the\s+)?(?:pending\s+)?"
                        r"(?:drafts|drafted articles|articles|backlog|pending)\s*[?.!]*\s*$", re.I)
 TT_RE = re.compile(r"\btik[\s_-]?tok\b", re.I)         # "tiktok" / "tik tok" / "tik-tok"
@@ -174,6 +180,8 @@ def main() -> int:
         text = (msg.get("text") or "").strip()
         if DRAFTS_RE.match(text):                        # "drafts" -> list the pending backlog
             kind, cmd = "drafts", text
+        elif PRIORITY_RE.match(text):                    # "prioritise <game>" -> long-form queue
+            kind, cmd = "prioritise", text
         elif APPROVE_RE.search(text):                    # "approved" -> publish a draft article
             kind, cmd, amsg = "approve", text, msg
         elif BLOG_RE.search(text):                       # "create a blog post <topic>" -> draft article
@@ -191,6 +199,12 @@ def main() -> int:
     if not cmd:
         print("[poller] no draft command in this batch.", flush=True)
         _emit(0)
+        return 0
+    if kind == "prioritise":                             # long-form queue priority
+        game = re.sub(r"[^\w\- ]", "", PRIORITY_RE.match(cmd).group(1)).strip()[:60] or "clear"
+        print(f"[poller] PRIORITISE: {cmd!r} -> {game!r}", flush=True)
+        if check:
+            _emit(1, "prioritise", arg=game)
         return 0
     if kind == "drafts":                                 # READ-ONLY backlog listing
         print(f"[poller] DRAFTS: {cmd!r} -> list pending drafts", flush=True)
