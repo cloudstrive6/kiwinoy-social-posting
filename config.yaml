@@ -409,10 +409,12 @@ reels:
     # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
     enabled: true    # WOLVERINE Shorts LIVE 2026-09-15 (user). Was paused for the pivot.
-    # QUOTA (2026-09-21): Shorts go through Post for Me so the YouTube Data API quota
-    # (default 10,000 units/day) is left for the 3/day 4K60 long-forms (longform_auto).
-    # Switch back to data_api once the quota increase is granted (restores playlist filing).
-    via: postforme
+    # data_api (default) = upload via our YouTube Data API client (returns the video id ->
+    # playlist filing). postforme = route through Post for Me instead (no playlist filing).
+    # QUOTA (checked in Cloud Console 2026-09-21, project kg-postforme): uploads have their
+    # OWN "Video Uploads per day" = 100 allowance; general "Queries per day" = 10,000 barely
+    # used (~375). So Shorts (3/day) + 4K60 long-forms (3/day) = ~6/100 — no increase needed.
+    via: data_api
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
     # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
     # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership
