@@ -305,6 +305,7 @@ def sample_dialogue(url: str, dur: float, gname: str, windows: int = 8, secs: in
 def _vision(prompt: str, images: list[Path], timeout: int = 240) -> str:
     """Claude vision (Read tool) first, OpenAI vision fallback."""
     from core import claude_code, openai_client
+    images = [Path(p).resolve() for p in images]       # the CLI's cwd differs -> absolute paths
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(images))
     try:
         return claude_code.run(f"Use the Read tool to open these images first.\n\n{prompt}\n\n"
@@ -447,29 +448,46 @@ def make_thumbnail(frames: list[Path], base: str, title: str, out: Path) -> Opti
     sheet.save(sheet_p, quality=85)
     best = 0
     try:
+        # SUBTITLES ARE A HARD RULE (per user review of NG+ Part 1, 2026-09-22): the judge first
+        # lists which frames carry subtitle/caption text, then must pick among the CLEAN ones.
         j = extract_json(_vision(
             f"This contact sheet shows {len(scored)} numbered frames from a YouTube gameplay "
-            f"video titled “{title}”. Pick the ONE frame that would make the most compelling, "
-            "highest click-through thumbnail: a clear face or character in a dramatic moment, "
-            "strong action, sharp and well-lit, NOT a menu/loading/black/HUD-cluttered frame. "
-            "Prefer frames WITHOUT subtitle text or on-screen captions (they look cluttered "
-            "at thumbnail size) unless every good frame has them. "
-            'Return ONLY JSON: {"best": <number>, "why": "<short>"}', [sheet_p])) or {}
+            f"video titled “{title}”.\nSTEP 1: list every frame number that shows ANY subtitle, "
+            "caption or dialogue text line (usually a white line near the bottom, often "
+            "'Name: ...').\nSTEP 2: from the frames NOT in that list, pick the ONE that makes "
+            "the most compelling, highest click-through thumbnail: a clear face or character "
+            "in a dramatic moment, strong action, sharp, well-lit; NOT a menu/loading/black/"
+            "HUD-cluttered frame, and not dominated by a blurry foreground object. Only if "
+            "EVERY frame has subtitles may you pick one with them.\n"
+            'Return ONLY JSON: {"subtitled": [<numbers>], "best": <number>, "why": "<short>"}',
+            [sheet_p])) or {}
         best = max(0, min(len(scored) - 1, int(j.get("best", 1)) - 1))
-        log(f"thumbnail frame #{best + 1}: {j.get('why', '')}")
+        subs = {int(x) - 1 for x in (j.get("subtitled") or []) if str(x).isdigit()}
+        if best in subs and len(subs) < len(scored):       # judge ignored the rule -> enforce
+            best = next(i for i in range(len(scored)) if i not in subs)
+            log("thumbnail judge picked a subtitled frame — switched to the best clean one")
+        log(f"thumbnail frame #{best + 1} (subtitled frames: {sorted(i + 1 for i in subs)}): "
+            f"{j.get('why', '')}")
     except Exception as e:
         log(f"thumbnail judge failed ({e!r}) — using the sharpest frame")
     frame = scored[best]
     corner = "top-left"
     try:
+        # NEVER bottom-right: YouTube overlays the video DURATION badge there. Bottom-left is a
+        # last resort (subtitle lines + progress bar). The logo box is ~400x170 px.
         j = extract_json(_vision(
-            "A game LOGO will be placed in ONE corner of this 1280x720 thumbnail. Choose the "
-            "corner where it covers NO face, NO main character/subject and no important "
-            "action. Prefer top-left when it is free. Return ONLY JSON: "
-            '{"corner": "top-left|top-right|bottom-left|bottom-right"}', [frame])) or {}
+            "A game LOGO (about 400x170 px, i.e. ~31% of the width and ~24% of the height) will "
+            "be placed in ONE corner of this 1280x720 YouTube thumbnail, 34 px from the edges. "
+            "Choose the corner where that box covers NO face, NO part of the main character's "
+            "body, NO text and no important action. Allowed: top-left, top-right, bottom-left "
+            "(bottom-right is NOT allowed — YouTube's duration badge sits there). Prefer "
+            "top-left, then top-right; bottom-left only if both top corners are occupied. "
+            'Return ONLY JSON: {"corner": "top-left|top-right|bottom-left", "why": "<short>"}',
+            [frame])) or {}
         c = str(j.get("corner", "")).lower().strip()
-        if c in ("top-left", "top-right", "bottom-left", "bottom-right"):
+        if c in ("top-left", "top-right", "bottom-left"):
             corner = c
+        log(f"logo corner reasoning: {j.get('why', '')}")
     except Exception as e:
         log(f"logo-corner judge failed ({e!r}) — top-left")
     log(f"logo corner: {corner}")
@@ -577,7 +595,7 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     dur = _duration(url)
     log(f"duration {dur / 60:.1f} min")
     gname = _game_name(it["base"])
-    frames = extract_frames(url, dur, run_dir / "frames")
+    frames = extract_frames(url, dur, run_dir / "frames", n=20)   # more candidates -> a clean cinematic frame is likelier
     log(f"{len(frames)} frames extracted")
 
     if entry.get("title"):                               # resume: reuse the booked metadata
