@@ -115,6 +115,27 @@ def _service():
     return build("youtube", "v3", credentials=_creds(), cache_discovery=False)
 
 
+def clean_tags(tags, limit: int = 490) -> list[str]:
+    """Trim a tag list to what the YouTube API accepts. YouTube counts the total the way
+    Studio shows it: every MULTI-WORD tag is wrapped in quotes (+2) and tags are joined by
+    commas — so a list at 463 plain characters is really 501 and fails with 'invalidTags'
+    (the first 4K long-form upload, 2026-09-22). Also strips characters YouTube rejects.
+    `limit` keeps a small margin under the hard 500."""
+    out: list[str] = []
+    total = 0
+    for t in tags or []:
+        t = " ".join(str(t).replace("<", "").replace(">", "").replace(",", " ")
+                     .replace('"', "").split())
+        if not t or t.lower() in {o.lower() for o in out}:
+            continue
+        cost = len(t) + (2 if " " in t else 0) + (1 if out else 0)
+        if total + cost > limit:
+            continue                     # skip this one; a shorter later tag may still fit
+        out.append(t)
+        total += cost
+    return out
+
+
 def upload_video(
     path,
     title: str,
@@ -168,7 +189,7 @@ def upload_video(
         "snippet": {
             "title": str(title)[:100],
             "description": str(description)[:5000],
-            "tags": [str(t) for t in (tags or [])][:60],
+            "tags": clean_tags(tags),
             "categoryId": str(category_id),
         },
         "status": status,

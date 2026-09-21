@@ -638,6 +638,9 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
                              "the next slot." if quota else
                              f"❌ Long-form upload FAILED {ledger.get(it['key'], {}).get('attempts', '')}x "
                              f"and was parked: {meta['title']}\n{msg[:200]}"))
+        else:                                            # will retry next run — still say so
+            notify.telegram(f"⚠️ Long-form upload attempt {ledger[it['key']]['attempts']} failed "
+                            f"(retrying on the next run, slot kept): {meta['title']}\n{msg[:200]}")
         raise
     vid = resp.get("id", "")
     ledger[it["key"]].update(status="scheduled", video_id=vid, done_at=time.time(),
