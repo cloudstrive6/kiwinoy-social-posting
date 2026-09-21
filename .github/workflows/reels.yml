@@ -56,6 +56,7 @@ concurrency:
 # 'footage' release) so the next reel picks fresh footage — needs write access.
 permissions:
   contents: write
+  actions: write     # lets the last step dispatch the 4K60 long-form uploader (longform.yml)
 
 jobs:
   reel:
@@ -155,6 +156,19 @@ jobs:
             done
             echo "Poster frames written next to $f"
           fi
+
+      # RELIABLE TRIGGER for the 4K60 long-form uploader (per 2026-09-22): GitHub's own
+      # schedule runs hours late / drops on this repo, but THIS workflow is fired by
+      # cron-job.org 3x/day (00/08/16 UTC), which lines up one trigger per long-form slot
+      # (NZ 23:00/07:00/15:00). The uploader books a slot only once, so extra triggers
+      # (its own schedule, backup runs) are harmless. workflow_dispatch via GITHUB_TOKEN is
+      # allowed to start another workflow.
+      - name: Kick the 4K60 long-form uploader
+        if: always() && github.event.inputs.dry_run != 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run longform.yml --ref main
 
       - name: Upload run artifacts (brief, caption, beats, mp4)
         if: always()
