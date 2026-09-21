@@ -406,6 +406,83 @@ GAME_LORE["wolverine"] = (
 )
 
 
+GAME_LORE["re2"] = (
+    "RESIDENT EVIL 2 (the 2019 REMAKE, Capcom) — survival horror, third-person, in RACCOON CITY "
+    "during the T-virus outbreak (late September 1998).\n"
+    "TWO SEPARATE CAMPAIGNS: LEON S. KENNEDY — a ROOKIE Raccoon Police officer on his FIRST DAY "
+    "(RPD uniform, short swept hair); and CLAIRE REDFIELD — a college student searching for her "
+    "brother Chris (red/dark biker jacket, ponytail). A clip shows ONE of them; name them only by "
+    "clear appearance or a subtitle. They meet briefly at the start (a gas station) and near the end "
+    "— most footage is one of them ALONE.\n"
+    "KEY PEOPLE: ADA WONG (Leon's side; says she's FBI, actually a spy after the G-virus; dark "
+    "trench coat, red dress, sunglasses — an ambiguous ALLY, not a monster); SHERRY BIRKIN (a young "
+    "girl Claire protects); WILLIAM BIRKIN (Umbrella scientist who created the G-VIRUS, injects "
+    "himself and becomes the multi-stage 'G' mutant boss); ANNETTE BIRKIN (his wife, Umbrella "
+    "researcher); CHIEF BRIAN IRONS (the corrupt RPD chief, Claire's campaign); MARVIN BRANAGH "
+    "(wounded RPD officer who helps at the start); ROBERT KENDO (gun-shop owner).\n"
+    "ENEMIES: zombies; LICKERS (skinless, exposed brain, long tongue, BLIND — they react to sound); "
+    "MR. X (the Tyrant T-00: a huge grey-skinned man in a FEDORA and long TRENCH COAT who relentlessly "
+    "STALKS you through the police station, punching — he can't be killed early); G-adults; "
+    "plant zombies (Ivies) in the lab.\n"
+    "PLACES: the RPD police station (a converted art museum), the streets, sewers, an orphanage "
+    "(Claire), Umbrella's NEST underground lab.\n"
+    "DON'T CONFUSE: MR. X (fedora + trench coat, RE2) is NOT NEMESIS (RE3's pursuer) and is NOT "
+    "William Birkin; the grotesque shape-shifting boss with a giant eye on its arm is BIRKIN ('G'); "
+    "Ada is not a villain; Leon here is a ROOKIE on day one (NOT the seasoned agent of RE4).\n"
+    "NAMING + DIALOGUE RULES: name a character ONLY when visuals or subtitles unmistakably show "
+    "them; never invent who is speaking to whom or why; when unsure, describe the action."
+)
+
+GAME_LORE["re3"] = (
+    "RESIDENT EVIL 3 (the 2020 REMAKE, Capcom) — survival horror in RACCOON CITY as the T-virus "
+    "outbreak collapses the city (late Sept - 1 Oct 1998; it overlaps RE2's timeline).\n"
+    "PLAYABLE: JILL VALENTINE — an EXPERIENCED ex-S.T.A.R.S. officer fleeing the city (blue top, "
+    "dark trousers, short hair); plus sections as CARLOS OLIVEIRA — a U.B.C.S. mercenary (Umbrella "
+    "Biohazard Countermeasure Service) who becomes her ALLY.\n"
+    "THE PURSUER: NEMESIS — a hulking bio-weapon hunting S.T.A.R.S. members: stitched/scarred face "
+    "with exposed teeth, black suit, growls 'S.T.A.R.S.'; uses a ROCKET LAUNCHER and a FLAMETHROWER "
+    "and mutates into bigger, more monstrous forms in later fights.\n"
+    "KEY PEOPLE: MIKHAIL VICTOR (U.B.C.S. squad leader); NICHOLAI GINOVAEF (U.B.C.S. sergeant who "
+    "BETRAYS everyone — working for Umbrella); TYRELL PATRICK (U.B.C.S., Carlos's friend); BRAD "
+    "VICKERS (S.T.A.R.S. pilot, bitten); DARIO ROSSO (a survivor hiding out); NATHANIEL BARD "
+    "(Umbrella scientist working on a vaccine at the hospital).\n"
+    "ENEMIES: zombies, Hunters (reptilian clawed creatures), Drain Deimos (insect-like), Pale Heads.\n"
+    "PLACES: downtown Raccoon City streets, the subway, the Spencer Memorial HOSPITAL, the NEST 2 lab.\n"
+    "STORY: Jill escapes Nemesis, teams up with Carlos, gets INFECTED by Nemesis and Carlos finds a "
+    "vaccine; the government destroys Raccoon City with a missile at the end.\n"
+    "DON'T CONFUSE: the pursuer here is NEMESIS (NOT Mr. X from RE2); Carlos and the U.B.C.S. squad are "
+    "ALLIES (Nicholai is the traitor); Jill is a veteran, never a rookie.\n"
+    "NAMING + DIALOGUE RULES: name a character ONLY when visuals or subtitles unmistakably show "
+    "them; never invent who is speaking to whom or why; when unsure, describe the action."
+)
+
+GAME_LORE["re4"] = (
+    "RESIDENT EVIL 4 (the 2023 REMAKE, Capcom) — action survival horror in RURAL SPAIN, 2004, six "
+    "years after Raccoon City.\n"
+    "PLAYABLE: LEON S. KENNEDY — now a SEASONED U.S. government agent, sent to rescue ASHLEY "
+    "GRAHAM, the U.S. President's daughter, kidnapped by a cult.\n"
+    "ENEMIES (CRITICAL): the villagers are LOS GANADOS — people infected by LAS PLAGAS parasites. "
+    "They are NOT ZOMBIES: they're aware, shout in SPANISH, work together and fight with pitchforks, "
+    "axes, sickles and dynamite. Never call them zombies. The LOS ILLUMINADOS cult (hooded, robed "
+    "zealots) serves them.\n"
+    "KEY PEOPLE: OSMUND SADDLER (the cult's leader, the main villain); RAMON SALAZAR (the short, "
+    "ornately dressed castellan of the castle); BITORES MENDEZ (the towering village chief); JACK "
+    "KRAUSER (Leon's former comrade turned enemy — knife fights, a mutated arm); ADA WONG (spy with "
+    "her own agenda, an ambiguous ally); LUIS SERA (a researcher who becomes Leon's ALLY); ASHLEY "
+    "GRAHAM (whom Leon escorts and protects); INGRID HUNNIGAN (Leon's radio contact); the MERCHANT "
+    "(hooded trader: 'What're ya buyin'?').\n"
+    "BOSSES / ELITES: DR. SALVADOR (the CHAINSAW man with a burlap sack over his head); EL GIGANTE "
+    "(a giant); DEL LAGO (a huge lake creature); GARRADORS (blind, clawed); REGENERATORS; "
+    "NOVISTADORS (insect-like); VERDUGO.\n"
+    "PLACES: the VILLAGE, the farm, the LAKE, Salazar's CASTLE, then the ISLAND military facility.\n"
+    "DON'T CONFUSE: Ganados are NOT zombies; the chainsaw man is DR. SALVADOR (not a cult leader); "
+    "Leon is an experienced agent here (NOT RE2's rookie); Luis and Ashley are allies; Krauser is an "
+    "enemy; Ada is neither simply friend nor foe.\n"
+    "NAMING + DIALOGUE RULES: name a character ONLY when visuals or subtitles unmistakably show "
+    "them; never invent who is speaking to whom or why; when unsure, describe the action."
+)
+
+
 # The FF7 bible covers the whole compilation (OG, Remake, Rebirth, Revelation), so the
 # Remake-trilogy game keys share it (added 2026-09-21 for the 4K60 long-form folders).
 GAME_LORE["ff7remake"] = GAME_LORE["ff7rebirth"] = GAME_LORE["ff7"]
@@ -420,6 +497,9 @@ def lore_for(game: str) -> str:
 # front. First match wins; order from most specific to least.
 _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("wolverine", ("wolverine", "logan", "james howlett", "marvel's wolverine", "adamantium")),
+    ("re2", ("resident evil 2", "resident evil ii", "re2", "mr. x", "raccoon police")),
+    ("re3", ("resident evil 3", "resident evil iii", "re3", "nemesis", "jill valentine")),
+    ("re4", ("resident evil 4", "resident evil iv", "re4", "ganado", "ashley graham", "saddler")),
     ("spider-man2", ("spider-man 2", "spiderman 2", "marvel's spider-man 2")),
     ("spider-man-miles-morales", ("miles morales",)),
     ("spider-man1", ("spider-man", "spiderman", "peter parker", "insomniac spider")),
