@@ -945,7 +945,8 @@ reels:
       spider-man-miles-morales: "spider-man-miles-morales logo.png"
       spider-man2: "Marvel's_Spider-Man_2.png"
       # RE2/3/4 share the "Resident Evil" root and Rebirth shares "Final Fantasy VII" with
-      # Remake, so pin each (2026-09-21). The generic 're' key maps to nothing specific.
+      # Remake, so pin each (2026-09-21). The generic 're' key keeps its previous logo (RE4).
+      re: "Resident Evil 4 Game Logo.png"
       re2: "Resident Evil 2 Game Logo.png"
       re3: "Resident Evil 3 Game Logo.png"
       re4: "Resident Evil 4 Game Logo.png"
