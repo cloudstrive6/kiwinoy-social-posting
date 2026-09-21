@@ -92,3 +92,10 @@ thumbnails/
 # local one-off longform batch runners (hardcoded paths)
 /process_ff7_fullgame.py
 /run_ff7_fullgame.bat
+
+# 4K 60FPS long-form source footage (per user 2026-09-21): reels/assets/4k60fps/<game>/{parts,segments}/.
+# Multi-GB files that go to B2 and straight to YouTube — they must NEVER be committed (this repo is
+# PUBLIC). Ignore every file under it except the .gitkeep folder placeholders.
+reels/assets/4k60fps/**
+!reels/assets/4k60fps/**/
+!reels/assets/4k60fps/**/.gitkeep
