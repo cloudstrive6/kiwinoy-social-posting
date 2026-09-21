@@ -196,8 +196,8 @@ def next_slot(ledger: dict, now: Optional[datetime] = None) -> Optional[datetime
     lead = timedelta(hours=float(c.get("lead_hours", 6.5)))
     gap = timedelta(hours=24.0 / max(1, len(c.get("slots_local", ["23:00", "07:00", "15:00"]))))
     tz = _tz()
-    taken = {v.get("publish_at") for v in ledger.values()
-             if v.get("status") in ("uploading", "scheduled") and v.get("publish_at")}
+    taken = {v.get("publish_at") for k, v in ledger.items() if not k.startswith("__")
+             and v.get("status") in ("uploading", "scheduled") and v.get("publish_at")}
     local_today = now.astimezone(tz).date()
     cands = []
     for d in range(-1, 4):
@@ -503,7 +503,8 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     files = b2_store.list_longform()
     ledger = _ledger()
     resume = None if only_key else next(
-        ((k, v) for k, v in ledger.items() if v.get("status") == "uploading"), None)
+        ((k, v) for k, v in ledger.items() if not k.startswith("__")
+         and v.get("status") == "uploading"), None)
     if resume:
         key, entry = resume
         it = next((_enrich(f) for f in files if f["key"] == key), None)
@@ -524,6 +525,22 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
                 log("next publish slot is already booked / not due yet — nothing to do.")
                 return {"skipped": "no_slot"}
             pool = build_queue(files, ledger, _priority())
+            # UNKNOWN GAME FOLDER GUARD: a folder that isn't a known game key would publish
+            # with a guessed name, no logo, no lore and no playlist — HOLD it instead and
+            # Telegram once per folder (e.g. "Marvel's Wolverine" instead of "wolverine").
+            known = set((CONFIG.reels.get("game_names", {}) or {}))
+            unknown = sorted({i["game"] for i in pool if i["base"] not in known})
+            if unknown:
+                meta_ = ledger.setdefault("__meta__", {})
+                new = [g for g in unknown if g not in meta_.get("warned_unknown", [])]
+                if new:
+                    notify.telegram("⚠️ 4K long-form: these footage folders aren't a known game, "
+                                    f"so I'm HOLDING them (not uploading): {', '.join(new)}. "
+                                    "Rename the folder to the game key (e.g. wolverine, "
+                                    f"spider-man2, halo) — known: {', '.join(sorted(known))}.")
+                    meta_["warned_unknown"] = sorted(set(meta_.get("warned_unknown", [])) | set(new))
+                    _save_ledger(ledger)
+                pool = [i for i in pool if i["base"] in known]
         if not pool:
             log("queue empty — no new long-form footage on B2.")
             return {"skipped": "empty"}
@@ -623,8 +640,8 @@ def cleanup(dry_run: bool = False) -> int:
     from core import youtube as yt
     days = float(_cfg().get("delete_after_days", 15))
     ledger = _ledger()
-    due = {k: v for k, v in ledger.items()
-           if v.get("status") == "scheduled" and v.get("video_id") and not v.get("b2_deleted")
+    due = {k: v for k, v in ledger.items() if not k.startswith("__")
+           and v.get("status") == "scheduled" and v.get("video_id") and not v.get("b2_deleted")
            and time.time() - float(v.get("done_at", time.time())) >= days * 86400}
     if not due:
         log("cleanup: nothing due.")
