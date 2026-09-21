@@ -944,6 +944,13 @@ reels:
       spider-man1: "HD Marvel Spider Man Logo PNG - 2200x2200.png"
       spider-man-miles-morales: "spider-man-miles-morales logo.png"
       spider-man2: "Marvel's_Spider-Man_2.png"
+      # RE2/3/4 share the "Resident Evil" root and Rebirth shares "Final Fantasy VII" with
+      # Remake, so pin each (2026-09-21). The generic 're' key maps to nothing specific.
+      re2: "Resident Evil 2 Game Logo.png"
+      re3: "Resident Evil 3 Game Logo.png"
+      re4: "Resident Evil 4 Game Logo.png"
+      ff7rebirth: "Final Fantasy VII Rebirth Game Logo.png"
+      wolverine: "Wolverine Game Logo.png"
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
