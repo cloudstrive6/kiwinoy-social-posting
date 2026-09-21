@@ -139,7 +139,9 @@ def build_queue(files: list[dict], ledger: dict, priority: list[str]) -> list[di
     never jumps ahead of an earlier one), segments by recording time, merged by time.
     Priority games first (in the given order), then every other game oldest-first."""
     done = set(ledger)                                    # uploaded / uploading / failed
-    items = [_enrich(f) for f in files if f["key"] not in done]
+    # Game folders starting with "_" are a STAGING area (tests, holds) — never auto-queued;
+    # they can still be run explicitly with --key.
+    items = [_enrich(f) for f in files if f["key"] not in done and not f["game"].startswith("_")]
     per: dict[str, list[dict]] = {}
     for it in items:
         per.setdefault(it["game"], []).append(it)
