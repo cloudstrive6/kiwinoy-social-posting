@@ -372,8 +372,10 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
         f"GAME LORE BIBLE:\n{bible}\n\n{evidence}\n\nDRAFT:\n{json.dumps(draft, ensure_ascii=False)}\n\n"
         "Check EVERY claim in moment/summary against the evidence and the lore rules: invented "
         "names, wrong speaker/target/motive, calling allies enemies (or vice versa), events not "
-        "shown, spoilers beyond the video. Rewrite anything unsupported so it is plainly true "
-        "(prefer describing the action over guessing). Return ONLY JSON with the SAME keys, "
+        "shown, spoilers beyond the video, and NICKNAMES turned into a named character (e.g. "
+        "'Red' is NOT automatically Omega Red — in Marvel's Wolverine it's Logan's name for Jean). "
+        "Rewrite anything unsupported so it is plainly true — by REMOVING or genericising the "
+        "claim, never by swapping in a different guessed name. Return ONLY JSON with the SAME keys, "
         "fully corrected, plus \"issues\": [short list of what you fixed].")
     try:
         fixed = extract_json(_text(critic, timeout=240)) or {}

@@ -652,7 +652,10 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
     cap_lang = "Natural Taglish is welcome." if taglish else "Write it in ENGLISH."
     fix = (f"A PREVIOUS attempt was REJECTED for a lore/accuracy error: {avoid}\n"
            "Fix it — write hook + caption that only reference what THIS clip actually "
-           "shows.\n\n" if avoid else "")
+           "shows. Fix it by REMOVING or making generic the unsupported claim — do NOT swap "
+           "in a DIFFERENT character name unless a subtitle speaker label or unmistakable "
+           "visual shows that exact character. A nickname in the dialogue ('Red', 'Kid', "
+           "'Bub') is NOT an identification.\n\n" if avoid else "")
     prompt = (
         f"You are writing text for a {gname} gameplay reel. You are a MASTER of "
         "short-video viewer psychology and retention — your job is to stop the "
@@ -763,8 +766,15 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         "6. It INVENTS an ACTION, conflict, or PARTICIPANTS the observation doesn't support — e.g. "
         "'why are THEY FIGHTING' when it's one character just swinging/traversing, or a 'chase' / "
         "'argument' / 'boss fight' that isn't happening. Web-swinging or exploring is NOT a fight.\n"
+        "7. It turns a NICKNAME or partial name heard in dialogue ('Red', 'Kid', 'Bub', 'Chief', "
+        "'Boss', 'Doc') into a specific named character (e.g. 'Red' -> Omega Red) when no subtitle "
+        "speaker label or unmistakable visual shows who is being addressed. A nickname is NOT an "
+        "identification.\n"
         "A hook about the ACTION THAT IS ACTUALLY SHOWN, the setting, or a general gamer feeling is "
         "FINE — but it must match what the observation describes.\n"
+        "IMPORTANT: your 'issues' text is fed back to the writer. ONLY say what is wrong. NEVER "
+        "suggest who a character might be or propose a different name — that plants a NEW guess "
+        "(a Sabretooth hook was once 'fixed' into an equally wrong Omega Red one this way).\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
