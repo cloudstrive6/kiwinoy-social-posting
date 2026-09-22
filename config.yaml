@@ -1365,3 +1365,16 @@ longform_auto:
   run_label: Walkthrough   # parts title word for normal folders
   chunk_mb: 512            # resumable-upload chunk (bigger = faster vs YouTube's per-chunk ack)
   max_attempts: 3          # park + Telegram after this many failed uploads of one file
+  # Face-thumbnail judge: who the HERO is + how they look, so it favours the main character
+  # and doesn't mistake a villain for them (per game folder base key).
+  thumbnail_heroes:
+    wolverine: {name: "Wolverine (Logan)", look: "stocky man, dark swept-up hair with pointed tufts, thick mutton-chop sideburns/beard; or the yellow-and-blue suit and cowl mask with pointed 'ears'"}
+    spider-man1: {name: "Spider-Man (Peter Parker)", look: "young man, short brown hair, clean-shaven; or the red-and-blue Spider-Man suit and mask with white eye lenses"}
+    spider-man2: {name: "Spider-Man (Peter Parker or Miles Morales)", look: "Peter: young man, short brown hair; Miles: Afro-Latino teen, short dark hair; or a Spider-Man suit and mask"}
+    spider-man-miles-morales: {name: "Spider-Man (Miles Morales)", look: "Afro-Latino teen, short dark hair; or the black-and-red Spider-Man suit and mask"}
+    halo: {name: "Master Chief", look: "green-armoured Spartan whose gold-visored helmet hides his face"}
+    ff7remake: {name: "Cloud Strife", look: "spiky blond hair, glowing blue Mako eyes, dark sleeveless SOLDIER outfit, huge Buster Sword"}
+    ff7rebirth: {name: "Cloud Strife", look: "spiky blond hair, glowing blue Mako eyes, dark sleeveless SOLDIER outfit, huge Buster Sword"}
+    re2: {name: "Leon S. Kennedy or Claire Redfield", look: "Leon: young man, floppy brown fringe, police uniform; Claire: auburn ponytail, red jacket"}
+    re3: {name: "Jill Valentine", look: "woman with dark shoulder-length hair, blue top / tactical gear"}
+    re4: {name: "Leon S. Kennedy", look: "man with a floppy brown fringe over one eye, brown leather jacket"}

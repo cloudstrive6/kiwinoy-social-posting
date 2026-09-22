@@ -558,7 +558,8 @@ def _face_crop(face: tuple, W: int, H: int) -> tuple[tuple[int, int, int, int], 
     return (int(x0), int(y0), int(x0 + cw), int(y0 + ch)), ("top-left" if face_cx >= 0.5 else "top-right")
 
 
-def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96):
+def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
+                    hero: str = "", hero_look: str = ""):
     """HIGH-CTR FACE THUMBNAIL (per user 2026-09-23 — 20 evenly spaced frames gave distant
     wide shots with no readable faces/emotion). Scans ~n frames across the whole video,
     keeps the ones with the LARGEST sharp faces (YuNet), punches in on the 4K source so
@@ -618,35 +619,74 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96):
         d.text((x + 16, y + 10), str(i + 1), fill="yellow")
     sheet_p = work / "face_sheet.jpg"
     sheet.save(sheet_p, quality=90)
-    best = 0
+    # PER-IMAGE SCORECARD (a single "pick the best" let the judge rationalise — it called a
+    # cyborg villain "Wolverine unmasked" and chose downcast eyes right after being told not
+    # to). The judge rates every crop on fixed questions; CODE applies the hard rules + score.
+    look = f" The hero looks like: {hero_look}." if hero_look else ""
     try:
         j = extract_json(_vision(
-            f"These {len(crops)} numbered images are candidate YouTube THUMBNAILS (close-up crops) "
-            f"for a gameplay video titled “{title}”.\nSTEP 1: list every number that shows ANY "
-            "subtitle, caption or dialogue text, that is NOT actually a face (the back of a head, "
-            "a blur, a mis-detection), or whose eyes are CLOSED / looking DOWN / mid-blink.\n"
-            "STEP 2: from the rest, pick the ONE with the highest click-through potential. Rank by:\n"
-            "  1. INTENSE, readable EMOTION — rage, a snarl or shout, fear, shock, pain, a fierce "
-            "stare. Eyes OPEN and engaged (ideally toward the camera). A neutral, tired or bored "
-            "face ranks LOW even if it is big and well lit.\n"
-            "  2. ICONIC LOOK — the hero in his signature COSTUME / MASK, blood, battle damage, "
-            "claws out. A mask with visible eyes/mouth is NOT 'obscured': it's the most "
-            "recognisable, clickable image of the character.\n"
-            "  3. The game's MAIN character over side characters; sharp, dramatic lighting.\n"
-            'Return ONLY JSON: {"rejected": [<numbers>], "best": <number>, "why": "<short>"}',
+            f"These {len(crops)} numbered images are candidate YouTube THUMBNAIL crops for a "
+            f"{hero or 'gameplay'} video titled “{title}”.{look}\nAssess EVERY image honestly "
+            "and independently; do not assume a face is the hero.\n"
+            "For each give:\n"
+            "- subtitles: true if ANY subtitle/caption/dialogue text is visible\n"
+            "- face: true only if a real face is clearly shown (not the back of a head / a blur)\n"
+            "- eyes_open: true only if the eyes are OPEN and looking forward/at something — false "
+            "if closed, mid-blink, or looking DOWN (a full-face MASK counts as eyes_open when "
+            "its eye lenses face forward)\n"
+            "- sharp: true only if the FACE is in focus — false for motion blur or a soft/"
+            "smeared face, or if the head is badly cut off by the frame edge\n"
+            f"- hero: true ONLY if you are confident this is {hero or 'the game’s main character'} "
+            "(an iconic mask/costume counts; a different character or a villain is false)\n"
+            "- emotion: 0-10 intensity of a READABLE emotion (10 = rage, a snarl or shout, terror, "
+            "agony; 5 = a focused/tense look; 0-2 = neutral, tired, bored)\n"
+            "- iconic: 0-10 how recognisable/striking the look is (signature costume or mask, "
+            "blood, battle damage, dramatic lighting)\n"
+            'Return ONLY JSON: {"items": [{"n": 1, "subtitles": false, "face": true, '
+            '"eyes_open": true, "sharp": true, "hero": true, "emotion": 7, "iconic": 6, "note": "<short>"}]}',
             [sheet_p])) or {}
-        rej = {int(x) - 1 for x in (j.get("rejected") or []) if str(x).isdigit()}
-        best = max(0, min(len(crops) - 1, int(j.get("best", 1)) - 1))
-        if best in rej:
-            clean = [i for i in range(len(crops)) if i not in rej]
-            if not clean:
-                log("thumbnail: every face crop was rejected — falling back to the action picker")
-                return None
-            best = clean[0]
-        log(f"thumbnail: face crop #{best + 1} at {crops[best]['t'] / 60:.1f} min "
-            f"(rejected {sorted(i + 1 for i in rej)}): {j.get('why', '')}")
+        rows = {int(r.get("n", 0)) - 1: r for r in (j.get("items") or []) if str(r.get("n", "")).isdigit()}
     except Exception as e:
-        log(f"face judge failed ({e!r}) — using the largest face")
+        log(f"face judge failed ({e!r}) — action-frame fallback")
+        return None
+
+    def score(i: int) -> float:
+        r = rows.get(i) or {}
+        return (float(r.get("emotion", 0) or 0) + 0.6 * float(r.get("iconic", 0) or 0)
+                + (4.0 if r.get("hero") else 0.0))
+
+    ok = [i for i in range(len(crops)) if (rows.get(i) or {}).get("face")
+          and (rows.get(i) or {}).get("eyes_open") and (rows.get(i) or {}).get("sharp")
+          and not (rows.get(i) or {}).get("subtitles")]
+    if not ok:
+        log("thumbnail: no crop passed (face + eyes open + sharp + no subtitles) — action-frame fallback")
+        return None
+    # HERO CHECK, one crop at a time at full size (the grid judge ticked 'hero' for a
+    # buzz-cut cyborg villain with no sideburns). First crop, best score first, that a focused
+    # single-image check confirms is the hero wins; else the best-scoring passing crop.
+    best = max(ok, key=score)
+    if hero:
+        for i in sorted((i for i in ok if rows[i].get("hero")), key=score, reverse=True)[:4]:
+            p = work / f"verify{i}.jpg"
+            crops[i]["img"].save(p, quality=90)
+            try:
+                v = extract_json(_vision(
+                    f"Is the main person in this image {hero}?{look} Check the SPECIFIC "
+                    "features (hair, facial hair, face shape, costume) — a different character, "
+                    "a villain, a soldier or a cyborg is NO even if the scene involves the hero. "
+                    'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
+            except Exception:
+                v = {}
+            if v.get("is_hero"):
+                best = i
+                break
+            log(f"thumbnail: crop #{i + 1} is NOT {hero} ({v.get('why', 'unverified')})")
+        else:
+            log(f"thumbnail: no crop verified as {hero} — using the best-scoring face")
+    r = rows[best]
+    log(f"thumbnail: face crop #{best + 1} at {crops[best]['t'] / 60:.1f} min — hero={r.get('hero')} "
+        f"emotion={r.get('emotion')} iconic={r.get('iconic')} ({r.get('note', '')}); "
+        f"passed {sorted(i + 1 for i in ok)} of {len(crops)}")
     return crops[best]["img"], crops[best]["corner"]
 
 
@@ -662,7 +702,10 @@ def make_thumbnail(frames: list[Path], base: str, title: str, out: Path,
     face = None
     if url and dur:
         try:
-            face = _face_thumbnail(url, dur, title, out.parent / "thumb_faces")
+            heroes = (_cfg().get("thumbnail_heroes", {}) or {}).get(base, {}) or {}
+            face = _face_thumbnail(url, dur, title, out.parent / "thumb_faces",
+                                   hero=str(heroes.get("name", "")),
+                                   hero_look=str(heroes.get("look", "")))
         except Exception as e:
             log(f"face thumbnail failed ({e!r}) — action-frame fallback")
     if face:
