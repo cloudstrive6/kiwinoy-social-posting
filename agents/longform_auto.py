@@ -576,6 +576,62 @@ def _face_crop(face: tuple, W: int, H: int) -> tuple[tuple[int, int, int, int], 
     return (int(x0), int(y0), int(x0 + cw), int(y0 + ch)), ("top-left" if face_cx >= 0.5 else "top-right")
 
 
+def _nominate_wildcards(grabs: list, work: Path, gname: str, want: int = 8) -> list:
+    """Vision picks the most THUMBNAIL-WORTHY no-face frames (a sharpness ranking picked
+    menus and static UI instead). Sheets of 12 scan frames, read in parallel; returns
+    [(t, path)] best-first. Falls back to sharpness order if vision is unavailable."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from PIL import Image, ImageDraw
+
+    from agents.content import extract_json
+    from core import frames as fr
+    grabs = [g for g in grabs if fr.sharpness(g[1]) > 60]     # drop only the truly smeared
+    if not grabs:
+        return []
+    sheets = []
+    for n in range(0, len(grabs), 12):
+        group = grabs[n:n + 12]
+        tw, th = 480, 270
+        sheet = Image.new("RGB", (tw * 3, th * ((len(group) + 2) // 3)), "black")
+        d = ImageDraw.Draw(sheet)
+        for j, (_, p) in enumerate(group):
+            x, y = (j % 3) * tw, (j // 3) * th
+            sheet.paste(Image.open(p).convert("RGB").resize((tw, th)), (x, y))
+            d.rectangle([x, y, x + 46, y + 38], fill="black")
+            d.text((x + 14, y + 8), str(n + j + 1), fill="yellow")
+        sp = work / f"wildsheet{n // 12:02d}.jpg"
+        sheet.save(sp, quality=88)
+        sheets.append(sp)
+
+    def _ask(sp: Path) -> list:
+        try:
+            j = extract_json(_vision(
+                f"Numbered frames from a {gname} gameplay video, as candidate YouTube "
+                "THUMBNAILS.\nPick AT MOST 2 that would make the most clickable thumbnail: a "
+                "big striking subject — a character, a robot/creature head, glowing eyes, a "
+                "boss, a dramatic action beat. Atmospheric haze, bloom or shallow focus is FINE "
+                "if the subject reads clearly; do not prefer a frame merely for being sharp.\n"
+                "NEVER pick a menu, map, inventory, loading, cutscene-black, dialogue-text or "
+                "HUD/UI-heavy screen, or a plain empty wide shot. Pick NOTHING if none qualify.\n"
+                'Return ONLY JSON: {"picks": [<numbers>], "why": "<short>"}', [sp])) or {}
+            return [int(x) - 1 for x in (j.get("picks") or []) if str(x).isdigit()]
+        except Exception:
+            return []
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        per_sheet = list(pool.map(_ask, sheets))
+    # round-robin across sheets: taking them in sheet order let the FIRST sheets use up every
+    # slot, so a strong frame late in the video (44 min in) never made the shortlist.
+    idxs = [i for rank in range(max((len(p) for p in per_sheet), default=0))
+            for p in per_sheet if rank < len(p) for i in [p[rank]]]
+    out = [grabs[i] for i in idxs if 0 <= i < len(grabs)][:want]
+    if out:
+        log(f"thumbnail: vision nominated {len(out)} wildcard frame(s)")
+        return out
+    return sorted(grabs, key=lambda g: fr.sharpness(g[1]), reverse=True)[:want]
+
+
 def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
                     hero: str = "", hero_look: str = ""):
     """HIGH-CTR FACE THUMBNAIL (per user 2026-09-23 — 20 evenly spaced frames gave distant
@@ -624,14 +680,16 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
         box, corner = _face_crop(faces[0], *im.size)
         crops.append({"img": im.crop(box).resize((1280, 720), Image.LANCZOS), "corner": corner,
                       "t": c["t"]})
-    # WILDCARDS (per user 2026-09-23): the sharpest frames with NO detected face, so a striking
-    # non-human close-up (Master Mold's glowing head, a Sentinel, a creature) can still compete.
-    # Cropped to sit ABOVE the subtitle band, so these are clean by construction.
-    wilds = sorted((g for g in grabs if g[1] and all(abs(g[0] - c["t"]) > 20 for c in picked)),
-                   key=lambda g: fr.sharpness(g[1]), reverse=True)
+    # WILDCARDS (per user 2026-09-23): striking frames with NO detected face, so a non-human
+    # close-up (Master Mold's glowing head, a Sentinel, a creature) can still compete. VISION
+    # nominates them — ranking by sharpness picked menu/collectible screens (static UI scores
+    # "sharpest") and buried the shot the user wanted, a soft, bloom-heavy glowing-eyes head
+    # that ranked 76th of 96. Cropped above the subtitle band, so these are clean by design.
+    wilds = _nominate_wildcards([g for g in grabs if g[1]
+                                 and all(abs(g[0] - c["t"]) > 20 for c in picked)], work, title)
     used: list[float] = []
     for t, p in wilds:
-        if len(used) == 4:
+        if len(used) == 6:
             break
         if any(abs(t - u) <= 20 for u in used):
             continue
@@ -715,20 +773,63 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
             break
         p = work / f"verify{best}.jpg"
         crops[best]["img"].save(p, quality=90)
-        try:
-            v = extract_json(_vision(
-                f"Is the main character in this image {hero}?{look} Check the SPECIFIC "
-                "features (hair, facial hair, face shape, costume) — a different character, "
-                "a villain, a soldier or a cyborg is NO even if the scene involves the hero. "
-                'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
-        except Exception:
-            v = {}
-        if v.get("is_hero"):
+        # TWO independent checks, both must say yes: one call flip-flopped on the SAME cyborg
+        # crop between runs (rejected with a detailed why, then waved through next time).
+        votes, why = [], ""
+        for _ in range(2):
+            try:
+                v = extract_json(_vision(
+                    f"Is the main character in this image {hero}?{look} Check the SPECIFIC "
+                    "features (hair, facial hair, face shape, costume) — a different character, "
+                    "a villain, a soldier or a CYBORG (metal face plating, implants) is NO even "
+                    "if the scene involves the hero. "
+                    'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
+            except Exception:
+                v = {"is_hero": True}
+            votes.append(bool(v.get("is_hero")))
+            why = why or str(v.get("why", ""))
+            if not votes[-1]:
+                break
+        if all(votes):
             break
+        v = {"why": why}
         log(f"thumbnail: crop #{best + 1} is NOT {hero} ({v.get('why', 'unverified')}) — "
             "dropping its hero bonus and re-ranking")
         rows[best]["hero"] = False                         # re-rank without the bonus
         best = max(ok, key=score)
+    # FINAL GATE, on the winner alone at full size: the grid judge waved through a mask seen
+    # from ABOVE with the face hidden while claiming "eye openings prominent". One image, one
+    # question set — the same pattern that made the hero check reliable.
+    passed = False
+    for _ in range(len(crops)):            # every candidate gets gated; an unchecked pick is
+        p = work / f"gate{best}.jpg"       # exactly how a face-down side view slipped through
+        crops[best]["img"].save(p, quality=90)
+        try:
+            g = extract_json(_vision(
+                "Judge this image as a YouTube thumbnail.\n"
+                "- eyes_visible: are the subject's eyes (or a mask's eye lenses / a robot's "
+                "glowing eyes) clearly visible and facing roughly toward the viewer? false if "
+                "the head is turned away, tilted down, or the face is hidden\n"
+                "- text_or_hud: is ANY subtitle, dialogue text, objective text, menu or "
+                "health-bar/HUD overlay visible?\n"
+                "- badly_cropped: is the head or subject cut off awkwardly by the frame edge?\n"
+                'Return ONLY JSON: {"eyes_visible": true, "text_or_hud": false, '
+                '"badly_cropped": false, "why": "<short>"}', [p])) or {}
+        except Exception:
+            passed = True             # vision down -> keep the pick, don't bin the whole pass
+            break
+        if g.get("eyes_visible") and not g.get("text_or_hud") and not g.get("badly_cropped"):
+            passed = True
+            break
+        log(f"thumbnail: crop #{best + 1} failed the final gate ({g.get('why', '')}) — re-ranking")
+        ok = [i for i in ok if i != best]
+        if not ok:
+            log("thumbnail: no crop survived the final gate — action-frame fallback")
+            return None
+        best = max(ok, key=score)
+    if not passed:
+        log("thumbnail: nothing passed the final gate — action-frame fallback")
+        return None
     r = rows[best]
     log(f"thumbnail: face crop #{best + 1} at {crops[best]['t'] / 60:.1f} min — hero={r.get('hero')} "
         f"emotion={r.get('emotion')} iconic={r.get('iconic')} ({r.get('note', '')}); "
@@ -1003,8 +1104,12 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
             yt.add_to_playlist(vid, pl)
         except Exception as e:
             log(f"playlist add failed ({e!r})")
-    notify.telegram(f"🎬 Long-form scheduled: {meta['title']}\n"
-                    f"Goes public {_nz(publish_at)}\nhttps://youtu.be/{vid}")
+    # Send the THUMBNAIL itself (per user review 2026-09-23: the auto-pick is good but not
+    # infallible — seeing it lets the user swap one before the video goes public).
+    msg = (f"🎬 Long-form scheduled: {meta['title']}\n"
+           f"Goes public {_nz(publish_at)}\nhttps://youtu.be/{vid}")
+    if not (thumb and Path(thumb).exists() and notify.telegram_photo(thumb, msg)):
+        notify.telegram(msg)
     log(f"DONE https://youtu.be/{vid} (public at {_nz(publish_at)})")
     return {"video_id": vid, "publish_at": publish_at, **meta}
 
