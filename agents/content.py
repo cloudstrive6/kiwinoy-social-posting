@@ -412,7 +412,8 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
                 observation = _observe_clip(cands, gname)
-                if observation:
+                if observation:                              # + full-clip subtitle speakers
+                    observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                     cand = _relatable_caption(observation, angle)
                     ok, issues = _verify_caption(cand, observation) if cand else (False, "")
                     if not ok and cand:                      # one grounded correction pass
@@ -485,7 +486,8 @@ def descriptive_fill_caption(video_path=None, game: str = "") -> str:
                 if cands:
                     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
                     observation = _observe_clip(cands, gname)
-                    if observation:
+                    if observation:                          # + full-clip subtitle speakers
+                        observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                         cand = _descriptive_caption(observation, gname)
                         ok, issues = _verify_descriptive(cand, observation) if cand else (False, "")
                         if not ok and cand:                  # one grounded correction pass
@@ -576,6 +578,80 @@ def _transcribe_clip(video_path, gname: str = "") -> str:
     except Exception as e:
         print(f"[content] transcribe failed ({e!r}); proceeding without dialogue.", flush=True)
         return ""
+
+
+def _scan_subtitles(video_path, gname: str = "", max_strips: int = 120) -> str:
+    """Read the ON-SCREEN SUBTITLES of the WHOLE clip, speaker labels included (per user
+    2026-09-22 — a Wolverine hook said 'his ally' when the subtitles read 'Jean: ...'
+    seven times; the observer's 4 frames missed every label). GAME-AGNOSTIC: crops the
+    bottom band of every frame at ~1 fps, tiles the strips into contact sheets and has
+    vision transcribe every subtitle line verbatim with its speaker name. The audio
+    transcript can't give names; this can. Returns a formatted block ('' if the clip has
+    no subtitles / on any error — fail-open, never blocks a post)."""
+    import tempfile
+    from pathlib import Path
+
+    from core import claude_code, ffmpeg, openai_client
+    try:
+        dur = ffmpeg.duration(Path(video_path)) or 60.0
+        fps = min(1.0, max_strips / dur)
+        with tempfile.TemporaryDirectory() as tmp:
+            pattern = str(Path(tmp) / "subs_%02d.jpg")
+            # bottom-centre band (76%-95% height, middle 60% width) where games put
+            # subtitles; 2 columns x 12 rows per sheet, read left->right, top->bottom.
+            rc, _ = ffmpeg.run(["-i", str(video_path), "-an", "-vf",
+                                f"fps={fps:.4f},crop=iw*0.6:ih*0.19:iw*0.2:ih*0.76,scale=800:-2,tile=2x12",
+                                "-q:v", "3", pattern], timeout=300)
+            sheets = sorted(Path(tmp).glob("subs_*.jpg"))
+            if rc != 0 or not sheets:
+                return ""
+            instruction = (
+                f"These {len(sheets)} image(s) are contact sheets of the SUBTITLE area of one "
+                f"{gname} gameplay clip, one strip per ~{1 / fps:.0f}s, read LEFT->RIGHT then "
+                "TOP->BOTTOM, sheets in order. Transcribe EVERY distinct subtitle line you can "
+                "read, in order, VERBATIM, including the SPEAKER LABEL before the colon exactly "
+                "as printed (e.g. 'Jean: Need a terminal.'). Merge repeats of the same line. "
+                "Ignore HUD/UI, button prompts and objective text. ACCURACY over completeness: "
+                "OMIT any line you can't read with certainty rather than guessing its words, "
+                "and never guess a speaker that "
+                "isn't printed — use '?' if a line has no label. If there are NO subtitles, "
+                'return an empty list.\nReturn ONLY JSON: {"lines": [{"speaker": "Jean", '
+                '"text": "Need a terminal."}]}'
+            )
+            listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(sheets))
+            try:
+                raw = claude_code.run(f"Use the Read tool to open these images first.\n\n"
+                                      f"{instruction}\n\nImages:\n{listing}",
+                                      allowed_tools="Read", timeout=420)
+            except claude_code.ClaudeCodeError as e:
+                print(f"[content] subtitle scan: Claude unavailable ({e}); OpenAI vision.", flush=True)
+                raw = openai_client.vision(instruction, sheets)
+        lines = (extract_json(raw) or {}).get("lines") or []
+    except Exception as e:
+        print(f"[content] subtitle scan failed ({e!r}); proceeding without it.", flush=True)
+        return ""
+    rows, speakers = [], []
+    for ln in lines:
+        sp = sanitize(str(ln.get("speaker", "") or "?")).strip()
+        tx = sanitize(str(ln.get("text", ""))).strip()
+        if not tx:
+            continue
+        rows.append(f"{sp}: {tx}" if sp and sp != "?" else tx)
+        if sp and sp != "?" and sp not in speakers:
+            speakers.append(sp)
+    if not rows:
+        return ""
+    print(f"[content] subtitle scan: {len(rows)} line(s); speakers={speakers}", flush=True)
+    return ("ON-SCREEN SUBTITLES (read off the clip, speaker labels VERBATIM — a name before "
+            "the ':' is WHO is speaking; these speakers are CONFIRMED present in the clip and "
+            "MAY be named; a nickname inside a line is still not an identification):\n"
+            + "\n".join(rows[:60])
+            + (f"\nCONFIRMED SPEAKERS: {', '.join(speakers)}" if speakers else ""))
+
+
+def _with_subs(text: str, subs: str) -> str:
+    """Append the subtitle-scan block to an observation/dialogue string."""
+    return f"{text.strip()}\n\n{subs}".strip() if subs else text
 
 
 # Whisper hallucinates these on silent / music-only / non-speech audio — treat as NO dialogue.
@@ -693,7 +769,8 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "- Name a character ONLY if THIS clip actually shows or names them — a visible "
         "character in the description, OR an on-screen SUBTITLE that names the speaker. "
         "If a subtitle reads e.g. 'JOHNSON: ...', the one talking is JOHNSON; never credit "
-        "a different character.\n"
+        "a different character. A CONFIRMED SUBTITLE SPEAKER should be NAMED — don't write a "
+        "vague 'his ally' / 'someone' when the subtitles show who it is.\n"
         "- Do NOT invoke an iconic character just because they're famous in this game. If "
         "they are not seen or heard in THIS clip, they are NOT in it — e.g. don't mention "
         "Cortana for an Operation-METEORITE / prequel mission she isn't part of and whose "
@@ -917,6 +994,12 @@ def hook_and_caption_from_video(
                 # the writer + critics know WHO says WHAT — e.g. a scene set inside PETER's mind
                 # while you CONTROL Miles must be about Peter, not the controlled character.
                 dialogue = _transcribe_clip(video_path, gname)
+                # SUBTITLES (per user 2026-09-22): full-clip speaker-label scan, so a
+                # 'Jean: ...' line names Jean instead of a vague 'his ally'. Fed to the
+                # writer + BOTH critics (observation + dialogue).
+                subs = _scan_subtitles(video_path, gname)
+                observation = _with_subs(observation, subs) if observation else observation
+                dialogue = _with_subs(dialogue, subs)
                 if observation:
                     hook, line = _hook_and_caption(observation, game, gname, taglish, dialogue=dialogue)
                     # ACCURACY GATE (two critics): (1) TEXT lore critic — invented character /
@@ -1034,7 +1117,8 @@ def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
                 observation = _observe_clip(cands, gname)
-                if observation:
+                if observation:                              # + full-clip subtitle speakers
+                    observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                     raw = _caption_with_lore(observation, game, gname, taglish)
                     line = raw.splitlines()[0].strip().strip('"')[:90] if raw else ""
     except Exception as e:
