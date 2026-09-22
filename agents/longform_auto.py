@@ -278,7 +278,7 @@ def extract_frames(url: str, dur: float, out: Path, n: int = 14) -> list[Path]:
     return frames
 
 
-def _tile(strips: list[Path], out: Path, stem: str, per: int = 24) -> list[Path]:
+def _tile(strips: list[Path], out: Path, stem: str, per: int = 12) -> list[Path]:
     """Tile subtitle strips into 2-column contact sheets (read left->right, top->bottom)."""
     from PIL import Image
     sheets = []
@@ -350,9 +350,10 @@ def sample_dialogue(url: str, dur: float, gname: str, windows: int = 8,
                 log(f"subtitle read failed ({e!r})")
                 return []
 
-        # one vision call per SHEET (a whole window in one call timed out on a dialogue-
-        # heavy stretch), 4 in parallel; results re-joined in window/sheet order.
-        jobs = [(w, [sh]) for w, sheets in enumerate(win_sheets) for sh in sheets]
+        # 3 sheets (of 12 strips) per vision call (a whole window in one call timed out on a
+        # dialogue-heavy stretch), 4 in parallel; results re-joined in window/sheet order.
+        jobs = [(w, sheets[i:i + 3]) for w, sheets in enumerate(win_sheets)
+                for i in range(0, len(sheets), 3)]
         with ThreadPoolExecutor(max_workers=4) as pool:
             results = list(pool.map(lambda j: _read(j[1]), jobs))
     rows, speakers, seen_win, prev = [], [], set(), None

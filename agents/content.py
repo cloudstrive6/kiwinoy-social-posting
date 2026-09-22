@@ -597,14 +597,19 @@ def _scan_subtitles(video_path, gname: str = "", max_strips: int = 120) -> str:
         fps = min(1.0, max_strips / dur)
         with tempfile.TemporaryDirectory() as tmp:
             pattern = str(Path(tmp) / "subs_%02d.jpg")
-            # 2 columns x 12 rows per sheet, read left->right, top->bottom.
+            # 2 columns x SUB_ROWS rows per sheet, read left->right, top->bottom.
             rc, _ = ffmpeg.run(["-i", str(video_path), "-an", "-vf",
-                                f"fps={fps:.4f},{SUB_CROP},tile=2x12",
-                                "-q:v", "3", pattern], timeout=300)
+                                f"fps={fps:.4f},{SUB_CROP},tile=2x{SUB_ROWS}",
+                                "-q:v", "2", pattern], timeout=300)
             sheets = sorted(Path(tmp).glob("subs_*.jpg"))
             if rc != 0 or not sheets:
                 return ""
-            lines = read_subtitle_sheets(sheets, gname)
+            # 3 sheets per vision call, in parallel, re-joined in order.
+            from concurrent.futures import ThreadPoolExecutor
+            batches = [sheets[i:i + 3] for i in range(0, len(sheets), 3)]
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                lines = [ln for part in pool.map(lambda b: read_subtitle_sheets(b, gname), batches)
+                         for ln in part]
     except Exception as e:
         print(f"[content] subtitle scan failed ({e!r}); proceeding without it.", flush=True)
         return ""
@@ -620,6 +625,9 @@ def _scan_subtitles(video_path, gname: str = "", max_strips: int = 120) -> str:
 
 # Bottom-centre band (76%-95% height, middle 60% width) where games put subtitles.
 SUB_CROP = "crop=iw*0.6:ih*0.19:iw*0.2:ih*0.76,scale=800:-2"
+# Strips per sheet column. 12 rows (24/sheet) got downscaled by the vision reader until faint
+# text on hazy scenes was unreadable ("MK2 Sentinel:" missed, 2026-09-22); 6 rows reads it.
+SUB_ROWS = 6
 
 
 def read_subtitle_sheets(sheets: list, gname: str, what: str = "clip",
