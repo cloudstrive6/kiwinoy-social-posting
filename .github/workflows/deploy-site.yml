@@ -10,9 +10,11 @@ name: Deploy site (Netlify)
 # The Site ID below is public (it's in Netlify's deploy-status badge URL), so it's inlined.
 
 on:
-  # rebuild a few times a day so the site pulls the newest YouTube uploads (build-time fetch)
+  # rebuild a few times a day so the site pulls the newest YouTube uploads (build-time fetch).
+  # Timed ~35 min after each long-form publish slot (11PM/7AM/3PM NZ = 11/19/03 UTC in NZST,
+  # 10/18/02 UTC in NZDT) so a newly public video shows up right away, not up to ~5h later.
   schedule:
-    - cron: "23 */8 * * *"
+    - cron: "35 2,3,10,11,18,19 * * *"
   push:
     # main -> PRODUCTION (bosskg.com); staging -> a preview alias (staging--<site>.netlify.app)
     branches: [main, staging]
