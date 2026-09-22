@@ -591,61 +591,83 @@ def _scan_subtitles(video_path, gname: str = "", max_strips: int = 120) -> str:
     import tempfile
     from pathlib import Path
 
-    from core import claude_code, ffmpeg, openai_client
+    from core import ffmpeg
     try:
         dur = ffmpeg.duration(Path(video_path)) or 60.0
         fps = min(1.0, max_strips / dur)
         with tempfile.TemporaryDirectory() as tmp:
             pattern = str(Path(tmp) / "subs_%02d.jpg")
-            # bottom-centre band (76%-95% height, middle 60% width) where games put
-            # subtitles; 2 columns x 12 rows per sheet, read left->right, top->bottom.
+            # 2 columns x 12 rows per sheet, read left->right, top->bottom.
             rc, _ = ffmpeg.run(["-i", str(video_path), "-an", "-vf",
-                                f"fps={fps:.4f},crop=iw*0.6:ih*0.19:iw*0.2:ih*0.76,scale=800:-2,tile=2x12",
+                                f"fps={fps:.4f},{SUB_CROP},tile=2x12",
                                 "-q:v", "3", pattern], timeout=300)
             sheets = sorted(Path(tmp).glob("subs_*.jpg"))
             if rc != 0 or not sheets:
                 return ""
-            instruction = (
-                f"These {len(sheets)} image(s) are contact sheets of the SUBTITLE area of one "
-                f"{gname} gameplay clip, one strip per ~{1 / fps:.0f}s, read LEFT->RIGHT then "
-                "TOP->BOTTOM, sheets in order. Transcribe EVERY distinct subtitle line you can "
-                "read, in order, VERBATIM, including the SPEAKER LABEL before the colon exactly "
-                "as printed (e.g. 'Jean: Need a terminal.'). Merge repeats of the same line. "
-                "Ignore HUD/UI, button prompts and objective text. ACCURACY over completeness: "
-                "OMIT any line you can't read with certainty rather than guessing its words, "
-                "and never guess a speaker that "
-                "isn't printed — use '?' if a line has no label. If there are NO subtitles, "
-                'return an empty list.\nReturn ONLY JSON: {"lines": [{"speaker": "Jean", '
-                '"text": "Need a terminal."}]}'
-            )
-            listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(sheets))
-            try:
-                raw = claude_code.run(f"Use the Read tool to open these images first.\n\n"
-                                      f"{instruction}\n\nImages:\n{listing}",
-                                      allowed_tools="Read", timeout=420)
-            except claude_code.ClaudeCodeError as e:
-                print(f"[content] subtitle scan: Claude unavailable ({e}); OpenAI vision.", flush=True)
-                raw = openai_client.vision(instruction, sheets)
-        lines = (extract_json(raw) or {}).get("lines") or []
+            lines = read_subtitle_sheets(sheets, gname)
     except Exception as e:
         print(f"[content] subtitle scan failed ({e!r}); proceeding without it.", flush=True)
         return ""
     rows, speakers = [], []
-    for ln in lines:
-        sp = sanitize(str(ln.get("speaker", "") or "?")).strip()
-        tx = sanitize(str(ln.get("text", ""))).strip()
-        if not tx:
-            continue
-        rows.append(f"{sp}: {tx}" if sp and sp != "?" else tx)
-        if sp and sp != "?" and sp not in speakers:
+    for sp, tx in lines:
+        rows.append(f"{sp}: {tx}" if sp != "?" else tx)
+        if sp != "?" and sp not in speakers:
             speakers.append(sp)
+    if rows:
+        print(f"[content] subtitle scan: {len(rows)} line(s); speakers={speakers}", flush=True)
+    return format_subtitles(rows, speakers)
+
+
+# Bottom-centre band (76%-95% height, middle 60% width) where games put subtitles.
+SUB_CROP = "crop=iw*0.6:ih*0.19:iw*0.2:ih*0.76,scale=800:-2"
+
+
+def read_subtitle_sheets(sheets: list, gname: str, what: str = "clip",
+                         timeout: int = 420) -> list[tuple[str, str]]:
+    """Vision-read contact sheets of subtitle strips (2 columns, read LEFT->RIGHT then
+    TOP->BOTTOM, sheets in order). Returns [(speaker or '?', text)] verbatim. Raises on
+    a vision/parse failure (callers fail open)."""
+    from pathlib import Path
+
+    from core import claude_code, openai_client
+    instruction = (
+        f"These {len(sheets)} image(s) are contact sheets of the SUBTITLE area of a "
+        f"{gname} gameplay {what}, one strip per ~1s, read LEFT->RIGHT then TOP->BOTTOM, "
+        "sheets in order. Transcribe EVERY distinct subtitle line you can read, in order, "
+        "VERBATIM, including the SPEAKER LABEL before the colon exactly as printed (e.g. "
+        "'Jean: Need a terminal.'). Merge repeats of the same line. Ignore HUD/UI, button "
+        "prompts and objective text. ACCURACY over completeness: OMIT any line you can't read "
+        "with certainty rather than guessing its words, and never guess a speaker that isn't "
+        "printed — use '?' if a line has no label. If there are NO subtitles, return an empty "
+        'list.\nReturn ONLY JSON: {"lines": [{"speaker": "Jean", "text": "Need a terminal."}]}'
+    )
+    sheets = [Path(s).resolve() for s in sheets]      # the CLI's cwd differs -> absolute paths
+    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(sheets))
+    try:
+        raw = claude_code.run(f"Use the Read tool to open these images first.\n\n"
+                              f"{instruction}\n\nImages:\n{listing}",
+                              allowed_tools="Read", timeout=timeout)
+    except claude_code.ClaudeCodeError as e:
+        print(f"[content] subtitle scan: Claude unavailable ({e}); OpenAI vision.", flush=True)
+        raw = openai_client.vision(instruction, sheets)
+    out = []
+    for ln in (extract_json(raw) or {}).get("lines") or []:
+        sp = sanitize(str(ln.get("speaker", "") or "?")).strip() or "?"
+        tx = sanitize(str(ln.get("text", ""))).strip()
+        if tx:
+            out.append((sp, tx))
+    return out
+
+
+def format_subtitles(rows: list[str], speakers: list[str], what: str = "clip",
+                     cap: int = 60) -> str:
+    """The subtitle-evidence block handed to writers + critics ('' if no rows)."""
     if not rows:
         return ""
-    print(f"[content] subtitle scan: {len(rows)} line(s); speakers={speakers}", flush=True)
-    return ("ON-SCREEN SUBTITLES (read off the clip, speaker labels VERBATIM — a name before "
-            "the ':' is WHO is speaking; these speakers are CONFIRMED present in the clip and "
-            "MAY be named; a nickname inside a line is still not an identification):\n"
-            + "\n".join(rows[:60])
+    return (f"ON-SCREEN SUBTITLES (read off the {what}, speaker labels VERBATIM — a name "
+            f"before the ':' is WHO is speaking; these speakers are CONFIRMED present in the "
+            f"{what} and MAY be named; a nickname inside a line is still not an "
+            "identification):\n" + "\n".join(rows[:cap])
             + (f"\nCONFIRMED SPEAKERS: {', '.join(speakers)}" if speakers else ""))
 
 

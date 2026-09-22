@@ -278,18 +278,61 @@ def extract_frames(url: str, dur: float, out: Path, n: int = 14) -> list[Path]:
     return frames
 
 
-def sample_dialogue(url: str, dur: float, gname: str, windows: int = 8, secs: int = 75) -> str:
-    """Spoken dialogue from `windows` evenly spaced `secs`-long stretches (not the whole
-    file: bounded cost + no full download). ElevenLabs Scribe first, then Whisper."""
-    from agents.content import _clean_transcript, sanitize
+def _tile(strips: list[Path], out: Path, stem: str, per: int = 24) -> list[Path]:
+    """Tile subtitle strips into 2-column contact sheets (read left->right, top->bottom)."""
+    from PIL import Image
+    sheets = []
+    for n in range(0, len(strips), per):
+        group = [Image.open(p).convert("RGB") for p in strips[n:n + per]]
+        w, h = group[0].size
+        rows = (len(group) + 1) // 2
+        sheet = Image.new("RGB", (w * 2, h * rows))
+        for j, im in enumerate(group):
+            sheet.paste(im.resize((w, h)), ((j % 2) * w, (j // 2) * h))
+        p = out / f"{stem}_{n // per:02d}.jpg"
+        sheet.save(p, quality=88)
+        sheets.append(p)
+    return sheets
+
+
+def sample_dialogue(url: str, dur: float, gname: str, windows: int = 8,
+                    secs: int = 75) -> tuple[str, str]:
+    """Spoken dialogue AND on-screen subtitles from `windows` evenly spaced `secs`-long
+    stretches (not the whole file: bounded cost + no full download). Returns
+    (dialogue, subtitles).
+
+    Dialogue: ElevenLabs Scribe first, then Whisper. SUBTITLES (per user 2026-09-22): the
+    SAME ffmpeg read also saves the subtitle band of every KEYFRAME (~1/s on the Elgato
+    4K60 recordings; -skip_frame nokey = no full 4K decode), which vision reads verbatim
+    WITH speaker labels — the audio can't say who is talking, the subtitles can ('Jean:
+    ...'), so titles/descriptions name the right people. Both fail open to ''."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from agents.content import (SUB_CROP, _clean_transcript, format_subtitles,
+                                read_subtitle_sheets, sanitize)
     from core import elevenlabs, openai_client
-    parts = []
+    parts, stamps, win_sheets = [], [], []
     with tempfile.TemporaryDirectory() as tmp:
+        tmpd = Path(tmp)
         for i in range(windows):
             t = max(0.0, dur * (0.04 + 0.92 * i / max(1, windows - 1)) - secs / 2)
-            a = Path(tmp) / f"a{i}.mp3"
-            if _ff(["-ss", f"{t:.2f}", "-i", url, "-t", str(secs), "-vn", "-ac", "1",
-                    "-ar", "16000", "-b:a", "48k", str(a)], timeout=240) != 0 or not a.exists():
+            stamp = f"~{int(t // 60)}:{int(t % 60):02d}"
+            a = tmpd / f"a{i}.mp3"
+            # -t BEFORE -i = an INPUT limit, so it bounds BOTH outputs (after -i it only
+            # capped the audio and the strips ran on to the end of the file).
+            _ff(["-ss", f"{t:.2f}", "-t", str(secs), "-skip_frame", "nokey", "-i", url,
+                 "-map", "0:a:0", "-vn", "-ac", "1", "-ar", "16000", "-b:a", "48k", str(a),
+                 "-map", "0:v:0", "-an", "-vf", SUB_CROP, "-fps_mode", "vfr", "-q:v", "3",
+                 str(tmpd / f"w{i}_%03d.jpg")], timeout=420)
+            strips = sorted(tmpd.glob(f"w{i}_*.jpg"))
+            if strips:
+                try:
+                    stamps.append(stamp)
+                    win_sheets.append(_tile(strips, tmpd, f"sheet{i}"))
+                except Exception as e:
+                    stamps.pop()
+                    log(f"subtitle tiling failed for window {i} ({e!r})")
+            if not a.exists():
                 continue
             try:
                 txt = _clean_transcript(elevenlabs.speech_to_text(a))
@@ -298,8 +341,34 @@ def sample_dialogue(url: str, dur: float, gname: str, windows: int = 8, secs: in
             except Exception:
                 txt = ""
             if txt:
-                parts.append(f"[~{int(t // 60)}:{int(t % 60):02d}] {sanitize(txt).strip()}")
-    return "\n".join(parts)
+                parts.append(f"[{stamp}] {sanitize(txt).strip()}")
+
+        def _read(sheets: list[Path]) -> list[tuple[str, str]]:
+            try:
+                return read_subtitle_sheets(sheets, gname, what="video stretch")
+            except Exception as e:
+                log(f"subtitle read failed ({e!r})")
+                return []
+
+        # one vision call per SHEET (a whole window in one call timed out on a dialogue-
+        # heavy stretch), 4 in parallel; results re-joined in window/sheet order.
+        jobs = [(w, [sh]) for w, sheets in enumerate(win_sheets) for sh in sheets]
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda j: _read(j[1]), jobs))
+    rows, speakers, seen_win, prev = [], [], set(), None
+    for (w, _), lines in zip(jobs, results):
+        for sp, tx in lines:
+            line = f"{sp}: {tx}" if sp != "?" else tx
+            if line == prev:                                  # same line spanning two sheets
+                continue
+            prev = line
+            rows.append((f"[{stamps[w]}] " if w not in seen_win else "") + line)
+            seen_win.add(w)
+            if sp != "?" and sp not in speakers:
+                speakers.append(sp)
+    if rows:
+        log(f"subtitles: {len(rows)} line(s) across {len(stamps)} window(s); speakers={speakers}")
+    return "\n".join(parts), format_subtitles(rows, speakers, what="video", cap=200)
 
 
 def _vision(prompt: str, images: list[Path], timeout: int = 240) -> str:
@@ -331,7 +400,8 @@ def _brand_tag() -> str:
     return str(CONFIG.reels.get("brand_hashtag", "#KiwinoyGaming"))
 
 
-def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str) -> dict:
+def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str,
+               subtitles: str = "") -> dict:
     """Title + REAL written description + hashtags + tags, grounded in the footage and the
     game's lore bible, then an adversarial fact-check pass that fixes anything unsupported."""
     from agents.content import _text, extract_json
@@ -340,7 +410,8 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
     bible = lore.lore_for(it["base"]) or "(no lore bible for this game — describe only what is shown)"
     is_part = it["kind"] == "parts"
     evidence = (f"WHAT THE FRAMES SHOW:\n{observation or '(none)'}\n\n"
-                f"SAMPLED DIALOGUE (timestamped, may be partial):\n{(dialogue or '(none)')[:9000]}")
+                f"SAMPLED DIALOGUE (timestamped, may be partial):\n{(dialogue or '(none)')[:9000]}"
+                + (f"\n\n{subtitles[:9000]}" if subtitles else ""))
     ask_title = "" if is_part else (
         "- \"moment\": the video's MAIN event as a YouTube title phrase, 3-9 words, Title Case, "
         "like: 'Sabretooth Boss Fight', 'Wolverine Helps Jean Grey Save The Mutants', 'Logan "
@@ -355,7 +426,9 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
         "- \"summary\": 2-4 sentences for the description saying what actually happens in "
         "this video, in order, present tense, like a good video description. Name a character "
         "ONLY when a subtitle speaker label, a boss health bar or unmistakable visuals show "
-        "them. Never invent events, quotes, motives or who is talking to whom. Do not spoil "
+        "them — and DO name the CONFIRMED SUBTITLE SPEAKERS who matter to the moment rather "
+        "than a vague 'an ally' / 'someone'. Use the subtitle LINES (who says what to whom) as "
+        "the main evidence of what the scene is about. Never invent events, quotes, motives or who is talking to whom. Do not spoil "
         "beyond what this video shows.\n"
         "- \"hashtags\": 6-9 lowercase hashtags (no spaces) relevant to the game, franchise "
         "and what is shown, e.g. #marvelswolverine #wolverine #xmen.\n"
@@ -370,6 +443,8 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
     critic = (
         "You are a strict fact-checker for YouTube metadata about a gameplay video.\n\n"
         f"GAME LORE BIBLE:\n{bible}\n\n{evidence}\n\nDRAFT:\n{json.dumps(draft, ensure_ascii=False)}\n\n"
+        "A name printed as a subtitle SPEAKER LABEL (CONFIRMED SPEAKERS) IS evidence — keep it; "
+        "don't genericise a confirmed speaker into 'an ally'.\n"
         "Check EVERY claim in moment/summary against the evidence and the lore rules: invented "
         "names, wrong speaker/target/motive, calling allies enemies (or vice versa), events not "
         "shown, spoilers beyond the video, and NICKNAMES turned into a named character (e.g. "
@@ -605,9 +680,10 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     else:
         part_no = _part_numbers(files, ledger).get(it["key"]) if it["kind"] == "parts" else None
         obs = observe(frames, gname) if frames else ""
-        dialogue = sample_dialogue(url, dur, gname) if dur else ""
-        meta = write_meta(it, part_no, obs, dialogue)
-        (run_dir / "analysis.txt").write_text(f"OBSERVATION:\n{obs}\n\nDIALOGUE:\n{dialogue}",
+        dialogue, subs = sample_dialogue(url, dur, gname) if dur else ("", "")
+        meta = write_meta(it, part_no, obs, dialogue, subs)
+        (run_dir / "analysis.txt").write_text(f"OBSERVATION:\n{obs}\n\nDIALOGUE:\n{dialogue}"
+                                              f"\n\n{subs}",
                                               encoding="utf-8")
     thumb = make_thumbnail(frames, it["base"], meta["title"], run_dir / "thumbnail.jpg")
     (run_dir / "meta.json").write_text(json.dumps({**meta, "key": it["key"],
