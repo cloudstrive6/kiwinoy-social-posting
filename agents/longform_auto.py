@@ -539,6 +539,21 @@ def _grab(url: str, t: float, p: Path, scale: str = "") -> Optional[Path]:
 FACE_SHARE, MIN_CROP = 0.42, 0.28
 
 
+SUB_TOP = 0.80          # subtitles live below this share of the frame height
+
+
+def _above_subs(y0: float, ch: float, H: int, keep_below: float = 0.0) -> tuple[float, float]:
+    """Pull a crop's bottom edge ABOVE the subtitle band (per user 2026-09-23: zoom past a
+    subtitle instead of discarding the frame — no retouching artifacts). Keeps `keep_below`
+    (e.g. the chin) inside; gives up if that can't fit."""
+    limit = SUB_TOP * H
+    if y0 + ch <= limit or keep_below > limit:
+        return y0, ch
+    if ch <= limit:                                   # same zoom, shifted up
+        return max(0.0, min(y0, limit - ch)), ch
+    return 0.0, limit                                 # too tall to shift -> zoom in
+
+
 def _face_crop(face: tuple, W: int, H: int) -> tuple[tuple[int, int, int, int], str]:
     """16:9 crop box around a face (face fills ~FACE_SHARE of the height, placed on a
     rule-of-thirds line, eyes in the upper half) + the top corner the logo should use
@@ -554,6 +569,9 @@ def _face_crop(face: tuple, W: int, H: int) -> tuple[tuple[int, int, int, int], 
     y0 = (fy + fh / 2) - ch * 0.42
     x0 = max(0.0, min(W - cw, x0))
     y0 = max(0.0, min(H - ch, y0))
+    y0, ch = _above_subs(y0, ch, H, keep_below=fy + fh)   # never frame a subtitle line
+    cw = min(float(W), ch * 16 / 9)
+    x0 = max(0.0, min(W - cw, cx - cw * (0.64 if right else 0.36)))
     face_cx = (cx - x0) / cw
     return (int(x0), int(y0), int(x0 + cw), int(y0 + ch)), ("top-left" if face_cx >= 0.5 else "top-right")
 
@@ -606,6 +624,28 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
         box, corner = _face_crop(faces[0], *im.size)
         crops.append({"img": im.crop(box).resize((1280, 720), Image.LANCZOS), "corner": corner,
                       "t": c["t"]})
+    # WILDCARDS (per user 2026-09-23): the sharpest frames with NO detected face, so a striking
+    # non-human close-up (Master Mold's glowing head, a Sentinel, a creature) can still compete.
+    # Cropped to sit ABOVE the subtitle band, so these are clean by construction.
+    wilds = sorted((g for g in grabs if g[1] and all(abs(g[0] - c["t"]) > 20 for c in picked)),
+                   key=lambda g: fr.sharpness(g[1]), reverse=True)
+    used: list[float] = []
+    for t, p in wilds:
+        if len(used) == 4:
+            break
+        if any(abs(t - u) <= 20 for u in used):
+            continue
+        full = _grab(url, t, work / f"wild{len(used)}.jpg")
+        if not full:
+            continue
+        im = Image.open(full).convert("RGB")
+        W, H = im.size
+        y0, ch = _above_subs(0.0, float(H), H)
+        cw = min(float(W), ch * 16 / 9)
+        crops.append({"img": im.crop((int((W - cw) / 2), int(y0), int((W + cw) / 2),
+                                      int(y0 + ch))).resize((1280, 720), Image.LANCZOS),
+                      "corner": "top-right", "t": t})
+        used.append(t)
     if not crops:
         return None
     tw, th = 640, 360                                     # big tiles: the judge must SEE expressions
@@ -630,10 +670,12 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
             "and independently; do not assume a face is the hero.\n"
             "For each give:\n"
             "- subtitles: true if ANY subtitle/caption/dialogue text is visible\n"
-            "- face: true only if a real face is clearly shown (not the back of a head / a blur)\n"
+            "- face: true if a clear FACE fills a good part of the image, OR a striking "
+            "character/robot/creature HEAD does (a Sentinel or Master Mold head with glowing "
+            "eyes counts) — false for the back of a head, a blur, or a plain wide shot\n"
             "- eyes_open: true only if the eyes are OPEN and looking forward/at something — false "
-            "if closed, mid-blink, or looking DOWN (a full-face MASK counts as eyes_open when "
-            "its eye lenses face forward)\n"
+            "if closed, mid-blink, or looking DOWN (a full-face MASK, visor or a robot head "
+            "counts as eyes_open when its lenses / glowing eyes face forward)\n"
             "- sharp: true only if the FACE is in focus — false for motion blur or a soft/"
             "smeared face, or if the head is badly cut off by the frame edge\n"
             f"- hero: true ONLY if you are confident this is {hero or 'the game’s main character'} "
@@ -642,8 +684,11 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
             "agony; 5 = a focused/tense look; 0-2 = neutral, tired, bored)\n"
             "- iconic: 0-10 how recognisable/striking the look is (signature costume or mask, "
             "blood, battle damage, dramatic lighting)\n"
+            "- appeal: 0-10 how strongly YOU would click this as a YouTube thumbnail, judging "
+            "the whole image (subject size, drama, colour, contrast, curiosity)\n"
             'Return ONLY JSON: {"items": [{"n": 1, "subtitles": false, "face": true, '
-            '"eyes_open": true, "sharp": true, "hero": true, "emotion": 7, "iconic": 6, "note": "<short>"}]}',
+            '"eyes_open": true, "sharp": true, "hero": true, "emotion": 7, "iconic": 6, '
+            '"appeal": 8, "note": "<short>"}]}',
             [sheet_p])) or {}
         rows = {int(r.get("n", 0)) - 1: r for r in (j.get("items") or []) if str(r.get("n", "")).isdigit()}
     except Exception as e:
@@ -652,8 +697,8 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
 
     def score(i: int) -> float:
         r = rows.get(i) or {}
-        return (float(r.get("emotion", 0) or 0) + 0.6 * float(r.get("iconic", 0) or 0)
-                + (4.0 if r.get("hero") else 0.0))
+        return (float(r.get("appeal", 0) or 0) + 0.5 * float(r.get("emotion", 0) or 0)
+                + 0.4 * float(r.get("iconic", 0) or 0) + (2.0 if r.get("hero") else 0.0))
 
     ok = [i for i in range(len(crops)) if (rows.get(i) or {}).get("face")
           and (rows.get(i) or {}).get("eyes_open") and (rows.get(i) or {}).get("sharp")
@@ -665,24 +710,25 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
     # buzz-cut cyborg villain with no sideburns). First crop, best score first, that a focused
     # single-image check confirms is the hero wins; else the best-scoring passing crop.
     best = max(ok, key=score)
-    if hero:
-        for i in sorted((i for i in ok if rows[i].get("hero")), key=score, reverse=True)[:4]:
-            p = work / f"verify{i}.jpg"
-            crops[i]["img"].save(p, quality=90)
-            try:
-                v = extract_json(_vision(
-                    f"Is the main person in this image {hero}?{look} Check the SPECIFIC "
-                    "features (hair, facial hair, face shape, costume) — a different character, "
-                    "a villain, a soldier or a cyborg is NO even if the scene involves the hero. "
-                    'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
-            except Exception:
-                v = {}
-            if v.get("is_hero"):
-                best = i
-                break
-            log(f"thumbnail: crop #{i + 1} is NOT {hero} ({v.get('why', 'unverified')})")
-        else:
-            log(f"thumbnail: no crop verified as {hero} — using the best-scoring face")
+    for _ in range(4):                                     # verify the LEADER; demote if it lies
+        if not hero or not rows[best].get("hero"):
+            break
+        p = work / f"verify{best}.jpg"
+        crops[best]["img"].save(p, quality=90)
+        try:
+            v = extract_json(_vision(
+                f"Is the main character in this image {hero}?{look} Check the SPECIFIC "
+                "features (hair, facial hair, face shape, costume) — a different character, "
+                "a villain, a soldier or a cyborg is NO even if the scene involves the hero. "
+                'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
+        except Exception:
+            v = {}
+        if v.get("is_hero"):
+            break
+        log(f"thumbnail: crop #{best + 1} is NOT {hero} ({v.get('why', 'unverified')}) — "
+            "dropping its hero bonus and re-ranking")
+        rows[best]["hero"] = False                         # re-rank without the bonus
+        best = max(ok, key=score)
     r = rows[best]
     log(f"thumbnail: face crop #{best + 1} at {crops[best]['t'] / 60:.1f} min — hero={r.get('hero')} "
         f"emotion={r.get('emotion')} iconic={r.get('iconic')} ({r.get('note', '')}); "
