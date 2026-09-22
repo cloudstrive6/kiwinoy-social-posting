@@ -503,13 +503,170 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
 
 # ------------------------------------------------------------------------- thumbnail
 
-def make_thumbnail(frames: list[Path], base: str, title: str, out: Path) -> Optional[Path]:
-    """Most clickable frame (vision-judged from the sharpest candidates) + the game logo in
-    the corner that covers no face / subject. No text, no 4K badge (per user)."""
+_YUNET = ROOT / "assets" / "models" / "face_detection_yunet_2023mar.onnx"
+
+
+def _faces(path: Path) -> list[tuple[float, float, float, float, float]]:
+    """Faces in an image as normalised (x, y, w, h, score), largest first. [] if OpenCV or
+    the YuNet model is unavailable (the caller falls back to the action-frame picker)."""
+    try:
+        import os
+        os.environ.setdefault("OPENCV_LOG_LEVEL", "ERROR")   # silence per-call dnn WARN spam
+        import cv2
+        img = cv2.imread(str(path))
+        if img is None or not _YUNET.exists():
+            return []
+        h, w = img.shape[:2]
+        det = cv2.FaceDetectorYN.create(str(_YUNET), "", (w, h), 0.75, 0.3, 5000)
+        _, found = det.detect(img)
+        out = [(float(f[0]) / w, float(f[1]) / h, float(f[2]) / w, float(f[3]) / h, float(f[14]))
+               for f in (found if found is not None else [])]
+        return sorted(out, key=lambda f: f[2] * f[3], reverse=True)
+    except Exception as e:
+        log(f"face detection unavailable ({e!r})")
+        return []
+
+
+def _grab(url: str, t: float, p: Path, scale: str = "") -> Optional[Path]:
+    vf = ["-vf", scale] if scale else []
+    _ff(["-ss", f"{t:.3f}", "-i", url, "-frames:v", "1", *vf, "-q:v", "2", str(p)], timeout=240)
+    return p if p.exists() and p.stat().st_size > 5000 else None
+
+
+# Face height as a share of the thumbnail height (per user 2026-09-23: faces should fill at
+# least ~1/3 of the thumbnail); the crop never goes tighter than MIN_CROP of the source
+# height (keeps a 4K source >= ~600 px tall before the 720p resize — no mushy upscale).
+FACE_SHARE, MIN_CROP = 0.42, 0.28
+
+
+def _face_crop(face: tuple, W: int, H: int) -> tuple[tuple[int, int, int, int], str]:
+    """16:9 crop box around a face (face fills ~FACE_SHARE of the height, placed on a
+    rule-of-thirds line, eyes in the upper half) + the top corner the logo should use
+    (the one AWAY from the face)."""
+    fx, fy, fw, fh = face[0] * W, face[1] * H, face[2] * W, face[3] * H
+    ch = min(float(H), max(fh / FACE_SHARE, MIN_CROP * H))
+    cw = ch * 16 / 9
+    if cw > W:
+        cw, ch = float(W), W * 9 / 16
+    cx = fx + fw / 2
+    right = cx >= W / 2                                   # keep the face on the side it's on
+    x0 = cx - cw * (0.64 if right else 0.36)
+    y0 = (fy + fh / 2) - ch * 0.42
+    x0 = max(0.0, min(W - cw, x0))
+    y0 = max(0.0, min(H - ch, y0))
+    face_cx = (cx - x0) / cw
+    return (int(x0), int(y0), int(x0 + cw), int(y0 + ch)), ("top-left" if face_cx >= 0.5 else "top-right")
+
+
+def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96):
+    """HIGH-CTR FACE THUMBNAIL (per user 2026-09-23 — 20 evenly spaced frames gave distant
+    wide shots with no readable faces/emotion). Scans ~n frames across the whole video,
+    keeps the ones with the LARGEST sharp faces (YuNet), punches in on the 4K source so
+    the face fills ~42% of the frame on a thirds line, then a vision judge picks the most
+    EMOTIONALLY INTENSE crop among clean (subtitle-free) ones. Returns (PIL image 1280x720,
+    logo corner) or None when the video has no usable close-up faces."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from PIL import Image, ImageDraw
+
+    from agents.content import extract_json
+    from core import frames as fr
+    work.mkdir(parents=True, exist_ok=True)
+    ts = [dur * (0.05 + 0.90 * i / max(1, n - 1)) for i in range(n)]
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        grabs = list(pool.map(lambda it: (it[1], _grab(url, it[1], work / f"c{it[0]:03d}.jpg",
+                                                         "scale=960:-2")), enumerate(ts)))
+    cands = []
+    for t, p in grabs:
+        if not p:
+            continue
+        faces = _faces(p)
+        if not faces or faces[0][3] < 0.10:              # face < 10% of height = too small to punch in
+            continue
+        sharp = fr.sharpness(p)
+        cands.append({"t": t, "p": p, "face": faces[0], "score": faces[0][3] * (1 + min(sharp, 800) / 800)})
+    log(f"thumbnail: {len(cands)} of {len(ts)} frames have a usable close-up face")
+    if not cands:
+        return None
+    cands.sort(key=lambda c: c["score"], reverse=True)
+    picked: list[dict] = []
+    for c in cands:                                       # distinct moments, not 8 frames of one shot
+        if all(abs(c["t"] - q["t"]) > 20 for q in picked):
+            picked.append(c)
+        if len(picked) == 10:
+            break
+    crops = []
+    for i, c in enumerate(picked):
+        full = _grab(url, c["t"], work / f"full{i}.jpg")
+        if not full:
+            continue
+        im = Image.open(full).convert("RGB")
+        faces = _faces(full) or [c["face"]]              # re-detect at full resolution
+        box, corner = _face_crop(faces[0], *im.size)
+        crops.append({"img": im.crop(box).resize((1280, 720), Image.LANCZOS), "corner": corner,
+                      "t": c["t"]})
+    if not crops:
+        return None
+    tw, th = 640, 360                                     # big tiles: the judge must SEE expressions
+    rows = (len(crops) + 1) // 2
+    sheet = Image.new("RGB", (tw * 2, th * rows), "black")
+    d = ImageDraw.Draw(sheet)
+    for i, c in enumerate(crops):
+        x, y = (i % 2) * tw, (i // 2) * th
+        sheet.paste(c["img"].resize((tw, th)), (x, y))
+        d.rectangle([x, y, x + 54, y + 44], fill="black")
+        d.text((x + 16, y + 10), str(i + 1), fill="yellow")
+    sheet_p = work / "face_sheet.jpg"
+    sheet.save(sheet_p, quality=90)
+    best = 0
+    try:
+        j = extract_json(_vision(
+            f"These {len(crops)} numbered images are candidate YouTube THUMBNAILS (close-up crops) "
+            f"for a gameplay video titled “{title}”.\nSTEP 1: list every number that shows ANY "
+            "subtitle, caption or dialogue text, that is NOT actually a face (the back of a head, "
+            "a blur, a mis-detection), or whose eyes are CLOSED / looking DOWN / mid-blink.\n"
+            "STEP 2: from the rest, pick the ONE with the highest click-through potential. Rank by:\n"
+            "  1. INTENSE, readable EMOTION — rage, a snarl or shout, fear, shock, pain, a fierce "
+            "stare. Eyes OPEN and engaged (ideally toward the camera). A neutral, tired or bored "
+            "face ranks LOW even if it is big and well lit.\n"
+            "  2. ICONIC LOOK — the hero in his signature COSTUME / MASK, blood, battle damage, "
+            "claws out. A mask with visible eyes/mouth is NOT 'obscured': it's the most "
+            "recognisable, clickable image of the character.\n"
+            "  3. The game's MAIN character over side characters; sharp, dramatic lighting.\n"
+            'Return ONLY JSON: {"rejected": [<numbers>], "best": <number>, "why": "<short>"}',
+            [sheet_p])) or {}
+        rej = {int(x) - 1 for x in (j.get("rejected") or []) if str(x).isdigit()}
+        best = max(0, min(len(crops) - 1, int(j.get("best", 1)) - 1))
+        if best in rej:
+            clean = [i for i in range(len(crops)) if i not in rej]
+            if not clean:
+                log("thumbnail: every face crop was rejected — falling back to the action picker")
+                return None
+            best = clean[0]
+        log(f"thumbnail: face crop #{best + 1} at {crops[best]['t'] / 60:.1f} min "
+            f"(rejected {sorted(i + 1 for i in rej)}): {j.get('why', '')}")
+    except Exception as e:
+        log(f"face judge failed ({e!r}) — using the largest face")
+    return crops[best]["img"], crops[best]["corner"]
+
+
+def make_thumbnail(frames: list[Path], base: str, title: str, out: Path,
+                   url: str = "", dur: float = 0.0) -> Optional[Path]:
+    """HIGH-CTR thumbnail + the game logo in the top corner away from the subject. First
+    choice: an emotional close-up FACE punched in from the 4K source (_face_thumbnail);
+    fallback: the most clickable action frame (vision-judged). No text, no 4K badge."""
     from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
     from agents.content import extract_json
     from core import frames as fr
+    face = None
+    if url and dur:
+        try:
+            face = _face_thumbnail(url, dur, title, out.parent / "thumb_faces")
+        except Exception as e:
+            log(f"face thumbnail failed ({e!r}) — action-frame fallback")
+    if face:
+        return _finish_thumbnail(face[0], face[1], base, out)
     if not frames:
         return None
     scored = sorted(frames, key=lambda p: fr.sharpness(p), reverse=True)[:8]
@@ -569,8 +726,13 @@ def make_thumbnail(frames: list[Path], base: str, title: str, out: Path) -> Opti
     except Exception as e:
         log(f"logo-corner judge failed ({e!r}) — top-left")
     log(f"logo corner: {corner}")
+    return _finish_thumbnail(Image.open(frame).convert("RGB").resize((1280, 720)), corner, base, out)
 
-    img = Image.open(frame).convert("RGB").resize((1280, 720))
+
+def _finish_thumbnail(img, corner: str, base: str, out: Path) -> Path:
+    """Light grade + the game logo (with a legibility halo) in `corner`; saves a JPEG."""
+    from PIL import Image, ImageEnhance, ImageFilter
+    log(f"logo corner: {corner}")
     img = ImageEnhance.Contrast(img).enhance(1.06)
     img = ImageEnhance.Color(img).enhance(1.10)
     img = ImageEnhance.Sharpness(img).enhance(1.25)
@@ -686,7 +848,8 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
         (run_dir / "analysis.txt").write_text(f"OBSERVATION:\n{obs}\n\nDIALOGUE:\n{dialogue}"
                                               f"\n\n{subs}",
                                               encoding="utf-8")
-    thumb = make_thumbnail(frames, it["base"], meta["title"], run_dir / "thumbnail.jpg")
+    thumb = make_thumbnail(frames, it["base"], meta["title"], run_dir / "thumbnail.jpg",
+                           url=url, dur=dur)
     (run_dir / "meta.json").write_text(json.dumps({**meta, "key": it["key"],
                                                    "publish_at": publish_at}, indent=2,
                                                   ensure_ascii=False), encoding="utf-8")
