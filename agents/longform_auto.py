@@ -170,10 +170,36 @@ def build_queue(files: list[dict], ledger: dict, priority: list[str]) -> list[di
     return out + rest
 
 
-def _part_numbers(files: list[dict], ledger: Optional[dict] = None) -> dict[str, int]:
+def _series_title(series: str) -> str:
+    """'wolverine|New Game Plus' -> the title prefix its videos carry on YouTube."""
+    base, _, run = series.partition("|")
+    return f"{_game_name(base)} {run}".strip()
+
+
+def youtube_part_max() -> dict[str, int]:
+    """Highest 'Part N' ALREADY ON THE CHANNEL per series title, read from YouTube itself
+    (uploads include private/scheduled videos). The channel is the authoritative record:
+    the ledger is a Release asset, and if a write is ever lost or two runs overlap, numbering
+    alone would repeat a number that is already published. Returns {} if the lookup fails."""
+    from core import youtube as yt
+    out: dict[str, int] = {}
+    try:
+        for v in yt.list_uploads(300):
+            m = re.match(r"^(.*?)\s+Part\s+(\d+)\s*\(", str(v.get("title", "")), re.I)
+            if m:
+                pre, n = m.group(1).strip().lower(), int(m.group(2))
+                out[pre] = max(out.get(pre, 0), n)
+    except Exception as e:
+        log(f"couldn't read existing part numbers from YouTube ({e!r}) — ledger only")
+    return out
+
+
+def _part_numbers(files: list[dict], ledger: Optional[dict] = None,
+                  yt_max: Optional[dict[str, int]] = None) -> dict[str, int]:
     """Part number for every part: 'Part N' from the filename if present, else the next
     number in its SERIES (e.g. wolverine|New Game Plus) after every part already booked in
-    the ledger — so numbering never restarts when old sources are cleaned off B2."""
+    the ledger AND every 'Part N' already on the YouTube channel — so numbering never
+    restarts when old sources are cleaned off B2, and never collides with a published part."""
     nums: dict[str, int] = {}
     used: dict[str, set] = {}
     for k, v in (ledger or {}).items():
@@ -186,7 +212,8 @@ def _part_numbers(files: list[dict], ledger: Optional[dict] = None) -> dict[str,
     for series, its in by.items():
         its.sort(key=lambda i: (i["part_no"] if i["part_no"] is not None else 10**6, i["order"]))
         taken = used.get(series, set()) | {i["part_no"] for i in its if i["part_no"]}
-        nxt = max(taken | {0}) + 1
+        live = (yt_max or {}).get(_series_title(series).lower(), 0)   # already on the channel
+        nxt = max(taken | {0, live}) + 1
         for it in its:
             if it["part_no"]:
                 nums[it["key"]] = it["part_no"]
@@ -755,8 +782,10 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
 
     def score(i: int) -> float:
         r = rows.get(i) or {}
+        # The hero is a mild tiebreaker only (per user 2026-09-24: "we don't always want
+        # Wolverine to be the thumbnail") — a striking villain or ally close-up can win.
         return (float(r.get("appeal", 0) or 0) + 0.5 * float(r.get("emotion", 0) or 0)
-                + 0.4 * float(r.get("iconic", 0) or 0) + (2.0 if r.get("hero") else 0.0))
+                + 0.4 * float(r.get("iconic", 0) or 0) + (0.5 if r.get("hero") else 0.0))
 
     ok = [i for i in range(len(crops)) if (rows.get(i) or {}).get("face")
           and (rows.get(i) or {}).get("eyes_open") and (rows.get(i) or {}).get("sharp")
@@ -768,38 +797,13 @@ def _face_thumbnail(url: str, dur: float, title: str, work: Path, n: int = 96,
     # buzz-cut cyborg villain with no sideburns). First crop, best score first, that a focused
     # single-image check confirms is the hero wins; else the best-scoring passing crop.
     best = max(ok, key=score)
-    for _ in range(4):                                     # verify the LEADER; demote if it lies
-        if not hero or not rows[best].get("hero"):
-            break
-        p = work / f"verify{best}.jpg"
-        crops[best]["img"].save(p, quality=90)
-        # TWO independent checks, both must say yes: one call flip-flopped on the SAME cyborg
-        # crop between runs (rejected with a detailed why, then waved through next time).
-        votes, why = [], ""
-        for _ in range(2):
-            try:
-                v = extract_json(_vision(
-                    f"Is the main character in this image {hero}?{look} Check the SPECIFIC "
-                    "features (hair, facial hair, face shape, costume) — a different character, "
-                    "a villain, a soldier or a CYBORG (metal face plating, implants) is NO even "
-                    "if the scene involves the hero. "
-                    'Return ONLY JSON: {"is_hero": true or false, "why": "<short>"}', [p])) or {}
-            except Exception:
-                v = {"is_hero": True}
-            votes.append(bool(v.get("is_hero")))
-            why = why or str(v.get("why", ""))
-            if not votes[-1]:
-                break
-        if all(votes):
-            break
-        v = {"why": why}
-        log(f"thumbnail: crop #{best + 1} is NOT {hero} ({v.get('why', 'unverified')}) — "
-            "dropping its hero bonus and re-ranking")
-        rows[best]["hero"] = False                         # re-rank without the bonus
-        best = max(ok, key=score)
+    # No hero VERIFICATION pass any more: the hero is only a 0.5 tiebreaker, so a wrong
+    # 'hero' tick barely moves the ranking, and the check itself was unreliable (it flip-
+    # flopped on the same cyborg crop between runs). Fewer calls, fewer failure modes.
+    #
     # FINAL GATE, on the winner alone at full size: the grid judge waved through a mask seen
     # from ABOVE with the face hidden while claiming "eye openings prominent". One image, one
-    # question set — the same pattern that made the hero check reliable.
+    # question set — judging a single image reliably is what this stage is for.
     passed = False
     for _ in range(len(crops)):            # every candidate gets gated; an unchecked pick is
         p = work / f"gate{best}.jpg"       # exactly how a face-down side view slipped through
@@ -1031,7 +1035,11 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     if entry.get("title"):                               # resume: reuse the booked metadata
         meta = {k: entry[k] for k in ("title", "description", "tags") if k in entry}
     else:
-        part_no = _part_numbers(files, ledger).get(it["key"]) if it["kind"] == "parts" else None
+        yt_max = youtube_part_max() if it["kind"] == "parts" else {}
+        part_no = _part_numbers(files, ledger, yt_max).get(it["key"]) if it["kind"] == "parts" else None
+        if part_no:
+            log(f"part number {part_no} (highest on the channel for this series: "
+                f"{yt_max.get(_series_title(it['series']).lower(), 0)})")
         obs = observe(frames, gname) if frames else ""
         dialogue, subs = sample_dialogue(url, dur, gname) if dur else ("", "")
         meta = write_meta(it, part_no, obs, dialogue, subs)
@@ -1051,7 +1059,7 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
         return {"dry_run": True, "dir": str(run_dir), **meta}
 
     if it["kind"] == "parts" and not entry.get("part_no"):
-        entry = {**entry, "part_no": _part_numbers(files, ledger).get(it["key"]),
+        entry = {**entry, "part_no": _part_numbers(files, ledger, youtube_part_max()).get(it["key"]),
                  "series": it["series"]}
     ledger[it["key"]] = {**entry, "status": "uploading", "publish_at": publish_at,
                          "title": meta["title"], "description": meta["description"],
