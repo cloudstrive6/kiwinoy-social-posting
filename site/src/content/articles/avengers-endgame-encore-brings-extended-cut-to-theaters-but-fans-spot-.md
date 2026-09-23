@@ -8,6 +8,7 @@ game: "mcu"
 cover: "/covers/avengers-endgame-encore-brings-extended-cut-to-theaters-but-fans-spot-.jpg"
 date: 2026-09-23
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/marvels-new-avengers-endgame-encore-poster-includes-shocking-mcu-error-and-you-cant-unsee-it/"
