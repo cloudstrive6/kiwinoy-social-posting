@@ -396,19 +396,24 @@ def set_thumbnail(video_id: str, image) -> None:
 
 
 def video_status(video_ids: list[str]) -> dict[str, dict[str, str]]:
-    """{video_id: {'upload': uploadStatus, 'privacy': privacyStatus}} (1 quota unit per 50).
-    A video missing from the result no longer exists. Used before deleting source footage."""
+    """{video_id: {'upload', 'privacy', 'processing', 'failure'}} (1 quota unit per 50).
+    A video missing from the result no longer exists. Used before deleting source footage,
+    and to spot uploads YouTube never finished processing ('processing' for days)."""
     out: dict[str, dict[str, str]] = {}
     ids = [v for v in video_ids if v]
     if not ids:
         return out
     yt = _service()
     for i in range(0, len(ids), 50):
-        r = yt.videos().list(part="status", id=",".join(ids[i:i + 50])).execute()
+        r = yt.videos().list(part="status,processingDetails",
+                             id=",".join(ids[i:i + 50])).execute()
         for it in r.get("items", []) or []:
             st = it.get("status") or {}
+            pd = it.get("processingDetails") or {}
             out[it["id"]] = {"upload": st.get("uploadStatus", ""),
-                             "privacy": st.get("privacyStatus", "")}
+                             "privacy": st.get("privacyStatus", ""),
+                             "processing": pd.get("processingStatus", ""),
+                             "failure": pd.get("processingFailureReason", "")}
     return out
 
 

@@ -1122,11 +1122,57 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     return {"video_id": vid, "publish_at": publish_at, **meta}
 
 
+def stuck_uploads(hours: float = 24.0) -> list[dict]:
+    """Uploads YouTube never finished processing (per user 2026-09-24: two orphaned Part 1
+    attempts from a buggy B2 reader sat on 'Processing will begin shortly' for days, unseen
+    because they aren't in the ledger). Telegrams ONCE per video id."""
+    from core import notify
+    from core import youtube as yt
+    try:
+        vids = [v for v in yt.list_uploads(300)
+                if str(v.get("privacy")) != "deleted" and v.get("id")]
+        st = yt.video_status([v["id"] for v in vids])
+    except Exception as e:
+        log(f"stuck-upload check failed ({e!r})")
+        return []
+    cutoff = time.time() - hours * 3600
+    out = []
+    for v in vids:
+        s = st.get(v["id"]) or {}
+        if s.get("upload") == "processed" or s.get("processing") not in ("processing", "failed"):
+            continue
+        try:
+            ts = datetime.strptime(str(v.get("publishedAt", "")), "%Y-%m-%dT%H:%M:%SZ")
+            ts = ts.replace(tzinfo=timezone.utc).timestamp()
+        except Exception:
+            ts = 0.0
+        if ts and ts > cutoff:
+            continue                                   # give a fresh upload time to process
+        out.append({**v, **s})
+    if not out:
+        return []
+    ledger = _ledger()
+    seen = set((ledger.get("__meta__", {}) or {}).get("stuck_reported", []))
+    fresh = [v for v in out if v["id"] not in seen]
+    if fresh:
+        lines = "\n".join(f"• {v.get('title', '?')[:60]}\n  https://youtu.be/{v['id']}" for v in fresh)
+        notify.telegram(f"⚠️ {len(fresh)} YouTube upload(s) stuck in processing for over "
+                        f"{hours:.0f}h (they'll never publish — delete them in Studio):\n{lines}")
+        meta = ledger.setdefault("__meta__", {})
+        meta["stuck_reported"] = sorted(seen | {v["id"] for v in fresh})
+        _save_ledger(ledger)
+    for v in out:
+        log(f"stuck upload: {v['id']} {v.get('title', '')[:50]} ({v.get('processing')})")
+    return out
+
+
 def cleanup(dry_run: bool = False) -> int:
     """Delete source footage from B2 `delete_after_days` after a CONFIRMED upload (YouTube
-    reports the video 'processed'). A video that's gone from YouTube keeps its footage."""
+    reports the video 'processed'). A video that's gone from YouTube keeps its footage.
+    Also flags uploads YouTube never finished processing."""
     from core import b2_store
     from core import youtube as yt
+    stuck_uploads()
     days = float(_cfg().get("delete_after_days", 15))
     ledger = _ledger()
     due = {k: v for k, v in ledger.items() if not k.startswith("__")
