@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/avengers-endgame-encore-s-new-scenes-confirm-major-changes-for-doomsda.jpg"
 date: 2026-09-25
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/avengers-endgame-encore-detail-you-missed-dispels-major-loki-rumor-completely-changes-one-characters-fate/"
 ---
