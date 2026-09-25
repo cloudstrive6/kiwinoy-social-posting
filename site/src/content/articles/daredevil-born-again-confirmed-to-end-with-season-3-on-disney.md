@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/daredevil-born-again-confirmed-to-end-with-season-3-on-disney.jpg"
 date: 2026-09-22
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "The Hollywood Reporter"
 sourceUrl: "https://www.hollywoodreporter.com/tv/tv-news/daredevil-born-again-ending-season-3-showrunner-change-1236705406/"
