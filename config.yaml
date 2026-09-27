@@ -1362,7 +1362,7 @@ longform_auto:
   slots_local: ["23:00", "07:00", "15:00"]   # public times, every 8h (NZ; DST-aware)
   lead_hours: 6.5          # book a slot at least this far ahead = the upload's time budget
   delete_after_days: 15    # delete the B2 source this long after a CONFIRMED upload
-  run_label: Walkthrough   # parts title word for normal folders
+  run_label: Full Gameplay # parts title words for a normal (non-NG+) folder; NG+ folders use "New Game+"
   chunk_mb: 512            # resumable-upload chunk (bigger = faster vs YouTube's per-chunk ack)
   max_attempts: 3          # park + Telegram after this many failed uploads of one file
   # Face-thumbnail judge: who the HERO is + how they look, so it favours the main character

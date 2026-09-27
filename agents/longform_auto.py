@@ -59,8 +59,8 @@ def _base_game(folder: str) -> tuple[str, str]:
     f = folder.lower()
     for suf in ("-ngplus", "-newgameplus", "-ng-plus"):
         if f.endswith(suf):
-            return folder[: -len(suf)], "New Game Plus"
-    return folder, str(_cfg().get("run_label", "Walkthrough"))
+            return folder[: -len(suf)], "New Game+"
+    return folder, str(_cfg().get("run_label", "Full Gameplay"))
 
 
 def _suit(stem: str) -> Optional[str]:
@@ -91,7 +91,7 @@ def _enrich(f: dict) -> dict:
     stem = Path(f["name"]).stem
     base, run = _base_game(f["game"])
     if _NGPLUS_RE.search(stem):                  # "Wolverine - New Game+ (...)" in a plain folder
-        run = "New Game Plus"
+        run = "New Game+"
     pm = _PART_RE.search(stem)
     return {**f, "stem": stem, "base": base, "run_label": run,
             "series": f"{base}|{run}",           # parts are numbered PER series (NG+ vs normal)
@@ -171,9 +171,18 @@ def build_queue(files: list[dict], ledger: dict, priority: list[str]) -> list[di
 
 
 def _series_title(series: str) -> str:
-    """'wolverine|New Game Plus' -> the title prefix its videos carry on YouTube."""
+    """'wolverine|New Game+' -> the title prefix its videos carry on YouTube."""
     base, _, run = series.partition("|")
-    return f"{_game_name(base)} {run}".strip()
+    return f"{_game_name(base)} | {run}".strip()
+
+
+def _norm_series(text: str) -> str:
+    """Normalise a title prefix so the OLD and NEW title formats key the same series:
+    "Marvel's Wolverine New Game Plus" and "Marvel's Wolverine | New Game+" both ->
+    "marvel's wolverine new game+". Without this, a format change would restart numbering."""
+    t = str(text).lower().replace("|", " ")
+    t = re.sub(r"new\s*game\s*(?:plus|\+)", "new game+", t)
+    return re.sub(r"\s+", " ", t).strip(" -:")
 
 
 def youtube_part_max() -> dict[str, int]:
@@ -185,9 +194,10 @@ def youtube_part_max() -> dict[str, int]:
     out: dict[str, int] = {}
     try:
         for v in yt.list_uploads(300):
-            m = re.match(r"^(.*?)\s+Part\s+(\d+)\s*\(", str(v.get("title", "")), re.I)
+            title = str(v.get("title", ""))
+            m = re.search(r"\bPart\s+(\d+)\b", title, re.I)      # both title formats
             if m:
-                pre, n = m.group(1).strip().lower(), int(m.group(2))
+                pre, n = _norm_series(title[:m.start()]), int(m.group(1))
                 out[pre] = max(out.get(pre, 0), n)
     except Exception as e:
         log(f"couldn't read existing part numbers from YouTube ({e!r}) — ledger only")
@@ -212,7 +222,7 @@ def _part_numbers(files: list[dict], ledger: Optional[dict] = None,
     for series, its in by.items():
         its.sort(key=lambda i: (i["part_no"] if i["part_no"] is not None else 10**6, i["order"]))
         taken = used.get(series, set()) | {i["part_no"] for i in its if i["part_no"]}
-        live = (yt_max or {}).get(_series_title(series).lower(), 0)   # already on the channel
+        live = (yt_max or {}).get(_norm_series(_series_title(series)), 0)   # already on the channel
         nxt = max(taken | {0, live}) + 1
         for it in its:
             if it["part_no"]:
@@ -441,10 +451,13 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
                 f"SAMPLED DIALOGUE (timestamped, may be partial):\n{(dialogue or '(none)')[:9000]}"
                 + (f"\n\n{subtitles[:9000]}" if subtitles else ""))
     ask_title = "" if is_part else (
-        "- \"moment\": the video's MAIN event as a YouTube title phrase, 3-9 words, Title Case, "
-        "like: 'Sabretooth Boss Fight', 'Wolverine Helps Jean Grey Save The Mutants', 'Logan "
-        "Remembers His Past', 'Mr. Sinister Gets Revenge on Trask Scene'. No emojis, no hype "
-        "words (Epic/Insane/INSANE), no clickbait caps. Do NOT include the game name.\n")
+        "- \"moment\": a CLICK-WORTHY title for the video's MAIN event, 3-9 words, Title Case. "
+        "Lead with the thing a fan wants to see and give it stakes or curiosity — e.g. "
+        "'Sabretooth Finally Turns On Logan', 'The Fight That Breaks Team X', 'Logan Remembers "
+        "What Essex Did'. It must be TRUE to what the evidence shows: tease the real payoff, "
+        "never a fake one. NAME the characters involved rather than hinting at them ('his "
+        "old partner'), so it reads clearly to someone who doesn't know the game. No emojis, "
+        "no ALL-CAPS, no 'Epic'/'Insane'/'You Won't Believe'. Do NOT include the game name.\n")
     prompt = (
         f"You write YouTube metadata for a no-commentary 4K 60FPS {gname} gameplay video "
         f"({'a walkthrough PART' if is_part else 'a standalone gameplay SEGMENT'}).\n\n"
@@ -488,14 +501,17 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
     except Exception as e:
         log(f"fact-check pass failed ({e!r}) — keeping the draft")
 
-    suit = f" + {it['suit']}" if it.get("suit") else ""
+    # TITLE FORMAT (per user 2026-09-27):
+    #   parts    "<Game> | <Run> Part <N> - 4K 60FPS"
+    #   segments "<Clickbaity title> | <Game> - 4K 60FPS"
+    suit = f" - {it['suit']}" if it.get("suit") else ""
     if is_part:
-        title = f"{gname} {it['run_label']} Part {part_no} (4K 60FPS){suit}"
+        title = f"{gname} | {it['run_label']} Part {part_no}{suit} - 4K 60FPS"
     else:
         moment = str(draft.get("moment") or "")
-        moment = re.sub(re.escape(gname), "", moment, flags=re.I)      # game name goes after the dash
+        moment = re.sub(re.escape(gname), "", moment, flags=re.I)      # the game name follows the pipe
         moment = re.sub(r"\s+", " ", moment).strip(" .-|:") or "Gameplay"
-        title = f"{moment} - {gname} (4K 60FPS){suit}"
+        title = f"{moment} | {gname}{suit} - 4K 60FPS"
     title = title[:100]
 
     summary = str(draft.get("summary") or "").strip() or (
@@ -1039,7 +1055,7 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
         part_no = _part_numbers(files, ledger, yt_max).get(it["key"]) if it["kind"] == "parts" else None
         if part_no:
             log(f"part number {part_no} (highest on the channel for this series: "
-                f"{yt_max.get(_series_title(it['series']).lower(), 0)})")
+                f"{yt_max.get(_norm_series(_series_title(it['series'])), 0)})")
         obs = observe(frames, gname) if frames else ""
         dialogue, subs = sample_dialogue(url, dur, gname) if dur else ("", "")
         meta = write_meta(it, part_no, obs, dialogue, subs)
