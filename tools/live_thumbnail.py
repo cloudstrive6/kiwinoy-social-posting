@@ -78,8 +78,26 @@ def _grad(w: int, h: int, top_a: int, bot_a: int) -> Image.Image:
     return out
 
 
+def _fit(im: Image.Image, w: int, h: int) -> Image.Image:
+    """WHOLE art kept intact on a blurred, darkened fill of itself. For box art / portrait
+    sources, where a centre-crop would slice off the game logo (per user 2026-09-27)."""
+    bg = _cover(im, w, h).filter(ImageFilter.GaussianBlur(28))
+    bg = ImageEnhance.Brightness(bg).enhance(0.55)
+    scale = min(w / im.width, h / im.height) * 0.92      # a little breathing room
+    art = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))),
+                    Image.LANCZOS)
+    x, y = (w - art.width) // 2, (h - art.height) // 2
+    card = bg.convert("RGBA")
+    sh = Image.new("RGBA", (w, h), (0, 0, 0, 0))         # soft drop shadow under the art
+    ImageDraw.Draw(sh).rectangle([x + 6, y + 10, x + art.width + 6, y + art.height + 10],
+                                 fill=(0, 0, 0, 165))
+    card = Image.alpha_composite(card, sh.filter(ImageFilter.GaussianBlur(18)))
+    card.paste(art, (x, y))
+    return card.convert("RGB")
+
+
 def build(game: str, title: str | None, art_path: str | None = None,
-          out_name: str | None = None) -> Path:
+          out_name: str | None = None, fit: bool = False) -> Path:
     key = ART_KEY.get(game, game)
     if art_path:
         src = Path(art_path)
@@ -88,7 +106,7 @@ def build(game: str, title: str | None, art_path: str | None = None,
     else:
         src = _first_art(key)
     art = Image.open(src).convert("RGB")
-    canvas = _cover(art, W, H)
+    canvas = _fit(art, W, H) if fit else _cover(art, W, H)
     canvas = ImageEnhance.Brightness(canvas).enhance(0.9)
     canvas = ImageEnhance.Contrast(canvas).enhance(1.05)
     canvas = canvas.convert("RGBA")
@@ -178,8 +196,11 @@ def main() -> int:
                     help="explicit art file to use instead of the folder's preferred image")
     ap.add_argument("--out", default=None,
                     help="output filename stem (default: <game>-live)")
+    ap.add_argument("--fit", action="store_true",
+                    help="keep the WHOLE art on a blurred fill (box art / portrait sources) "
+                         "instead of centre-cropping it to 16:9")
     a = ap.parse_args()
-    build(a.game, a.title, a.art, a.out)
+    build(a.game, a.title, a.art, a.out, a.fit)
     return 0
 
 
