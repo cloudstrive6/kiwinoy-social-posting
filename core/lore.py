@@ -497,7 +497,98 @@ GAME_LORE["re4"] = (
 
 # The FF7 bible covers the whole compilation (OG, Remake, Rebirth, Revelation), so the
 # Remake-trilogy game keys share it (added 2026-09-21 for the 4K60 long-form folders).
-GAME_LORE["ff7remake"] = GAME_LORE["ff7rebirth"] = GAME_LORE["ff7"]
+ffvii_shared = GAME_LORE["ff7"]
+
+# Remake and Rebirth get their OWN bibles (per user 2026-09-27): they shared the
+# compilation bible, which is OG-FF7-weighted, so their own set pieces (Gongaga, the Zack
+# timeline, Cait Sith, the Temple of the Ancients) were thin and captions turned vague.
+GAME_LORE["ff7remake"] = (
+    "FINAL FANTASY VII REMAKE (2020) — the FIRST chapter of the Remake trilogy. The WHOLE "
+    "game takes place in MIDGAR (the OG covered Midgar in a few hours; Remake expands it to "
+    "a full game). It ENDS as the party leaves Midgar — so nothing beyond the city walls "
+    "(no Kalm, no Junon, no Gold Saucer, no Nibelheim flashback playable) happens here.\n"
+    "PLAYABLE PARTY: CLOUD STRIFE (ex-SOLDIER merc, Buster Sword, spiky blond hair, glowing "
+    "blue Mako eyes), BARRET WALLACE (AVALANCHE leader, gun-arm), TIFA LOCKHART (martial "
+    "artist, Seventh Heaven bar owner, Cloud's childhood friend from Nibelheim), AERITH "
+    "GAINSBOROUGH (flower seller, staff, last of the Cetra/Ancients). RED XIII joins late as "
+    "a guest (NOT player-controlled in this game). YUFFIE is playable only in the separate "
+    "INTERmission DLC (Episode INTERmission, with Sonon).\n"
+    "STORY BEATS IN ORDER: Mako Reactor 1 bombing -> Reactor 5 -> the plate over Sector 7 "
+    "falls (Shinra drops it, destroying the slums and AVALANCHE's home) -> Wall Market and "
+    "Don Corneo -> infiltrating the Shinra Building -> Jenova/Sephiroth on the upper floors "
+    "-> the highway escape -> the Whispers at the edge of Midgar.\n"
+    "KEY PEOPLE: PRESIDENT SHINRA (killed in the Shinra Building; Sephiroth/Jenova is the "
+    "implied hand) and his son RUFUS SHINRA (takes over; fights Cloud on the helipad with "
+    "his dog Dark Nation). HOJO (the amoral scientist behind the Jenova/SOLDIER experiments). "
+    "HEIDEGGER, SCARLET, REEVE (Reeve secretly runs Cait Sith later). THE TURKS: RENO "
+    "(red hair, goggles, electro-rod), RUDE (bald, sunglasses), TSENG, ELENA. AVALANCHE's "
+    "Sector 7 cell: BIGGS, WEDGE, JESSIE (Jessie's gate-crashing plate mission is a Remake "
+    "addition). MARLENE is Barret's adopted daughter. ROCHE is a Remake-original SOLDIER "
+    "biker who duels Cloud.\n"
+    "SEPHIROTH: appears to Cloud throughout as a vision/figure long before any 'real' "
+    "confrontation — these are visions and Jenova's influence, not the party casually "
+    "meeting him. JENOVA DREAMWEAVER is the Jenova specimen fight in the Shinra Building.\n"
+    "THE WHISPERS (Arbiters of Fate): ghost-like spirits that FORCE events back onto the "
+    "original timeline's path. The finale is the party fighting the Whispers (Whisper "
+    "Harbinger/Bahamut) — i.e. fighting DESTINY ITSELF, which is why the trilogy can now "
+    "diverge from the OG. The very end shows ZACK FAIR surviving his last stand outside "
+    "Midgar — a DIFFERENT timeline, not a retcon that Zack was 'alive all along'.\n"
+    "DON'T CONFUSE: Remake is Midgar ONLY — do not caption a Remake clip with Rebirth "
+    "locations or party members (Red XIII/Yuffie/Cait Sith/Cid as playable, Gongaga, Costa "
+    "del Sol, the Temple of the Ancients). Aerith does NOT die in Remake. AVALANCHE here is "
+    "Barret's small Sector 7 cell (the wider AVALANCHE HQ under Fuhito is Before Crisis). "
+    "The Buster Sword is Cloud's, handed down from Zack (via Angeal) — not a Shinra issue "
+    "weapon.\n\n" + ffvii_shared
+)
+
+GAME_LORE["ff7rebirth"] = (
+    "FINAL FANTASY VII REBIRTH (2024) — the SECOND chapter of the Remake trilogy. It starts "
+    "as the party LEAVES MIDGAR and covers the world-spanning journey, ending at the "
+    "FORGOTTEN CAPITAL. Midgar itself is only the Kalm flashback's framing/opening.\n"
+    "PLAYABLE PARTY (all controllable here): CLOUD, BARRET, TIFA, AERITH, RED XIII (a "
+    "talking red beast with a flame-tipped tail; real name NANAKI, of Cosmo Canyon), YUFFIE "
+    "KISARAGI (Wutai ninja, giant shuriken), CAIT SITH (a cat/robot that rides a giant MOOG "
+    "moogle doll — REEVE TUESTI of Shinra pilots him remotely; he BETRAYS the party as "
+    "Shinra's spy at the Temple, then stays with them). CID HIGHWIND (pilot, airship "
+    "Tiny Bronco) joins as a guest. VINCENT VALENTINE is found sleeping in the Shinra Manor "
+    "basement but is NOT playable in Rebirth.\n"
+    "JOURNEY IN ORDER (roughly): Kalm (Cloud's NIBELHEIM FLASHBACK, told with Sephiroth and "
+    "Zack — an UNRELIABLE retelling) -> Chocobo Farm and the Grasslands -> Mythril Mine -> "
+    "JUNON (parade, Priscilla and the dolphin, Leviathan) -> the cargo ship -> COSTA DEL SOL "
+    "(resort, Dio) -> Mt. Corel and North Corel -> the GOLD SAUCER (theme park; Cait Sith "
+    "joins; the DATE NIGHT at the Loveless play/gondola, whose partner depends on your "
+    "choices) -> Corel Prison and DYNE (Barret's old friend, Marlene's birth father) -> "
+    "Gongaga -> Cosmo Canyon -> Nibelheim -> the TEMPLE OF THE ANCIENTS -> the Forgotten "
+    "Capital.\n"
+    "GONGAGA: ZACK FAIR's home village, a jungle region with a ruined Mako reactor. Zack's "
+    "parents live there. It is also where the Turks and the Gi/Weiss threads cross.\n"
+    "THE TEMPLE OF THE ANCIENTS: a Cetra ruin that shrinks/shifts around the party; Cait "
+    "Sith's betrayal (taking the Black Materia for Shinra) happens here, Aerith learns what "
+    "the Black Materia is, and Sephiroth manipulates Cloud into handing it over.\n"
+    "THE FORGOTTEN CAPITAL (the ending): Sephiroth strikes at Aerith while she prays for "
+    "HOLY. Rebirth deliberately leaves her fate AMBIGUOUS across splitting timelines — in one "
+    "Cloud appears to block the blade and still sees her alive; other characters grieve. DO "
+    "NOT flatly caption it as 'Aerith dies' or 'Cloud saved Aerith': say Sephiroth strikes / "
+    "the timelines split / Cloud alone still sees her. Then the party fights Sephiroth "
+    "Reborn and Zack joins across worlds.\n"
+    "THE ZACK TIMELINE: playable interludes follow ZACK FAIR in a world where HE survived "
+    "and Cloud is comatose, with Biggs and Marlene and a dying Aerith in a church. These are "
+    "a PARALLEL world, not a flashback and not the main party's present.\n"
+    "OTHERS: SEPHIROTH (appears in many forms and as visions; 'Sephiroth Reborn' is the "
+    "final boss), JENOVA LIFECLINGER, the GI TRIBE at Cosmo Canyon (with Grandpa Bugenhagen "
+    "and Seto, Nanaki's father, turned to stone — Nanaki's 'coward father' shame is REVEALED "
+    "AS A LIE: Seto died defending Cosmo Canyon), WEISS, GLENN/the Deepground thread, "
+    "CHADLEY and MAI (the research assistants behind world intel), the TURKS, RUFUS, HOJO. "
+    "QUEEN'S BLOOD is Rebirth's in-world card game. SYNERGY ABILITIES are its paired combat "
+    "moves. Summons include Titan, Alexander, Phoenix, Bahamut Arisen, Odin, Gilgamesh.\n"
+    "DON'T CONFUSE: Red XIII is NANAKI, an intelligent beast, not a 'pet' or a 'dog'. Cait "
+    "Sith is Reeve's remote-controlled robot, not a live cat and not Reeve in person. The "
+    "Nibelheim seen in the present is a REBUILT town staffed by Shinra actors, distinct from "
+    "the burned Nibelheim of the flashback. The flashback's own details are unreliable "
+    "(Cloud was NOT the SOLDIER in it — that was Zack). Don't place Rebirth events in "
+    "Midgar, and don't use Remake-only beats (the plate drop, Wall Market, the Whispers "
+    "finale) for a Rebirth clip.\n\n" + ffvii_shared
+)
 
 
 def lore_for(game: str) -> str:
