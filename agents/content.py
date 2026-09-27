@@ -782,6 +782,11 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "'physics' or 'graphics').\n"
         "- 4 to 9 words. ENGLISH. No hashtags, no emojis, no quotes. Title-worthy, "
         "not a full sentence with punctuation.\n"
+        "- INSTANTLY CLEAR — a scroller reads it in ONE second. NAME the character (one whose "
+        "presence is confirmed) instead of an oblique reference: NOT \"Essex forgot his weapon "
+        "has claws\" (a person called 'his weapon' — a riddle) but \"Logan turns on Essex\". No "
+        "in-jokes, and no 'he/his/this thing' unless the hook says who that is. If a line of "
+        "DIALOGUE says it better, use the line.\n"
         "- Examples of the ENERGY (don't copy): \"Watch what he does at the end\", "
         "\"This is why Otto can't be trusted\", \"Nobody talks about this combo\".\n\n"
         "CAPTION (sits BELOW the video as the post caption):\n"
@@ -877,6 +882,10 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         "'Boss', 'Doc') into a specific named character (e.g. 'Red' -> Omega Red) when no subtitle "
         "speaker label or unmistakable visual shows who is being addressed. A nickname is NOT an "
         "identification.\n"
+        "8. It is CRYPTIC — a scroller can't tell in one read WHO or WHAT it refers to, because "
+        "it calls a person something oblique ('his weapon', 'the one who made him') instead of "
+        "naming them. Accurate but riddle-like is still BAD. Say only that the subject is "
+        "unclear — do NOT suggest who it is.\n"
         "A hook about the ACTION THAT IS ACTUALLY SHOWN, the setting, or a general gamer feeling is "
         "FINE — but it must match what the observation describes.\n"
         "IMPORTANT: your 'issues' text is fed back to the writer. ONLY say what is wrong. NEVER "
@@ -887,6 +896,36 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
     try:
         d = extract_json(_text(prompt, timeout=90))
         return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+    except Exception:
+        return True, ""
+
+
+def _verify_clarity(hook: str, gname: str = "") -> tuple[bool, str]:
+    """CLARITY critic (per user 2026-09-27): a hook can be perfectly TRUE and still fail as a
+    hook — "Essex forgot his weapon has claws" was accurate (Logan shouts "A weapon?! YOU GOT
+    ONE!") but reads as a riddle, since 'his weapon' means Logan. Asked as its own single
+    question, because the same rule buried in the accuracy critic's list was ignored.
+    Fail-OPEN on any error."""
+    if not hook.strip():
+        return False, "empty hook"
+    prompt = (
+        f'A {gname or "gameplay"} reel shows this text across the top: "{hook}"\n\n'
+        "You are a viewer scrolling past. You read the line for ONE second.\n"
+        "Judge ONLY this: is the line a RIDDLE?\n"
+        "UNCLEAR = a person or thing is referred to OBLIQUELY instead of plainly, so you can't "
+        "tell what it even is without knowing the story — e.g. 'his weapon has claws' (a "
+        "weapon that is actually a person), 'the one who made him', 'that thing in the vault'.\n"
+        "CLEAR = it NAMES who it is about (a proper name is fine even if you don't recognise "
+        "it — names are normal in titles), or quotes dialogue, or describes the visible "
+        "action, or is an everyday teasing line like 'watch what he does at the end'.\n"
+        "Do NOT mark a line unclear merely because a name is unfamiliar, or because it "
+        "withholds the outcome — curiosity is the POINT of a hook.\n"
+        "Only say WHAT is unclear — never suggest a replacement or guess who anyone is.\n"
+        'Return ONLY JSON: {"clear": true or false, "issues": "one short reason if UNCLEAR, else empty"}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=90))
+        return bool(d.get("clear", True)), str(d.get("issues", "")).strip()
     except Exception:
         return True, ""
 
@@ -1044,6 +1083,10 @@ def hook_and_caption_from_video(
                         ok1, i1 = _verify_hook(h, l, observation, game, dialogue=dialogue)
                         if not ok1:
                             return False, i1 or "lore mismatch"
+                        okc, ic = _verify_clarity(h, gname)      # true but cryptic = still bad
+                        if not okc:
+                            return False, (f"the hook is a riddle to someone who doesn't know "
+                                           f"the game: {ic or 'who/what it refers to is vague'}")
                         ok2, i2 = _verify_hook_vision(h, l, cands, gname, dialogue=dialogue)
                         if not ok2:
                             return False, i2 or "hook not supported by the footage"
