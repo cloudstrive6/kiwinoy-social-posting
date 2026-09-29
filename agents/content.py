@@ -891,6 +891,27 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         return True, ""
 
 
+def _plain_action_hook(observation: str, gname: str = "") -> str:
+    """LAST-RESORT hook when both written attempts fail the accuracy critics: describe ONLY
+    the action that is visibly happening — no names, no story, nothing to misstate. Still
+    specific to the clip, unlike the canned fallback line. '' on any error."""
+    prompt = (
+        f"Here is an observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        "Write ONE short on-screen hook, 4 to 8 words, describing ONLY what is VISIBLY "
+        "happening — the action, the setting, the danger.\n"
+        "HARD RULES: name NO character (not even the hero), claim NO story event, motive or "
+        "relationship, and mention NO object that isn't in the observation. Say what a viewer "
+        "SEES: e.g. 'Claws out against three armoured soldiers', 'Cornered on a rooftop in "
+        "the rain', 'One hit left before this fight ends'. Make it tense, not generic — never "
+        "'watch this play' or 'you won't believe this'.\n"
+        "ENGLISH. No hashtags, no emojis, no quotes, no preamble — just the line."
+    )
+    try:
+        return sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')[:90]
+    except Exception:
+        return ""
+
+
 def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
                         dialogue: str = "") -> tuple[bool, str]:
     """VISION critic (per user 2026-07-30): re-check the on-screen HOOK against the ACTUAL
@@ -1053,12 +1074,25 @@ def hook_and_caption_from_video(
                     if not ok:
                         print(f"[content] hook rejected ({issues}); regenerating.", flush=True)
                         h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues, dialogue=dialogue)
-                        ok2, _ = _check_hook(h2, l2)
+                        ok2, i2 = _check_hook(h2, l2)
                         if ok2:
                             hook, line = h2, l2
                         else:
-                            # 2nd attempt still failed -> a safe action hook (no identities)
-                            hook = "You have to see this play"
+                            # Both attempts failed the accuracy critics. Rather than the canned
+                            # line (per user 2026-09-30 — it kept showing up on real posts), ask
+                            # for ONE plain hook describing only the VISIBLE ACTION: no names, no
+                            # story claims, so there is almost nothing left to get wrong.
+                            print(f"[content] 2nd hook also rejected ({i2}); writing a plain "
+                                  "action hook.", flush=True)
+                            h3 = _plain_action_hook(observation, gname)
+                            ok3, i3 = _check_hook(h3, line) if h3 else (False, "empty")
+                            if ok3:
+                                hook = h3
+                                print(f"[content] plain action hook: {h3}", flush=True)
+                            else:
+                                print(f"[content] plain hook rejected too ({i3}); generic "
+                                      "fallback.", flush=True)
+                                hook = "You have to see this play"
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     if not hook:
