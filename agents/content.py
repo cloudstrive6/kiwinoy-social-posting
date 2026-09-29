@@ -911,15 +911,18 @@ def _verify_clarity(hook: str, gname: str = "") -> tuple[bool, str]:
     prompt = (
         f'A {gname or "gameplay"} reel shows this text across the top: "{hook}"\n\n'
         "You are a viewer scrolling past. You read the line for ONE second.\n"
-        "Judge ONLY this: is the line a RIDDLE?\n"
-        "UNCLEAR = a person or thing is referred to OBLIQUELY instead of plainly, so you can't "
-        "tell what it even is without knowing the story — e.g. 'his weapon has claws' (a "
-        "weapon that is actually a person), 'the one who made him', 'that thing in the vault'.\n"
-        "CLEAR = it NAMES who it is about (a proper name is fine even if you don't recognise "
-        "it — names are normal in titles), or quotes dialogue, or describes the visible "
-        "action, or is an everyday teasing line like 'watch what he does at the end'.\n"
-        "Do NOT mark a line unclear merely because a name is unfamiliar, or because it "
-        "withholds the outcome — curiosity is the POINT of a hook.\n"
+        "Judge ONE narrow thing: does the line call a person or thing something OBLIQUE, so "
+        "you cannot tell WHAT IT IS without knowing the story? That is the only failure.\n"
+        "UNCLEAR examples: 'Essex forgot his weapon has claws' (a 'weapon' that is secretly a "
+        "person), 'the one who made him', 'that thing in the vault'.\n"
+        "CLEAR — say clear for ALL of these:\n"
+        "- it names someone ('Logan turns on Essex') — an unfamiliar name is still CLEAR\n"
+        "- it teases without telling ('Jean finds something wrong', 'watch what he does at the "
+        "end', 'nobody talks about this combo') — WITHHOLDING THE PAYOFF IS THE JOB OF A HOOK\n"
+        "- it uses a casual pronoun for the character on screen ('he/she/they')\n"
+        "- it quotes dialogue, or describes the visible action\n"
+        "Being VAGUE is not being unclear. Do NOT ask for more detail, a named outcome, or an "
+        "explanation — only flag a line whose SUBJECT is disguised as something else.\n"
         "Only say WHAT is unclear — never suggest a replacement or guess who anyone is.\n"
         'Return ONLY JSON: {"clear": true or false, "issues": "one short reason if UNCLEAR, else empty"}'
     )
@@ -1077,30 +1080,42 @@ def hook_and_caption_from_video(
                     # the text read missed (e.g. "Why is Spider-Man pulling out a gun?" when no
                     # gun is on screen — flagged by user 2026-07-30). Both also get the DIALOGUE.
                     # Regenerate once, feeding the reason back; else fall back to a safe hook.
-                    def _check_hook(h: str, l: str) -> tuple[bool, str]:
+                    # Returns (ok, issues, accurate) — `accurate` means it passed BOTH accuracy
+                    # critics and only tripped CLARITY, so it is still TRUE about the clip.
+                    def _check_hook(h: str, l: str) -> tuple[bool, str, bool]:
                         if not h:
-                            return False, "empty hook"
+                            return False, "empty hook", False
                         ok1, i1 = _verify_hook(h, l, observation, game, dialogue=dialogue)
                         if not ok1:
-                            return False, i1 or "lore mismatch"
+                            return False, i1 or "lore mismatch", False
+                        ok2, i2 = _verify_hook_vision(h, l, cands, gname, dialogue=dialogue)
+                        if not ok2:
+                            return False, i2 or "hook not supported by the footage", False
                         okc, ic = _verify_clarity(h, gname)      # true but cryptic = still bad
                         if not okc:
                             return False, (f"the hook is a riddle to someone who doesn't know "
-                                           f"the game: {ic or 'who/what it refers to is vague'}")
-                        ok2, i2 = _verify_hook_vision(h, l, cands, gname, dialogue=dialogue)
-                        if not ok2:
-                            return False, i2 or "hook not supported by the footage"
-                        return True, ""
+                                           f"the game: {ic or 'who/what it refers to is vague'}"), True
+                        return True, "", True
 
-                    ok, issues = _check_hook(hook, line)
+                    ok, issues, accurate = _check_hook(hook, line)
                     if not ok:
                         print(f"[content] hook rejected ({issues}); regenerating.", flush=True)
+                        keep = (hook, line) if accurate else None   # true, just worded vaguely
                         h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues, dialogue=dialogue)
-                        ok2, _ = _check_hook(h2, l2)
+                        ok2, i2, acc2 = _check_hook(h2, l2)
                         if ok2:
                             hook, line = h2, l2
+                        elif acc2:                                 # prefer the 2nd if it's true
+                            print(f"[content] 2nd hook also flagged ({i2}); keeping it anyway — "
+                                  "it is accurate, which beats the generic fallback.", flush=True)
+                            hook, line = h2, l2
+                        elif keep:
+                            print(f"[content] 2nd hook rejected ({i2}); falling back to the 1st "
+                                  "(accurate but vague).", flush=True)
+                            hook, line = keep
                         else:
-                            # 2nd attempt still failed -> a safe action hook (no identities)
+                            print(f"[content] both hooks rejected ({i2}) — generic fallback.",
+                                  flush=True)
                             hook = "You have to see this play"
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
