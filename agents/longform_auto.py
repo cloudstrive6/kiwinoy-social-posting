@@ -39,6 +39,7 @@ from core.config import CONFIG, ROOT
 LEDGER_ASSET = "_longform_ledger.json"      # {b2_key: {status, title, publish_at, video_id, ...}}
 PRIORITY_ASSET = "_longform_priority.json"  # {"games": ["wolverine", ...]}
 OUTPUT_DIR = ROOT / "output"
+TITLE_MAX = 100                             # YouTube hard limit on a video title
 
 _TS_RE = re.compile(r"(20\d{2})[-_.](\d{2})[-_.](\d{2})[ _T-]+(\d{2})[-_.:](\d{2})[-_.:](\d{2})")
 _PART_RE = re.compile(r"\bpart\s*[-_#]?\s*(\d{1,3})\b", re.I)
@@ -451,7 +452,9 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
                 f"SAMPLED DIALOGUE (timestamped, may be partial):\n{(dialogue or '(none)')[:9000]}"
                 + (f"\n\n{subtitles[:9000]}" if subtitles else ""))
     ask_title = "" if is_part else (
-        "- \"moment\": a CLICK-WORTHY title for the video's MAIN event, 3-9 words, Title Case. "
+        f"- \"moment\": a CLICK-WORTHY title for the video's MAIN event, 3-9 words, Title Case, "
+        f"and AT MOST {TITLE_MAX - len(gname) - 16} CHARACTERS (the game name and the 4K tag are "
+        "appended after it, and YouTube cuts the whole title at 100). Shorter hits harder. "
         "Lead with the thing a fan wants to see and give it stakes or curiosity — e.g. "
         "'Sabretooth Finally Turns On Logan', 'The Fight That Breaks Team X', 'Logan Remembers "
         "What Essex Did'. It must be TRUE to what the evidence shows: tease the real payoff, "
@@ -511,8 +514,18 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
         moment = str(draft.get("moment") or "")
         moment = re.sub(re.escape(gname), "", moment, flags=re.I)      # the game name follows the pipe
         moment = re.sub(r"\s+", " ", moment).strip(" .-|:") or "Gameplay"
-        title = f"{moment} | {gname}{suit} - 4K 60FPS"
-    title = title[:100]
+        # YouTube's limit is 100 chars. Trim the MOMENT (on a word boundary) so the game name
+        # and the 4K tag always survive — a plain title[:100] cut the game name mid-word
+        # ("... Turns Out to Be Yuffie | F"), flagged by the user 2026-09-30.
+        tail = f" | {gname}{suit} - 4K 60FPS"
+        room = TITLE_MAX - len(tail)
+        if len(moment) > room:
+            cut = moment[:max(0, room)]
+            if " " in cut:
+                cut = cut[:cut.rfind(" ")]
+            moment = cut.rstrip(" ,.;:-") or moment[:max(0, room)]
+        title = f"{moment}{tail}"
+    title = title[:TITLE_MAX]
 
     summary = str(draft.get("summary") or "").strip() or (
         f"{'Part ' + str(part_no) + ' of the ' if is_part else ''}{gname} "
