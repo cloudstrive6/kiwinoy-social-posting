@@ -952,8 +952,8 @@ def run_gameplay_reel(
         # FILL reels have no on-screen hook, so fall back to the caption's first line for the
         # title (e.g. "Free Fall Over the Skyline") instead of just the bare game name.
         title_hook = (hook or "").strip() or (caption.splitlines()[0].strip() if caption else "")
-        title = ((f"{title_hook} | {gname} #Shorts" if title_hook else f"{gname} #Shorts") if gname
-                 else (f"{title_hook} #Shorts" if title_hook else "#Shorts"))[:100]
+        title = (_yt_title(title_hook, f" | {gname} #Shorts") if gname and title_hook
+                 else _yt_title(title_hook or gname, " #Shorts"))
         desc = _short_description(caption, gname, g)
         ghash = [str(h).lstrip("#") for h in
                  (CONFIG.reels.get("game_hashtags", {}) or {}).get(g, []) if str(h).strip()]
@@ -2327,6 +2327,21 @@ def _social_gear_cta(n: int) -> str:
     return cta if (n % every == 0) else ""
 
 
+def _yt_title(lead: str, tail: str, limit: int = 100) -> str:
+    """'<lead><tail>' within YouTube's 100-char title limit, trimming the LEAD on a word
+    boundary so the tail (game name, #Shorts, 4K tag) always survives. A plain [:100] cut
+    Shorts titles mid-word — '... | Marvel's Spider-M' (user, 2026-09-30)."""
+    lead = (lead or "").strip()
+    tail = tail or ""
+    room = limit - len(tail)
+    if len(lead) > room:
+        cut = lead[:max(0, room)]
+        if " " in cut:
+            cut = cut[:cut.rfind(" ")]
+        lead = cut.rstrip(" ,.;:-—") or lead[:max(0, room)]
+    return f"{lead}{tail}"[:limit]
+
+
 def _short_description(caption: str, game_name: str, game_key: str) -> str:
     """YouTube Short description, laid out as three blocks:
 
@@ -2564,7 +2579,7 @@ def run_youtube_short(
 
     # 5) upload as a Short via the YouTube Data API (#Shorts in title + description).
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
-    title = f"{hook} - {gname.upper()} [4K HDR] #Shorts"[:100]
+    title = _yt_title(hook, f" - {gname.upper()} [4K HDR] #Shorts")
     desc = _short_description(caption, gname, game)
     result: dict[str, Any] = {
         "kind": "youtube_short", "game": game, "clip_id": clip_id, "layout": layout,
