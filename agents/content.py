@@ -891,28 +891,44 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         return True, ""
 
 
-def _plain_action_hook(observation: str, gname: str = "", avoid: str = "") -> str:
-    """LAST-RESORT hook when both written attempts fail the accuracy critics: describe ONLY
-    the action that is visibly happening — no names, no story, nothing to misstate. Still
-    specific to the clip, unlike the canned fallback line. '' on any error."""
+def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
+                       dialogue: str = "") -> str:
+    """LAST-RESORT hook when both written attempts fail the accuracy critics. Built from the
+    SAFEST evidence we have: first what a character actually SAYS (a subtitle line is quoted
+    proof — per user 2026-10-02, a fallback described 'rainy street, glowing eyes' while the
+    clip had Jean pleading 'Fight it, Logan!'), then what they DO. It only has to avoid
+    INVENTING things, not avoid the story. '' on any error."""
+    dlg = (f"WHAT IS SAID IN THE CLIP (transcript + subtitle speaker labels — a name before "
+           f"':' is PROOF that character is in it and said that line):\n{dialogue.strip()}\n\n"
+           if dialogue.strip() else "")
     prompt = (
-        f"Here is an observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
-        "Write ONE short on-screen hook, 4 to 8 words, describing ONLY what is VISIBLY "
-        "happening — the action, the setting, the danger.\n"
-        "HARD RULES: name NO character (not even the hero), claim NO story event, motive or "
-        "relationship. Use ONLY things the observation itself mentions — if it does not say "
-        "there is a crowd, a chase or a weapon, there isn't one. Prefer the observation's OWN "
-        "words. Describe only the part you are most certain of; a smaller true detail beats a "
-        "bigger guess. Say what a viewer SEES: e.g. 'Claws out against three armoured "
-        "soldiers', 'Cornered on a rooftop in the rain', 'One hit left before this fight "
-        "ends'. Make it tense, not generic — never 'watch this play' or 'you won't believe "
-        "this'.\n"
-        "ENGLISH. No hashtags, no emojis, no quotes, no preamble — just the line."
-        + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix it by describing LESS — keep only "
-           "what the observation plainly states." if avoid else "")
+        f"{dlg}An observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        "Write ONE short on-screen hook, 4 to 8 words, that makes a scroller stop.\n"
+        "BUILD IT FROM, IN THIS ORDER OF PREFERENCE:\n"
+        "1. WHAT A CHARACTER SAYS — quote or tightly paraphrase a line from the dialogue "
+        "above, e.g. a subtitle 'Jean: Fight it, Logan!' gives \"Jean begging Logan to fight "
+        "it\" or simply \"'Fight it, Logan!'\". You MAY name a character whose SPEAKER LABEL "
+        "appears above — that is confirmed.\n"
+        "2. WHAT THEY DO — the action in the observation ('Claws out against three armoured "
+        "soldiers', 'Cornered on a rooftop in the rain').\n"
+        "3. Only if there is neither: the setting or mood.\n"
+        "HARD RULES: invent NOTHING. No event, motive, relationship or outcome that the "
+        "dialogue and observation don't plainly support — do not say a plea 'works', that "
+        "someone 'wins', or why anyone acts. Do not name a character who has no speaker label "
+        "and is not unmistakably on screen. A smaller true detail beats a bigger guess.\n"
+        "Never generic: no 'watch this play', no 'you won't believe this'. A flat scenery "
+        "line ('rainy street, glowing eyes') is a FAILURE — the clip's words or action almost "
+        "always give you something better.\n"
+        "ENGLISH. No hashtags, no emojis, no preamble — just the line."
+        + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix THAT specific problem; keep using "
+           "the dialogue and action, just drop the unsupported part." if avoid else "")
     )
     try:
-        return sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')[:90]
+        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip()
+        line = line.strip('"').strip()
+        if line.count('"') % 2:        # a stray quote left by stripping one wrapper quote
+            line = line.replace('"', "").strip()
+        return line.strip(" ,;:-")[:90]
     except Exception:
         return ""
 
@@ -1094,12 +1110,13 @@ def hook_and_caption_from_video(
                             # caption misquotes the line..."), which is why the canned line kept
                             # reaching TikTok. The stale caption is dropped either way — it was
                             # just judged wrong, so it must not be published.
-                            h3 = _plain_action_hook(observation, gname)
+                            h3 = _plain_action_hook(observation, gname, dialogue=dialogue)
                             ok3, i3 = _check_hook(h3, "") if h3 else (False, "empty hook")
                             if h3 and not ok3:                       # one corrective retry
                                 print(f"[content] plain hook rejected ({i3}); retrying tighter.",
                                       flush=True)
-                                h3b = _plain_action_hook(observation, gname, avoid=i3)
+                                h3b = _plain_action_hook(observation, gname, avoid=i3,
+                                                         dialogue=dialogue)
                                 if h3b:
                                     ok3b, i3b = _check_hook(h3b, "")
                                     if ok3b:
