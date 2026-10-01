@@ -891,7 +891,7 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         return True, ""
 
 
-def _plain_action_hook(observation: str, gname: str = "") -> str:
+def _plain_action_hook(observation: str, gname: str = "", avoid: str = "") -> str:
     """LAST-RESORT hook when both written attempts fail the accuracy critics: describe ONLY
     the action that is visibly happening — no names, no story, nothing to misstate. Still
     specific to the clip, unlike the canned fallback line. '' on any error."""
@@ -900,11 +900,16 @@ def _plain_action_hook(observation: str, gname: str = "") -> str:
         "Write ONE short on-screen hook, 4 to 8 words, describing ONLY what is VISIBLY "
         "happening — the action, the setting, the danger.\n"
         "HARD RULES: name NO character (not even the hero), claim NO story event, motive or "
-        "relationship, and mention NO object that isn't in the observation. Say what a viewer "
-        "SEES: e.g. 'Claws out against three armoured soldiers', 'Cornered on a rooftop in "
-        "the rain', 'One hit left before this fight ends'. Make it tense, not generic — never "
-        "'watch this play' or 'you won't believe this'.\n"
+        "relationship. Use ONLY things the observation itself mentions — if it does not say "
+        "there is a crowd, a chase or a weapon, there isn't one. Prefer the observation's OWN "
+        "words. Describe only the part you are most certain of; a smaller true detail beats a "
+        "bigger guess. Say what a viewer SEES: e.g. 'Claws out against three armoured "
+        "soldiers', 'Cornered on a rooftop in the rain', 'One hit left before this fight "
+        "ends'. Make it tense, not generic — never 'watch this play' or 'you won't believe "
+        "this'.\n"
         "ENGLISH. No hashtags, no emojis, no quotes, no preamble — just the line."
+        + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix it by describing LESS — keep only "
+           "what the observation plainly states." if avoid else "")
     )
     try:
         return sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')[:90]
@@ -1084,15 +1089,30 @@ def hook_and_caption_from_video(
                             # story claims, so there is almost nothing left to get wrong.
                             print(f"[content] 2nd hook also rejected ({i2}); writing a plain "
                                   "action hook.", flush=True)
+                            # Judge the plain hook ALONE. Passing the failed attempt's caption
+                            # made the critics reject the HOOK for the CAPTION's errors ("the
+                            # caption misquotes the line..."), which is why the canned line kept
+                            # reaching TikTok. The stale caption is dropped either way — it was
+                            # just judged wrong, so it must not be published.
                             h3 = _plain_action_hook(observation, gname)
-                            ok3, i3 = _check_hook(h3, line) if h3 else (False, "empty")
+                            ok3, i3 = _check_hook(h3, "") if h3 else (False, "empty hook")
+                            if h3 and not ok3:                       # one corrective retry
+                                print(f"[content] plain hook rejected ({i3}); retrying tighter.",
+                                      flush=True)
+                                h3b = _plain_action_hook(observation, gname, avoid=i3)
+                                if h3b:
+                                    ok3b, i3b = _check_hook(h3b, "")
+                                    if ok3b:
+                                        h3, ok3 = h3b, True
+                                    else:
+                                        i3 = i3b
                             if ok3:
-                                hook = h3
+                                hook, line = h3, h3   # caption body = the same accurate line
                                 print(f"[content] plain action hook: {h3}", flush=True)
                             else:
                                 print(f"[content] plain hook rejected too ({i3}); generic "
                                       "fallback.", flush=True)
-                                hook = "You have to see this play"
+                                hook, line = "You have to see this play", ""
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     if not hook:
