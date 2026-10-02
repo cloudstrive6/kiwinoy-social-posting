@@ -402,16 +402,18 @@ def relatable_fill_caption(video_path, game: str = "") -> str:
     import tempfile
     from pathlib import Path
 
-    from core import frames
+    from core import ffmpeg, frames
 
     line = ""
     angle = random.choice(_FILL_ANGLES)
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            _dur = ffmpeg.duration(Path(video_path))
+            cands = frames.extract_candidates(Path(video_path), Path(tmp),
+                                              n=observe_frame_count(_dur))
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
-                observation = _observe_clip(cands, gname)
+                observation = _observe_clip(cands, gname, _dur)
                 if observation:                              # + full-clip subtitle speakers
                     observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                     cand = _relatable_caption(observation, angle)
@@ -476,16 +478,18 @@ def descriptive_fill_caption(video_path=None, game: str = "") -> str:
     import tempfile
     from pathlib import Path
 
-    from core import frames
+    from core import ffmpeg, frames
 
     body = ""
     if video_path:
         try:
             with tempfile.TemporaryDirectory() as tmp:
-                cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+                _dur = ffmpeg.duration(Path(video_path))
+                cands = frames.extract_candidates(Path(video_path), Path(tmp),
+                                                  n=observe_frame_count(_dur))
                 if cands:
                     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
-                    observation = _observe_clip(cands, gname)
+                    observation = _observe_clip(cands, gname, _dur)
                     if observation:                          # + full-clip subtitle speakers
                         observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                         cand = _descriptive_caption(observation, gname)
@@ -521,7 +525,17 @@ def _text(prompt: str, timeout: int = 120) -> str:
         return openai_client.write(prompt)
 
 
-def _observe_clip(cands: list, gname: str) -> str:
+def observe_frame_count(duration: float) -> int:
+    """How many frames the observer should look at: ~1 per 10s of clip, 4..14. Four frames
+    for a 150s reel (one every ~37s) meant the writer narrated a video it had barely seen —
+    it welded together scenes minutes apart and the critics rightly rejected it (per user
+    2026-10-02: 16 of 32 recent rejections were 'the dialogue says X but the footage shows Y')."""
+    if duration <= 0:
+        return 4
+    return max(4, min(14, round(duration / 10)))
+
+
+def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
     """Stage 1 (vision OBSERVER): describe ONLY what's literally on screen across
     the frames — setting, characters' appearance (no name-guessing), action and
     any on-screen text. This factual read is then handed to the captioner so it
@@ -529,18 +543,32 @@ def _observe_clip(cands: list, gname: str) -> str:
     OpenAI vision fallback if Claude is unavailable."""
     from core import claude_code, openai_client
 
+    n = len(cands)
+    # Frames are spread evenly across the clip, so frame i sits at ~this timestamp. Telling
+    # the observer WHEN each frame is lets it report the clip as a sequence, so the writer can
+    # line the dialogue up with what is on screen instead of guessing.
+    def _stamp(i: int) -> str:
+        if duration <= 0:
+            return f"frame {i + 1}"
+        t = duration * (i + 0.5) / max(1, n)
+        return f"frame {i + 1} at ~{int(t // 60)}:{int(t % 60):02d}"
+
+    span = f" spanning about {int(duration // 60)}:{int(duration % 60):02d}" if duration > 0 else ""
     instruction = (
-        f"These are {len(cands)} frames (in order) from ONE short gameplay "
-        "clip.\nDescribe ONLY what you can literally SEE — do not guess names or "
-        "backstory. Cover, in 3-5 plain sentences:\n"
-        "- SETTING/location (indoor lab, rooftop, street, snow, etc.)\n"
+        f"These are {n} frames (in order) from ONE gameplay clip{span}, evenly spaced across "
+        "it.\nDescribe ONLY what you can literally SEE — do not guess names or "
+        "backstory. Cover, in 4-7 plain sentences:\n"
+        "- SETTING/location (indoor lab, rooftop, street, snow, etc.), and SAY WHEN IT "
+        "CHANGES — if the frames move from a fight to a corridor to a cabin, report that "
+        "ORDER with the timestamps, because later frames are a LATER part of the clip.\n"
         "- CHARACTERS visible, by APPEARANCE only (e.g. 'man in a lab coat', 'figure "
         "in a red-and-blue spider suit', 'teen in a hoodie') — never assume who they "
-        "are.\n"
-        "- The ACTION / what is happening or being done.\n"
-        "- Any on-screen TEXT, subtitles, objective markers or UI you can read."
+        "are. Note which frames each one appears in.\n"
+        "- The ACTION / what is happening or being done, in sequence.\n"
+        "- Any on-screen TEXT, subtitles, objective markers, BOSS-BAR NAMES or UI you can "
+        "read, with the frame it appears in."
     )
-    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
+    listing = "\n".join(f"{_stamp(i)}: {p}" for i, p in enumerate(cands))
     claude_prompt = (
         f"Use the Read tool to open these frames first.\n\n{instruction}\n\n"
         f"Frames:\n{listing}"
@@ -1059,15 +1087,17 @@ def hook_and_caption_from_video(
     import tempfile
     from pathlib import Path
 
-    from core import frames
+    from core import ffmpeg, frames
 
     hook, line = "", ""
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            _dur = ffmpeg.duration(Path(video_path))
+            cands = frames.extract_candidates(Path(video_path), Path(tmp),
+                                              n=observe_frame_count(_dur))
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
-                observation = _observe_clip(cands, gname)
+                observation = _observe_clip(cands, gname, _dur)
                 # DIALOGUE (per user 2026-07-31): transcribe the clip's actual spoken words so
                 # the writer + critics know WHO says WHAT — e.g. a scene set inside PETER's mind
                 # while you CONTROL Miles must be about Peter, not the controlled character.
@@ -1215,15 +1245,17 @@ def caption_from_video(video_path, game: str = "", taglish: bool = False) -> str
     import tempfile
     from pathlib import Path
 
-    from core import frames
+    from core import ffmpeg, frames
 
     line = ""
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            cands = frames.extract_candidates(Path(video_path), Path(tmp), n=4)
+            _dur = ffmpeg.duration(Path(video_path))
+            cands = frames.extract_candidates(Path(video_path), Path(tmp),
+                                              n=observe_frame_count(_dur))
             if cands:
                 gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
-                observation = _observe_clip(cands, gname)
+                observation = _observe_clip(cands, gname, _dur)
                 if observation:                              # + full-clip subtitle speakers
                     observation = _with_subs(observation, _scan_subtitles(video_path, gname))
                     raw = _caption_with_lore(observation, game, gname, taglish)
