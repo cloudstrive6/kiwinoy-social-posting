@@ -849,7 +849,10 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         f"{lore_block}{dlg_block}"
         f"OBSERVER'S FACTUAL READ OF THE CLIP (only what is actually visible/readable):\n"
         f"{observation}\n\n"
-        f'HOOK: "{hook}"\nCAPTION: "{caption}"\n\n'
+        + (f'HOOK: "{hook}"\nCAPTION: "{caption}"\n\n' if str(caption).strip() else
+           f'HOOK: "{hook}"\n(There is no caption — judge the HOOK ALONE. A missing or empty '
+           'caption is NOT a fault and must not count against the hook.)\n\n')
+        +
         "Naming the game's established PLAYER-CHARACTER / protagonist is ALWAYS OK even if "
         "they aren't visible — MANY games are FIRST-PERSON, where you play as them but only "
         "see their weapon/hands (e.g. Halo's Master Chief; an alien-looking gun in the "
@@ -949,7 +952,10 @@ def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
     instruction = (
         f"You are a STRICT accuracy checker for a {gname} gameplay reel's ON-SCREEN hook. "
         "These are frames from the ACTUAL clip.\n\n"
-        f'ON-SCREEN HOOK: "{hook}"\nPOST CAPTION: "{caption}"\n{dlg}\n'
+        + (f'ON-SCREEN HOOK: "{hook}"\nPOST CAPTION: "{caption}"\n{dlg}\n' if str(caption).strip()
+           else f'ON-SCREEN HOOK: "{hook}"\n(No caption — judge the HOOK ALONE; a missing '
+                f'caption is NOT a fault.)\n{dlg}\n')
+        +
         "Judge from what is literally visible in these frames AND what the dialogue says. Mark "
         "it BAD if the hook's central claim/premise is NOT supported — e.g. it claims an OBJECT "
         "(a gun/weapon), an ACTION, or a CHARACTER that does not actually appear, OR it "
