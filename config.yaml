@@ -1359,7 +1359,11 @@ tiktok:
 longform_auto:
   enabled: true            # LIVE 2026-09-21 — skips quietly while the B2 queue is empty
   timezone: Pacific/Auckland
-  slots_local: ["23:00", "07:00", "15:00"]   # public times, every 8h (NZ; DST-aware)
+  # ONE upload a day (per user 2026-10-05), timed from YouTube Analytics rather than guessed:
+  # "When your viewers are on YouTube" peaks 5-8 AM NZ, brightest Sun/Mon ~6 AM, and the
+  # audience is 53% US — NZ 6 AM = 1 PM US Eastern / 10 AM Pacific, i.e. US weekend afternoon.
+  # Evenings NZ are the channel's deadest hours. Publishing at 6 AM lands as the peak starts.
+  slots_local: ["06:00"]                     # public time (NZ; DST-aware)
   lead_hours: 6.5          # book a slot at least this far ahead = the upload's time budget
   delete_after_days: 15    # delete the B2 source this long after a CONFIRMED upload
   run_label: Full Gameplay # parts title words for a normal (non-NG+) folder; NG+ folders use "New Game+"
