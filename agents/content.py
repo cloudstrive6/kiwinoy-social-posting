@@ -964,6 +964,29 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         return ""
 
 
+def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
+    """A caption to go WITH the plain fallback hook. The fallback used to reuse the hook text
+    verbatim, so the post's hook and caption read identically (per user 2026-10-06). Same
+    safe evidence, but a clip-title line that says something the hook doesn't. '' on error."""
+    dlg = (f"WHAT IS SAID IN THE CLIP:\n{dialogue.strip()}\n\n" if dialogue.strip() else "")
+    prompt = (
+        f"{dlg}An observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        f'The on-screen hook already says: "{hook}"\n\n'
+        "Write the POST CAPTION: ONE short clip-title line, 3 to 8 words, Title Case.\n"
+        "It must NOT repeat the hook's wording — the hook is on the video, the caption sits "
+        "under it, so give a DIFFERENT angle on the same moment (the hook teases the action, "
+        "the caption can name the scene, the place, or who is involved).\n"
+        "Invent nothing: use only what the dialogue and observation support. You may name a "
+        "character whose subtitle SPEAKER LABEL appears above. No hashtags, no emojis, no "
+        "quotes, no preamble — just the line."
+    )
+    try:
+        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')
+        return line.strip(" ,;:-")[:90]
+    except Exception:
+        return ""
+
+
 def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
                         dialogue: str = "") -> tuple[bool, str]:
     """VISION critic (per user 2026-07-30): re-check the on-screen HOOK against the ACTUAL
@@ -1160,8 +1183,17 @@ def hook_and_caption_from_video(
                                     else:
                                         i3 = i3b
                             if ok3:
-                                hook, line = h3, h3   # caption body = the same accurate line
-                                print(f"[content] plain action hook: {h3}", flush=True)
+                                # A caption of its OWN (reusing the hook made the post's hook
+                                # and caption identical); falls back to the safe default line
+                                # if it can't be written or doesn't pass the critics.
+                                hook = h3
+                                cap3 = _plain_caption(observation, gname, h3, dialogue)
+                                okc3 = bool(cap3) and cap3.lower() != h3.lower() and \
+                                    _check_hook(h3, cap3)[0]
+                                line = cap3 if okc3 else ""
+                                print(f"[content] plain action hook: {h3}"
+                                      + (f" | caption: {cap3}" if okc3 else
+                                         " | caption: (safe default)"), flush=True)
                             else:
                                 print(f"[content] plain hook rejected too ({i3}); generic "
                                       "fallback.", flush=True)
