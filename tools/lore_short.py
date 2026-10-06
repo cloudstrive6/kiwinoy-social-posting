@@ -157,7 +157,7 @@ def _draw_highlighted(d, x: int, y: int, line: str, hl_words: set, f_norm, f_hl)
         x += d.textlength(word + " ", font=font)
 
 
-def _layout(card: dict, video_h: int) -> dict:
+def _layout(card: dict, video_h: int, video_w: int) -> dict:
     """Vertical layout, imitating the proven format: TEXT CARD on top, video under it,
     a comment strip below that, and the PNGtuber reaction at the bottom."""
     from PIL import ImageDraw, Image
@@ -170,7 +170,7 @@ def _layout(card: dict, video_h: int) -> dict:
     comment_h = 150 if card.get("comment") else 0
     top = 150                                       # leaves room for the Shorts UI
     return {"pad": pad, "inner": inner, "f_body": f_body, "body_lines": body_lines,
-            "video_h": video_h,
+            "video_h": video_h, "video_w": video_w,
             "line_h": line_h, "top": top, "text_h": text_h, "video_y": top + text_h,
             "comment_y": top + text_h + video_h, "comment_h": comment_h}
 
@@ -186,7 +186,8 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
     d.rounded_rectangle([pad, panel_top, W - pad, panel_bot], radius=44, fill=(10, 10, 12, 242))
     # clear the band where the video sits underneath, or the panel would hide it
     vy0, vy1 = lay["video_y"], lay["video_y"] + lay["video_h"]
-    d.rectangle([pad + 2, vy0, W - pad - 2, vy1], fill=(0, 0, 0, 0))
+    vx0 = round((W - lay["video_w"]) / 2)
+    d.rectangle([vx0, vy0, vx0 + lay["video_w"], vy1], fill=(0, 0, 0, 0))
 
     hl_words = {re.sub(r"[^\w']", "", w).lower()
                 for w in (card.get("highlight") or "").split() if w}
@@ -273,9 +274,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     (outdir / "card.txt").write_text(
         f'{card["body"]}\n\n@bosskg: {card.get("comment", "")}\n', encoding="utf-8")
 
-    video_w = W - 36 * 2 - 44 * 2                  # sits inside the card, with its padding
+    # The video spans the card's FULL inner width. Any narrower and the hole punched in the
+    # panel shows blurred background down each side of it (user spotted those strips).
+    video_w = W - 36 * 2
     video_h = round(video_w * 9 / 16)
-    lay = _layout(card, video_h)
+    lay = _layout(card, video_h, video_w)
     png = _card_png(card, outdir / "card.png", video_h, lay)
     out = outdir / "short.mp4"
     # blurred fill behind + the clip inset under the text + the overlay (text/comment/reaction)
