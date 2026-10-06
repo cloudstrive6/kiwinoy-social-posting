@@ -295,7 +295,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
           f"[v1][1:v]overlay=0:0,format=yuv420p[v]")
     subprocess.run([ff, "-y", "-v", "error", "-stream_loop", "-1", "-i", str(seg),
                     "-i", str(png), "-filter_complex", vf, "-map", "[v]", "-map", "0:a?",
-                    "-t", f"{dur:.2f}", "-r", "30", "-c:v", "libx264", "-crf", "20",
+                    "-t", f"{dur:.2f}", "-r", "60", "-c:v", "libx264", "-crf", "20",
                     "-preset", "medium", "-pix_fmt", "yuv420p",
                     "-c:a", "aac", "-b:a", "192k", "-shortest", str(out)], check=True)
     log(f"wrote {out} ({out.stat().st_size // 1024} KB)")
