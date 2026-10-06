@@ -936,10 +936,12 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         f"{dlg}An observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
         "Write ONE short on-screen hook, 4 to 8 words, that makes a scroller stop.\n"
         "BUILD IT FROM, IN THIS ORDER OF PREFERENCE:\n"
-        "1. WHAT A CHARACTER SAYS — quote or tightly paraphrase a line from the dialogue "
-        "above, e.g. a subtitle 'Jean: Fight it, Logan!' gives \"Jean begging Logan to fight "
-        "it\" or simply \"'Fight it, Logan!'\". You MAY name a character whose SPEAKER LABEL "
-        "appears above — that is confirmed.\n"
+        "1. WHAT THE MOMENT IS ABOUT, taken from the dialogue — but in YOUR OWN WORDS. NEVER "
+        "copy a line verbatim and never put a character's words in quotes: the hook is burned "
+        "onto the video, and a quoted line can drag in profanity or threats that get the post "
+        "age-restricted or demonetised. A subtitle 'Jean: Fight it, Logan!' becomes \"Jean is "
+        "losing him to the rage\" — the same beat, re-angled. You MAY name a character whose "
+        "SPEAKER LABEL appears above — that is confirmed.\n"
         "2. WHAT THEY DO — the action in the observation ('Claws out against three armoured "
         "soldiers', 'Cornered on a rooftop in the rain').\n"
         "3. Only if there is neither: the setting or mood.\n"
@@ -950,6 +952,9 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         "Never generic: no 'watch this play', no 'you won't believe this'. A flat scenery "
         "line ('rainy street, glowing eyes') is a FAILURE — the clip's words or action almost "
         "always give you something better.\n"
+        "ADVERTISER-SAFE: no profanity or censored profanity (f-word, s-word, 'wtf'), no "
+        "slurs, and no graphic wording about killing, death, blood or torture. Say 'takes him "
+        "down', 'this fight turns', 'it goes bad fast' instead. Keep it punchy, not explicit.\n"
         "ENGLISH. No hashtags, no emojis, no preamble — just the line."
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix THAT specific problem; keep using "
            "the dialogue and action, just drop the unsupported part." if avoid else "")
@@ -962,6 +967,62 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         return line.strip(" ,;:-")[:90]
     except Exception:
         return ""
+
+
+# Words that make a post advertiser-unfriendly or age-restricted on YouTube when they are
+# BURNED ON SCREEN or sit in the caption (per user 2026-10-06: hooks were quoting subtitles
+# verbatim, profanity and all). Matched whole-word, case-insensitive, incl. common censoring.
+_UNSAFE_WORDS = (
+    r"f+u+c+k\w*|f\*+c?k\w*|f#+\w*|motherf\w+|mf\w*|wtf|stfu|"
+    r"s+h+i+t\w*|sh\*+t\w*|bullshit|crap|piss\w*|"
+    r"b+i+t+c+h\w*|bastard\w*|asshole\w*|arsehole\w*|dick\w*|douche\w*|"
+    r"c+u+n+t\w*|whore\w*|slut\w*|rape\w*|"
+    r"damn|goddamn|hell\b|"
+    r"kill(s|ed|ing)?|murder\w*|slaughter\w*|massacre\w*|execute[sd]?\b|suicide|"
+    r"die[sd]?\b|dying|dead\b|death\w*|corpse\w*|blood(y|ied)?\b|gore|torture\w*|"
+    r"butcher\w*|decapitat\w*|dismember\w*"
+)
+_UNSAFE_RE = re.compile(rf"\b(?:{_UNSAFE_WORDS})\b", re.I)
+
+
+def unsafe_terms(text: str) -> list[str]:
+    """Advertiser-unfriendly words in `text` (on-screen hooks + captions). [] when clean."""
+    seen, out = set(), []
+    for m in _UNSAFE_RE.finditer(text or ""):     # group(0): the whole match, not a subgroup
+        w = m.group(0)
+        if w.lower() not in seen:
+            seen.add(w.lower())
+            out.append(w)
+    return out
+
+
+def _make_safe(text: str, kind: str, gname: str = "") -> str:
+    """Rewrite a hook/caption that trips the advertiser-safety gate, keeping the MEANING.
+    Returns '' if it still isn't clean, so the caller can fall back rather than publish it."""
+    bad = unsafe_terms(text)
+    if not bad:
+        return text
+    print(f"[content] {kind} flagged as advertiser-unsafe ({', '.join(bad)}); rewriting.",
+          flush=True)
+    prompt = (
+        f'This {kind} for a {gname or "gameplay"} video is not advertiser-friendly because of: '
+        f'{", ".join(bad)}.\n\n"{text}"\n\n'
+        "Rewrite it keeping the SAME meaning and energy, but with none of those words and no "
+        "censored spellings. Swap graphic wording for impact wording: 'kills him' -> 'takes "
+        "him down', 'everyone dies' -> 'nobody walks away', profanity -> drop it entirely. "
+        "Same length or shorter. Return ONLY the rewritten line."
+    )
+    try:
+        out = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')
+    except Exception:
+        return ""
+    out = out.strip(" ,;:-")[:90]
+    if not out or unsafe_terms(out):
+        print(f"[content] {kind} still unsafe after a rewrite — using a safe fallback.",
+              flush=True)
+        return ""
+    print(f"[content] {kind} rewritten safe: {out}", flush=True)
+    return out
 
 
 def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
@@ -1113,6 +1174,7 @@ def hook_and_caption_from_video(
     from core import ffmpeg, frames
 
     hook, line = "", ""
+    gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
     try:
         with tempfile.TemporaryDirectory() as tmp:
             _dur = ffmpeg.duration(Path(video_path))
@@ -1200,6 +1262,13 @@ def hook_and_caption_from_video(
                                 hook, line = "You have to see this play", ""
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
+    # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
+    # BURNED ON the video and the caption ships with it, so profanity or graphic wording
+    # risks demonetisation / age-restriction. Rewrite, then drop to a safe line if needed.
+    if hook and unsafe_terms(hook):
+        hook = _make_safe(hook, "hook", gname) or ""
+    if line and unsafe_terms(line):
+        line = _make_safe(line, "caption", gname) or ""
     if not hook:
         hook = "Wait for it"
     if not line:
