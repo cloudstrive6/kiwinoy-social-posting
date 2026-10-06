@@ -1248,13 +1248,32 @@ def hook_and_caption_from_video(
                                 # and caption identical); falls back to the safe default line
                                 # if it can't be written or doesn't pass the critics.
                                 hook = h3
+                                # Judge the caption ON ITS OWN (as a pair with the hook, one
+                                # weak half sank both and the post fell back to "Watch this
+                                # clip" — user, 2026-10-07), and say WHY when it fails.
+                                def _cap_ok(c: str) -> tuple[bool, str]:
+                                    if not c:
+                                        return False, "empty"
+                                    if c.lower() == h3.lower():
+                                        return False, "same text as the hook"
+                                    return _verify_hook(c, "", observation, game,
+                                                        dialogue=dialogue)
+
                                 cap3 = _plain_caption(observation, gname, h3, dialogue)
-                                okc3 = bool(cap3) and cap3.lower() != h3.lower() and \
-                                    _check_hook(h3, cap3)[0]
+                                okc3, cwhy = _cap_ok(cap3)
+                                if not okc3:
+                                    print(f"[content] plain caption rejected ({cwhy}); "
+                                          "retrying.", flush=True)
+                                    cap3b = _plain_caption(observation, gname, h3, dialogue)
+                                    okc3b, cwhy2 = _cap_ok(cap3b)
+                                    if okc3b:
+                                        cap3, okc3 = cap3b, True
+                                    else:
+                                        cwhy = cwhy2
                                 line = cap3 if okc3 else ""
                                 print(f"[content] plain action hook: {h3}"
                                       + (f" | caption: {cap3}" if okc3 else
-                                         " | caption: (safe default)"), flush=True)
+                                         f" | caption: (safe default — {cwhy})"), flush=True)
                             else:
                                 print(f"[content] plain hook rejected too ({i3}); generic "
                                       "fallback.", flush=True)
