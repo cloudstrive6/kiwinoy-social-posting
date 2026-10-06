@@ -218,7 +218,7 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
             logo.putalpha(mask.resize((s, s), Image.LANCZOS))
             img.alpha_composite(logo, (pad + inner, cy))
         f_handle, f_cmt = _font(34, "Bold"), _font(36, "Medium")
-        d.text((pad + inner + s + 16, cy + 12), "@bosskg", font=f_handle,
+        d.text((pad + inner + s + 16, cy + 12), "@kiwinoygaming", font=f_handle,
                fill=(190, 190, 198, 255))
         for i, ln in enumerate(lay["comment_lines"]):   # same lines the height was sized from
             d.text((pad + inner, cy + s + 18 + i * lay["cmt_line_h"]), ln, font=f_cmt,
@@ -278,7 +278,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     log(f'body ({words} words, ~{words / 3.5:.0f}s to read vs a {dur:.0f}s video): {card["body"]}')
     (outdir / "card.json").write_text(json.dumps(card, indent=2), encoding="utf-8")
     (outdir / "card.txt").write_text(
-        f'{card["body"]}\n\n@bosskg: {card.get("comment", "")}\n', encoding="utf-8")
+        f'{card["body"]}\n\n@kiwinoygaming: {card.get("comment", "")}\n', encoding="utf-8")
 
     # The video spans the card's FULL inner width. Any narrower and the hole punched in the
     # panel shows blurred background down each side of it (user spotted those strips).
