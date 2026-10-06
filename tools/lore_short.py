@@ -147,14 +147,35 @@ def _font(size: int, weight: str = "Bold"):
     return f
 
 
-def _draw_highlighted(d, x: int, y: int, line: str, hl_words: set, f_norm, f_hl) -> None:
-    """Draw a line word by word, colouring the highlight phrase gold (reference format)."""
+def _norm_word(w: str) -> str:
+    return re.sub(r"[^\w']", "", w).lower()
+
+
+def _highlight_indices(body: str, highlight: str) -> set:
+    """Indices of the body's words covered by the highlight PHRASE (contiguous match).
+    Matching word-by-word lit up every stray 'a' and 'not' in the paragraph."""
+    hw = [_norm_word(w) for w in (highlight or "").split() if _norm_word(w)]
+    bw = [_norm_word(w) for w in body.split()]
+    if not hw or len(hw) > len(bw):
+        return set()
+    for i in range(len(bw) - len(hw) + 1):
+        if bw[i:i + len(hw)] == hw:
+            return set(range(i, i + len(hw)))
+    return set()
+
+
+def _draw_highlighted(d, x: int, y: int, line: str, hl_idx: set, f_norm, f_hl,
+                      start_word: int = 0) -> int:
+    """Draw a line word by word, colouring only the words inside the highlight phrase.
+    Returns the running word index after this line."""
+    i = start_word
     for word in line.split(" "):
-        key = re.sub(r"[^\w']", "", word).lower()
-        hit = key in hl_words
+        hit = i in hl_idx
         font = f_hl if hit else f_norm
         d.text((x, y), word, font=font, fill=(255, 209, 102, 255) if hit else (255, 255, 255, 255))
         x += d.textlength(word + " ", font=font)
+        i += 1
+    return i
 
 
 def _layout(card: dict, video_h: int, video_w: int) -> dict:
@@ -195,13 +216,12 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
     vx0 = round((W - lay["video_w"]) / 2)
     d.rectangle([vx0, vy0, vx0 + lay["video_w"], vy1], fill=(0, 0, 0, 0))
 
-    hl_words = {re.sub(r"[^\w']", "", w).lower()
-                for w in (card.get("highlight") or "").split() if w}
+    hl_idx = _highlight_indices(card["body"], card.get("highlight", ""))
     f_body, f_hl = lay["f_body"], _font(46, "ExtraBold")
-    y = panel_top + inner
+    y, wi = panel_top + inner, 0
     for ln in lay["body_lines"]:                    # centred, like the sample
         w = d.textlength(ln, font=f_body)
-        _draw_highlighted(d, int((W - w) / 2), y, ln, hl_words, f_body, f_hl)
+        wi = _draw_highlighted(d, int((W - w) / 2), y, ln, hl_idx, f_body, f_hl, wi)
         y += lay["line_h"]
 
     if lay["comment_lines"]:                        # avatar + handle + reaction line
