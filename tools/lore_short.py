@@ -83,6 +83,11 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "fine — but beats 1 and 2 must be literally true of this clip\n"
         "- you MAY name a character whose subtitle speaker label appears\n"
         "- do not quote a line verbatim if it contains profanity; describe it instead\n"
+        "- NEVER invent a NUMBER or a DURATION — no 'five years later', 'after three days', "
+        "'the only time in the series' — unless that exact figure is in the lore bible or on "
+        "screen. Fans check these. Say 'years later' or 'for a long time' instead\n"
+        "- the COMMENT line is posted too and is held to the same standard; it may be funny, "
+        "but it may not state anything untrue\n"
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
         + ('\nReturn ONLY JSON: {"body": "the paragraph", "highlight": "exact phrase from the '
            'body", "comment": "the reaction line"}')
@@ -97,14 +102,25 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         return {}
 
 
-def _check_card(card: dict, observation: str, subtitles: str, gname: str) -> tuple[bool, str]:
-    """Adversarial check: every claim must come from the clip, the subtitles or the lore."""
+def _check_card(card: dict, observation: str, subtitles: str, gname: str,
+                game: str = "") -> tuple[bool, str]:
+    """Adversarial check: every claim must come from the clip, the subtitles or the lore.
+    The BIBLE is included (it was not, so a wrong 'five years' sailed through with no
+    timeline to check it against — user, 2026-10-07)."""
+    from core import lore as _lore
+    bible = (_lore.lore_for(game) if game else "") or ""
     prompt = (
         f"You are a strict fact-checker for a {gname} gameplay card. A gaming audience calls "
         "out invented trivia, so be rigorous.\n\n"
-        f"EVIDENCE — what is on screen:\n{observation}\n\n"
+        + (f"GAME LORE BIBLE (authoritative — check any date, duration or who-did-what "
+           f"against THIS):\n{bible[:3500]}\n\n" if bible else "")
+        + f"EVIDENCE — what is on screen:\n{observation}\n\n"
         + (f"{subtitles}\n\n" if subtitles else "")
+        # The COMMENT ships on the video too, and it was NOT being checked — that is where an
+        # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
         + f"THE CARD:\n{card.get('body', '')}\n\n"
+        + f"THE COMMENT LINE (also posted, check it the same way):\n"
+          f"{card.get('comment', '(none)')}\n\n"
         "Mark it BAD only for a FACTUAL claim the evidence does not support: an invented "
         "detail, a developer/design intention, a camera or animation claim you cannot verify, "
         "a character who is not shown or named, a misquoted or mis-attributed line, or an "
@@ -112,7 +128,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str) -> tup
         "The card deliberately ENDS with a verdict and a comparison ('that is ice cold', 'the "
         "kind of parry every Souls player dreams about'). Those are OPINION — do NOT flag "
         "them. Do not flag ordinary re-telling of what is shown, or established series lore. "
-        "Flag only something stated as fact about this clip that is not true of it.\n"
+        "Flag only something stated as fact that is not true.\n"
+        "ALWAYS flag an invented NUMBER or DURATION — a year, a count, 'five years later', "
+        "'the only time in the series' — unless that exact figure is in the bible or on "
+        "screen. Check every span against the bible's TIMELINE.\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
@@ -276,11 +295,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         subs = _scan_subtitles(clip, gname)
         card = _write_card(observation, subs, game, gname)
         if card.get("body"):
-            ok, why = _check_card(card, observation, subs, gname)
+            ok, why = _check_card(card, observation, subs, gname, game)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
                 card2 = _write_card(observation, subs, game, gname, avoid=why)
-                if card2.get("body") and _check_card(card2, observation, subs, gname)[0]:
+                if card2.get("body") and _check_card(card2, observation, subs, gname, game)[0]:
                     card = card2
                 else:
                     log("second card also rejected — stopping rather than posting invented lore")
