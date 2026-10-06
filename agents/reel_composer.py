@@ -269,16 +269,20 @@ def cutscene_windows(path: Path, seconds: float) -> list[float]:
     if total <= seconds:
         return [0.0]
     last = max(0.0, total - seconds)
-    starts = [max(0.0, min(last, t - 0.6)) for t in _speech_starts(path)]   # a beat before the line
-    if not starts:
-        step = max(seconds, total / 6.0)
-        starts = [t for t in _frange(0.0, last, step)]
-    # de-duplicate windows that would overlap heavily
+    # SPEECH first (a beat before the line lands), then an even spread to cover the stretches
+    # with no dialogue — a sparse-dialogue cutscene otherwise yielded only 2 windows from 77s.
     out: list[float] = []
-    for t in sorted(starts):
-        if not out or t - out[-1] >= seconds * 0.9:
-            out.append(round(t, 1))
-    return out or [0.0]
+
+    def _add(t: float) -> None:
+        t = round(max(0.0, min(last, t)), 1)
+        if all(abs(t - u) >= seconds * 0.9 for u in out):
+            out.append(t)
+
+    for t in _speech_starts(path):
+        _add(t - 0.6)
+    for t in _frange(0.0, last, max(seconds * 1.5, 12.0)):
+        _add(t)
+    return sorted(out) or [0.0]
 
 
 def _frange(a: float, b: float, step: float) -> list[float]:
