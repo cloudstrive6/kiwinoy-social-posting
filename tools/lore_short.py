@@ -167,10 +167,16 @@ def _layout(card: dict, video_h: int, video_w: int) -> dict:
     body_lines = _wrap(d, card["body"], f_body, W - pad * 2 - inner * 2)
     line_h = 58
     text_h = inner * 2 + len(body_lines) * line_h
-    comment_h = 150 if card.get("comment") else 0
+    # The comment strip is sized from the ACTUAL wrapped lines — a fixed height clipped the
+    # second line outside the card (user, 2026-10-06).
+    avatar, cmt_line_h = 56, 44
+    comment_lines = (_wrap(d, card["comment"], _font(36, "Medium"), W - pad * 2 - inner * 2)[:3]
+                     if card.get("comment") else [])
+    comment_h = (18 + avatar + 18 + len(comment_lines) * cmt_line_h + 26) if comment_lines else 0
     top = 150                                       # leaves room for the Shorts UI
     return {"pad": pad, "inner": inner, "f_body": f_body, "body_lines": body_lines,
-            "video_h": video_h, "video_w": video_w,
+            "video_h": video_h, "video_w": video_w, "avatar": avatar,
+            "comment_lines": comment_lines, "cmt_line_h": cmt_line_h,
             "line_h": line_h, "top": top, "text_h": text_h, "video_y": top + text_h,
             "comment_y": top + text_h + video_h, "comment_h": comment_h}
 
@@ -198,9 +204,9 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
         _draw_highlighted(d, int((W - w) / 2), y, ln, hl_words, f_body, f_hl)
         y += lay["line_h"]
 
-    if card.get("comment"):                         # avatar + handle + reaction line
+    if lay["comment_lines"]:                        # avatar + handle + reaction line
         cy = lay["comment_y"] + 18
-        s = 56
+        s = lay["avatar"]
         if LOGO.exists():
             logo = Image.open(LOGO).convert("RGBA")
             c = min(logo.size)
@@ -214,8 +220,8 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
         f_handle, f_cmt = _font(34, "Bold"), _font(36, "Medium")
         d.text((pad + inner + s + 16, cy + 12), "@bosskg", font=f_handle,
                fill=(190, 190, 198, 255))
-        for i, ln in enumerate(_wrap(d, card["comment"], f_cmt, W - pad * 2 - inner * 2)[:2]):
-            d.text((pad + inner, cy + s + 18 + i * 44), ln, font=f_cmt,
+        for i, ln in enumerate(lay["comment_lines"]):   # same lines the height was sized from
+            d.text((pad + inner, cy + s + 18 + i * lay["cmt_line_h"]), ln, font=f_cmt,
                    fill=(236, 236, 240, 255))
 
     react = ROOT / "assets" / "pngtuber" / "kg_idle.png"
