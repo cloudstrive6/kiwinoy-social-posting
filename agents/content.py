@@ -1024,6 +1024,31 @@ def _make_safe(text: str, kind: str, gname: str = "") -> str:
     return out
 
 
+def _observation_hook(observation: str) -> str:
+    """ABSOLUTE last resort before the canned line: restate the OBSERVER'S OWN first clause.
+    No model call, so there is nothing to invent — the text is literally the ground truth the
+    critics judge against. Beats 'You have to see this play', which kept reaching live posts
+    when every written attempt was rejected (user, 2026-10-07)."""
+    body = re.sub(r"\s+", " ", (observation or "").strip())
+    # strip ONLY a short lead-in ("These frames show ", "The clip shows ") — an earlier
+    # version swallowed everything up to the first full stop and returned nothing
+    body = re.sub(r"^(?:these frames?|the clip|this clip|the footage|the scene)\s+"
+                  r"(?:show|shows|depicts?|opens with)\s+", "", body, flags=re.I)
+    first = (re.split(r"(?<=[.;])\s+", body)[0] if body else "").strip(" .;:,")
+    if not first:
+        return ""
+    if len(first.split()) > 12:                      # prefer a clause boundary over a hard cut
+        head = first.split(",")[0]
+        first = head if 4 <= len(head.split()) <= 12 else " ".join(first.split()[:12])
+    # never end on a dangling function word ("stands over a")
+    while first.split() and first.split()[-1].lower() in {
+            "a", "an", "the", "on", "in", "at", "of", "to", "with", "over", "under", "and",
+            "by", "for", "from", "into", "as", "his", "her", "their", "its"}:
+        first = " ".join(first.split()[:-1])
+    first = first.strip(" ,;:-")
+    return ((first[0].upper() + first[1:])[:90] if first else "")
+
+
 def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
     """A caption to go WITH the plain fallback hook. The fallback used to reuse the hook text
     verbatim, so the post's hook and caption read identically (per user 2026-10-06). Same
@@ -1275,9 +1300,18 @@ def hook_and_caption_from_video(
                                       + (f" | caption: {cap3}" if okc3 else
                                          f" | caption: (safe default — {cwhy})"), flush=True)
                             else:
-                                print(f"[content] plain hook rejected too ({i3}); generic "
-                                      "fallback.", flush=True)
-                                hook, line = "You have to see this play", ""
+                                # Still nothing: restate the observer's own words rather than
+                                # the canned line. It cannot be "unsupported" — it IS the
+                                # evidence — so no critic pass is needed.
+                                h4 = _observation_hook(observation)
+                                if h4:
+                                    print(f"[content] plain hook rejected ({i3}); using the "
+                                          f"observation itself: {h4}", flush=True)
+                                    hook, line = h4, ""
+                                else:
+                                    print(f"[content] plain hook rejected too ({i3}); generic "
+                                          "fallback.", flush=True)
+                                    hook, line = "You have to see this play", ""
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
