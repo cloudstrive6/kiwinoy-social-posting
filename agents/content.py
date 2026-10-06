@@ -952,9 +952,9 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         "Never generic: no 'watch this play', no 'you won't believe this'. A flat scenery "
         "line ('rainy street, glowing eyes') is a FAILURE — the clip's words or action almost "
         "always give you something better.\n"
-        "ADVERTISER-SAFE: no profanity or censored profanity (f-word, s-word, 'wtf'), no "
-        "slurs, and no graphic wording about killing, death, blood or torture. Say 'takes him "
-        "down', 'this fight turns', 'it goes bad fast' instead. Keep it punchy, not explicit.\n"
+        "ADVERTISER-SAFE: no profanity or censored profanity (f-word, s-word, 'wtf') and no "
+        "slurs — if a line you're drawing on contains them, re-angle it without them. Ordinary "
+        "action words (kill, die, blood, hell) are FINE; don't tiptoe around the game.\n"
         "ENGLISH. No hashtags, no emojis, no preamble — just the line."
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix THAT specific problem; keep using "
            "the dialogue and action, just drop the unsupported part." if avoid else "")
@@ -972,15 +972,14 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
 # Words that make a post advertiser-unfriendly or age-restricted on YouTube when they are
 # BURNED ON SCREEN or sit in the caption (per user 2026-10-06: hooks were quoting subtitles
 # verbatim, profanity and all). Matched whole-word, case-insensitive, incl. common censoring.
+# PROFANITY AND SLURS ONLY. Ordinary action vocabulary — kill, die, dead, blood, hell — is
+# fine for a gaming channel and is NOT filtered (user, 2026-10-06): the problem was never the
+# word 'killin'', it was burning "Fuck the plan, let's get to killin'" on screen verbatim.
 _UNSAFE_WORDS = (
-    r"f+u+c+k\w*|f\*+c?k\w*|f#+\w*|motherf\w+|mf\w*|wtf|stfu|"
-    r"s+h+i+t\w*|sh\*+t\w*|bullshit|crap|piss\w*|"
-    r"b+i+t+c+h\w*|bastard\w*|asshole\w*|arsehole\w*|dick\w*|douche\w*|"
-    r"c+u+n+t\w*|whore\w*|slut\w*|rape\w*|"
-    r"damn|goddamn|hell\b|"
-    r"kill(s|ed|ing)?|murder\w*|slaughter\w*|massacre\w*|execute[sd]?\b|suicide|"
-    r"die[sd]?\b|dying|dead\b|death\w*|corpse\w*|blood(y|ied)?\b|gore|torture\w*|"
-    r"butcher\w*|decapitat\w*|dismember\w*"
+    r"f+u+c+k\w*|f\*+c?k\w*|f#+\w*|fuk\w*|motherf\w+|wtf|stfu|"
+    r"s+h+i+t\w*|sh\*+t\w*|bullshit|"
+    r"b+i+t+c+h\w*|bastard\w*|asshole\w*|arsehole\w*|dumbass|jackass|"
+    r"c+u+n+t\w*|whore\w*|slut\w*|rape\w*|retard\w*|f[a4]gg?\w*|n[i1]gg\w*"
 )
 _UNSAFE_RE = re.compile(rf"\b(?:{_UNSAFE_WORDS})\b", re.I)
 
