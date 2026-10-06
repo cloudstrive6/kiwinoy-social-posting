@@ -44,8 +44,18 @@ def _candidates(key: str) -> list[tuple[str, Any]]:
     kept as a fallback during migration (the bulk migrator deletes a clip from the
     Release once it's on B2, so steady-state has no duplicates)."""
     fcfg = CONFIG.reels.get("footage", {}) or {}
-    base = ROOT / fcfg.get("dir", "reels/assets/footage")
     pool: list[tuple[str, Any]] = []
+    # CUTSCENE pool (key '<game>-cutscene', per user 2026-10-06): its own folder + B2 prefix,
+    # so cutscene clips feed the LORE format only and never land in a gameplay reel. The key
+    # keeps them separate in the used-clip ledger too.
+    if key.endswith("-cutscene"):
+        game = key[: -len("-cutscene")]
+        d = ROOT / "reels" / "assets" / "cutscenes" / game
+        if d.exists():
+            pool += [("local", p) for p in d.iterdir() if p.suffix.lower() in VIDEO_EXTS]
+        pool += [("b2", a) for a in b2_store.list_cutscenes(game)]
+        return pool
+    base = ROOT / fcfg.get("dir", "reels/assets/footage")
     d = base / key
     if d.exists():
         pool += [("local", p) for p in d.iterdir() if p.suffix.lower() in VIDEO_EXTS]

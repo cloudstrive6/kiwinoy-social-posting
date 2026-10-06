@@ -659,6 +659,11 @@ def run_gameplay_reel(
              if gk else len(pset))
     except Exception:
         n = 0
+    # PER-PLATFORM rotation (per user 2026-10-06): each track cycles its OWN list, so
+    # YouTube/Facebook can be lore-only while IG/TikTok keep the old mix. Missing = `layouts`.
+    _plat_layouts = (gcfg.get("platform_layouts") or {}).get(_lp)
+    if _plat_layouts:
+        layouts = [str(x) for x in _plat_layouts]
     main_layouts = [l for l in layouts if l != "rotated"] or ["classic"]
     # INSTAGRAM ONLY: drop the triptych format for the configured games (weakest IG
     # performance, per user 2026-08-08). Only the FEED track (_lp=="instagram") is
@@ -711,6 +716,27 @@ def run_gameplay_reel(
             log(f"Clip override '{clip_override}' not found in '{brief['game']}' — skipping.")
             return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
         log(f"Clip forced (override): {clip_id}")
+    elif layout == "lore":
+        # LORE cards come from the CUTSCENE pool only (per user 2026-10-06). When a game has
+        # no unused cutscene clip, fall back to this track's previous layout for the slot
+        # rather than skipping the post (user's call) — logged so the empty pool is visible.
+        ckey = f"{brief['game']}-cutscene"
+        clip_path, clip_id = reel_composer.pick_unused_clip(ckey, pick_platforms)
+        if not clip_path:
+            _prev = [l for l in main_layouts if l != "lore"] or [
+                l for l in (gcfg.get("layouts") or ["classic"]) if l != "rotated"] or ["classic"]
+            layout = _prev[n % len(_prev)]
+            log(f"No unused CUTSCENE footage ({ckey}) — falling back to the {layout} layout "
+                "for this slot. Add clips to reels/assets/cutscenes/<game> for lore shorts.")
+            if layout == "fill":
+                clip_path, clip_id = reel_composer.pick_unused_clip(vkey, pick_platforms)
+            if not clip_path:
+                clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"],
+                                                                    pick_platforms)
+                if not clip_path and layout != "fill":
+                    clip_path, clip_id = reel_composer.pick_unused_clip(vkey, pick_platforms)
+                    if clip_path:
+                        layout = "fill"
     elif layout == "fill":
         clip_path, clip_id = reel_composer.pick_unused_clip(vkey, pick_platforms)
         if not clip_path:
@@ -732,7 +758,27 @@ def run_gameplay_reel(
         log("Could not resolve a clip from either pool — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
-    if layout == "fill":
+    if layout == "lore":
+        # LORE card: the TEXT is the content and it is burned into the frame, so there is no
+        # separate on-screen hook. The post caption reuses the card body (it reads as a
+        # standalone observation) plus the usual game title + hashtags.
+        from tools.lore_short import build as _build_lore
+        lcfg = gcfg.get("lore", {}) or {}
+        _dur = float(lcfg.get("seconds", 8))
+        _total = ffmpeg.duration(Path(clip_path)) or _dur
+        _start = max(0.0, min(_total - _dur, _total * float(lcfg.get("start_at", 0.45))))
+        log(f"Clip (cutscene pool): {clip_id}")
+        log(f"Building a LORE card ({_dur:.0f}s from {_start:.0f}s of a {_total:.0f}s clip)...")
+        lore_out = _build_lore(Path(clip_path), brief.get("game", ""), _start, _dur,
+                               None, run_dir / "lore")
+        _card = json.loads((run_dir / "lore" / "card.json").read_text(encoding="utf-8"))
+        hook = ""
+        brief["hook"] = ""
+        caption = content.compose_reel_caption(_card.get("body", ""), brief.get("game", ""),
+                                               with_game_title=True)
+        reel_path = Path(lore_out)
+        log(f"Game: {brief.get('subject')} | LORE card | clip {clip_id}")
+    elif layout == "fill":
         # FILL caption ALTERNATES two styles (per user 2026-07-28) on the used-clip
         # counter n: EVEN -> RELATABLE (clip-grounded human first-person moment, no game
         # name/marketing); ODD -> DESCRIPTIVE/HYPE (the previous game-level style that
@@ -799,7 +845,11 @@ def run_gameplay_reel(
     # The 30 Mbps "hi" spec backfired on TikTok's PUBLIC API transcode (proven: high bitrate
     # degrades worse). Set reels.tiktok.hi_bitrate: true to restore the 30M browser-upload spec.
     tt_hi = tiktok_only and bool((CONFIG.reels.get("tiktok", {}) or {}).get("hi_bitrate", False))
-    if layout == "fill":
+    if layout == "lore":
+        # Already rendered by tools.lore_short (card + clip + comment + reaction, 60fps).
+        video_bytes = reel_path.read_bytes()
+        log(f"LORE card rendered -> {reel_path} ({len(video_bytes) // 1024} KB)")
+    elif layout == "fill":
         # Full-bleed: raw landscape scaled to COVER 9:16, pure footage (no overlay),
         # original game audio + the 1080p reels' +vol_db boost, FULL clip.
         log(f"Rendering FULL-BLEED vertical reel (full clip, <={int(target)}s)...")
@@ -1068,9 +1118,37 @@ def run_gameplay_reel(
                 fb_art = _game_art(brief.get("game"))
                 fb_src = reel_path
                 fb_caption = caption
-                if layout == "triptych" or not fb_art:
+                # FACEBOOK IS LORE-ONLY (per user 2026-10-06; the triptych is retired here).
+                # When the shared render is already FB's format, reuse it; otherwise FB builds
+                # its OWN lore short from a fresh CUTSCENE clip. No cutscene left -> shared.
+                fb_layouts = [str(x) for x in ((gcfg.get("platform_layouts") or {}).get(
+                    "facebook") or ["lore"])]
+                if layout not in fb_layouts and "lore" in fb_layouts:
+                    fb_clip, fb_cid = reel_composer.pick_unused_clip(
+                        f"{brief['game']}-cutscene", ["facebook"])
+                    if fb_clip:
+                        from tools.lore_short import build as _build_lore_fb
+                        _lc = gcfg.get("lore", {}) or {}
+                        _d = float(_lc.get("seconds", 8))
+                        _t = float(ffmpeg.duration(Path(fb_clip)) or _d)
+                        _s = max(0.0, min(_t - _d, _t * float(_lc.get("start_at", 0.45))))
+                        log(f"FB lore: building its own card from {fb_cid}")
+                        fb_src = Path(_build_lore_fb(Path(fb_clip), brief.get("game", ""),
+                                                     _s, _d, None, run_dir / "lore_fb"))
+                        _fc = json.loads(
+                            (run_dir / "lore_fb" / "card.json").read_text(encoding="utf-8"))
+                        fb_caption = content.compose_reel_caption(
+                            _fc.get("body", ""), brief.get("game", ""), with_game_title=True)
+                        fb_story_hook = ""
+                        fb_own_clip = fb_cid
+                        if reel_composer.mark_clip_used(fb_cid, ["facebook"]):
+                            log(f"FB lore: dedicated cutscene clip {fb_cid} (marked used).")
+                    else:
+                        log("FB lore: no unused CUTSCENE clip for this game — using the "
+                            "shared render this slot.")
+                elif layout == "triptych" or not fb_art:
                     if not fb_art and layout != "triptych":
-                        log("FB triptych: no game art for this game — using the shared render.")
+                        log("FB: no game art for this game — using the shared render.")
                     if layout == "triptych" and art_video:
                         # FB shows the SHARED triptych's loop -> count it on FB's own rotation
                         # so FB's next own pick moves past it (no back-to-back repeat on FB).
@@ -1118,7 +1196,7 @@ def run_gameplay_reel(
                     reel_ffmpeg.trim_seconds(reel_path, src, fb_dur)
                 fb_bytes = reel_ffmpeg.reencode_facebook(src, run_dir / "reel_fb.mp4", fps=fps)
                 fb_story_bytes = fb_bytes
-                log("Publishing Facebook (triptych-only, FB-spec 60fps)...")
+                log("Publishing Facebook (lore-only, FB-spec 60fps)...")
                 # REELS placement regardless of length — FB Reels have no cap since June 2025
                 # (publish_video fail-opens to a feed video if the placement is ever rejected).
                 result["facebook_result"] = publisher.run_reel(
@@ -1127,7 +1205,7 @@ def run_gameplay_reel(
                     _record_post(["facebook"], result["facebook_result"],
                                  clip=(fb_own_clip or clip_id), hook_=fb_story_hook, cap_=fb_caption)
             except Exception as e:
-                log(f"FB triptych/re-encode failed ({e!r}) — posting FB with the shared render.")
+                log(f"FB lore/re-encode failed ({e!r}) — posting FB with the shared render.")
                 rest_targets = main_targets
 
         api_result = None

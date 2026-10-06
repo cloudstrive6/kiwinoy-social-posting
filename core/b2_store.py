@@ -154,6 +154,25 @@ def list_footage(gamekey: str) -> list[dict[str, str]]:
     return out
 
 
+def list_cutscenes(gamekey: str) -> list[dict[str, str]]:
+    """Return [{name, key}] for a game's CUTSCENE clips on B2 (``cutscenes/<game>/*``).
+    Cutscene footage is kept in its own pool (per user 2026-10-06) so the talky clips feed
+    the LORE format only and never get picked as a normal gameplay reel. Same shape as
+    list_footage; download with ``download_footage``."""
+    if not enabled() or not gamekey:
+        return []
+    prefix = f"cutscenes/{gamekey}/"
+    out: list[dict[str, str]] = []
+    for f in _list_names(prefix):
+        key = str(f.get("fileName", ""))
+        name = key[len(prefix):]
+        if not name or "/" in name:
+            continue
+        if Path(name).suffix.lower() in VIDEO_EXTS:
+            out.append({"name": name, "key": key})
+    return out
+
+
 def list_art_footage(gamekey: str) -> list[dict[str, str]]:
     """Return [{name, key}] for a game's TITLE-SCREEN art videos on B2
     (``art-footage/<game>/*``) — the looping bottom-panel clips for the triptych.

@@ -790,6 +790,21 @@ reels:
     layouts: [classic, triptych, fill]   # 'rotated' (IG-only sideways landscape) PAUSED
                                           # 2026-07-24 per user, until further notice. Re-add
                                           # 'rotated' here to resume the IG-exclusive look.
+    # PER-PLATFORM ROTATION (per user 2026-10-06). A track rotates through ITS OWN list on
+    # its own used-clip counter; anything missing here falls back to `layouts` above.
+    #   lore = the LORE-CARD short (tools/lore_short.py): ~8s clip + a 45-65 word card that
+    #   takes ~18s to read, so the viewer loops it. Its clips come from the CUTSCENE pool
+    #   (reels/assets/cutscenes/<game> -> B2 cutscenes/<game>), never from footage/.
+    # When a game has no unused cutscene clip, the track falls back to its previous layout
+    # for that slot rather than skipping the post (user's call).
+    platform_layouts:
+      youtube:   [lore]                        # YouTube Shorts: lore only
+      facebook:  [lore]                        # FB: lore only (triptych retired 2026-10-06)
+      instagram: [classic, triptych, fill, lore]
+      tiktok:    [classic, triptych, fill, lore]
+    lore:
+      seconds: 8          # video length; the card is written to out-read it (~18s)
+      start_at: 0.45      # where in the cutscene to cut from (fraction of its length)
     # FILL = full-bleed vertical (new 2026-07-03): raw LANDSCAPE clips you paste into a
     # DEDICATED per-game folder, scaled to COVER the whole 9:16 frame (centre-crop, no
     # bands/logo/text — pure footage). Original game audio + the 1080p reels' volume
