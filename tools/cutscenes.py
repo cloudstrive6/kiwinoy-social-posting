@@ -8,7 +8,8 @@ ever feed the lore cards, and a normal gameplay reel can never pick one.
   python tools/cutscenes.py sync                # every game, then free the local copies
   python tools/cutscenes.py sync wolverine      # one game
   python tools/cutscenes.py sync --keep-local   # upload but keep the local files
-  python tools/cutscenes.py list                # what's on B2 per game
+  python tools/cutscenes.py list                # what is on B2 per game
+  python tools/cutscenes.py log [game]          # which SCENES/windows are already used
 """
 from __future__ import annotations
 
@@ -47,6 +48,41 @@ def sync(delete_local: bool = True, only_game: str | None = None) -> None:
           + ("  (verified + local freed)" if delete_local and rc == 0 else ""), flush=True)
 
 
+def used_log(only_game: str | None = None) -> None:
+    """WHICH SCENES ARE SPENT. Every lore short records '<game>-cutscene__<file>@<start>'
+    in the per-platform used-clip ledger, so the same MOMENT is never posted twice on a
+    platform even though the file is reused for other moments (per user 2026-10-07)."""
+    from core import gh_release
+    led = gh_release.read_ledger()
+    if led is None:
+        sys.exit("[cutscenes] used-clip ledger unreadable (transient GitHub error) — try again")
+    rows: dict[str, dict[float, list[str]]] = {}
+    for plat, ids in (led or {}).items():
+        for cid in ids:
+            if "-cutscene__" not in str(cid):
+                continue
+            head, _, start = str(cid).partition("@")
+            game = head.split("-cutscene__")[0]
+            if only_game and game != only_game:
+                continue
+            try:
+                t = float(start)
+            except ValueError:
+                t = -1.0
+            rows.setdefault(head, {}).setdefault(t, []).append(plat)
+    if not rows:
+        print("[cutscenes] no lore windows posted yet"
+              + (f" for {only_game}" if only_game else ""))
+        return
+    for head in sorted(rows):
+        file = head.split("-cutscene__", 1)[-1]
+        print(f"\n  {file}")
+        for t in sorted(rows[head]):
+            mm, ss = divmod(int(t), 60)
+            where = ", ".join(sorted(set(rows[head][t])))
+            print(f"    used @ {mm}:{ss:02d}  ->  {where}")
+
+
 def listing() -> None:
     games = sorted({p.name for p in SRC.iterdir() if p.is_dir()} if SRC.exists() else set())
     for g in games:
@@ -65,5 +101,7 @@ if __name__ == "__main__":
         sync(delete_local=not keep, only_game=game)
     elif argv and argv[0] == "list":
         listing()
+    elif argv and argv[0] in ("log", "used"):
+        used_log(next((a for a in argv[1:] if not a.startswith("-")), None))
     else:
         print(__doc__)

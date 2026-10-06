@@ -228,6 +228,99 @@ def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]
     return None, None
 
 
+def _speech_starts(path: Path, min_gap: float = 3.0) -> list[float]:
+    """Seconds where SPEECH starts, from ffmpeg's silencedetect. A lore card is written from
+    what characters say, so these are the moments worth cutting to. [] if ffmpeg/audio fail."""
+    import re as _re
+    import subprocess as _sp
+    from core import ffmpeg as _ff
+    exe = _ff.ffmpeg_bin() or "ffmpeg"
+    # Threshold RELATIVE to the clip's own level: a fixed -32dB finds nothing in loud combat
+    # audio and everything in a quiet scene. Mean volume - 12dB adapts to both.
+    noise = -32.0
+    try:
+        v = _sp.run([exe, "-hide_banner", "-i", str(path), "-af", "volumedetect",
+                     "-f", "null", "-"], capture_output=True, text=True, timeout=300)
+        m = _re.search(r"mean_volume:\s*(-?[0-9.]+) dB", v.stderr or "")
+        if m:
+            noise = max(-50.0, min(-20.0, float(m.group(1)) - 12.0))
+    except Exception:
+        pass
+    try:
+        r = _sp.run([exe, "-hide_banner", "-i", str(path), "-af",
+                     f"silencedetect=noise={noise:.0f}dB:d=0.6", "-f", "null", "-"],
+                    capture_output=True, text=True, timeout=300)
+    except Exception:
+        return []
+    ends = [float(m) for m in _re.findall(r"silence_end:\s*([0-9.]+)", r.stderr or "")]
+    out: list[float] = []
+    for t in sorted(ends):
+        if not out or t - out[-1] >= min_gap:
+            out.append(t)
+    return out
+
+
+def cutscene_windows(path: Path, seconds: float) -> list[float]:
+    """Candidate START times for a `seconds`-long lore window inside one cutscene file.
+    Prefers where speech begins (a line landing on screen), else an even spread. One file
+    therefore yields SEVERAL shorts over time (per user 2026-10-07)."""
+    from core import ffmpeg as _ff
+    total = float(_ff.duration(path) or 0.0)
+    if total <= seconds:
+        return [0.0]
+    last = max(0.0, total - seconds)
+    starts = [max(0.0, min(last, t - 0.6)) for t in _speech_starts(path)]   # a beat before the line
+    if not starts:
+        step = max(seconds, total / 6.0)
+        starts = [t for t in _frange(0.0, last, step)]
+    # de-duplicate windows that would overlap heavily
+    out: list[float] = []
+    for t in sorted(starts):
+        if not out or t - out[-1] >= seconds * 0.9:
+            out.append(round(t, 1))
+    return out or [0.0]
+
+
+def _frange(a: float, b: float, step: float) -> list[float]:
+    out, t = [], a
+    while t <= b + 1e-6:
+        out.append(round(t, 1))
+        t += step
+    return out
+
+
+def pick_unused_cutscene(game: str, platforms, seconds: float,
+                         cache: Optional[Path] = None):
+    """Pick (clip_path, clip_id, start) for a LORE short: the first cutscene WINDOW that is
+    unused on every platform in `platforms`. Ids are '<game>-cutscene__<file>@<start>', so the
+    SAME recording is reused for different moments until its windows run out. Returns
+    (None, None, 0.0) when nothing is free."""
+    key = f"{game}-cutscene"
+    plats = [str(p) for p in (platforms or []) if p]
+    pool = _candidates(key)
+    if not pool:
+        return None, None, 0.0
+    led = gh_release.read_ledger()
+    if led is None:                      # fail CLOSED, same rule as pick_unused_clip
+        print(f"[reel] used-clip ledger UNREADABLE — skipping to avoid a repeat ({key}).",
+              flush=True)
+        return None, None, 0.0
+    cache = cache or (ROOT / "reels" / "assets" / "cutscenes" / ".cache")
+    cache.mkdir(parents=True, exist_ok=True)
+    for kind, item in pool:
+        base_id = _clip_id(kind, item, key)
+        path = Path(item) if kind == "local" else _download_item(kind, item, cache)
+        if not path or not Path(path).exists():
+            continue
+        for start in cutscene_windows(Path(path), seconds):
+            cid = f"{base_id}@{start:g}"
+            if all(cid not in led.get(p, set()) for p in plats):
+                return Path(path), cid, start
+        print(f"[reel] every window of {base_id} is used on {plats} — trying the next file.",
+              flush=True)
+    return None, None, 0.0
+
+
 def mark_clip_used(clip_id: str, platforms) -> bool:
     """Record a clip as used ON EACH of `platforms` (call after a successful post)."""
     return gh_release.add_used_clip(clip_id, platforms)
