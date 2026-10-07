@@ -1024,6 +1024,34 @@ def _make_safe(text: str, kind: str, gname: str = "") -> str:
     return out
 
 
+# Words that give away text written ABOUT the footage rather than FOR the viewer. A hook is
+# burned onto the video, so "The whole clip is set outdoors in an industrial shipping-yard"
+# is never acceptable, no matter which stage produced it (user, 2026-10-08).
+_META_RE = re.compile(
+    r"\b(?:clips?|frames?|footage|screenshots?|videos?|scene is set|is set (?:in|at|outdoors)|"
+    r"observer|subtitles?|on-screen text|the whole|throughout|depicts?|shown here|"
+    r"this (?:short|reel|post))\b", re.I)
+
+
+def hook_shape_ok(hook: str) -> tuple[bool, str]:
+    """Is this usable as an ON-SCREEN hook? Deterministic guard applied to EVERY candidate,
+    so a stage direction or an over-long description can never reach a post."""
+    h = (hook or "").strip()
+    if not h:
+        return False, "empty"
+    n = len(h.split())
+    if n < 3:
+        return False, f"too short ({n} words)"
+    if n > 12:
+        return False, f"too long for a hook ({n} words)"
+    m = _META_RE.search(h)
+    if m:
+        return False, f"talks about the footage ('{m.group(0)}') instead of to the viewer"
+    if h.endswith(":"):
+        return False, "ends with a colon"
+    return True, ""
+
+
 def _observation_hook(observation: str) -> str:
     """ABSOLUTE last resort before the canned line: restate the OBSERVER'S OWN first clause.
     No model call, so there is nothing to invent — the text is literally the ground truth the
@@ -1047,6 +1075,27 @@ def _observation_hook(observation: str) -> str:
         first = " ".join(first.split()[:-1])
     first = first.strip(" ,;:-")
     return ((first[0].upper() + first[1:])[:90] if first else "")
+
+
+def _hookify_observation(observation: str, gname: str = "") -> str:
+    """Turn the observer's description INTO a hook. A pure rewrite — it may not add a single
+    fact — so it needs no accuracy pass, but unlike the raw restatement it reads like
+    something written for a viewer rather than a stage direction. '' on error."""
+    prompt = (
+        f"A factual description of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        "Rewrite the single most interesting thing in it as an ON-SCREEN HOOK for the video.\n"
+        "- 4 to 9 words, present tense\n"
+        "- use ONLY what the description states: no new objects, actions, names or outcomes\n"
+        "- write it TO the viewer, never ABOUT the video: never say clip, frames, footage, "
+        "scene, 'the whole', 'is set in'. 'The whole clip is set in a shipping yard' is WRONG; "
+        "'Cornered in a shipping yard at night' is right\n"
+        "- no hashtags, no emojis, no quotes, no preamble — just the line"
+    )
+    try:
+        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')
+        return line.strip(" ,;:-")[:90]
+    except Exception:
+        return ""
 
 
 def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
@@ -1228,6 +1277,9 @@ def hook_and_caption_from_video(
                     def _check_hook(h: str, l: str) -> tuple[bool, str]:
                         if not h:
                             return False, "empty hook"
+                        oks, whys = hook_shape_ok(h)      # cheap, before any model call
+                        if not oks:
+                            return False, whys
                         ok1, i1 = _verify_hook(h, l, observation, game, dialogue=dialogue)
                         if not ok1:
                             return False, i1 or "lore mismatch"
@@ -1304,6 +1356,12 @@ def hook_and_caption_from_video(
                                 # the canned line. It cannot be "unsupported" — it IS the
                                 # evidence — so no critic pass is needed.
                                 h4 = _observation_hook(observation)
+                                if h4 and not hook_shape_ok(h4)[0]:
+                                    h4 = ""           # stage-direction prose: not a hook
+                                if not h4:            # rewrite it INTO a hook instead
+                                    h4 = _hookify_observation(observation, gname)
+                                    if h4 and not hook_shape_ok(h4)[0]:
+                                        h4 = ""
                                 if h4:
                                     print(f"[content] plain hook rejected ({i3}); using the "
                                           f"observation itself: {h4}", flush=True)
