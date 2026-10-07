@@ -695,6 +695,29 @@ def read_subtitle_sheets(sheets: list, gname: str, what: str = "clip",
     return out
 
 
+def caption_body_ok(body: str, hook: str, game: str = "") -> tuple[bool, str]:
+    """Is this caption body worth posting? Blocks the filler and the duplicate-title case —
+    a caption came back as just 'The Last of Us Part II 🍄', which compose_reel_caption then
+    adds AGAIN as the game-title line (user, 2026-10-08)."""
+    b = re.sub(r"[^\w ]", "", (body or "")).strip().lower()
+    if not b:
+        return False, "empty"
+    if b in {"watch this clip", "wait for it", "gameplay"}:
+        return False, "filler"
+    if hook and b == re.sub(r"[^\w ]", "", hook).strip().lower():
+        return False, "same as the hook"
+    gname = re.sub(r"[^\w ]", "", (CONFIG.reels.get("game_names", {}) or {}).get(
+        game, "") or game or "").strip().lower()
+    # token subset, so "Spider-Man 2" is caught against "Marvel's Spider-Man 2"
+    if gname:
+        gt, bt = set(gname.split()), set(b.split())
+        if bt and (bt <= gt or b in {gname, f"{gname} gameplay", f"{gname} clip"}):
+            return False, "just the game title (compose adds that line already)"
+    if len(b.split()) < 2:
+        return False, "too short to be a caption"
+    return True, ""
+
+
 def format_subtitles(rows: list[str], speakers: list[str], what: str = "clip",
                      cap: int = 60) -> str:
     """The subtitle-evidence block handed to writers + critics ('' if no rows)."""
@@ -945,6 +968,21 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         "2. WHAT THEY DO — the action in the observation ('Claws out against three armoured "
         "soldiers', 'Cornered on a rooftop in the rain').\n"
         "3. Only if there is neither: the setting or mood.\n"
+        "IT MUST READ LIKE A HOOK, NOT A DESCRIPTION. Grounded does NOT mean flat: a caption "
+        "that merely lists what is on screen ('Plunging toward waterfall cliffs, clawing at "
+        "purple robots mid-air') is a FAILURE — nobody stops scrolling for a label. Take the "
+        "same true facts and give them TENSION, using one of these, which assert nothing "
+        "extra:\n"
+        "  - stakes already visible: 'No parachute, no plan, just claws'\n"
+        "  - a question about what IS on screen: 'Why is Logan falling with the Sentinels?'\n"
+        "  - second person, pointing at the moment: 'Watch what he does with the last one'\n"
+        "  - a dry reaction to the situation: 'Commandeer a Banshee they said'\n"
+        "  - the turn the dialogue sets up: 'Jean is losing him to the rage'\n"
+        "Write the line a person would say about this moment, not the line a camera would.\n"
+        "THE TEST: after reading it, the viewer should feel they will MISS something if they "
+        "scroll past. Open a gap and let the clip close it — hint at what happens without "
+        "stating it. If your line could be swapped onto any other clip from this game, or if "
+        "it already tells the whole moment, it is not a hook yet: rewrite it.\n"
         "HARD RULES: invent NOTHING. No event, motive, relationship or outcome that the "
         "dialogue and observation don't plainly support — do not say a plea 'works', that "
         "someone 'wins', or why anyone acts. Do not name a character who has no speaker label "
@@ -960,8 +998,7 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
            "the dialogue and action, just drop the unsupported part." if avoid else "")
     )
     try:
-        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip()
-        line = line.strip('"').strip()
+        line = _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])
         if line.count('"') % 2:        # a stray quote left by stripping one wrapper quote
             line = line.replace('"', "").strip()
         return line.strip(" ,;:-")[:90]
@@ -1030,7 +1067,8 @@ def _make_safe(text: str, kind: str, gname: str = "") -> str:
 _META_RE = re.compile(
     r"\b(?:clips?|frames?|footage|screenshots?|videos?|scene is set|is set (?:in|at|outdoors)|"
     r"observer|subtitles?|on-screen text|the whole|throughout|depicts?|shown here|"
-    r"this (?:short|reel|post))\b", re.I)
+    r"this (?:short|reel|post)|descriptions?|literal(?:ly)?|summary|as requested|"
+    r"here(?:'s| is| are)|the following)\b", re.I)
 
 
 def hook_shape_ok(hook: str) -> tuple[bool, str]:
@@ -1086,16 +1124,59 @@ def _hookify_observation(observation: str, gname: str = "") -> str:
         "Rewrite the single most interesting thing in it as an ON-SCREEN HOOK for the video.\n"
         "- 4 to 9 words, present tense\n"
         "- use ONLY what the description states: no new objects, actions, names or outcomes\n"
+        "- it must READ LIKE A HOOK, not a label. Listing what is on screen ('Plunging toward "
+        "waterfall cliffs, clawing at purple robots mid-air') FAILS. Give the same facts "
+        "tension: name the stakes ('No parachute, no plan, just claws'), ask about what is "
+        "shown ('Why is he falling with them?'), or point at it ('Watch the last few seconds')\n"
+        "- it must OPEN A CURIOSITY GAP: the viewer should feel they'll miss something by "
+        "scrolling. Hint at what happens; never state the whole moment outright\n"
         "- write it TO the viewer, never ABOUT the video: never say clip, frames, footage, "
         "scene, 'the whole', 'is set in'. 'The whole clip is set in a shipping yard' is WRONG; "
         "'Cornered in a shipping yard at night' is right\n"
         "- no hashtags, no emojis, no quotes, no preamble — just the line"
     )
     try:
-        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')
-        return line.strip(" ,;:-")[:90]
+        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:90]
     except Exception:
         return ""
+
+
+def _strip_md(line: str) -> str:
+    """Drop markdown the model sometimes wraps a line in (**bold**, *italics*, `code`) —
+    '**Williams calls the win before Chief fires**' reached a hook (user, 2026-10-08)."""
+    t = (line or "").strip()
+    t = re.sub(r"^\s*[#>\-\*\d.\)]+\s+", "", t)       # list/heading markers
+    t = re.sub(r"(\*\*|__|[*_`])", "", t)
+    return t.strip().strip('"').strip(" ,;:-")
+
+
+def _verify_hooky(hook: str, gname: str = "", min_score: int = 5) -> tuple[bool, str]:
+    """CURIOSITY gate for the FALLBACK hooks (per user 2026-10-08: 'hooks should induce
+    curiosity and make the viewers watch'). Grounded fallbacks were coming out as stage
+    directions — accurate and dead. Scored blind on a benchmark: stage directions and the
+    canned line rate 2-3/10, real hooks 6-8/10, so 5 is the line. Fail-OPEN on error."""
+    if not hook.strip():
+        return False, "empty"
+    prompt = (
+        f'A {gname or "gameplay"} short burns this text across the top of the video:\n'
+        f'"{hook}"\n\n'
+        "You are a short-form editor. Would a cold scroller STOP for this line?\n"
+        "A hook has tension, curiosity, stakes, a question, a dry joke, or points at "
+        "something about to happen. A line that merely DESCRIBES what is on screen, like a "
+        "stage direction or a shot list ('Claws out, one word said, against an explosion', "
+        "'Plunging toward waterfall cliffs'), is NOT a hook — it labels the frame.\n"
+        '- "is_hook": true/false   - "stop_score": 0-10   - "issues": what is missing if low\n'
+        'Return ONLY JSON: {"is_hook": true, "stop_score": 7, "issues": ""}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=90)) or {}
+        score = int(d.get("stop_score", 0) or 0)
+        if bool(d.get("is_hook")) and score >= min_score:
+            return True, ""
+        return False, (f"reads as a description, not a hook ({score}/10): "
+                       f"{str(d.get('issues', '')).strip()}")
+    except Exception:
+        return True, ""
 
 
 def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
@@ -1106,17 +1187,21 @@ def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") 
     prompt = (
         f"{dlg}An observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
         f'The on-screen hook already says: "{hook}"\n\n'
-        "Write the POST CAPTION: ONE short clip-title line, 3 to 8 words, Title Case.\n"
-        "It must NOT repeat the hook's wording — the hook is on the video, the caption sits "
-        "under it, so give a DIFFERENT angle on the same moment (the hook teases the action, "
-        "the caption can name the scene, the place, or who is involved).\n"
-        "Invent nothing: use only what the dialogue and observation support. You may name a "
-        "character whose subtitle SPEAKER LABEL appears above. No hashtags, no emojis, no "
-        "quotes, no preamble — just the line."
+        "Write the POST CAPTION: ONE short line, 3 to 8 words, Title Case. It is a LABEL for "
+        "the moment — who, what and where — the way a clip is listed, e.g. 'Logan vs MK2 "
+        "Sentinel, Wave 23', 'Ellie Tracks Down Nora in Seattle', 'Banshee Heist Under "
+        "Fire'.\n"
+        "The hook does the teasing; the caption just NAMES the scene. So:\n"
+        "- do NOT repeat the hook's wording\n"
+        "- do NOT claim an OUTCOME or a motive ('beats', 'wins', 'escapes', 'because he "
+        "wants'). Captions keep getting rejected for exactly that. Name the confrontation, "
+        "not how it ends.\n"
+        "- use only what the dialogue and observation support; you may name a character whose "
+        "subtitle SPEAKER LABEL appears above\n"
+        "No hashtags, no emojis, no quotes, no preamble — just the line."
     )
     try:
-        line = sanitize(_text(prompt, timeout=90)).strip().splitlines()[0].strip().strip('"')
-        return line.strip(" ,;:-")[:90]
+        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:90]
     except Exception:
         return ""
 
@@ -1307,15 +1392,25 @@ def hook_and_caption_from_video(
                             # caption misquotes the line..."), which is why the canned line kept
                             # reaching TikTok. The stale caption is dropped either way — it was
                             # just judged wrong, so it must not be published.
+                            def _check_fallback(h: str) -> tuple[bool, str]:
+                                """Accurate AND actually a hook — a grounded stage direction
+                                is a failure here (user, 2026-10-08)."""
+                                if not h:
+                                    return False, "empty hook"
+                                oka, ia = _check_hook(h, "")
+                                if not oka:
+                                    return False, ia
+                                return _verify_hooky(h, gname)
+
                             h3 = _plain_action_hook(observation, gname, dialogue=dialogue)
-                            ok3, i3 = _check_hook(h3, "") if h3 else (False, "empty hook")
+                            ok3, i3 = _check_fallback(h3)
                             if h3 and not ok3:                       # one corrective retry
                                 print(f"[content] plain hook rejected ({i3}); retrying tighter.",
                                       flush=True)
                                 h3b = _plain_action_hook(observation, gname, avoid=i3,
                                                          dialogue=dialogue)
                                 if h3b:
-                                    ok3b, i3b = _check_hook(h3b, "")
+                                    ok3b, i3b = _check_fallback(h3b)
                                     if ok3b:
                                         h3, ok3 = h3b, True
                                     else:
@@ -1329,10 +1424,9 @@ def hook_and_caption_from_video(
                                 # weak half sank both and the post fell back to "Watch this
                                 # clip" — user, 2026-10-07), and say WHY when it fails.
                                 def _cap_ok(c: str) -> tuple[bool, str]:
-                                    if not c:
-                                        return False, "empty"
-                                    if c.lower() == h3.lower():
-                                        return False, "same text as the hook"
+                                    okb, whyb = caption_body_ok(c, h3, game)
+                                    if not okb:
+                                        return False, whyb
                                     return _verify_hook(c, "", observation, game,
                                                         dialogue=dialogue)
 
@@ -1358,9 +1452,14 @@ def hook_and_caption_from_video(
                                 h4 = _observation_hook(observation)
                                 if h4 and not hook_shape_ok(h4)[0]:
                                     h4 = ""           # stage-direction prose: not a hook
+                                if h4 and not _verify_hooky(h4, gname)[0]:
+                                    h4 = ""           # true, but reads as a description
                                 if not h4:            # rewrite it INTO a hook instead
-                                    h4 = _hookify_observation(observation, gname)
-                                    if h4 and not hook_shape_ok(h4)[0]:
+                                    for _try in range(2):
+                                        h4 = _hookify_observation(observation, gname)
+                                        if h4 and hook_shape_ok(h4)[0] and _verify_hooky(
+                                                h4, gname)[0]:
+                                            break
                                         h4 = ""
                                 if h4:
                                     print(f"[content] plain hook rejected ({i3}); using the "
@@ -1376,12 +1475,12 @@ def hook_and_caption_from_video(
         # title + hashtags, which beats filler (user, 2026-10-08).
         if hook and not line and observation:
             cap = _plain_caption(observation, gname, hook, dialogue)
-            okc, cwhy = ((False, "empty") if not cap else
-                         (False, "same as hook") if cap.lower() == hook.lower() else
-                         _verify_hook(cap, "", observation, game, dialogue=dialogue))
+            okb, cwhy = caption_body_ok(cap, hook, game)
+            okc = okb and _verify_hook(cap, "", observation, game, dialogue=dialogue)[0]
             if not okc:
                 cap2 = _plain_caption(observation, gname, hook, dialogue)
-                if cap2 and cap2.lower() != hook.lower():
+                okb2, cwhy2 = caption_body_ok(cap2, hook, game)
+                if okb2:
                     okc, cwhy = _verify_hook(cap2, "", observation, game, dialogue=dialogue)
                     if okc:
                         cap = cap2
