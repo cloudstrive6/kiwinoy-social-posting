@@ -173,6 +173,20 @@ def list_cutscenes(gamekey: str) -> list[dict[str, str]]:
     return out
 
 
+def cutscene_games() -> list[str]:
+    """Game keys that have ANY cutscene clip on B2 — one listing, not one call per game.
+    Lets the LORE format fall across to a game that actually has footage."""
+    if not enabled():
+        return []
+    out: list[str] = []
+    for f in _list_names("cutscenes/"):
+        parts = str(f.get("fileName", "")).split("/")
+        if len(parts) >= 3 and parts[0] == "cutscenes" and parts[1] and parts[1] not in out:
+            if Path(parts[-1]).suffix.lower() in VIDEO_EXTS:
+                out.append(parts[1])
+    return out
+
+
 def list_art_footage(gamekey: str) -> list[dict[str, str]]:
     """Return [{name, key}] for a game's TITLE-SCREEN art videos on B2
     (``art-footage/<game>/*``) — the looping bottom-panel clips for the triptych.

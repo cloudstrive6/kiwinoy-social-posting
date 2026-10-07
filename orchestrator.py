@@ -31,7 +31,7 @@ from agents import (
     threads_research,
     threads_writer,
 )
-from core import elevenlabs, ffmpeg
+from core import b2_store, elevenlabs, ffmpeg
 from core.config import CONFIG, OUTPUT_DIR, ROOT
 
 
@@ -725,6 +725,22 @@ def run_gameplay_reel(
         clip_path, clip_id, lore_start = reel_composer.pick_unused_cutscene(
             brief["game"], pick_platforms, _lsec)
         if not clip_path:
+            # The track's game may be locked by prefer_override to a game with no cutscenes
+            # (wolverine, while the cutscenes are spider-man2/thelastofus2), which made a
+            # lore-only platform fall back every single slot. Cross over to a game that HAS
+            # cutscene footage rather than abandoning the format (per user 2026-10-08).
+            for _alt in b2_store.cutscene_games():
+                if _alt == brief["game"]:
+                    continue
+                _cp, _cid, _st = reel_composer.pick_unused_cutscene(
+                    _alt, pick_platforms, _lsec)
+                if _cp:
+                    _an = (CONFIG.reels.get("game_names", {}) or {}).get(_alt, _alt)
+                    log(f"No {brief['game']} cutscenes — LORE switches to {_an} this slot.")
+                    brief["game"], brief["subject"] = _alt, _an
+                    clip_path, clip_id, lore_start = _cp, _cid, _st
+                    break
+        if not clip_path:
             _prev = [l for l in main_layouts if l != "lore"] or [
                 l for l in (gcfg.get("layouts") or ["classic"]) if l != "rotated"] or ["classic"]
             layout = _prev[n % len(_prev)]
@@ -1130,15 +1146,26 @@ def run_gameplay_reel(
                     _d = float(_lc.get("seconds", 8))
                     fb_clip, fb_cid, _s = reel_composer.pick_unused_cutscene(
                         brief["game"], ["facebook"], _d)
+                    fb_lore_game = brief["game"]
+                    if not fb_clip:            # cross over to a game that HAS cutscenes
+                        for _alt in b2_store.cutscene_games():
+                            if _alt == brief["game"]:
+                                continue
+                            fb_clip, fb_cid, _s = reel_composer.pick_unused_cutscene(
+                                _alt, ["facebook"], _d)
+                            if fb_clip:
+                                fb_lore_game = _alt
+                                log(f"FB lore: no {brief['game']} cutscenes — using {_alt}.")
+                                break
                     if fb_clip:
                         from tools.lore_short import build as _build_lore_fb
                         log(f"FB lore: building its own card from {fb_cid}")
-                        fb_src = Path(_build_lore_fb(Path(fb_clip), brief.get("game", ""),
+                        fb_src = Path(_build_lore_fb(Path(fb_clip), fb_lore_game,
                                                      _s, _d, None, run_dir / "lore_fb"))
                         _fc = json.loads(
                             (run_dir / "lore_fb" / "card.json").read_text(encoding="utf-8"))
                         fb_caption = content.compose_reel_caption(
-                            _fc.get("body", ""), brief.get("game", ""), with_game_title=True)
+                            _fc.get("body", ""), fb_lore_game, with_game_title=True)
                         fb_story_hook = ""
                         fb_own_clip = fb_cid
                         if reel_composer.mark_clip_used(fb_cid, ["facebook"]):
