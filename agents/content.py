@@ -1370,6 +1370,24 @@ def hook_and_caption_from_video(
                                     print(f"[content] plain hook rejected too ({i3}); generic "
                                           "fallback.", flush=True)
                                     hook, line = "You have to see this play", ""
+        # A FALLBACK HOOK used to leave the caption empty, which became the filler "Watch
+        # this clip" on a real post. Write a caption for it from the same evidence; if that
+        # can't be done, leave the body EMPTY — compose_reel_caption then posts the game
+        # title + hashtags, which beats filler (user, 2026-10-08).
+        if hook and not line and observation:
+            cap = _plain_caption(observation, gname, hook, dialogue)
+            okc, cwhy = ((False, "empty") if not cap else
+                         (False, "same as hook") if cap.lower() == hook.lower() else
+                         _verify_hook(cap, "", observation, game, dialogue=dialogue))
+            if not okc:
+                cap2 = _plain_caption(observation, gname, hook, dialogue)
+                if cap2 and cap2.lower() != hook.lower():
+                    okc, cwhy = _verify_hook(cap2, "", observation, game, dialogue=dialogue)
+                    if okc:
+                        cap = cap2
+            line = cap if okc else ""
+            print(f"[content] fallback caption: {cap if okc else f'(none — {cwhy})'}",
+                  flush=True)
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
@@ -1381,8 +1399,8 @@ def hook_and_caption_from_video(
         line = _make_safe(line, "caption", gname) or ""
     if not hook:
         hook = "Wait for it"
-    if not line:
-        line = "Watch this clip"
+    # NO filler body: an empty body posts just the game title + hashtags, which reads fine.
+    # "Watch this clip" told the viewer nothing and reached live posts (user, 2026-10-08).
     return hook, compose_reel_caption(line, game, with_game_title)
 
 
