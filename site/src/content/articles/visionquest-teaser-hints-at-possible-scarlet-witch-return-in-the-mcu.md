@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/visionquest-teaser-hints-at-possible-scarlet-witch-return-in-the-mcu.jpg"
 date: 2026-10-08
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/new-visionquest-teaser-features-surprising-blink-and-you-miss-it-wanda-maximoff-detail/"
 ---
