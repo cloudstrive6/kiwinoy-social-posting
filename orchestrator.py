@@ -776,6 +776,7 @@ def run_gameplay_reel(
         log("Could not resolve a clip from either pool — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
 
+    lore_title = ""      # lore posts have no on-screen hook; the card writes its own title
     if layout == "lore":
         # LORE card: the TEXT is the content and it is burned into the frame, so there is no
         # separate on-screen hook. The post caption reuses the card body (it reads as a
@@ -826,6 +827,7 @@ def run_gameplay_reel(
             hook = ""
             brief["hook"] = ""
             # The caption is the card's SHORT elaboration, never the card text itself.
+            lore_title = str(_card.get("title") or "").strip()
             caption = content.compose_reel_caption(
                 _card.get("caption") or _card.get("comment") or _card.get("body", ""),
                 brief.get("game", ""), with_game_title=True)
@@ -1054,7 +1056,11 @@ def run_gameplay_reel(
         gname = (CONFIG.reels.get("game_names", {}) or {}).get(g, "") or g
         # FILL reels have no on-screen hook, so fall back to the caption's first line for the
         # title (e.g. "Free Fall Over the Skyline") instead of just the bare game name.
-        title_hook = (hook or "").strip() or (caption.splitlines()[0].strip() if caption else "")
+        # LORE has no hook, and the caption is a full sentence — using its first line cut
+        # the title mid-clause ("...not knowing that | Marvel's Spider-Man 2"). The card
+        # writes a short title of its own for exactly this (user, 2026-10-08).
+        title_hook = ((hook or "").strip() or lore_title
+                      or (caption.splitlines()[0].strip() if caption else ""))
         title = (_yt_title(title_hook, f" | {gname} #Shorts") if gname and title_hook
                  else _yt_title(title_hook or gname, " #Shorts"))
         desc = _short_description(caption, gname, g)

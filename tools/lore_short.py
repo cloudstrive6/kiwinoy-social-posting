@@ -143,7 +143,7 @@ def card_shape_ok(body: str) -> tuple[bool, str]:
     return True, ""
 
 
-def _write_caption(card: dict, gname: str, avoid: str = "") -> str:
+def _write_caption(card: dict, gname: str, avoid: str = "") -> dict:
     """A SHORT caption that ELABORATES on the card — never a copy of it (user, 2026-10-08).
     Their own sample for a Harry/Norman card: 'The father who would do everything to save his
     son, even if it endangers everyone, including his own son.'"""
@@ -161,14 +161,20 @@ def _write_caption(card: dict, gname: str, avoid: str = "") -> str:
         "dying son go: 'The father who would do everything to save his son, even if it "
         "endangers everyone, including his own son.'\n"
         + (f"\nA previous attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
-        + '\nReturn ONLY JSON: {"caption": "the sentence"}'
+        + "\nAlso write the YOUTUBE TITLE for the same short: 4-10 words, under 60 "
+        "characters, a curiosity gap that makes someone tap. It is NOT the caption and NOT a "
+        "full sentence with a full stop; no game name (it gets appended), no hashtags, no "
+        "quotes, and no tease the card does not pay off. Good shape: 'The one word that costs "
+        "Harry everything'.\n"
+        + '\nReturn ONLY JSON: {"caption": "the sentence", "title": "the short title"}'
     )
     try:
         d = extract_json(_text(prompt, timeout=150)) or {}
-        return re.sub(r"\s+", " ", sanitize(str(d.get("caption", "")))).strip().strip('"')
+        return {k: re.sub(r"\s+", " ", sanitize(str(d.get(k, "")))).strip().strip('"')
+                for k in ("caption", "title")}
     except Exception as e:
         log(f"caption writer failed ({e!r})")
-        return ""
+        return {}
 
 
 def _caption_ok(caption: str, card: dict) -> tuple[bool, str]:
@@ -187,19 +193,41 @@ def _caption_ok(caption: str, card: dict) -> tuple[bool, str]:
     return True, ""
 
 
-def lore_caption(card: dict, gname: str) -> str:
-    """The caption body for a lore post: short, elaborating, never a copy of the card."""
-    why = ""
+def _title_ok(title: str) -> bool:
+    """A YouTube title must survive ' | <Game> #Shorts' inside 100 chars without being cut
+    mid-sentence — a lore post has no on-screen hook, so this IS the title (user, 2026-10-08)."""
+    n = len(title.split())
+    return bool(title) and 3 <= n <= 12 and len(title) <= 62 and not title.endswith(".")
+
+
+def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
+    """(caption, title) for a lore post: the caption elaborates, the title teases. Neither
+    is ever a copy of the card."""
+    cap_out, title_out, why = "", "", ""
     for _ in range(2):
-        cap = _write_caption(card, gname, avoid=why)
-        if cap:
+        d = _write_caption(card, gname, avoid=why)
+        cap, title = d.get("caption", ""), d.get("title", "")
+        if title and _title_ok(title) and not unsafe_terms(title) and not title_out:
+            title_out = title
+        if cap and not cap_out:
             ok, why = _caption_ok(cap, card)
             if ok and not unsafe_terms(cap):
-                return cap
-            log(f"caption rejected ({why or 'unsafe wording'}); rewriting.")
+                cap_out = cap
+            else:
+                log(f"caption rejected ({why or 'unsafe wording'}); rewriting.")
+        if cap_out and title_out:
+            break
     # The comment line is already short, on-topic and fact-checked — better than shipping
     # the whole card body as the caption.
-    return (card.get("comment", "") or "").strip()
+    cap_out = cap_out or (card.get("comment", "") or "").strip()
+    if not title_out:      # trim the caption on a word boundary rather than mid-sentence
+        words, title_out = cap_out.split(), ""
+        for w in words:
+            if len(f"{title_out} {w}".strip()) > 58:
+                break
+            title_out = f"{title_out} {w}".strip()
+        title_out = title_out.rstrip(",;:.") or gname
+    return cap_out, title_out
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
@@ -440,8 +468,9 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         # The POST caption is written here, from the finished card, so every caller (the
         # reels track, the FB lore path, the CLI) posts the short elaboration instead of
         # re-posting the card text (user, 2026-10-08).
-        card["caption"] = lore_caption(card, gname)
+        card["caption"], card["title"] = lore_post_text(card, gname)
         log(f'caption: {card["caption"]}')
+        log(f'title: {card["title"]}')
 
     words = len(card["body"].split())
     log(f'highlight: {card.get("highlight", "")!r} | comment: {card.get("comment", "")!r}')
