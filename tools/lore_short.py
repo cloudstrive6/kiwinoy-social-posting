@@ -110,7 +110,7 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         f"You write 'did you notice' cards for {gname} gameplay shorts.\n\n"
         f"WHAT IS ON SCREEN:\n{observation}\n\n"
         + (f"{subtitles}\n\n" if subtitles else "")
-        + (f"GAME LORE (for context — never contradict it):\n{bible[:3000]}\n\n" if bible else "")
+        + (f"GAME LORE (for context — never contradict it):\n{bible}\n\n" if bible else "")
         + (f"WHAT PLAYERS AND WRITERS SAY ABOUT THIS SCENE (researched online — Reddit, "
            f"wikis, interviews):\n{research}\n\nIf one of these findings is genuinely "
            "surprising, MAKE IT THE CARD. A detail players argue about, cut content, a line "
@@ -291,7 +291,7 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         f"You are a strict fact-checker for a {gname} gameplay card. A gaming audience calls "
         "out invented trivia, so be rigorous.\n\n"
         + (f"GAME LORE BIBLE (authoritative — check any date, duration or who-did-what "
-           f"against THIS):\n{bible[:3500]}\n\n" if bible else "")
+           f"against THIS):\n{bible}\n\n" if bible else "")
         + f"EVIDENCE — what is on screen:\n{observation}\n\n"
         + (f"RESEARCHED CONTEXT for this scene (Reddit, wikis, interviews). A claim that "
            f"matches this IS supported — but a fan theory must still be worded as one, and "
