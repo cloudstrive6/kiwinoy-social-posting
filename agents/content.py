@@ -931,6 +931,12 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         "'Boss', 'Doc') into a specific named character (e.g. 'Red' -> Omega Red) when no subtitle "
         "speaker label or unmistakable visual shows who is being addressed. A nickname is NOT an "
         "identification.\n"
+        "8. It gets the STORY BACKWARDS even though the individual words trace to a line of "
+        "dialogue. Hold it against what the GAME CONTEXT above says these characters WANT and "
+        "DO: a character described as doing the opposite of their established motive — a "
+        "father who refuses to lose his son written as 'agreeing to let his son die', someone "
+        "giving up on what the story shows them never giving up on — is a LORE ERROR, and the "
+        "fact that a subtitle can be read that way does not save it (user, 2026-10-09).\n"
         "A hook about the ACTION THAT IS ACTUALLY SHOWN, the setting, or a general gamer feeling is "
         "FINE — but it must match what the observation describes.\n"
         "IMPORTANT: your 'issues' text is fed back to the writer. ONLY say what is wrong. NEVER "
@@ -1206,6 +1212,56 @@ def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") 
         return ""
 
 
+def _angle_caption(observation: str, gname: str, hook: str, dialogue: str = "",
+                   avoid: str = "") -> str:
+    """A caption from a DIFFERENT ANGLE than the hook, for when the scene-label caption keeps
+    getting rejected for asserting something the footage doesn't show. It adds no new facts:
+    it reacts, frames the stakes, or asks the viewer something. '' on error."""
+    dlg = (f"WHAT IS SAID IN THE CLIP:\n{dialogue.strip()}\n\n" if dialogue.strip() else "")
+    prompt = (
+        f"{dlg}An observer's factual read of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        f'The on-screen hook already says: "{hook}"\n\n'
+        "Write the POST CAPTION. It must say something ELSE about this moment than the hook "
+        "does — a different angle on the same clip:\n"
+        "- what is at stake, or what this moment costs someone\n"
+        "- an honest reaction to it\n"
+        "- a question to the viewer about it\n\n"
+        "RULES:\n"
+        "- ONE line, 5 to 16 words. Plain English, no Title Case\n"
+        "- it must NOT repeat the hook's wording or simply restate the hook\n"
+        "- add NO new facts. Everything it implies must already be in the hook, the dialogue "
+        "or the observation above. A reaction or a question asserts nothing, which is why "
+        "they are safe here\n"
+        "- no outcome claims ('beats', 'escapes', 'dies'), no hashtags, no emojis, no quotes\n"
+        + (f"\nA previous attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
+        + "Just the line."
+    )
+    try:
+        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:120]
+    except Exception:
+        return ""
+
+
+_HOOK_OPENER = re.compile(
+    r"^(why (?:is|are|was|were|does|do|did)|what happens when|how (?:does|did|is|do)|"
+    r"watch (?:how|what|as)|when |the moment )", re.I)
+
+
+def _recast_hook(hook: str) -> str:
+    """ABSOLUTE LAST RESORT: the hook's own point, worded differently and from a 'what to
+    watch' angle. Never word-for-word the hook (user, 2026-10-09), and it adds no claim the
+    hook has not already made — so it cannot fail the accuracy critics."""
+    h = re.sub(r"\s+", " ", (hook or "").strip()).rstrip("?.!â€¦ ")
+    if not h:
+        return ""
+    m = _HOOK_OPENER.match(h)
+    core = (h[m.end():] if m else h).strip().rstrip(",;:")
+    if not core:
+        return ""
+    line = f"Worth a rewind: {core}."      # never lowercase it — core often opens on a NAME
+    return line if len(line) <= 120 else line[:117].rsplit(" ", 1)[0] + "."
+
+
 def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
                         dialogue: str = "") -> tuple[bool, str]:
     """VISION critic (per user 2026-07-30): re-check the on-screen HOOK against the ACTUAL
@@ -1474,19 +1530,32 @@ def hook_and_caption_from_video(
         # can't be done, leave the body EMPTY — compose_reel_caption then posts the game
         # title + hashtags, which beats filler (user, 2026-10-08).
         if hook and not line and observation:
-            cap = _plain_caption(observation, gname, hook, dialogue)
-            okb, cwhy = caption_body_ok(cap, hook, game)
-            okc = okb and _verify_hook(cap, "", observation, game, dialogue=dialogue)[0]
-            if not okc:
-                cap2 = _plain_caption(observation, gname, hook, dialogue)
-                okb2, cwhy2 = caption_body_ok(cap2, hook, game)
-                if okb2:
-                    okc, cwhy = _verify_hook(cap2, "", observation, game, dialogue=dialogue)
+            # Two writers, in order: the scene LABEL, then a DIFFERENT-ANGLE line. The label
+            # keeps getting rejected for asserting an event the footage doesn't show, and an
+            # empty caption is not an option — a reel always ships with one (user,
+            # 2026-10-09), and it must not be the hook word-for-word either.
+            cwhy = ""
+            for _writer in (_plain_caption, _angle_caption):
+                for _try in range(2):
+                    cap = (_writer(observation, gname, hook, dialogue, avoid=cwhy)
+                           if _writer is _angle_caption and _try
+                           else _writer(observation, gname, hook, dialogue))
+                    if not cap:
+                        continue
+                    okb, cwhy = caption_body_ok(cap, hook, game)
+                    if not okb:
+                        continue
+                    okc, cwhy = _verify_hook(cap, "", observation, game, dialogue=dialogue)
                     if okc:
-                        cap = cap2
-            line = cap if okc else ""
-            print(f"[content] fallback caption: {cap if okc else f'(none — {cwhy})'}",
-                  flush=True)
+                        line = cap
+                        break
+                if line:
+                    break
+            if line:
+                print(f"[content] fallback caption: {line}", flush=True)
+            else:
+                print(f"[content] every caption was rejected ({cwhy}) — recasting the hook "
+                      "from a different angle.", flush=True)
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
     # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
@@ -1504,9 +1573,9 @@ def hook_and_caption_from_video(
     # gates and it reads like a title of the video, which is what the caption is for. Only
     # filler is banned — a repeat of the hook is not filler.
     if not line:
-        line = hook
-        print(f"[content] no caption survived the critics — using the hook as the "
-              f"caption: {line}", flush=True)
+        # NEVER the hook word-for-word (user, 2026-10-09): say its point a different way.
+        line = _recast_hook(hook)
+        print(f"[content] caption recast from the hook: {line}", flush=True)
     return hook, compose_reel_caption(line, game, with_game_title)
 
 

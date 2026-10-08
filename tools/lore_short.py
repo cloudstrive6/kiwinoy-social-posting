@@ -317,6 +317,14 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         "ALWAYS flag an invented NUMBER or DURATION — a year, a count, 'five years later', "
         "'the only time in the series' — unless that exact figure is in the bible or on "
         "screen. Check every span against the bible's TIMELINE.\n"
+        "ALSO CHECK THE READING, NOT JUST THE FACTS. A sentence can be traceable to a line "
+        "of dialogue and still be BACKWARDS about the story. Hold the card's interpretation "
+        "against what the bible says these characters WANT and DO: if the card has someone "
+        "acting against their established motive — a father who refuses to lose his son "
+        "described as 'agreeing to let his son die', a character said to give up on "
+        "something the story shows them never giving up on — that is a FACTUAL error about "
+        "the game and you must flag it, however well the individual words match the "
+        "subtitles (user, 2026-10-09).\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
