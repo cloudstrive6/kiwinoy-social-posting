@@ -30,7 +30,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from agents.content import (_observe_clip, _scan_subtitles, _text,  # noqa: E402
+from agents.content import (_observe_clip, _scan_subtitles, _strip_md, _text,  # noqa: E402
                             observe_frame_count, sanitize, unsafe_terms)
 from core import b2_store, ffmpeg, frames  # noqa: E402
 from core.config import CONFIG  # noqa: E402
@@ -59,7 +59,50 @@ def log(m: str) -> None:
     print(f"[lore-short] {m}", flush=True)
 
 
-def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: str = "") -> dict:
+def research_scene(observation: str, subtitles: str, gname: str) -> str:
+    """What the INTERNET says about THIS scene — Reddit threads, wikis, interviews, analysis.
+
+    The card used to be limited to what the frames and subtitles show plus the lore bible,
+    so the best it could do was explain the moment. The material that actually earns a
+    'did you notice' short is the thing players argue about on r/SpidermanPS4, the cut
+    content a wiki records, the line a developer explained in an interview (user's idea,
+    2026-10-08). Returns a short evidence block, or '' when nothing specific turns up.
+    """
+    from core import claude_code
+    prompt = (
+        f"Research ONE specific scene from {gname} on the web and report what you find.\n\n"
+        f"THE SCENE, as it appears on screen:\n{observation}\n\n"
+        + (f"{subtitles}\n\n" if subtitles else "")
+        + "Search Reddit (the game's subreddit and r/gaming), wikis, fandom pages, news "
+        "articles, developer interviews and video essays for THIS scene specifically.\n"
+        "Report only findings a casual player would NOT know from watching it once:\n"
+        "- trivia, cut content, a detail the devs confirmed or explained\n"
+        "- a popular fan reading, theory or argument about this moment\n"
+        "- a connection to a later event, another game, or the comics the scene is setting up\n"
+        "- voice acting, motion capture or writing notes about this specific scene\n\n"
+        "RULES:\n"
+        "- every line must be about THIS scene, not the game in general. A fact about the "
+        "whole game is worthless here\n"
+        "- say where each one comes from (subreddit, wiki, interview, article)\n"
+        "- mark a fan theory as a fan theory. Never present speculation as confirmed\n"
+        "- invent NOTHING. If the search turns up nothing specific, reply with exactly NONE\n\n"
+        "Reply with up to 4 short bullet lines, or NONE."
+    )
+    try:
+        out = (claude_code.run(prompt, web=True, timeout=300) or "").strip()
+    except Exception as e:
+        log(f"scene research unavailable ({e!r}) — writing from the clip alone.")
+        return ""
+    if not out or out.strip().upper().startswith("NONE"):
+        log("scene research: nothing specific to this scene.")
+        return ""
+    out = "\n".join(_strip_md(l) for l in out.splitlines() if l.strip())[:1800]
+    log(f"scene research:\n{out}")
+    return out
+
+
+def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: str = "",
+                research: str = "") -> dict:
     """The card: a short EYEBROW line + the long body text, grounded in this clip."""
     from core import lore
     bible = lore.lore_for(game) or ""
@@ -68,6 +111,13 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         f"WHAT IS ON SCREEN:\n{observation}\n\n"
         + (f"{subtitles}\n\n" if subtitles else "")
         + (f"GAME LORE (for context — never contradict it):\n{bible[:3000]}\n\n" if bible else "")
+        + (f"WHAT PLAYERS AND WRITERS SAY ABOUT THIS SCENE (researched online — Reddit, "
+           f"wikis, interviews):\n{research}\n\nIf one of these findings is genuinely "
+           "surprising, MAKE IT THE CARD. A detail players argue about, cut content, a line "
+           "the devs explained — that is far better than anything you can infer from the "
+           "frames. Attribute a fan reading as one ('fans still argue', 'players noticed'), "
+           "never as fact, and use a finding only if it fits THIS moment.\n\n"
+           if research else "")
         + "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
         "four beats, in this order, as ONE paragraph:\n"
         f"  1. CONTEXT: open with 'In {gname}' and the situation, in a few words.\n"
@@ -231,7 +281,7 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
-                game: str = "") -> tuple[bool, str]:
+                game: str = "", research: str = "") -> tuple[bool, str]:
     """Adversarial check: every claim must come from the clip, the subtitles or the lore.
     The BIBLE is included (it was not, so a wrong 'five years' sailed through with no
     timeline to check it against — user, 2026-10-07)."""
@@ -243,6 +293,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + (f"GAME LORE BIBLE (authoritative — check any date, duration or who-did-what "
            f"against THIS):\n{bible[:3500]}\n\n" if bible else "")
         + f"EVIDENCE — what is on screen:\n{observation}\n\n"
+        + (f"RESEARCHED CONTEXT for this scene (Reddit, wikis, interviews). A claim that "
+           f"matches this IS supported — but a fan theory must still be worded as one, and "
+           f"anything here that is not about THIS scene supports nothing:\n{research}\n\n"
+           if research else "")
         + (f"{subtitles}\n\n" if subtitles else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
         # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
@@ -439,20 +493,28 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             subs = (f"{subs}\n(These lines are from the {dur + CTX_PAD * 2:.0f}s AROUND the "
                     f"moment; only the middle {dur:.0f}s are ON SCREEN. Use the rest for "
                     "context only — never describe it as happening in the clip.)")
+        # What the internet knows about THIS scene beats anything inferable from the frames,
+        # so research it first and let the writer build the card on a finding (user's idea,
+        # 2026-10-08). Off with reels.gameplay.lore.research: false.
+        lcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
+        research = (research_scene(observation, subs, gname)
+                    if bool(lcfg.get("research", True)) else "")
+
         def _judge(c: dict) -> tuple[bool, str]:
             """Both gates: it must EXPLAIN (not narrate the picture) and be true."""
             shape_ok, shape_why = card_shape_ok(c.get("body", ""))
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
                                "the moment MEANS instead.")
-            return _check_card(c, observation, subs, gname, game)
+            return _check_card(c, observation, subs, gname, game, research)
 
-        card = _write_card(observation, subs, game, gname)
+        card = _write_card(observation, subs, game, gname, research=research)
         if card.get("body"):
             ok, why = _judge(card)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
-                card2 = _write_card(observation, subs, game, gname, avoid=why)
+                card2 = _write_card(observation, subs, game, gname, avoid=why,
+                                    research=research)
                 if card2.get("body") and _judge(card2)[0]:
                     card = card2
                 else:
