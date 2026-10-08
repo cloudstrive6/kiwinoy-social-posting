@@ -787,15 +787,48 @@ def run_gameplay_reel(
         _start = float(lore_start)          # the chosen WINDOW (speech-aligned, never reused)
         log(f"Clip (cutscene pool): {clip_id}")
         log(f"Building a LORE card ({_dur:.0f}s from {_start:.0f}s of a {_total:.0f}s clip)...")
-        lore_out = _build_lore(Path(clip_path), brief.get("game", ""), _start, _dur,
-                               None, run_dir / "lore")
-        _card = json.loads((run_dir / "lore" / "card.json").read_text(encoding="utf-8"))
-        hook = ""
-        brief["hook"] = ""
-        caption = content.compose_reel_caption(_card.get("body", ""), brief.get("game", ""),
-                                               with_game_title=True)
-        reel_path = Path(lore_out)
-        log(f"Game: {brief.get('subject')} | LORE card | clip {clip_id}")
+        # The fact-checker REFUSES a card it cannot support (SystemExit) — which used to
+        # abort the whole run, so one unsupported sentence meant no post on any platform
+        # that slot. Try other moments first; only then drop the format (bench 2026-10-08).
+        lore_out, _ldir = None, run_dir / "lore"
+        for _try in range(3):
+            _ldir = run_dir / ("lore" if _try == 0 else f"lore_retry{_try}")
+            try:
+                lore_out = _build_lore(Path(clip_path), brief.get("game", ""), _start, _dur,
+                                       None, _ldir)
+                break
+            except Exception as e:
+                log(f"LORE card refused for {clip_id} ({e}) — trying another moment.")
+                _np, _nid, _ns = reel_composer.pick_unused_cutscene(
+                    brief["game"], pick_platforms, _dur)
+                if not _np:
+                    break
+                clip_path, clip_id, _start = _np, _nid, float(_ns)
+        if lore_out is None:
+            # Every candidate moment was refused. Post the slot as a normal composited reel
+            # rather than losing it: same hook/caption path as the classic layout below.
+            _prev = [l for l in main_layouts if l not in ("lore", "fill", "rotated")] or [
+                l for l in (gcfg.get("layouts") or ["classic"])
+                if l not in ("lore", "fill", "rotated")] or ["classic"]
+            layout = _prev[n % len(_prev)]
+            log(f"No lore card survived the fact-check — falling back to the {layout} "
+                "layout for this slot.")
+            clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"], pick_platforms)
+            if not clip_path:
+                return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay",
+                                       "brief": brief}, "no_media")
+            hook, caption = content.hook_and_caption_from_video(
+                clip_path, brief.get("game", ""), taglish=False, with_game_title=True)
+            brief["hook"] = hook
+            log(f"Game: {brief.get('subject')} | Hook: {hook} | clip {clip_id}")
+        else:
+            _card = json.loads((_ldir / "card.json").read_text(encoding="utf-8"))
+            hook = ""
+            brief["hook"] = ""
+            caption = content.compose_reel_caption(_card.get("body", ""),
+                                                   brief.get("game", ""), with_game_title=True)
+            reel_path = Path(lore_out)
+            log(f"Game: {brief.get('subject')} | LORE card | clip {clip_id}")
     elif layout == "fill":
         # FILL caption ALTERNATES two styles (per user 2026-07-28) on the used-clip
         # counter n: EVEN -> RELATABLE (clip-grounded human first-person moment, no game

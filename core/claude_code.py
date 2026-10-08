@@ -146,7 +146,14 @@ def run(
     for i, (label, env) in enumerate(attempts):
         try:
             return _invoke(cmd, prompt, env, timeout)
-        except ClaudeCodeError as e:
+        except (ClaudeCodeError, subprocess.TimeoutExpired) as e:
+            # A TIMEOUT used to escape this loop entirely: the second auth attempt never
+            # ran and callers' `except ClaudeCodeError` never fired, so the OpenAI
+            # fallback was skipped and the caller just failed (two of five lore cards
+            # died this way in the 2026-10-08 bench). Treat it as a failed attempt.
+            if isinstance(e, subprocess.TimeoutExpired):
+                print(f"[claude_code] {label} timed out after {timeout}s.", flush=True)
+                e = ClaudeCodeError(f"claude timed out after {timeout}s")
             last_err = e
             if i + 1 < len(attempts):
                 print(
@@ -154,4 +161,5 @@ def run(
                     flush=True,
                 )
             continue
-    raise last_err  # type: ignore[misc]
+    raise (last_err if isinstance(last_err, ClaudeCodeError)
+           else ClaudeCodeError(str(last_err)))  # callers catch ClaudeCodeError

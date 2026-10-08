@@ -45,6 +45,14 @@ RED = (255, 61, 70)
 # ~3.5 words/second is a comfortable silent-reading pace, so 55-70 words ~= 16-20s of reading
 # against an 8s video: the viewer has to loop it, which is the whole point of the format.
 WORDS_MIN, WORDS_MAX = 45, 65
+# seconds of dialogue either side of the on-screen window, read for CONTEXT only
+CTX_PAD = 10.0
+
+
+class CardRefused(RuntimeError):
+    """The card could not be supported by the evidence. A normal exception, NOT SystemExit:
+    SystemExit skipped past every caller's `except Exception` and aborted the whole posting
+    run, so one unsupported sentence cost the slot on every platform (bench 2026-10-08)."""
 
 
 def log(m: str) -> None:
@@ -66,9 +74,11 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "  2. THE DETAIL: the specific thing worth noticing — what someone says or does, and "
         "the part most viewers skim past. This is the heart of the card.\n"
         "  3. THE VERDICT: a short punchy reaction to that detail ('That is ice cold.').\n"
-        "  4. THE COMPARISON: tie it to something the audience knows — another moment in this "
-        "game, another game, or a gamer experience ('the kind of parry every Souls player "
-        "dreams about'). This beat is OPINION and is meant to be subjective.\n\n"
+        "  4. THE COMPARISON: tie it to something the audience knows — another moment in THIS "
+        "game's story, or a universal gamer experience ('the kind of parry every Souls player "
+        "dreams about'). This beat is OPINION and is meant to be subjective. Name a DIFFERENT "
+        "game only when the parallel is exact and you say what the parallel IS — a name-drop "
+        "that only half-fits this moment reads as filler, so prefer this game.\n\n"
         f"- \"body\": all four beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
         "it must take ~15 seconds to read against an 8-second video so the viewer loops it. "
         "Plain spoken English, present tense, no hype words, no emojis, no hashtags.\n"
@@ -93,7 +103,7 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            'body", "comment": "the reaction line"}')
     )
     try:
-        d = extract_json(_text(prompt, timeout=180)) or {}
+        d = extract_json(_text(prompt, timeout=240)) or {}
         return {"highlight": sanitize(str(d.get("highlight", ""))).strip()[:60],
                 "comment": sanitize(str(d.get("comment", ""))).strip()[:90],
                 "body": re.sub(r"\s+", " ", sanitize(str(d.get("body", "")))).strip()}
@@ -127,7 +137,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         "event outside this clip presented as happening in it.\n"
         "The card deliberately ENDS with a verdict and a comparison ('that is ice cold', 'the "
         "kind of parry every Souls player dreams about'). Those are OPINION — do NOT flag "
-        "them. Do not flag ordinary re-telling of what is shown, or established series lore. "
+        "them for being subjective. DO flag a comparison that implies something untrue about "
+        "this clip (likening it to a famous death when nobody dies here), or that name-drops "
+        "another game's character without a parallel that actually holds. "
+        "Do not flag ordinary re-telling of what is shown, or established series lore. "
         "Flag only something stated as fact that is not true.\n"
         "ALWAYS flag an invented NUMBER or DURATION — a year, a count, 'five years later', "
         "'the only time in the series' — unless that exact figure is in the bible or on "
@@ -135,7 +148,7 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
-        d = extract_json(_text(prompt, timeout=150))
+        d = extract_json(_text(prompt, timeout=200))
         return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
     except Exception:
         return True, ""
@@ -289,10 +302,25 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     elif text:
         card = {"highlight": "", "comment": "", "body": re.sub(r"\s+", " ", text).strip()}
     else:
+        # EVIDENCE MUST BE THE MOMENT ON SCREEN. Observing/scanning the whole source file
+        # wrote a card about a part of the recording the viewer never sees: an 8s window of
+        # the Sandman aftermath got a card about the Web Wings from minutes later in the same
+        # file (bench 2026-10-08). Frames come from the rendered SEGMENT; subtitles come from
+        # the segment plus a short lead-in/out, flagged as context only.
         with tempfile.TemporaryDirectory() as tmp:
-            cands = frames.extract_candidates(clip, Path(tmp), n=observe_frame_count(dur * 3))
-            observation = _observe_clip(cands, gname, dur * 3)
-        subs = _scan_subtitles(clip, gname)
+            cands = frames.extract_candidates(seg, Path(tmp), n=max(6, observe_frame_count(dur)))
+            observation = _observe_clip(cands, gname, dur)
+            ctx_start = max(0.0, start - CTX_PAD)
+            ctx = Path(tmp) / "context.mp4"
+            subprocess.run([ff, "-y", "-v", "error", "-ss", f"{ctx_start:.2f}",
+                            "-t", f"{dur + CTX_PAD * 2:.2f}", "-i", str(clip),
+                            "-c:v", "libx264", "-crf", "23", "-preset", "veryfast",
+                            "-an", str(ctx)], check=False)
+            subs = _scan_subtitles(ctx if ctx.exists() else seg, gname)
+        if subs:
+            subs = (f"{subs}\n(These lines are from the {dur + CTX_PAD * 2:.0f}s AROUND the "
+                    f"moment; only the middle {dur:.0f}s are ON SCREEN. Use the rest for "
+                    "context only — never describe it as happening in the clip.)")
         card = _write_card(observation, subs, game, gname)
         if card.get("body"):
             ok, why = _check_card(card, observation, subs, gname, game)
@@ -302,10 +330,10 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                 if card2.get("body") and _check_card(card2, observation, subs, gname, game)[0]:
                     card = card2
                 else:
-                    log("second card also rejected — stopping rather than posting invented lore")
-                    raise SystemExit(1)
+                    raise CardRefused("second card also rejected — not posting "
+                                     "invented lore")
         if not card.get("body"):
-            raise SystemExit("[lore-short] no card text was written")
+            raise CardRefused("no card text was written")
         bad = unsafe_terms(" ".join((card["body"], card.get("comment", ""))))
         if bad:
             log(f"card contains advertiser-unsafe wording ({', '.join(bad)}) — rewriting body")
@@ -365,7 +393,11 @@ def main() -> int:
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     outdir = ROOT / "output" / "lore-shorts" / f"{stamp}_{a.game}"
     card = json.loads(Path(a.card_json).read_text(encoding="utf-8")) if a.card_json else None
-    build(clip, a.game, a.start, a.dur, a.text, outdir, card)
+    try:
+        build(clip, a.game, a.start, a.dur, a.text, outdir, card)
+    except CardRefused as e:
+        log(f"refused: {e}")
+        return 1
     return 0
 
 

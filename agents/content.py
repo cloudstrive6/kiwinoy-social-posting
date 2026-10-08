@@ -520,8 +520,8 @@ def _text(prompt: str, timeout: int = 120) -> str:
 
     try:
         return claude_code.run(prompt, timeout=timeout)
-    except claude_code.ClaudeCodeError as e:
-        print(f"[content] Claude unavailable ({e}); falling back to OpenAI.", flush=True)
+    except Exception as e:   # ClaudeCodeError, a timeout, anything — never lose the write
+        print(f"[content] Claude unavailable ({e!r}); falling back to OpenAI.", flush=True)
         return openai_client.write(prompt)
 
 
