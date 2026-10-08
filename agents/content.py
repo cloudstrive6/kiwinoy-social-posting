@@ -1498,8 +1498,15 @@ def hook_and_caption_from_video(
         line = _make_safe(line, "caption", gname) or ""
     if not hook:
         hook = "Wait for it"
-    # NO filler body: an empty body posts just the game title + hashtags, which reads fine.
-    # "Watch this clip" told the viewer nothing and reached live posts (user, 2026-10-08).
+    # A REEL ALWAYS SHIPS WITH A CAPTION (user, 2026-10-09). Leaving the body empty posted a
+    # live TikTok reel with nothing but the game title + hashtags. When every caption writer
+    # has been rejected, use the HOOK as the body: it already passed the shape and accuracy
+    # gates and it reads like a title of the video, which is what the caption is for. Only
+    # filler is banned — a repeat of the hook is not filler.
+    if not line:
+        line = hook
+        print(f"[content] no caption survived the critics — using the hook as the "
+              f"caption: {line}", flush=True)
     return hook, compose_reel_caption(line, game, with_game_title)
 
 

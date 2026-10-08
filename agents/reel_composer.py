@@ -294,14 +294,21 @@ def _frange(a: float, b: float, step: float) -> list[float]:
 
 
 def pick_unused_cutscene(game: str, platforms, seconds: float,
-                         cache: Optional[Path] = None):
-    """Pick (clip_path, clip_id, start) for a LORE short: the first cutscene WINDOW that is
+                         cache: Optional[Path] = None, exclude=None):
+    """Pick (clip_path, clip_id, start) for a LORE short: a RANDOM cutscene WINDOW that is
     unused on every platform in `platforms`. Ids are '<game>-cutscene__<file>@<start>', so the
     SAME recording is reused for different moments until its windows run out. Returns
-    (None, None, 0.0) when nothing is free."""
+    (None, None, 0.0) when nothing is free.
+
+    RANDOM, not first-free: walking the pool in order meant every lore short came out of the
+    same recording until its ~9 windows ran out, so days of posts were all one scene from one
+    clip from one game (user, 2026-10-09). `exclude` skips ids a caller already tried.
+    """
     key = f"{game}-cutscene"
     plats = [str(p) for p in (platforms or []) if p]
-    pool = _candidates(key)
+    skip = {str(x) for x in (exclude or [])}
+    pool = list(_candidates(key))
+    random.shuffle(pool)                     # RANDOM clip
     if not pool:
         return None, None, 0.0
     led = gh_release.read_ledger()
@@ -316,8 +323,12 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
         path = Path(item) if kind == "local" else _download_item(kind, item, cache)
         if not path or not Path(path).exists():
             continue
-        for start in cutscene_windows(Path(path), seconds):
+        wins = list(cutscene_windows(Path(path), seconds))
+        random.shuffle(wins)                 # RANDOM scene inside that clip
+        for start in wins:
             cid = f"{base_id}@{start:g}"
+            if cid in skip:
+                continue
             if all(cid not in led.get(p, set()) for p in plats):
                 return Path(path), cid, start
         print(f"[reel] every window of {base_id} is used on {plats} — trying the next file.",

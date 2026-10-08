@@ -800,7 +800,7 @@ reels:
     platform_layouts:
       youtube:   [lore]                        # YouTube Shorts: lore only
       facebook:  [lore]                        # FB: lore only (triptych retired 2026-10-06)
-      instagram: [classic, triptych, fill, lore]
+      instagram: [classic, fill, lore]          # no triptych on IG (user, 2026-10-09)
       tiktok:    [classic, triptych, fill, lore]
     lore:
       seconds: 8          # video length; the card is written to out-read it (~18s)

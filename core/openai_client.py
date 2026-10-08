@@ -122,9 +122,15 @@ def extract_json(text: str) -> dict[str, Any]:
     fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
     if fence:
         text = fence.group(1)
-    # Otherwise grab from first { to last }.
-    if not text.startswith("{"):
-        start, end = text.find("{"), text.rfind("}")
-        if start != -1 and end != -1:
-            text = text[start : end + 1]
+    # A model that answers with a complete object and THEN a trailing remark used to fail
+    # outright ("Extra data: line 3 column 1"), losing a whole lore card to a stray sentence
+    # (seen live 2026-10-08). raw_decode stops at the end of the first object instead.
+    start = text.find("{")
+    if start != -1:
+        try:
+            return json.JSONDecoder().raw_decode(text[start:])[0]
+        except json.JSONDecodeError:
+            end = text.rfind("}")
+            if end > start:
+                return json.loads(text[start : end + 1])
     return json.loads(text)

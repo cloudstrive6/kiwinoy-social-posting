@@ -729,9 +729,12 @@ def run_gameplay_reel(
             # (wolverine, while the cutscenes are spider-man2/thelastofus2), which made a
             # lore-only platform fall back every single slot. Cross over to a game that HAS
             # cutscene footage rather than abandoning the format (per user 2026-10-08).
-            for _alt in b2_store.cutscene_games():
-                if _alt == brief["game"]:
-                    continue
+            # RANDOM game order, not alphabetical: walking the list in order sent every
+            # crossover to spider-man2, so the lore track never showed another game even
+            # though two had cutscenes (user, 2026-10-09).
+            _alts = [g for g in b2_store.cutscene_games() if g != brief["game"]]
+            random.shuffle(_alts)
+            for _alt in _alts:
                 _cp, _cid, _st = reel_composer.pick_unused_cutscene(
                     _alt, pick_platforms, _lsec)
                 if _cp:
@@ -791,7 +794,7 @@ def run_gameplay_reel(
         # The fact-checker REFUSES a card it cannot support (SystemExit) — which used to
         # abort the whole run, so one unsupported sentence meant no post on any platform
         # that slot. Try other moments first; only then drop the format (bench 2026-10-08).
-        lore_out, _ldir = None, run_dir / "lore"
+        lore_out, _ldir, _tried = None, run_dir / "lore", set()
         for _try in range(3):
             _ldir = run_dir / ("lore" if _try == 0 else f"lore_retry{_try}")
             try:
@@ -800,8 +803,12 @@ def run_gameplay_reel(
                 break
             except Exception as e:
                 log(f"LORE card refused for {clip_id} ({e}) — trying another moment.")
+                # EXCLUDE what just failed: without it the picker handed back the SAME
+                # window three times and the slot fell through to triptych while claiming
+                # it was trying other moments (user, 2026-10-09).
+                _tried.add(str(clip_id))
                 _np, _nid, _ns = reel_composer.pick_unused_cutscene(
-                    brief["game"], pick_platforms, _dur)
+                    brief["game"], pick_platforms, _dur, exclude=_tried)
                 if not _np:
                     break
                 clip_path, clip_id, _start = _np, _nid, float(_ns)
