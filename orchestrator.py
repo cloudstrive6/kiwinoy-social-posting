@@ -825,8 +825,10 @@ def run_gameplay_reel(
             _card = json.loads((_ldir / "card.json").read_text(encoding="utf-8"))
             hook = ""
             brief["hook"] = ""
-            caption = content.compose_reel_caption(_card.get("body", ""),
-                                                   brief.get("game", ""), with_game_title=True)
+            # The caption is the card's SHORT elaboration, never the card text itself.
+            caption = content.compose_reel_caption(
+                _card.get("caption") or _card.get("comment") or _card.get("body", ""),
+                brief.get("game", ""), with_game_title=True)
             reel_path = Path(lore_out)
             log(f"Game: {brief.get('subject')} | LORE card | clip {clip_id}")
     elif layout == "fill":
@@ -1198,7 +1200,8 @@ def run_gameplay_reel(
                         _fc = json.loads(
                             (run_dir / "lore_fb" / "card.json").read_text(encoding="utf-8"))
                         fb_caption = content.compose_reel_caption(
-                            _fc.get("body", ""), fb_lore_game, with_game_title=True)
+                            _fc.get("caption") or _fc.get("comment") or _fc.get("body", ""),
+                            fb_lore_game, with_game_title=True)
                         fb_story_hook = ""
                         fb_own_clip = fb_cid
                         if reel_composer.mark_clip_used(fb_cid, ["facebook"]):

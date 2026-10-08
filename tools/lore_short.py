@@ -71,8 +71,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         + "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
         "four beats, in this order, as ONE paragraph:\n"
         f"  1. CONTEXT: open with 'In {gname}' and the situation, in a few words.\n"
-        "  2. THE DETAIL: the specific thing worth noticing — what someone says or does, and "
-        "the part most viewers skim past. This is the heart of the card.\n"
+        "  2. THE DETAIL: the specific thing worth noticing — what someone SAYS or DOES and "
+        "what it MEANS. This is the heart of the card.\n"
         "  3. THE VERDICT: a short punchy reaction to that detail ('That is ice cold.').\n"
         "  4. THE COMPARISON: tie it to something the audience knows — another moment in THIS "
         "game's story, or a universal gamer experience ('the kind of parry every Souls player "
@@ -86,6 +86,15 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "of beat 2, coloured gold on screen.\n"
         "- \"comment\": one short funny/knowing reaction line, like a top YouTube comment on "
         "this moment (max 90 chars). Dry humour, no emojis, no hashtags.\n\n"
+        "THE CARD EXPLAINS, IT NEVER NARRATES THE PICTURE. The viewer is watching the same "
+        "footage, so telling them what is on screen is worthless — a card that reads like a "
+        "scene description is a FAILED card. Give them what they CANNOT see: what the line "
+        "means, what it sets up, what it costs someone later. NEVER make clothing, hair, "
+        "lighting, colour, the camera, the UI, an on-screen caption or a character's face the "
+        "POINT of the card. Never write 'the scene opens on', 'watch his face', 'a teen in a "
+        "grey t-shirt', 'a man in a lab coat', 'in a green-lit lab'. If the only thing you can "
+        "say about this moment is what it looks like, you have NO card — say that instead of "
+        "padding the body with description.\n\n"
         "ACCURACY IS EVERYTHING — a gaming audience catches invented trivia instantly:\n"
         "- use ONLY what the screen and the subtitles above show, plus the lore bible\n"
         "- never invent a developer intention, a camera trick, a statistic or a hidden detail "
@@ -110,6 +119,87 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
     except Exception as e:
         log(f"card writer failed ({e!r})")
         return {}
+
+
+# Wording that only ever appears when the writer has narrated the footage instead of
+# explaining it. A YouTube Short shipped "the scene opens on a caption reading TWO YEARS AGO,
+# in a green-lit Oscorp lab. Harry, a teen in a grey-green t-shirt..." — the viewer can SEE
+# all of that; the card's whole job is the part they cannot (user, 2026-10-08).
+_DESCRIBES = (
+    "the scene opens", "the camera", "the shot ", "this shot", "the frame", "on screen",
+    "a caption reading", "the caption reads", "text on screen", "watch his face",
+    "watch her face", "watch their face", "in the background", "we see ", "you can see",
+    "wearing a", "in a grey", "in a green", "in a blue", "in a red", "in a black",
+    "in a white", "t-shirt", "lab coat", "-lit ", "glances aside", "looks down,",
+)
+
+
+def card_shape_ok(body: str) -> tuple[bool, str]:
+    """Reject a card that describes the picture instead of explaining the moment."""
+    low = " " + re.sub(r"\s+", " ", body or "").lower() + " "
+    hits = [p for p in _DESCRIBES if p in low]
+    if hits:
+        return False, f"describes the footage ({', '.join(hits[:3])})"
+    return True, ""
+
+
+def _write_caption(card: dict, gname: str, avoid: str = "") -> str:
+    """A SHORT caption that ELABORATES on the card — never a copy of it (user, 2026-10-08).
+    Their own sample for a Harry/Norman card: 'The father who would do everything to save his
+    son, even if it endangers everyone, including his own son.'"""
+    prompt = (
+        f"This {gname} short carries an on-screen card:\n\n{card.get('body', '')}\n\n"
+        "Write the POST CAPTION for it. The caption does NOT repeat the card — the viewer is "
+        "already reading that. It names the THEME underneath the moment in the writer's own "
+        "words, so it rewards someone who just read the card.\n"
+        "- ONE sentence, 12-28 words. Plain English. No emojis, no hashtags, no quotes.\n"
+        "- stay CONCRETE about who this is about ('The father who...', 'A man who...'). Plain "
+        "words beat literary ones — no 'indistinguishable from', no abstract nouns stacked up\n"
+        "- never reuse a phrase from the card; never start with 'In " + gname + "'\n"
+        "- state nothing the card does not support\n"
+        "Example of the right register, for a card about a father promising never to let his "
+        "dying son go: 'The father who would do everything to save his son, even if it "
+        "endangers everyone, including his own son.'\n"
+        + (f"\nA previous attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
+        + '\nReturn ONLY JSON: {"caption": "the sentence"}'
+    )
+    try:
+        d = extract_json(_text(prompt, timeout=150)) or {}
+        return re.sub(r"\s+", " ", sanitize(str(d.get("caption", "")))).strip().strip('"')
+    except Exception as e:
+        log(f"caption writer failed ({e!r})")
+        return ""
+
+
+def _caption_ok(caption: str, card: dict) -> tuple[bool, str]:
+    """Short, and genuinely NOT a copy: no 6-word run shared with the card body."""
+    words = caption.split()
+    if not (8 <= len(words) <= 34):
+        return False, f"{len(words)} words — needs one sentence of 12-28"
+    body_words = [_norm_word(w) for w in card.get("body", "").split()]
+    runs = {tuple(body_words[i:i + 6]) for i in range(max(0, len(body_words) - 5))}
+    cw = [_norm_word(w) for w in words]
+    for i in range(max(0, len(cw) - 5)):
+        if tuple(cw[i:i + 6]) in runs:
+            return False, "copies a phrase straight out of the card"
+    if caption.strip().lower() == (card.get("comment", "") or "").strip().lower():
+        return False, "same as the comment line"
+    return True, ""
+
+
+def lore_caption(card: dict, gname: str) -> str:
+    """The caption body for a lore post: short, elaborating, never a copy of the card."""
+    why = ""
+    for _ in range(2):
+        cap = _write_caption(card, gname, avoid=why)
+        if cap:
+            ok, why = _caption_ok(cap, card)
+            if ok and not unsafe_terms(cap):
+                return cap
+            log(f"caption rejected ({why or 'unsafe wording'}); rewriting.")
+    # The comment line is already short, on-topic and fact-checked — better than shipping
+    # the whole card body as the caption.
+    return (card.get("comment", "") or "").strip()
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
@@ -321,13 +411,21 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             subs = (f"{subs}\n(These lines are from the {dur + CTX_PAD * 2:.0f}s AROUND the "
                     f"moment; only the middle {dur:.0f}s are ON SCREEN. Use the rest for "
                     "context only — never describe it as happening in the clip.)")
+        def _judge(c: dict) -> tuple[bool, str]:
+            """Both gates: it must EXPLAIN (not narrate the picture) and be true."""
+            shape_ok, shape_why = card_shape_ok(c.get("body", ""))
+            if not shape_ok:
+                return False, (f"{shape_why} — the viewer can already see that. Explain what "
+                               "the moment MEANS instead.")
+            return _check_card(c, observation, subs, gname, game)
+
         card = _write_card(observation, subs, game, gname)
         if card.get("body"):
-            ok, why = _check_card(card, observation, subs, gname, game)
+            ok, why = _judge(card)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
                 card2 = _write_card(observation, subs, game, gname, avoid=why)
-                if card2.get("body") and _check_card(card2, observation, subs, gname, game)[0]:
+                if card2.get("body") and _judge(card2)[0]:
                     card = card2
                 else:
                     raise CardRefused("second card also rejected — not posting "
@@ -339,6 +437,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             log(f"card contains advertiser-unsafe wording ({', '.join(bad)}) — rewriting body")
             card["body"] = re.sub(r"\b(?:%s)\b" % "|".join(map(re.escape, bad)), "", card["body"])
             card["body"] = re.sub(r"\s+", " ", card["body"]).strip()
+        # The POST caption is written here, from the finished card, so every caller (the
+        # reels track, the FB lore path, the CLI) posts the short elaboration instead of
+        # re-posting the card text (user, 2026-10-08).
+        card["caption"] = lore_caption(card, gname)
+        log(f'caption: {card["caption"]}')
 
     words = len(card["body"].split())
     log(f'highlight: {card.get("highlight", "")!r} | comment: {card.get("comment", "")!r}')
