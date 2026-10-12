@@ -802,6 +802,22 @@ reels:
       facebook:  [lore]                        # FB: lore only (triptych retired 2026-10-06)
       instagram: [classic, fill, lore]          # no triptych on IG (user, 2026-10-09)
       tiktok:    [classic, triptych, fill, lore]
+    # JOINT GAME x FORMAT ROTATION (user, 2026-10-12). Where a platform is listed here it
+    # OVERRIDES platform_layouts above and the preferred-game pick: the track walks the whole
+    # GAME x FORMAT grid, so the format changes every slot AND each game reaches every format.
+    # Leave a platform out (Facebook) to keep the old behaviour: its own layout list, every
+    # game available. Full IG/TikTok format lists are [fill, triptych, classic]; the lists
+    # below are the narrowed "for now" sets.
+    platform_rotation:
+      instagram:
+        games:   [spider-man2, wolverine]
+        formats: [fill, classic]                 # triptych held back for now
+      tiktok:
+        games:   [spider-man2, wolverine]
+        formats: [fill, classic, triptych]
+      youtube:
+        games:   [spider-man2]                   # lore only, SM2 only for now
+        formats: [lore]
     lore:
       seconds: 8          # video length; the card is written to out-read it (~18s)
       start_at: 0.45      # where in the cutscene to cut from (fraction of its length)

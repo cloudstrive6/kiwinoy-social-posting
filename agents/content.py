@@ -833,8 +833,21 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "'physics' or 'graphics').\n"
         "- 4 to 9 words. ENGLISH. No hashtags, no emojis, no quotes. Title-worthy, "
         "not a full sentence with punctuation.\n"
-        "- Examples of the ENERGY (don't copy): \"Watch what he does at the end\", "
-        "\"This is why Otto can't be trusted\", \"Nobody talks about this combo\".\n\n"
+        "- THE TEST IT MUST PASS: if someone can watch two seconds, see that your line "
+        "is simply TRUE, and scroll on satisfied, you wrote a caption, not a hook. It "
+        "has to leave something unanswered that only watching settles. 'Spider-Man "
+        "stops a getaway car by landing on it' went out on a real post and a viewer "
+        "replied with an 'ok, obviously' GIF — never write that line (user, "
+        "2026-10-12).\n"
+        "- Take the SAME moment and find the angle the footage does not already "
+        "answer: the choice behind it ('why land on the car instead of webbing it'), "
+        "what it costs, who is about to regret it, or what the dialogue reveals that "
+        "the action does not. Describing the action is the one thing the hook must "
+        "not do — the video already does that.\n"
+        "- Examples of the ENERGY (don't copy): \"This is why Otto can't be trusted\", "
+        "\"Nobody talks about this combo\", \"He had one shot to not kill the driver\". "
+        "Avoid hollow directives — a bare \"Watch what he does\" puts no weight behind "
+        "the question and scores as filler.\n\n"
         "CAPTION (sits BELOW the video as the post caption):\n"
         "- ONE short clip-title line, 3 to 8 words, accurate to the moment.\n"
         f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
@@ -1171,6 +1184,14 @@ def _verify_hooky(hook: str, gname: str = "", min_score: int = 5) -> tuple[bool,
         "something about to happen. A line that merely DESCRIBES what is on screen, like a "
         "stage direction or a shot list ('Claws out, one word said, against an explosion', "
         "'Plunging toward waterfall cliffs'), is NOT a hook — it labels the frame.\n"
+        "THE TEST THAT MATTERS: if a viewer could watch two seconds, see that the line is "
+        "simply TRUE, and scroll on satisfied, it is a caption, not a hook. It has to leave "
+        "something unanswered that only watching settles. 'SPIDER-MAN STOPS A GETAWAY CAR BY "
+        "LANDING ON IT' went out on a real post and a viewer replied with an 'ok, obviously' "
+        "GIF — that line is a 2/10 and so is anything shaped like it (user, 2026-10-12).\n"
+        "Score 0-3: states the visible action and nothing else. 4-5: a flicker of attitude "
+        "but still answers itself. 6-7: opens a real gap — a question, a stake, a 'wait, "
+        "why?'. 8-10: that gap plus a reason to keep watching to the end.\n"
         '- "is_hook": true/false   - "stop_score": 0-10   - "issues": what is missing if low\n'
         'Return ONLY JSON: {"is_hook": true, "stop_score": 7, "issues": ""}'
     )
@@ -1427,6 +1448,15 @@ def hook_and_caption_from_video(
                         ok2, i2 = _verify_hook_vision(h, l, cands, gname, dialogue=dialogue)
                         if not ok2:
                             return False, i2 or "hook not supported by the footage"
+                        # CURIOSITY, not just accuracy. This gate only ran on the FALLBACK
+                        # hooks, so a perfectly accurate description sailed through the
+                        # primary path: "SPIDER-MAN STOPS A GETAWAY CAR BY LANDING ON IT"
+                        # went live on IG and a viewer replied with an "ok, obviously" GIF
+                        # (user, 2026-10-12). The written hook is held HIGHER than the
+                        # fallbacks: it has the whole clip and the dialogue to work with.
+                        ok3, i3 = _verify_hooky(h, gname, min_score=6)
+                        if not ok3:
+                            return False, i3 or "accurate, but it is not a hook"
                         return True, ""
 
                     ok, issues = _check_hook(hook, line)

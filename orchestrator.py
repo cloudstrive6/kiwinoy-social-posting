@@ -675,6 +675,31 @@ def run_gameplay_reel(
         if str(brief.get("game") or "") in _ig_no_trip and "triptych" in main_layouts:
             main_layouts = [l for l in main_layouts if l != "triptych"] or ["classic"]
     layout = main_layouts[n % len(main_layouts)]
+    # JOINT GAME x FORMAT ROTATION (per user 2026-10-12). Rotating the format on its own
+    # let one game sit on one or two formats forever, and rotating per game let the same
+    # format run two slots back to back. This walks the full GAME x FORMAT grid for the
+    # platform: the format advances EVERY slot (so it never repeats back to back) and the
+    # game steps one place each round, so every game reaches every format. With 2 games and
+    # 2 formats that means a game sometimes repeats on the next slot — the user's own
+    # suggestion, and the only way to cover the grid while the format keeps moving.
+    #   slot 0..: (SM2 fill) (Wolv classic) (Wolv fill) (SM2 classic) -> repeat
+    _rot = ((gcfg.get("platform_rotation") or {}).get(_lp) or {})
+    _rg = [str(x) for x in (_rot.get("games") or []) if str(x).strip()]
+    _rf = [str(x) for x in (_rot.get("formats") or []) if str(x).strip()]
+    if _rg and _rf and not game and not layout_override and not clip_override:
+        try:
+            from core import gh_release as _ghr0
+            _slot = len(_ghr0.used_clips(_lp))   # posts made on THIS platform so far
+        except Exception:
+            _slot = 0
+        _i = _slot % (len(_rg) * len(_rf))
+        _round, _fi = divmod(_i, len(_rf))
+        _gi = (_round + _fi) % len(_rg)
+        _game, layout = _rg[_gi], _rf[_fi]
+        _gname = str((CONFIG.reels.get("game_names", {}) or {}).get(_game, _game))
+        brief["game"], brief["subject"] = _game, _gname
+        log(f"Rotation [{_lp} slot {_slot}]: {_gname} + {layout} "
+            f"(grid {len(_rg)}x{len(_rf)}, position {_i + 1})")
     if layout_override:                         # manual override (e.g. --layout triptych)
         layout = str(layout_override).strip().lower()
         log(f"Layout forced by override: {layout}")
