@@ -8,7 +8,7 @@ game: "marvel-tokon"
 cover: "/covers/jubilee-jane-foster-and-venom-complete-marvel-tokon-fighting-souls-yea.jpg"
 date: 2026-10-12
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/10/jane-foster-venom-jubilee-join-marvel-tokon-in-year-1-on-ps5"
 ---
