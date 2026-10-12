@@ -683,10 +683,15 @@ def run_gameplay_reel(
     # 2 formats that means a game sometimes repeats on the next slot — the user's own
     # suggestion, and the only way to cover the grid while the format keeps moving.
     #   slot 0..: (SM2 fill) (Wolv classic) (Wolv fill) (SM2 classic) -> repeat
+    # The rotation also OVERRIDES a track's configured game (reels.tiktok.game). Skipping it
+    # whenever a game was passed meant the TikTok track — which always passes its config game
+    # — never entered the rotation at all, so it kept picking `lore` off platform_layouts and
+    # crossing over to The Last of Us Part II (user, 2026-10-13). A hand-forced run still
+    # wins: pass clip_override/layout_override, or take the platform out of the config.
     _rot = ((gcfg.get("platform_rotation") or {}).get(_lp) or {})
     _rg = [str(x) for x in (_rot.get("games") or []) if str(x).strip()]
     _rf = [str(x) for x in (_rot.get("formats") or []) if str(x).strip()]
-    if _rg and _rf and not game and not layout_override and not clip_override:
+    if _rg and _rf and not layout_override and not clip_override:
         try:
             from core import gh_release as _ghr0
             _slot = len(_ghr0.used_clips(_lp))   # posts made on THIS platform so far

@@ -800,8 +800,10 @@ reels:
     platform_layouts:
       youtube:   [lore]                        # YouTube Shorts: lore only
       facebook:  [lore]                        # FB: lore only (triptych retired 2026-10-06)
-      instagram: [classic, fill, lore]          # no triptych on IG (user, 2026-10-09)
-      tiktok:    [classic, triptych, fill, lore]
+      # LORE is YouTube + Facebook ONLY (user, 2026-10-12). It used to sit in these two
+      # lists as well, which is how a TLOU2 lore short kept landing on TikTok.
+      instagram: [classic, fill, triptych]
+      tiktok:    [classic, triptych, fill]
     # JOINT GAME x FORMAT ROTATION (user, 2026-10-12). Where a platform is listed here it
     # OVERRIDES platform_layouts above and the preferred-game pick: the track walks the whole
     # GAME x FORMAT grid, so the format changes every slot AND each game reaches every format.
