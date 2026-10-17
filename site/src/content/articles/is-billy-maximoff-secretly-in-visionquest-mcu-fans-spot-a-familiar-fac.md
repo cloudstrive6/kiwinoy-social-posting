@@ -8,6 +8,7 @@ game: "mcu"
 cover: "/covers/is-billy-maximoff-secretly-in-visionquest-mcu-fans-spot-a-familiar-fac.jpg"
 date: 2026-10-17
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/eagle-eyed-marvel-fans-may-have-spotted-another-mcu-hero-in-visionquest-it-makes-so-much-sense/"
