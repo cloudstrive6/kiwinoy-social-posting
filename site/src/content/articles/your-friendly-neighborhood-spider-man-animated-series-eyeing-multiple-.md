@@ -8,7 +8,7 @@ game: "mcu"
 cover: "/covers/your-friendly-neighborhood-spider-man-animated-series-eyeing-multiple-.jpg"
 date: 2026-10-22
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/spider-mans-coolest-disney-series-confirms-work-on-future-seasons-ahead-of-season-2-launch/"
 ---
