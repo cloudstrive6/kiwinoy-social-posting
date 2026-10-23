@@ -6,14 +6,13 @@ import Base from "../layouts/Base.astro";
 // TO ADD A PRODUCT: copy a block below. Fields:
 //   name     product name                     tagline  one line under the name
 //   blurb    2-3 sentences, what it DOES      points   4-6 short feature bullets
-//   price    shown on the button row. Leave "" to hide the price line entirely.
 //   note     small print under the button (requirements, guarantees) — optional
 //   url      the product's own site           badge    the pill at the top of the card
+//   mark     logo id rendered before the name (see .mark-* in the styles below)
 //   img      optional cover image in /public (e.g. "/products/edittwin.jpg")
 //
-// PRICES ARE HAND-MAINTAINED. Deliberately no countdown or end-date here: a launch
-// deadline on a static page goes stale and reads worse than no deadline at all. Update
-// `price` when the founding offer ends.
+// NO PRICES ON THIS PAGE (user, 2026-10-23): pricing lives on each product's own landing
+// page, where it can change without a site rebuild and without going stale here.
 const PRODUCTS = [
   {
     name: "EditTwin",
@@ -31,23 +30,22 @@ const PRODUCTS = [
       "Renders locally — your footage never leaves your machine",
       "9:16 or 16:9 out, Windows and Mac",
     ],
-    price: "$47 one-time",
-    priceNote: "founding price (normally $97)",
     note: "Runs on your own computer and needs a paid Claude plan (billed by Anthropic, not by us).",
     url: "https://edittwin.bosskg.com/",
     cta: "See EditTwin",
+    mark: "edittwin",
     img: "",
   },
 ];
 ---
 
 <Base
-  title="Digital Products — BOSS KG"
+  title="AI & Automation Systems — BOSS KG"
   description="Tools built by BOSS KG for creators — starting with EditTwin, the AI video editor that cuts, captions and finishes your short-form video on your own machine."
 >
   <main class="wrap">
     <section class="sec" style="margin-top:34px">
-      <div class="sec-h"><span class="bar"></span><h2>Digital products</h2></div>
+      <div class="sec-h"><span class="bar"></span><h2>AI &amp; Automation Systems</h2></div>
       <p class="lede">
         Tools we built for the way we actually work — the same pipeline that runs this channel,
         packaged so you can use it too. These are <strong>our own products</strong>, not affiliate
@@ -61,7 +59,10 @@ const PRODUCTS = [
               <div class="prod-img"><img src={p.img} alt={p.name} loading="lazy" /></div>
             )}
             <span class="prod-badge">{p.badge}</span>
-            <h3>{p.name}</h3>
+            <h3>
+              {p.mark && <span class={`prod-mark mark-${p.mark}`} aria-hidden="true"></span>}
+              {p.name}
+            </h3>
             <p class="prod-tagline">{p.tagline}</p>
             <p class="prod-blurb">{p.blurb}</p>
 
@@ -71,12 +72,6 @@ const PRODUCTS = [
 
             <div class="prod-buy">
               <a class="prod-btn" href={p.url} target="_blank" rel="noopener">{p.cta} →</a>
-              {p.price && (
-                <span class="prod-price">
-                  {p.price}
-                  {p.priceNote && <em>{p.priceNote}</em>}
-                </span>
-              )}
             </div>
 
             {p.note && <p class="prod-note">{p.note}</p>}
@@ -121,7 +116,30 @@ const PRODUCTS = [
       background: color-mix(in srgb, var(--red) 14%, transparent);
       padding: 3px 9px; border-radius: 999px;
     }
-    .prod-card h3 { font-size: 26px; margin: 2px 0 0; line-height: 1.15; }
+    .prod-card h3 {
+      font-size: 26px; margin: 2px 0 0; line-height: 1.15;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* Product logo marks. EditTwin's logo is drawn in CSS on its own site rather than
+       served as an image file, so it is reproduced here from the same rules (coral tile,
+       two "twin" bars — one ink, one paper) scaled to this heading. --m drives every
+       dimension, so the proportions hold at any size. */
+    .prod-mark { flex: none; width: var(--m); height: var(--m); position: relative; overflow: hidden; }
+    .mark-edittwin {
+      --m: 34px;
+      border-radius: calc(var(--m) * .30);
+      background: #FF5B3A;
+    }
+    .mark-edittwin::before, .mark-edittwin::after {
+      content: ""; position: absolute;
+      top: calc(var(--m) * .233);
+      width: calc(var(--m) * .333);
+      height: calc(var(--m) * .533);
+      border-radius: calc(var(--m) * .133);
+    }
+    .mark-edittwin::before { left: calc(var(--m) * .167); background: #0C0C10; }
+    .mark-edittwin::after { right: calc(var(--m) * .167); background: #F4EFE6; }
     .prod-tagline { color: var(--text); font-size: 16px; font-weight: 700; margin: 0; }
     .prod-blurb { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin: 0; max-width: 62ch; }
 
@@ -141,8 +159,6 @@ const PRODUCTS = [
       border-radius: 11px; background: var(--red); color: #fff; transition: .16s;
     }
     .prod-btn:hover { filter: brightness(1.08); }
-    .prod-price { font-weight: 800; font-size: 15px; color: var(--text); display: flex; flex-direction: column; }
-    .prod-price em { font-style: normal; font-weight: 600; font-size: 12.5px; color: var(--faint); }
     .prod-note { color: var(--faint); font-size: 12.5px; line-height: 1.5; margin: 2px 0 0; max-width: 60ch; }
 
     .prod-foot { color: var(--muted); font-size: 14px; margin-top: 34px; }
