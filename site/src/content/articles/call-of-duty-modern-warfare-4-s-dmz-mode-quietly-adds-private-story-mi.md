@@ -8,6 +8,7 @@ game: "call-of-duty-mw4"
 cover: "/covers/call-of-duty-modern-warfare-4-s-dmz-mode-quietly-adds-private-story-mi.jpg"
 date: 2026-11-02
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/call-of-duty-modern-warfare-4-dmz-story-missions-pve"
