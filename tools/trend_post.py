@@ -261,7 +261,7 @@ def main() -> int:
     cands = trends.scout()
     posted = [] if a.dry_run else _load_posted()           # rich records (newest last)
     picks = trends.analyze(cands, games=games, exclude=_posted_keys(posted),
-                           posted_log=_posted_digest(posted), history=history, top_n=6)
+                           posted_log=_posted_digest(posted, n=150), history=history, top_n=6)
     for p in picks:                                        # map the pick to its source article
         try:
             si = int(p.get("source_index", 0))
@@ -304,7 +304,8 @@ def main() -> int:
 
         # NOVELTY GATE: catch a genuinely-recent article that only RESTATES a long-known fact
         # (e.g. "RDJ is Doctor Doom" — public since 2024). The age filter can't see this.
-        nv = trends.novelty_check(topic, pick.get("angle", ""), history)
+        nv = trends.novelty_check(topic, pick.get("angle", ""), history,
+                                   posted_log=_posted_digest(posted, n=150))
         if not nv.get("new", True):
             since = nv.get("known_since") or "?"
             print(f"   NOT NEW (known since {since}): {nv.get('reason')} -> skip", flush=True)

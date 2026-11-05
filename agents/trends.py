@@ -257,8 +257,10 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         for i, c in enumerate(candidates[:80]))
     # Prefer the readable posted-log; fall back to the bare key list.
     if posted_log:
-        excl = ("\n\nWE ALREADY POSTED THESE (newest first) — do NOT pick any of them or a "
-                f"close variant:\n{posted_log}")
+        excl = ("\n\nWE ALREADY POSTED THESE (newest first) — do NOT pick any of them, a "
+                "close variant, or the SAME ANGLE with slightly newer numbers (e.g. a third "
+                "'sales trail Spider-Man' story) unless it adds a big new official milestone:"
+                f"\n{posted_log}")
     elif exclude:
         excl = "\n\nALREADY POSTED (do NOT pick these or close variants): " + "; ".join(exclude[:40])
     else:
@@ -311,7 +313,7 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         return []
 
 
-def novelty_check(topic: str, angle: str = "", history: str = "") -> dict:
+def novelty_check(topic: str, angle: str = "", history: str = "", posted_log: str = "") -> dict:
     """Dedicated 'is this actually NEW?' gate, run before an autopost/draft goes out.
 
     Catches the case the age filter can't: a genuinely-recent article that merely RESTATES
@@ -326,13 +328,18 @@ def novelty_check(topic: str, angle: str = "", history: str = "") -> dict:
         f"TODAY is {today}. You are a gate that stops a Marvel news page from posting OLD news "
         "as if it just happened.\n\n"
         f"FACTS ALREADY PUBLIC (since the dates shown):\n{history or '(none provided)'}\n\n"
-        f"PROPOSED POST TOPIC: {topic}\n"
+        + (f"WE ALREADY POSTED (newest first):\n{posted_log}\n\n" if posted_log else "")
+        + f"PROPOSED POST TOPIC: {topic}\n"
         f"ANGLE: {angle or '(none)'}\n\n"
         "Decide whether this topic is a GENUINELY NEW development (a new trailer/footage, a "
         "newly announced casting, a new/changed release date, a delay, a just-released "
         "product) OR a RESTATEMENT of something already publicly known for weeks, months or "
         "years — whether it's in the list above or is general knowledge from your own training. "
-        "If it merely re-reports a long-known casting, plot point or date, it is NOT new. When "
+        "If it merely re-reports a long-known casting, plot point or date, it is NOT new. "
+        "It is also NOT new if we already posted the same story or angle (see the posted "
+        "list), even with slightly updated numbers, unless there is a big new official "
+        "milestone. Your training data may be older than TODAY: trust the facts list over "
+        "your own memory about what has or has not released. When "
         "genuinely unsure and it smells like an old, oft-repeated fact, treat it as OLD.\n"
         'Return ONLY JSON: {"new": true|false, "known_since": "YYYY-MM or date or empty", '
         '"reason": "one short line"}.')

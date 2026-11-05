@@ -53,6 +53,8 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get update && sudo apt-get install -y fonts-dejavu-core
           curl -fsSL https://rclone.org/install.sh | sudo bash
+      - name: Install Claude Code CLI (analyst + novelty + fact-check gates)
+        run: npm install -g @anthropic-ai/claude-code
       - name: Generate trend draft(s)
         run: |
           python tools/trend_post.py --count "${{ github.event.inputs.count || '1' }}"

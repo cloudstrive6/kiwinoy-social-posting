@@ -43,6 +43,15 @@ FACTS: list[dict] = [
      "since": "2023-10-20",
      "note": "Its existence is known; a concrete reveal (official title, trailer, platform, "
              "date) would be new."},
+    {"fact": "Marvel's Wolverine RELEASED on PS5 on September 15, 2026",
+     "since": "2026-09-15",
+     "note": "It is OUT. Launch, reviews, scent-trail patch, AI-asset denial and launch-week "
+             "talk are all old. New patches, DLC, a new trailer, or a PC port ARE postable."},
+    {"fact": "Marvel's Wolverine sales trail Marvel's Spider-Man 2 (a 'soft start'): 1.9M by "
+             "mid-September, about 2.16M in September, 2.4M after 50 days (Sony, 2026-11-05)",
+     "since": "2026-09-19",
+     "note": "Posted 2026-09-19, 2026-10-10 and 2026-11-05. Another 'Wolverine sales lag "
+             "Spider-Man' post is NOT new. Only a big official milestone (e.g. 5M sold) is."},
     # ─── ADD MORE AS THEY BECOME PUBLIC — with the date each one broke ───
 ]
 

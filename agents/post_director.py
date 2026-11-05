@@ -181,9 +181,19 @@ def verify_caption(topic: str, caption: str, game: str = "") -> dict:
     fundamentally unsupportable it returns ok=False. Fail-OPEN on critic error (the writer
     is already anti-fabrication and the image screener is a second gate)."""
     from agents.content import _text, extract_json, sanitize
+    from datetime import datetime, timezone
+    try:
+        from core.marvel_history import history_brief
+        known = history_brief()
+    except Exception:
+        known = ""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     prompt = (
         "You are a strict FACT-CHECK editor for a Marvel fan page. A caption is about to "
-        f"AUTO-POST (no human will review it). TOPIC: {topic}\nPROPERTY: {game or 'Marvel'}\n\n"
+        f"AUTO-POST (no human will review it). TODAY is {today}. Your training data may be "
+        "older than today, so things released after your cutoff are real. These facts are "
+        f"CONFIRMED and current:\n{known or '(none)'}\n\n"
+        f"TOPIC: {topic}\nPROPERTY: {game or 'Marvel'}\n\n"
         f"CAPTION:\n{caption}\n\n"
         "Flag any statement the page can't stand behind: invented or precise stats/numbers, "
         "specific dates, direct quotes, specific casting/actor names, or plot/story details, "
@@ -273,7 +283,10 @@ def _headline(topic: str, angle: str) -> tuple:
     prompt = (
         "Write a PUNCHY on-image NEWS-card headline for a Marvel post about: "
         f"{topic}. Angle: {angle}. Rules: <=9 words, UPPERCASE-friendly, accurate, instantly "
-        "readable, no hashtags/quotes/emoji. ALSO pick 1-2 KEY PHRASES from the headline to "
+        "readable, no hashtags/quotes/emoji. LEAD WITH WHAT IS NEW TODAY: the new number, "
+        "announcement, date or reveal (e.g. '2.4 MILLION SOLD', 'NEW TRAILER'). Never a vague "
+        "recap like 'slower launch sparks debate' that reads as old news. ALSO pick 1-2 KEY "
+        "PHRASES from the headline to "
         "HIGHLIGHT in accent colour (the most important hook words/nouns). Each accent phrase "
         "MUST be an exact substring of the headline.\n"
         'Return STRICT JSON {"headline":"...","accents":["phrase","phrase"]}.')
