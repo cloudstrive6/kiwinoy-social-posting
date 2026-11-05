@@ -255,6 +255,14 @@ def main() -> int:
         history = history_brief()
     except Exception:
         history = ""
+    # Official trailer upload dates: tells the gates which trailer is new and which is old.
+    try:
+        from core import trailer_watch
+        tb = trailer_watch.brief(trailer_watch.update(persist=not a.dry_run))
+        if tb:
+            history = (history + "\n\n" + tb).strip()
+    except Exception as e:
+        print(f"[trend-post] trailer tracker skipped ({e!r}).", flush=True)
 
     games = list((CONFIG.reels.get("game_names", {}) or {}).values())
     print("[trend-post] scouting rising gaming trends…", flush=True)
