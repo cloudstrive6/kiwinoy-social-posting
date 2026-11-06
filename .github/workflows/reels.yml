@@ -69,6 +69,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  # alerts (clip ledger, Post for Me health)
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       # The decoupled YouTube Shorts track (--youtube-reel) now uploads via the YouTube DATA
       # API (not Post for Me) so it gets the video id back and files each Short into its game
       # playlist immediately. Needs the channel's OAuth (same secrets deploy-site.yml uses).
@@ -131,6 +133,12 @@ jobs:
           BACKUP=""
           if [ "${{ steps.pick.outputs.backup }}" = "true" ]; then BACKUP="--backup"; fi
           python run.py --reel --slot ${{ steps.pick.outputs.slot }} $DRY $BACKUP
+
+      # Post for Me publishes in the background, so a dead FB/IG token still looks like a
+      # successful run. This pings Telegram when a platform's latest post failed.
+      - name: Post for Me health check
+        if: always()
+        run: python tools/pfm_health.py || true
 
       # DECOUPLED YouTube Shorts track (per user 2026-07-30): its OWN clip, fresh on
       # YouTube (works the FB/IG/TikTok backlog). Same 3x/day trigger = 3 YT Shorts/day.

@@ -1171,11 +1171,13 @@ def run_gameplay_reel(
         # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
         # full caption + their fuller hashtags. The FILL format follows the Threads
         # LANDSCAPE rule instead: caption body + #GamingThreads only (no game tags).
+        # gtags is set for every layout: the IG Story repost below needs it on fill too
+        # (it crashed with UnboundLocalError on fill reels until 2026-11-06).
+        gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
         if layout == "fill":
             body = caption.split("\n\n#")[0].rstrip()   # drop the trailing game-tag block
             threads_cap = publisher._with_threads_tag(body)
         else:
-            gtags = content._reel_hashtags({"game": brief.get("game")}, 1)
             threads_cap = f"{hook}\n\n{gtags[0]}".strip() if gtags else hook
         # On IG's rotated turn, IG gets its OWN rotated reel (below) — so drop IG from
         # the main classic/triptych post; otherwise IG shares the main reel.
@@ -1395,8 +1397,8 @@ def run_gameplay_reel(
             try:
                 log("Reposting reel to Facebook Story...")
                 _fbtags = content._reel_hashtags({"game": brief.get("game")}, 1)
-                story_cap = (f"{fb_story_hook}\n\n{_fbtags[0]}".strip()
-                             if (fb_story_hook and _fbtags) else fb_story_hook)
+                _sh = fb_story_hook or hook      # lore card failed -> fall back to the reel hook
+                story_cap = (f"{_sh}\n\n{_fbtags[0]}".strip() if (_sh and _fbtags) else _sh)
                 result["fb_story_result"] = publisher.run_fb_story(
                     caption=story_cap, media_bytes=fb_story_bytes, is_video=True,
                     scheduled_at=scheduled_at)
