@@ -49,6 +49,20 @@ WORDS_MIN, WORDS_MAX = 45, 65
 CTX_PAD = 10.0
 
 
+def lore_seconds(lcfg: dict | None = None) -> float:
+    """Target length of one lore clip. TRIAL from 2026-11-09 (user): a random 15-20s per post
+    instead of a flat 8s, to test whether longer clips perform better. Config
+    reels.gameplay.lore.seconds_min / seconds_max; without them the old flat `seconds` (8).
+    build() trims this to the footage when the cutscene is shorter."""
+    import random
+    if lcfg is None:
+        lcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
+    lo, hi = lcfg.get("seconds_min"), lcfg.get("seconds_max")
+    if lo and hi and float(hi) >= float(lo):
+        return round(random.uniform(float(lo), float(hi)), 1)
+    return float(lcfg.get("seconds", 8))
+
+
 class CardRefused(RuntimeError):
     """The card could not be supported by the evidence. A normal exception, NOT SystemExit:
     SystemExit skipped past every caller's `except Exception` and aborted the whole posting
@@ -136,7 +150,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "game only when the parallel is exact and you say what the parallel IS — a name-drop "
         "that only half-fits this moment reads as filler, so prefer this game.\n\n"
         f"- \"body\": all four beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
-        "it must take ~15 seconds to read against an 8-second video so the viewer loops it. "
+        "it must take ~15 seconds to read, about as long as the clip or longer, so the viewer "
+        "stays to finish it. "
         "Plain spoken English, present tense, no hype words, no emojis, no hashtags.\n"
         "- \"highlight\": a SHORT phrase (2-6 words) copied EXACTLY from your body — the pivot "
         "of beat 2, coloured gold on screen.\n"
@@ -512,6 +527,12 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     outdir.mkdir(parents=True, exist_ok=True)
     seg = outdir / "segment.mp4"
     ff = ffmpeg.ffmpeg_bin() or "ffmpeg"
+    # Never run past the footage: the final render LOOPS the segment to fill `dur`, so a
+    # 10s cutscene asked for 17s would replay its start. A shorter cutscene is used whole
+    # (user, 2026-11-09).
+    _total = float(ffmpeg.duration(Path(clip)) or 0.0)
+    if _total > 0:
+        dur = max(1.0, min(dur, _total - max(0.0, start)))
     # keep the gameplay AUDIO (per user 2026-10-06) — it carries the moment
     subprocess.run([ff, "-y", "-v", "error", "-ss", f"{start:.2f}", "-t", f"{dur:.2f}",
                     "-i", str(clip), "-c:v", "libx264", "-crf", "18",

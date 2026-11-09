@@ -751,7 +751,8 @@ def run_gameplay_reel(
         # no unused cutscene clip, fall back to this track's previous layout for the slot
         # rather than skipping the post (user's call) — logged so the empty pool is visible.
         ckey = f"{brief['game']}-cutscene"
-        _lsec = float((gcfg.get("lore", {}) or {}).get("seconds", 8))
+        from tools.lore_short import lore_seconds as _lore_seconds
+        _lsec = _lore_seconds(gcfg.get("lore", {}) or {})
         clip_path, clip_id, lore_start = reel_composer.pick_unused_cutscene(
             brief["game"], pick_platforms, _lsec)
         if not clip_path:
@@ -816,7 +817,12 @@ def run_gameplay_reel(
         # standalone observation) plus the usual game title + hashtags.
         from tools.lore_short import build as _build_lore
         lcfg = gcfg.get("lore", {}) or {}
-        _dur = float(lcfg.get("seconds", 8))
+        # Same length the window was picked for; a forced clip (override) picks its own.
+        try:
+            _dur = float(_lsec)
+        except NameError:
+            from tools.lore_short import lore_seconds as _lore_seconds
+            _dur = _lore_seconds(lcfg)
         _total = float(ffmpeg.duration(Path(clip_path)) or _dur)
         _start = float(lore_start)          # the chosen WINDOW (speech-aligned, never reused)
         log(f"Clip (cutscene pool): {clip_id}")
@@ -1223,7 +1229,8 @@ def run_gameplay_reel(
                     "facebook") or ["lore"])]
                 if layout not in fb_layouts and "lore" in fb_layouts:
                     _lc = gcfg.get("lore", {}) or {}
-                    _d = float(_lc.get("seconds", 8))
+                    from tools.lore_short import lore_seconds as _lore_seconds_fb
+                    _d = _lore_seconds_fb(_lc)
                     fb_clip, fb_cid, _s = reel_composer.pick_unused_cutscene(
                         brief["game"], ["facebook"], _d)
                     fb_lore_game = brief["game"]

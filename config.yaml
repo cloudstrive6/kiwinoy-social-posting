@@ -822,7 +822,9 @@ reels:
         games:   [spider-man2]                   # lore only, SM2 only for now
         formats: [lore]
     lore:
-      seconds: 8          # video length; the card is written to out-read it (~18s)
+      seconds: 8          # old flat length; used only if seconds_min/max are removed
+      seconds_min: 15     # each lore clip is a random 15-20s (user, 2026-11-09);
+      seconds_max: 20     # a cutscene shorter than 15s is used whole
       start_at: 0.45      # where in the cutscene to cut from (fraction of its length)
       humanize: true      # humanizer skill on the card + caption + title (user, 2026-11-09)
     # FILL = full-bleed vertical (new 2026-07-03): raw LANDSCAPE clips you paste into a
