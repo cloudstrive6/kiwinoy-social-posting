@@ -824,6 +824,7 @@ reels:
     lore:
       seconds: 8          # video length; the card is written to out-read it (~18s)
       start_at: 0.45      # where in the cutscene to cut from (fraction of its length)
+      humanize: true      # humanizer skill on the card + caption + title (user, 2026-11-09)
     # FILL = full-bleed vertical (new 2026-07-03): raw LANDSCAPE clips you paste into a
     # DEDICATED per-game folder, scaled to COVER the whole 9:16 frame (centre-crop, no
     # bands/logo/text — pure footage). Original game audio + the 1080p reels' volume

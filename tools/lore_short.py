@@ -116,7 +116,13 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "surprising, MAKE IT THE CARD. A detail players argue about, cut content, a line "
            "the devs explained — that is far better than anything you can infer from the "
            "frames. Attribute a fan reading as one ('fans still argue', 'players noticed'), "
-           "never as fact, and use a finding only if it fits THIS moment.\n\n"
+           "never as fact, and use a finding only if it fits THIS moment.\n"
+           "BUT THE FOOTAGE OUTRANKS THE RESEARCH, ALWAYS. The research may have found a "
+           "DIFFERENT scene that sounds like this one. If any finding disagrees with WHAT IS "
+           "ON SCREEN above — who is doing what to whom, who is awake, where they are — the "
+           "screen wins and you DROP that finding. Never import an event (a flashback, an "
+           "object, a trigger) the frames do not show, and never reverse who is acting on "
+           "whom to match a research note (user, 2026-10-09).\n\n"
            if research else "")
         + "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
         "four beats, in this order, as ONE paragraph:\n"
@@ -286,7 +292,15 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
                 break
             title_out = f"{title_out} {w}".strip()
         title_out = title_out.rstrip(",;:.") or gname
-    return cap_out, title_out
+    # Humanize pass (user, 2026-11-09). A rewrite that copies the card or trips the
+    # advertiser-safety list is dropped for the original.
+    from core import humanize
+    h_cap, h_title = humanize.post_text(cap_out, title_out)
+    if h_cap != cap_out and (not _caption_ok(h_cap, card)[0] or unsafe_terms(h_cap)):
+        h_cap = cap_out
+    if h_title != title_out and unsafe_terms(h_title):
+        h_title = title_out
+    return h_cap, h_title
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
@@ -304,7 +318,9 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + f"EVIDENCE — what is on screen:\n{observation}\n\n"
         + (f"RESEARCHED CONTEXT for this scene (Reddit, wikis, interviews). A claim that "
            f"matches this IS supported — but a fan theory must still be worded as one, and "
-           f"anything here that is not about THIS scene supports nothing:\n{research}\n\n"
+           f"anything here that is not about THIS scene supports nothing. The research may "
+           f"describe a DIFFERENT, similar scene: it NEVER overrides the on-screen evidence, "
+           f"so reject anything it imported that the frames contradict:\n{research}\n\n"
            if research else "")
         + (f"{subtitles}\n\n" if subtitles else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
@@ -312,6 +328,13 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + f"THE CARD:\n{card.get('body', '')}\n\n"
         + f"THE COMMENT LINE (also posted, check it the same way):\n"
           f"{card.get('comment', '(none)')}\n\n"
+        "CHECK THE DIRECTION OF THE ACTION FIRST. Who is doing what, TO WHOM, and who is "
+        "awake, standing, holding or reaching — compare that against the on-screen evidence "
+        "line by line. A card that swaps the two people round ('Dina holding her' when the "
+        "evidence shows Ellie reaching for a sleeping Dina) is BAD even if it is beautifully "
+        "written, and a card that imports an event the frames do not show (a flashback, a "
+        "fallen object, a trigger) is BAD however confident the researched context sounds. "
+        "This is the failure that shipped (user, 2026-10-09).\n"
         "NAMING: a character the BIBLE identifies unmistakably from what is on screen (its "
         "visual tells plus who is with whom at that point in the story) is CORRECTLY named — "
         "do NOT demand a subtitle label for them. Forcing the writer to say 'someone' about "
@@ -533,13 +556,18 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                                "the moment MEANS instead.")
             return _check_card(c, observation, subs, gname, game, research)
 
-        card = _write_card(observation, subs, game, gname, research=research)
+        # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
+        # words that go on screen.
+        from core import humanize
+        card = humanize.card(_write_card(observation, subs, game, gname, research=research),
+                             gname, WORDS_MIN, WORDS_MAX)
         if card.get("body"):
             ok, why = _judge(card)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
-                card2 = _write_card(observation, subs, game, gname, avoid=why,
-                                    research=research)
+                card2 = humanize.card(_write_card(observation, subs, game, gname, avoid=why,
+                                                  research=research),
+                                      gname, WORDS_MIN, WORDS_MAX)
                 if card2.get("body") and _judge(card2)[0]:
                     card = card2
                 else:
