@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -71,6 +72,14 @@ def _apikey_env() -> dict:
     env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
     env.pop("ANTHROPIC_AUTH_TOKEN", None)
     return env
+
+
+def _reason(e: Exception) -> str:
+    """Short reason from a CLI failure: the JSON 'result' text when present (e.g. a usage
+    limit message), else the tail of the error. Never includes credentials."""
+    s = str(e)
+    m = re.search(r'"result"\s*:\s*"([^"]{1,300})"', s)
+    return m.group(1) if m else s[-300:]
 
 
 def _invoke(cmd: list[str], prompt: str, env: dict, timeout: int) -> str:
@@ -156,8 +165,10 @@ def run(
                 e = ClaudeCodeError(f"claude timed out after {timeout}s")
             last_err = e
             if i + 1 < len(attempts):
+                # Say WHY: the subscription's reason was hidden, so on 2026-11-10/11 three
+                # reels slots died showing only the empty API key's "Credit balance is too low".
                 print(
-                    f"[claude_code] {label} failed, trying {attempts[i + 1][0]}...",
+                    f"[claude_code] {label} failed ({_reason(e)}), trying {attempts[i + 1][0]}...",
                     flush=True,
                 )
             continue
