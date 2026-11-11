@@ -46,7 +46,12 @@ export function sectionFor(d) {
 }
 
 // "Marvel Games | PlayStation" shows as "Marvel Games".
-export const catLabel = (c) => (c || "News").split("|")[0].trim();
+// One casing everywhere (crumbs, chips, cards): sentence case, names and acronyms kept.
+const LABEL_CASE = { "marvel games": "Marvel games" };
+export const catLabel = (c) => {
+  const l = (c || "News").split("|")[0].trim();
+  return LABEL_CASE[l.toLowerCase()] || l;
+};
 
 const GMAP = {
   wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
@@ -85,20 +90,34 @@ export function toStory(entry) {
   };
 }
 
-// "Up next": stories that share the category or a tag, newest first, never the story itself.
-// Falls back to the newest other stories so every article ends with somewhere to go.
-export function related(entry, all, n = 2) {
-  const d = entry.data;
-  const tags = new Set((d.tags || []).map((t) => slugify(t)));
-  const cat = catLabel(d.category).toLowerCase();
+// Tags that match almost everything, so they say nothing about relatedness.
+const GENERIC_TAGS = new Set([
+  "marvel", "gaming", "games", "video-games", "news", "playstation", "ps5", "ps4", "sony",
+  "mcu", "marvel-studios", "disney", "xbox", "pc", "nintendo", "trailer", "update", "rumor",
+]);
+
+// Relatedness score: same `game` first, then same category, then shared specific tags.
+export function relatedScore(d, o) {
+  const game = (d.game || "").toLowerCase();
+  let score = 0;
+  if (game && (o.game || "").toLowerCase() === game) score += 6;
+  if (catLabel(o.category).toLowerCase() === catLabel(d.category).toLowerCase()) score += 3;
+  const mine = new Set((d.tags || []).map(slugify).filter((t) => !GENERIC_TAGS.has(t)));
+  for (const t of o.tags || []) if (mine.has(slugify(t))) score += 2;
+  return score;
+}
+
+// Stories ranked by relatedness (ties: newest first). `all` is already draft-free and newest first.
+// Never the story itself. Falls back to the newest other stories so there is always somewhere to go.
+export function rankRelated(entry, all) {
   const others = all.filter((a) => a.id !== entry.id);
-  const close = others.filter(
-    (a) => catLabel(a.data.category).toLowerCase() === cat || (a.data.tags || []).some((t) => tags.has(slugify(t))),
-  );
-  const picked = close.slice(0, n);
-  for (const a of others) {
-    if (picked.length >= n) break;
-    if (!picked.includes(a)) picked.push(a);
-  }
-  return picked;
+  const scored = others
+    .map((a, i) => ({ a, i, s: relatedScore(entry.data, a.data) }))
+    .sort((x, y) => y.s - x.s || x.i - y.i);
+  return scored.map((x) => x.a);
+}
+
+// "Up next": the n most related stories.
+export function related(entry, all, n = 2) {
+  return rankRelated(entry, all).slice(0, n);
 }

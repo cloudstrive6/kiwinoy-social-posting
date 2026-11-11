@@ -26,3 +26,6 @@ export const ICON = {
 };
 
 export const YT_PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true" focusable="false"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
+
+// Calm play glyph for grid cards (YouTube red is kept for the one featured player per page).
+export const PLAY_DOT = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle class="pd-bg" cx="24" cy="24" r="23"/><path d="M19.5 15.5 33 24l-13.5 8.5z" fill="currentColor"/></svg>`;

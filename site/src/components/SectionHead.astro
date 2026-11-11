@@ -1,10 +1,11 @@
 ---
-// Section heading with the red health-bar rule and an optional "more" link.
+// Section heading with an optional "more" link. `ruled` adds the red health-bar rule: used once
+// per page (the first section) so the device keeps its meaning.
 import { ICON } from "../lib/icons.js";
-interface Props { title: string; href?: string; more?: string; id?: string; ext?: boolean }
-const { title, href, more, id, ext = false } = Astro.props;
+interface Props { title: string; href?: string; more?: string; id?: string; ext?: boolean; ruled?: boolean }
+const { title, href, more, id, ext = false, ruled = false } = Astro.props;
 ---
-<div class="sec-h">
+<div class={`sec-h${ruled ? " ruled" : ""}`}>
   <h2 id={id}>{title}</h2>
   {href && (
     <a class="sec-more" href={href} {...(ext ? { target: "_blank", rel: "noopener" } : {})}>

@@ -1,6 +1,7 @@
 ---
-// Videos: the newest full video as a feature, the rest of the long-form library, then Shorts
-// (click to play in place through the facade in Base.astro).
+// Videos: the newest full video as a feature row (sharp 1280 px still, title and actions beside it
+// on desktop), then the library with two large cards first, 12 videos up front and the rest behind
+// "Show more" (native <details>, no JS), then Shorts (click to play in place).
 import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
 import SectionHead from "../components/SectionHead.astro";
@@ -12,10 +13,19 @@ import { YT_PLAY, ICON } from "../lib/icons.js";
 
 const feat = longform[0];
 const restLong = longform.slice(1);
-const gridShorts = shorts.slice(0, 18);
+const upFront = restLong.slice(0, 12);
+const later = restLong.slice(12);
+const gridShorts = shorts.slice(0, 12);
 const has = longform.length > 0 || shorts.length > 0;
+const yt = (id, f) => `https://i.ytimg.com/vi/${id}/${f}.jpg`;
+// sddefault is 640 px wide (letterboxed); it covers phone screens, hq720 (1280 px) covers desktop.
+const featSrcset = feat ? `${yt(feat.id, "sddefault")} 720w, ${yt(feat.id, "hq720")} 1280w` : "";
+const featSizes = "(min-width: 1024px) 760px, calc(100vw - 40px)";
+const blurb = feat && feat.blurb ? feat.blurb.replace(/\s+/g, " ").split(/(?<=[.!?])\s/).slice(0, 2).join(" ") : "";
 ---
-<Base title="Videos" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG.">
+<Base title="Videos" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG."
+  preconnect={["https://i.ytimg.com"]}
+  preloadImage={feat ? { srcset: featSrcset, sizes: featSizes } : undefined}>
   <SectionNav current="/videos/" />
   <main id="main" class="wrap">
     <header class="page-head">
@@ -28,27 +38,38 @@ const has = longform.length > 0 || shorts.length > 0;
     )}
 
     {feat && (
-      <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hFeat">
-        <a class="vfeat" href={`/watch/${feat.slug}/`}>
+      <section class="vfeat-row" aria-labelledby="hFeat">
+        <a class="vfeat" href={`/watch/${feat.slug}/`} aria-hidden="true" tabindex="-1">
           <div class="vthumb">
-            <img src={feat.thumb.replace("hqdefault", "sddefault")} alt={feat.title} width="640" height="480"
+            <img src={yt(feat.id, "hq720")} srcset={featSrcset} sizes={featSizes} alt="" width="1280" height="720"
               loading="eager" fetchpriority="high" decoding="async"
-              onerror="this.onerror=null;this.src=this.src.replace('sddefault','hqdefault')" />
+              onerror="this.onerror=null;this.removeAttribute('srcset');this.src=this.src.replace(/(hq720|sddefault)/,'hqdefault')" />
             <span class="play" set:html={YT_PLAY}></span>
           </div>
-          <div style="margin-top:var(--s4)">
-            <span class="chip">Latest full video</span>
-            <h2 id="hFeat" style="font-size:clamp(24px,3vw,34px); margin-top:var(--s2)">{feat.title}</h2>
-            <p class="card-date" style="margin-top:var(--s2)">{fmtDate(feat.published)}</p>
-          </div>
         </a>
+        <div class="vfeat-text">
+          <span class="chip">Latest full video</span>
+          <h2 id="hFeat"><a href={`/watch/${feat.slug}/`}>{feat.title}</a></h2>
+          {feat.published && <p class="card-date">{fmtDate(feat.published, true)}</p>}
+          {blurb && <p>{blurb}</p>}
+          <div class="vfeat-actions">
+            <a class="btn btn-primary" href={`/watch/${feat.slug}/`}><Fragment set:html={ICON.youtube} /><span>Watch now</span></a>
+            <a class="btn btn-ghost" href={CHANNEL_URL} rel="noopener">Subscribe</a>
+          </div>
+        </div>
       </section>
     )}
 
-    {restLong.length > 0 && (
+    {upFront.length > 0 && (
       <section class="sec" aria-labelledby="hFull">
         <SectionHead id="hFull" title="Full videos" href={CHANNEL_URL} more="YouTube channel" ext />
-        <div class="vgrid">{restLong.map((v) => <VideoCard v={v} showDate />)}</div>
+        <div class="vgrid mixed">{upFront.map((v, i) => <VideoCard v={v} showDate big={i < 2} />)}</div>
+        {later.length > 0 && (
+          <details class="more-videos">
+            <summary class="btn btn-ghost">Show {later.length} more videos</summary>
+            <div class="vgrid">{later.map((v) => <VideoCard v={v} showDate />)}</div>
+          </details>
+        )}
       </section>
     )}
 
@@ -58,10 +79,6 @@ const has = longform.length > 0 || shorts.length > 0;
         <div class="sgrid">{gridShorts.map((v) => <VideoCard v={v} short />)}</div>
       </section>
     )}
-
-    <div class="sec">
-      <a class="btn btn-primary" href={CHANNEL_URL} rel="noopener"><Fragment set:html={ICON.youtube} /><span>Subscribe on YouTube</span></a>
-    </div>
 
     <NewsletterBox />
   </main>

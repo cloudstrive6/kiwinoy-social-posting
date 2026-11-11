@@ -34,15 +34,14 @@ const take = (list, n) => {
 const side = take(all, 4);
 const marvel = take(all.filter((a) => SECTIONS["marvel-games"].match(a.data)), 4);
 const mcu = take(all.filter((a) => SECTIONS.mcu.match(a.data)), 4);
-const gaming = take(all.filter((a) => !SECTIONS["marvel-games"].match(a.data) && !SECTIONS.mcu.match(a.data)), 4);
-const latest = take(all, 8);
+const gaming = take(all.filter((a) => !SECTIONS["marvel-games"].match(a.data) && !SECTIONS.mcu.match(a.data)), 6);
+const latest = take(all, 6);
 
 const lead = leadEntry ? toStory(leadEntry) : null;
-const leadSec = leadEntry ? sectionFor(leadEntry.data) : null;
 const leadImg = lead ? imgAttrs(lead.cover, { sizes: SIZES.lead }) : null;
 
 const vids = longform.slice(0, 4);
-const shortList = shorts.slice(0, 6);
+const shortList = shorts.slice(0, 8);
 const gearPicks = ["PlayStation 5 Pro (2TB)", "DualSense Edge", "Elgato 4K Pro (internal)", "DUBBY Energy"]
   .map((n) => GEAR.find((g) => g.name === n)).filter(Boolean);
 const soc = [
@@ -66,7 +65,7 @@ const ld = [
   },
 ];
 ---
-<Base jsonLd={ld}>
+<Base jsonLd={ld} preloadImage={leadImg && leadImg.srcset ? { srcset: leadImg.srcset, sizes: leadImg.sizes } : undefined}>
   <SectionNav />
   <main id="main" class="wrap">
     <h1 class="sr-only">BOSS KG: gaming and Marvel news</h1>
@@ -96,8 +95,11 @@ const ld = [
 
     {marvel.length > 1 && (
       <section class="sec" aria-labelledby="hMarvel">
-        <SectionHead id="hMarvel" title="Marvel games" href="/category/marvel-games/" more="All Marvel games" />
-        <div class="grid">{marvel.map((s) => <StoryCard s={s} />)}</div>
+        <SectionHead id="hMarvel" title="Marvel games" href="/category/marvel-games/" more="All Marvel games" ruled />
+        <div class="rail-lead">
+          <StoryCard s={marvel[0]} variant="big" />
+          <div class="list">{marvel.slice(1).map((s) => <StoryCard s={s} variant="row" />)}</div>
+        </div>
       </section>
     )}
 
@@ -113,14 +115,18 @@ const ld = [
     {shortList.length > 0 && (
       <section class="sec" aria-labelledby="hShorts">
         <SectionHead id="hShorts" title="Shorts" href="/videos/" more="All videos" />
-        <div class="sgrid">{shortList.map((v) => <VideoCard v={v} short />)}</div>
+        <div class="srail">{shortList.map((v) => <VideoCard v={v} short />)}</div>
       </section>
     )}
 
     {gaming.length > 1 && (
       <section class="sec" aria-labelledby="hGaming">
         <SectionHead id="hGaming" title="Gaming and PlayStation" href="/category/news/" more="All news" />
-        <div class="grid">{gaming.map((s) => <StoryCard s={s} />)}</div>
+        <ol class="numbered">
+          {gaming.map((s) => (
+            <li><a href={s.href}><span class="n-body"><span class="chip">{s.cat}</span><h3 class="card-title">{s.title}</h3><time class="card-date" datetime={s.date}>{s.dateLabel}</time></span></a></li>
+          ))}
+        </ol>
       </section>
     )}
 
@@ -136,7 +142,7 @@ const ld = [
     {gearPicks.length > 0 && (
       <section class="sec" aria-labelledby="hGear">
         <SectionHead id="hGear" title="Gear we use" href="/gear/" more="All gear" />
-        <div class="gear-grid compact">{gearPicks.map((g) => <GearTile g={g} />)}</div>
+        <div class="gear-grid compact no-notes">{gearPicks.map((g) => <GearTile g={g} />)}</div>
         <div style="margin-top:var(--s5)"><PartnerBanner id="trybe" /></div>
       </section>
     )}

@@ -7,6 +7,9 @@ import imageVariants from "./integrations/image-variants.mjs";
 // directory build format: bots post /news/<slug> without a slash and rely on the 301 to /news/<slug>/.
 export default defineConfig({
   site: "https://bosskg.com",
-  integrations: [sitemap(), imageVariants()],
+  // The search results page is not a page to rank (it also sends X-Robots-Tag noindex, see netlify.toml).
+  integrations: [sitemap({ filter: (page) => !/\/search\/?$/.test(page) }), imageVariants()],
   trailingSlash: "ignore",
+  // Inline the one small stylesheet: saves a render-blocking round trip on a phone's first landing.
+  build: { inlineStylesheets: "always" },
 });

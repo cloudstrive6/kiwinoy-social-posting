@@ -18,3 +18,15 @@
   for = "/fonts/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Site search results are not pages to rank: keep them out of the index (header, not a meta tag,
+# so the page itself stays a normal public page).
+[[headers]]
+  for = "/search/"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/search/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"

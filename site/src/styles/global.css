@@ -11,9 +11,21 @@
 @font-face{font-family:"Source Serif 4"; font-style:italic; font-weight:400; font-display:swap;
   src:url("/fonts/sourceserif4-v15-latin-italic400.woff2") format("woff2")}
 /* Metric-matched fallbacks (measured 2026-11-11) so the swap does not rewrap headlines */
-@font-face{font-family:"Archivo Head Fallback"; src:local("Arial Bold"), local("Arial-BoldMT"), local("Arial"); font-weight:600 900; size-adjust:92.4%}
-@font-face{font-family:"Archivo UI Fallback"; src:local("Arial"), local("ArialMT"); font-weight:400 900; size-adjust:95.5%}
-@font-face{font-family:"Serif Fallback"; src:local("Georgia"); size-adjust:106.9%}
+/* Metric-matched fallbacks, measured 2026-11-12 in Chrome on long sample text, one face per
+   weight (bold Source Serif is narrower than Georgia Bold while regular is wider). Ascent and
+   descent overrides keep the line box identical, so the swap moves nothing. */
+@font-face{font-family:"Archivo Head Fallback"; src:local("Arial Bold"), local("Arial-BoldMT"); font-weight:600 900;
+  size-adjust:91.2%; ascent-override:96.5%; descent-override:23%; line-gap-override:0%}
+@font-face{font-family:"Archivo UI Fallback"; src:local("Arial"), local("ArialMT"); font-weight:400 650;
+  size-adjust:101.4%; ascent-override:86.8%; descent-override:20.7%; line-gap-override:0%}
+@font-face{font-family:"Archivo UI Fallback"; src:local("Arial Bold"), local("Arial-BoldMT"); font-weight:651 900;
+  size-adjust:97.4%; ascent-override:90.3%; descent-override:21.6%; line-gap-override:0%}
+@font-face{font-family:"Serif Fallback"; src:local("Georgia"); font-weight:400 600; font-style:normal;
+  size-adjust:106.6%; ascent-override:97.6%; descent-override:31.9%; line-gap-override:0%}
+@font-face{font-family:"Serif Fallback"; src:local("Georgia Bold"), local("Georgia-Bold"); font-weight:601 900; font-style:normal;
+  size-adjust:94.6%; ascent-override:109.9%; descent-override:35.9%; line-gap-override:0%}
+@font-face{font-family:"Serif Fallback"; src:local("Georgia Italic"), local("Georgia-Italic"); font-weight:400 900; font-style:italic;
+  size-adjust:96.4%; ascent-override:107.9%; descent-override:35.3%; line-gap-override:0%}
 
 /* ---------- tokens ---------- */
 :root{
@@ -22,7 +34,7 @@
   --red:#FF3D46; --red-hi:#FF5A62; --red-btn:#D61F2C; --red-btn-hi:#BF1824;
   --red-tint:color-mix(in srgb, var(--red) 14%, transparent);
   --ok:#5FE39B; --err:#FF8A8A;
-  --tile:#DEDFE3;
+  --tile:#1C1D22; --tile-light:#34353D;
   --scrim:rgba(8,8,10,.94); --scrim-mid:rgba(8,8,10,.62); --clear:rgba(8,8,10,0);
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 18px 40px -22px rgba(0,0,0,.8);
   --ga1:#B3262E; --ga2:#1E2F5C; --gs1:#C21A26; --gs2:#13398F; --gw1:#C79504; --gw2:#0B4A30;
@@ -37,12 +49,12 @@
 
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px;
   --r-s:6px; --r-m:12px; --r-l:16px;
-  --maxw:1200px; --measure:68ch; --gutter:20px; --head-h:56px;
+  --maxw:1200px; --measure:680px; --gutter:20px; --head-h:56px;
 
   --ease-out:cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out:cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer:cubic-bezier(0.32, 0.72, 0, 1);
-  --d-press:120ms; --d-hover:180ms; --d-ui:240ms; --d-reveal:320ms; --d-img:400ms;
+  --d-press:120ms; --d-hover:180ms; --d-ui:240ms; --d-reveal:320ms; --d-img:280ms;
   color-scheme:dark;
 }
 @media (min-width:768px){:root{--gutter:28px; --head-h:64px}}
@@ -92,11 +104,11 @@ header.nav{position:sticky; top:0; z-index:50; background:color-mix(in srgb, var
 .nav-in{display:flex; align-items:center; gap:var(--s5); height:var(--head-h)}
 .brand{display:flex; align-items:center; min-height:44px; color:var(--text); flex:none}
 .brand .logo{height:46px; width:auto; display:block}
-@media (min-width:1024px){header.nav .brand .logo{height:54px}}
-.brand-mark{display:none; align-items:baseline; gap:6px; position:relative; padding-bottom:6px}
+.brand-mark{display:inline-flex; align-items:baseline; gap:6px; position:relative; padding-bottom:6px}
 .brand-mark .bm-boss{font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:22px; letter-spacing:.02em; line-height:1}
 .brand-mark .bm-kg{font-family:var(--f-text); font-weight:700; font-size:25px; line-height:1}
 .brand-mark::after{content:""; position:absolute; right:0; bottom:0; width:30px; height:4px; border-radius:2px; background:var(--red)}
+@media (min-width:1024px){.brand-mark .bm-boss{font-size:26px} .brand-mark .bm-kg{font-size:30px} .brand-mark::after{width:36px}}
 nav.main{display:flex; gap:2px; margin-left:var(--s2)}
 nav.main a{position:relative; display:flex; align-items:center; min-height:44px; padding:0 12px; border-radius:var(--r-s);
   font-weight:600; font-size:15px; color:var(--muted)}
@@ -114,10 +126,7 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
   .hamburger{display:grid}
   .nav-right .btn{display:none}
 }
-@media (max-width:640px){
-  .brand .logo{display:none}
-  .brand-mark{display:inline-flex}
-}
+
 
 /* section chips under the header (home, sections) */
 .section-nav{border-bottom:1px solid var(--border)}
@@ -139,17 +148,19 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 /* ---------- section heads ---------- */
 .sec{margin-top:var(--s8)}
 .sec-h{display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s4); margin-bottom:var(--s5)}
-.sec-h h2{font-size:26px; position:relative; padding-bottom:12px}
-.sec-h h2::after{content:""; position:absolute; left:0; bottom:0; width:40px; height:4px; border-radius:2px; background:var(--red)}
+.sec-h h2{font-size:26px; position:relative}
+.sec-h.ruled h2{padding-bottom:12px}
+.sec-h.ruled h2::after{content:""; position:absolute; left:0; bottom:0; width:40px; height:4px; border-radius:2px; background:var(--red)}
 .sec-more{display:inline-flex; align-items:center; gap:6px; min-height:44px; font-weight:700; font-size:14px; color:var(--muted); white-space:nowrap}
 .sec-more svg{width:16px; height:16px}
 .page-head{padding-top:var(--s7)}
 .page-head h1{font-size:clamp(34px, 6vw, var(--t-3xl))}
-.page-head .lede{margin-top:var(--s3); color:var(--muted); font-family:var(--f-text); font-size:var(--t-m); line-height:1.55; max-width:60ch}
+.page-head .lede{margin-top:var(--s3); color:var(--muted); font-family:var(--f-text); font-size:var(--t-m); line-height:1.55; max-width:32em}
 .crumbs ol{list-style:none; margin:0 0 var(--s3); padding:0; display:flex; flex-wrap:wrap; align-items:center; gap:2px 6px; font-size:14px; color:var(--muted)}
 .crumbs li{display:flex; align-items:center; gap:6px}
 .crumbs li+li::before{content:""; width:6px; height:6px; border-right:1.5px solid var(--faint); border-top:1.5px solid var(--faint); transform:rotate(45deg); margin-right:4px}
-.crumbs a{display:inline-flex; align-items:center; min-height:44px; font-weight:600; color:var(--muted)}
+.crumbs a{display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px; padding:0 4px; font-weight:600; color:var(--muted)}
+.crumbs li:first-child a{justify-content:flex-start; padding-left:0}
 
 /* ---------- art frames (cover image, or a franchise gradient when there is none) ---------- */
 .art{position:relative; overflow:hidden; background:var(--raise); isolation:isolate; border-radius:var(--r-m)}
@@ -205,7 +216,7 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 .lead-body{padding:var(--s6); display:flex; flex-direction:column; gap:var(--s3)}
 .lead .chip{color:var(--white); background:var(--red-btn); padding:5px 10px; border-radius:var(--r-s)}
 .lead h2{font-size:clamp(30px, 3.5vw, var(--t-3xl)); line-height:1.03; text-shadow:0 2px 16px rgba(0,0,0,.5)}
-.lead .lead-dek{font-family:var(--f-text); font-size:17px; line-height:1.5; color:var(--body); max-width:56ch; text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.lead .lead-dek{font-family:var(--f-text); font-size:17px; line-height:1.5; color:var(--body); max-width:30em; text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .lead .lead-meta{font-size:14px; font-weight:600; color:var(--body)}
 .side{display:flex; flex-direction:column; gap:var(--s4)}
 .side-h{font-family:var(--f-ui); font-stretch:100%; font-size:15px; font-weight:700; color:var(--muted); letter-spacing:0}
@@ -232,8 +243,8 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 .partner{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:var(--s5);
   padding:var(--s4) var(--s5); background:var(--surface); border:1px solid var(--border); border-radius:var(--r-l); color:var(--text)}
 .partner-img{width:72px; height:96px; object-fit:cover; border-radius:var(--r-s)}
-.partner-mark{width:56px; height:56px; border-radius:var(--r-m); display:grid; place-items:center; background:var(--raise);
-  font-family:var(--f-head); font-weight:800; font-size:22px; color:var(--text)}
+.partner-mark{min-width:96px; height:56px; padding:0 16px; border-radius:var(--r-m); display:grid; place-items:center; background:var(--raise);
+  font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:24px; letter-spacing:.01em; color:var(--text)}
 .partner-text{display:flex; flex-direction:column; gap:4px; min-width:0}
 .partner-label{font-size:var(--t-xs); font-weight:700; color:var(--muted)}
 .partner-name{font-family:var(--f-head); font-weight:800; font-stretch:var(--stretch-head); font-size:22px; line-height:1.1}
@@ -248,13 +259,20 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 /* ---------- gear tiles (product photo on a soft studio tile, flush with the card top) ---------- */
 .gear-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap:var(--s5)}
 .gear-tile{display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-l); overflow:hidden; min-width:0}
-.gear-photo{position:relative; aspect-ratio:4/3; background:var(--tile); overflow:hidden}
-.gear-photo img{position:absolute; inset:var(--s5); width:calc(100% - var(--s5) * 2); height:calc(100% - var(--s5) * 2); object-fit:contain; mix-blend-mode:multiply}
+/* product photos: cut-out (build step) on a mid-dark tile with a soft light, so they read as product shots */
+.gear-photo, .art.product{position:relative; aspect-ratio:4/3; overflow:hidden;
+  background:radial-gradient(75% 70% at 50% 38%, var(--tile-light), var(--tile) 72%)}
+.art.product::before{display:none}
+.gear-photo img, .art.product img{position:absolute; inset:var(--s5); width:calc(100% - var(--s5) * 2); height:calc(100% - var(--s5) * 2);
+  object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}
+.card .art.product, .a-cover .art.product{aspect-ratio:16/9}
+.card.row .art.product img, .grid > .card:not(:first-child) .art.product img{inset:6px; width:calc(100% - 12px); height:calc(100% - 12px)}
 .gear-photo.dark{background:var(--raise); padding:0}
 .gear-photo.dark img{object-fit:cover; mix-blend-mode:normal}
 .gear-info{display:flex; flex-direction:column; gap:var(--s2); padding:var(--s4) var(--s4) var(--s5); flex:1}
 .gear-info h3{font-size:19px; line-height:1.15; font-stretch:92%}
 .gear-info p{font-family:var(--f-text); color:var(--body); font-size:15px; line-height:1.5; flex:1}
+.gear-sub{margin:calc(var(--s3) * -1) 0 var(--s5); font-family:var(--f-text); color:var(--muted); font-size:16px}
 .gear-info .btn{align-self:flex-start; margin-top:var(--s2)}
 .gear-code{font-weight:700; color:var(--text)}
 @media (max-width:640px){
@@ -262,7 +280,8 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
   .gear-grid.compact .gear-photo img{inset:var(--s3); width:calc(100% - var(--s3) * 2); height:calc(100% - var(--s3) * 2)}
   .gear-grid.compact .gear-info{padding:var(--s3)}
   .gear-grid.compact .gear-info h3{font-size:16px}
-  .gear-grid.compact .gear-info p{display:none}
+  .gear-grid.compact .gear-info p{font-size:14px}
+  .gear-grid.no-notes .gear-info p{display:none}
   .gear-grid.compact .gear-info .btn{align-self:stretch; padding:0 10px; font-size:14px; white-space:normal; text-align:center}
 }
 
@@ -290,9 +309,8 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 /* ---------- newsletter box (.sub-form wiring lives in Base.astro) ---------- */
 .nl-box{margin-top:var(--s8); padding:var(--s7) var(--s6); background:var(--surface); border:1px solid var(--border);
   border-radius:var(--r-l); position:relative; overflow:hidden}
-.nl-box::before{content:""; position:absolute; left:0; top:0; height:4px; width:96px; background:var(--red); border-radius:0 0 3px 0}
-.nl-box h2{font-size:clamp(26px, 3.4vw, 36px); max-width:20ch}
-.nl-box > p{margin-top:var(--s3); font-family:var(--f-text); font-size:17px; line-height:1.5; color:var(--body); max-width:52ch}
+.nl-box h2{font-size:clamp(26px, 3.4vw, 36px); max-width:11em}
+.nl-box > p{margin-top:var(--s3); font-family:var(--f-text); font-size:17px; line-height:1.5; color:var(--body); max-width:28em}
 form.sub-form{display:flex; flex-wrap:wrap; gap:var(--s3); margin-top:var(--s5); max-width:640px}
 form.sub-form label{flex:1 1 180px; min-width:0; display:flex; flex-direction:column; gap:6px; font-size:var(--t-xs); font-weight:600; color:var(--muted)}
 form.sub-form input, .nl-pop-form input, .err-search input{width:100%; min-height:48px; padding:0 14px; border-radius:var(--r-m);
@@ -318,7 +336,6 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
   border-radius:var(--r-l); padding:var(--s6) var(--s6) var(--s5); box-shadow:var(--shadow);
   transform:translateY(16px) scale(.97); transition:transform var(--d-ui) var(--ease-out)}
 .nl-pop.on .nl-pop-card{transform:none}
-.nl-pop-card::before{content:""; position:absolute; left:var(--s6); top:0; width:56px; height:4px; background:var(--red); border-radius:0 0 3px 3px}
 .nl-pop-x{position:absolute; top:var(--s2); right:var(--s2); width:44px; height:44px; display:grid; place-items:center;
   border-radius:var(--r-m); background:none; border:0; color:var(--muted); cursor:pointer}
 .nl-pop-x svg{width:18px; height:18px}
@@ -345,26 +362,21 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
   .nl-pop{place-items:end stretch; padding:0}
   .nl-pop-card{max-width:none; border-radius:var(--r-l) var(--r-l) 0 0; border-bottom:0;
     padding:var(--s6) var(--gutter) calc(var(--s4) + env(safe-area-inset-bottom, 0px)); transform:translateY(100%)}
-  .nl-pop-card::before{left:var(--gutter)}
   .nl-pop-form button{flex:1 1 100%}
 }
 
 /* ---------- article ---------- */
 .article{padding-top:var(--s6)}
-.a-head, .prose, .a-end{max-width:var(--measure); margin-left:auto; margin-right:auto}
-.a-head{max-width:820px}
+.a-head, .prose, .a-end, .up-next, .more-in{max-width:var(--measure); margin-left:auto; margin-right:auto}
 .a-head h1{font-size:clamp(32px, 5.2vw, 50px); line-height:1.04}
 .a-kicker{display:flex; flex-wrap:wrap; align-items:center; gap:var(--s2) var(--s3); margin-bottom:var(--s4)}
 .a-kicker .chip{min-height:44px}
 .a-kicker .chip span{display:inline-flex; align-items:center; min-height:32px; padding:0 12px; border:1px solid color-mix(in srgb, var(--red) 55%, var(--border)); border-radius:999px; background:var(--red-tint)}
-.a-dek{margin-top:var(--s4); font-family:var(--f-text); font-size:20px; line-height:1.45; color:var(--body); max-width:60ch}
+.a-dek{margin-top:var(--s4); font-family:var(--f-text); font-size:20px; line-height:1.45; color:var(--body); max-width:32em}
 .a-meta{display:flex; flex-wrap:wrap; align-items:center; gap:var(--s2) var(--s5); margin-top:var(--s5); font-size:14px; color:var(--muted); font-weight:600}
 .a-by{color:var(--text); font-weight:700}
 .a-cover{margin:var(--s6) auto 0; max-width:1000px}
 .a-cover .art{aspect-ratio:16/9; border-radius:var(--r-l)}
-.a-cover.contain .art{background:var(--tile)}
-.a-cover.contain .art::before{display:none}
-.a-cover.contain img{object-fit:contain; padding:var(--s5); mix-blend-mode:multiply}
 .a-cover figcaption{margin-top:var(--s3); font-size:var(--t-xs); color:var(--muted); padding-left:var(--s3); border-left:2px solid var(--border-2)}
 .prose{margin-top:var(--s6); font-family:var(--f-text); font-size:18px; line-height:1.65; color:var(--body)}
 .prose > * + *{margin-top:1.05em}
@@ -387,6 +399,26 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
 .share .iconbtn{border:1px solid var(--border); color:var(--text)}
 .share .btn{min-height:44px}
 .share-note{font-size:14px; color:var(--ok); font-weight:600; min-height:1em}
+/* phones: the start of the body text must be in the first screen; share row icons only */
+@media (max-width:767px){
+  .share{flex-wrap:nowrap}
+  .share-h, .share .btn span{display:none}
+  .share .btn{width:44px; padding:0}
+  .share .btn svg{width:20px; height:20px}
+  .article{padding-top:var(--s2)}
+  .crumbs ol{margin-bottom:0}
+  .a-kicker{margin-bottom:var(--s2)}
+  .a-head h1{font-size:30px; line-height:1.06}
+  .a-dek{margin-top:var(--s3); font-size:17px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+  .a-meta{margin-top:var(--s3)}
+  .a-cover{margin-top:var(--s4)}
+  .prose{margin-top:var(--s5)}
+}
+@media (max-width:640px){
+  .a-cover{margin-left:calc(var(--gutter) * -1); margin-right:calc(var(--gutter) * -1)}
+  .a-cover .art{border-radius:0}
+  .a-cover figcaption{margin-left:var(--gutter)}
+}
 .a-tags{display:flex; flex-wrap:wrap; gap:var(--s2); list-style:none; margin:0; padding:0}
 .tag-chip{display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border-radius:999px;
   background:var(--surface); border:1px solid var(--border); font-size:14px; font-weight:600; color:var(--body)}
@@ -398,7 +430,7 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
 @media (max-width:640px){.up-next .grid{grid-template-columns:minmax(0,1fr)}}
 .read-progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; pointer-events:none;
   background:var(--red); transform-origin:0 50%; transform:scaleX(0)}
-.article{timeline-scope:--kg-read}
+body{timeline-scope:--kg-read}
 .article .prose{view-timeline:--kg-read block}
 @supports (animation-timeline: view()){
   .read-progress{animation:kg-read-grow linear both; animation-timeline:--kg-read; animation-range:contain 0% contain 100%}
@@ -455,16 +487,17 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
 /* ---------- footer ---------- */
 footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background:var(--surface)}
 .foot{display:grid; grid-template-columns:minmax(0,1.5fr) repeat(3, minmax(0,1fr)); gap:var(--s6); padding-top:var(--s7); padding-bottom:var(--s6)}
+.foot-about .brand{min-height:52px}
 .foot .brand .logo{height:52px; display:block}
-.foot-about p{margin-top:var(--s4); font-family:var(--f-text); color:var(--muted); font-size:16px; line-height:1.5; max-width:36ch}
+.foot-about p{margin-top:var(--s4); font-family:var(--f-text); color:var(--muted); font-size:16px; line-height:1.5; max-width:19em}
 .socrow{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s4)}
 .socrow a{width:44px; height:44px; border-radius:var(--r-m); display:grid; place-items:center; color:var(--muted); border:1px solid var(--border)}
 .socrow svg{width:20px; height:20px}
 .foot-h{font-size:14px; font-weight:700; color:var(--text); margin-bottom:var(--s2)}
 .foot-links{list-style:none; margin:0; padding:0}
 .foot-links a{display:flex; align-items:center; min-height:44px; color:var(--muted); font-size:15px; font-weight:600}
-.foot-b{display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--s2) var(--s6); padding-top:var(--s5); padding-bottom:var(--s6);
-  border-top:1px solid var(--border); color:var(--faint); font-size:var(--t-xs)}
+.foot-b{position:relative; display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--s2) var(--s6); padding-top:var(--s5); padding-bottom:var(--s6); color:var(--faint); font-size:var(--t-xs)}
+.foot-b::before{content:""; position:absolute; top:0; left:var(--gutter); right:var(--gutter); height:1px; background:var(--border)}
 @media (max-width:1023px){.foot{grid-template-columns:repeat(3, minmax(0,1fr))} .foot-about{grid-column:1 / -1}}
 @media (max-width:640px){.foot{grid-template-columns:repeat(2, minmax(0,1fr)); gap:var(--s5)} .foot .brand .logo{display:block}}
 
@@ -472,6 +505,69 @@ footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background
 .err-search{display:flex; gap:var(--s2); flex-wrap:wrap; margin-top:var(--s5); max-width:560px}
 .err-search input{flex:1 1 220px}
 .err-search .btn{min-height:48px}
+
+/* ======================================================================================
+   v2 layouts (fix round 1, 2026-11-12)
+   ====================================================================================== */
+/* calm play glyph on grid cards; YouTube red stays on the one featured player */
+.play .pd-bg{fill:var(--scrim-mid)}
+.play{color:var(--white)}
+.vcard .play svg, .sgrid .play svg, .srail .play svg{width:46px}
+.vfeat .play svg{width:68px}
+
+/* videos: featured row (player left, words right on desktop) */
+.vfeat-row{display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); gap:var(--s6); align-items:center; margin-top:var(--s6)}
+.vfeat-text{display:flex; flex-direction:column; align-items:flex-start; gap:var(--s3)}
+.vfeat-text h2{font-size:clamp(24px, 2.6vw, 32px); line-height:1.1}
+.vfeat-text p{font-family:var(--f-text); color:var(--body); font-size:16px; line-height:1.55}
+.vfeat-actions{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s2)}
+@media (max-width:1023px){.vfeat-row{grid-template-columns:minmax(0,1fr); gap:var(--s4)}}
+/* mixed grid: the first two cards are large */
+.vgrid.mixed > .vcard.big{grid-column:span 2}
+.vcard.big .vb{font-size:22px}
+@media (max-width:1023px){.vgrid.mixed > .vcard.big{grid-column:span 1} .vcard.big .vb{font-size:17px}}
+@media (max-width:640px){.vgrid.mixed > .vcard.big{grid-column:1 / -1} .vcard.big .vb{font-size:19px}}
+details.more-videos{margin-top:var(--s5)}
+details.more-videos > summary{list-style:none; display:inline-flex}
+details.more-videos > summary::-webkit-details-marker{display:none}
+details.more-videos[open] > summary{display:none}
+details.more-videos > .vgrid{margin-top:0}
+
+/* Shorts rail: vertical thumbnails, one row; scrolls sideways under 1024 px */
+.srail{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:var(--s4)}
+.srail .vthumb{aspect-ratio:9/16}
+.srail .vb{font-size:14px}
+@media (max-width:1023px){
+  .srail{grid-auto-columns:40%; overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding:0 var(--gutter);
+    margin:0 calc(var(--gutter) * -1); padding:0 var(--gutter) var(--s2); scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(to right, #000 85%, transparent)}
+  .srail::-webkit-scrollbar{display:none}
+  .srail > *{scroll-snap-align:start}
+}
+@media (max-width:640px){.srail{grid-auto-columns:42%}}
+
+/* rail with one large card and compact rows beside it */
+.rail-lead{display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:var(--s6); align-items:start}
+.rail-lead > .list{align-content:start}
+.card.big .card-title{font-size:clamp(22px, 2.4vw, 30px); line-height:1.1}
+.rail-lead .list .card.row + .card.row{padding-top:var(--s4); border-top:1px solid var(--border)}
+@media (max-width:1023px){.rail-lead{grid-template-columns:minmax(0,1fr); gap:var(--s4)}}
+
+/* compact numbered list */
+.numbered{list-style:none; margin:0; padding:0; counter-reset:n; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0 var(--s6)}
+.numbered li{counter-increment:n; border-top:1px solid var(--border)}
+.numbered a{display:grid; grid-template-columns:44px minmax(0,1fr); gap:var(--s3); padding:var(--s4) 0; min-height:44px; color:var(--text)}
+.numbered a::before{content:counter(n); font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:34px; line-height:.9; color:var(--red)}
+.numbered .card-title{font-size:17px; line-height:1.22}
+.numbered .n-body{display:flex; flex-direction:column; gap:6px; min-width:0}
+@media (max-width:767px){.numbered{grid-template-columns:minmax(0,1fr)}}
+@media (hover:hover) and (pointer:fine){.numbered a:hover .card-title{color:var(--red-hi)}}
+
+/* article: More in list and hub link */
+.more-in{margin-top:var(--s7)}
+.more-in .more-hub{margin-top:var(--s5)}
+.more-hub svg{width:16px; height:16px}
+.nl-pop-card:focus{outline:none}
 
 /* ======================================================================================
    Motion (F1 to F7 from the motion report, adapted to these tokens)
@@ -533,7 +629,7 @@ header.nav{transition:transform var(--d-ui) var(--ease-drawer), background-color
 header.nav::after{content:""; position:absolute; left:0; right:0; bottom:-12px; height:12px; pointer-events:none;
   background:linear-gradient(rgba(0,0,0,.4), transparent); opacity:0; transition:opacity var(--d-hover) ease}
 header.nav .brand{transform-origin:0 50%; transition:transform var(--d-ui) var(--ease-out)}
-header.nav.is-condensed{background-color:var(--bg)}
+header.nav.is-condensed{background-color:var(--surface); border-bottom-color:var(--border-2)}
 header.nav.is-condensed::after{opacity:1}
 header.nav.is-condensed .brand{transform:scale(.9)}
 @media (max-width:1023px){

@@ -10,10 +10,8 @@ import SectionNav from "../components/SectionNav.astro";
 import { GEAR } from "../lib/gear.js";
 import { liveArticles, toStory } from "../lib/articles.js";
 
-const cats = [...new Set(GEAR.map((g) => g.cat))];
 // Gear guides and reviews: any published article filed under "Hardware", newest first.
 const guides = (await liveArticles()).filter((a) => /hardware/i.test(a.data.category || "")).map(toStory);
-const groupTitle = { Console: "Console", Controller: "Controllers", Capture: "Capture", Audio: "Audio", Display: "Display", Storage: "Storage", Fuel: "Fuel" };
 ---
 <Base title="Gear we use" description="The gear BOSS KG uses to record and play: controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
   <SectionNav current="/gear/" />
@@ -23,24 +21,23 @@ const groupTitle = { Console: "Console", Controller: "Controllers", Capture: "Ca
       <p class="lede">The kit behind the 4K/60 HDR gameplay, plus the odd thing that just makes the grind better. Everything here is stuff we would actually recommend.</p>
     </header>
 
-    <p class="a-source gear-disc" role="note" style="margin-top:var(--s5); max-width:70ch">
+    <p class="a-source gear-disc" role="note" style="margin-top:var(--s5); max-width:37em">
       <strong>Heads up:</strong> some links below are affiliate links. If you buy through them, BOSS KG may earn a small
       commission at <strong>no extra cost to you</strong>. It is a free way to support the channel, and we only list gear we stand behind.
     </p>
 
     {guides.length > 0 && (
       <section class="sec" aria-labelledby="hGuides">
-        <SectionHead id="hGuides" title="Guides and reviews" />
-        <div class="grid three all-cards">{guides.map((s) => <StoryCard s={s} />)}</div>
+        <SectionHead id="hGuides" title="Guides and reviews" ruled />
+        <div class="grid three all-cards">{guides.map((s, i) => <StoryCard s={s} priority={i === 0} eager={i < 3} />)}</div>
       </section>
     )}
 
-    {cats.map((c) => (
-      <section class="sec" aria-labelledby={`g-${c}`}>
-        <SectionHead id={`g-${c}`} title={groupTitle[c] || c} />
-        <div class="gear-grid">{GEAR.filter((g) => g.cat === c).map((g) => <GearTile g={g} />)}</div>
-      </section>
-    ))}
+    <section class="sec" aria-labelledby="hKit">
+      <SectionHead id="hKit" title="The kit" />
+      <p class="gear-sub">Console, controllers, capture, audio, display, storage and fuel. Each card says what it is.</p>
+      <div class="gear-grid compact">{GEAR.map((g) => <GearTile g={g} />)}</div>
+    </section>
 
     <section class="sec" aria-labelledby="hPartners">
       <SectionHead id="hPartners" title="Partner offers" />
@@ -50,7 +47,7 @@ const groupTitle = { Console: "Console", Controller: "Controllers", Capture: "Ca
       </div>
     </section>
 
-    <p class="empty" style="font-size:15px; max-width:70ch">
+    <p class="empty" style="font-size:15px; max-width:37em">
       <strong>As an Amazon Associate I earn from qualifying purchases.</strong> Prices and availability are set by the
       retailer and can change. Product names and brands belong to their respective owners.
     </p>

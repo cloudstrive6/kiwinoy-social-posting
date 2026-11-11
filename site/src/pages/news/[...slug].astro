@@ -1,26 +1,52 @@
 ---
 // Article page: where most readers land (from social). Chip, H1, dek, byline, full-colour cover,
-// serif body, share, tags, source, "Up next" (server-rendered, drafts never included),
-// a slide-up Up next bar near the end (F3) and a reading progress bar (F2).
+// serif body, share, tags, source, "Up next" (2 most related stories), "More in <game or section>"
+// (4 rows plus the game hub link), a slide-up Up next bar near the end (F3) and a reading
+// progress bar (F2). Everything is server-rendered from liveArticles(), so drafts never appear.
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import StoryCard from "../../components/StoryCard.astro";
 import NewsletterBox from "../../components/NewsletterBox.astro";
 import Crumbs from "../../components/Crumbs.astro";
-import { liveArticles, toStory, related, sectionFor, catLabel, gclass, fmtDate, readMinutes, slugify } from "../../lib/articles.js";
+import { liveArticles, toStory, rankRelated, sectionFor, catLabel, gclass, fmtDate, readMinutes, slugify } from "../../lib/articles.js";
+import { gameForText, gameForVideo, gameBySlug } from "../../lib/games.js";
+import { longform, shorts } from "../../lib/youtube.js";
 import { imgAttrs, SIZES } from "../../lib/img.js";
 import { ICON } from "../../lib/icons.js";
 import { ORG, crumbsLd, abs } from "../../lib/seo.js";
 
 export async function getStaticPaths() {
   const all = await liveArticles();
-  return all.map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry, next: related(entry, all, 2).map(toStory) },
-  }));
+  const hubOf = (a) => gameForText(a.data.game, a.data.category, a.data.title);
+  const vids = [...longform, ...shorts];
+  return all.map((entry) => {
+    const ranked = rankRelated(entry, all);
+    const next = ranked.slice(0, 2);
+    const hub = hubOf(entry);
+    const g = hub ? gameBySlug(hub) : null;
+    const label = catLabel(entry.data.category);
+    const pool = all.filter((a) => a.id !== entry.id && !next.includes(a));
+    const sameGame = hub ? pool.filter((a) => hubOf(a) === hub) : [];
+    const sameGameField = entry.data.game ? pool.filter((a) => (a.data.game || "").toLowerCase() === entry.data.game.toLowerCase()) : [];
+    const sameCat = pool.filter((a) => catLabel(a.data.category) === label);
+    let more, moreTitle;
+    if (sameGame.length >= 2) { more = sameGame; moreTitle = g.title; }
+    else if (sameGameField.length >= 2) { more = sameGameField; moreTitle = label; }
+    else { more = sameCat.length >= 2 ? sameCat : pool; moreTitle = label; }
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        next: next.map(toStory),
+        more: more.slice(0, 4).map(toStory),
+        moreTitle,
+        hub: g ? { slug: g.slug, title: g.title, videos: vids.filter((v) => gameForVideo(v) === g.slug).length } : null,
+      },
+    };
+  });
 }
 
-const { entry, next } = Astro.props;
+const { entry, next, more, moreTitle, hub } = Astro.props;
 const { Content } = await render(entry);
 const d = entry.data;
 const sec = sectionFor(d);
@@ -30,7 +56,6 @@ const iso = d.date.toISOString();
 const by = !d.author || d.author === "BOSS KG" ? "KG" : d.author;
 const url = abs(`/news/${entry.id}/`);
 const cover = imgAttrs(d.cover, { sizes: SIZES.cover });
-const contain = /hardware/i.test(d.category || "");
 const credit = d.sourceName ? `Image: ${d.sourceName}` : "Image belongs to its respective owner.";
 const crumbs = [{ label: "Home", href: "/" }, { label: sec.label, href: sec.href }, { label: d.title }];
 const ld = [
@@ -53,12 +78,16 @@ const ld = [
 ];
 const shareText = encodeURIComponent(d.title);
 const shareUrl = encodeURIComponent(url);
+const hubLine = hub
+  ? `All ${hub.title} news${hub.videos ? ` and ${hub.videos} ${hub.videos === 1 ? "video" : "videos"}` : ""}`
+  : `All ${sec.label} stories`;
 ---
 <Base title={d.title} description={d.excerpt} image={d.cover || undefined} type="article"
-  publishedTime={iso} section={label} tags={d.tags} jsonLd={ld} page="article">
-  <div class="read-progress" aria-hidden="true"></div>
+  publishedTime={iso} section={label} tags={d.tags} jsonLd={ld} page="article"
+  preloadImage={cover && cover.srcset ? { srcset: cover.srcset, sizes: cover.sizes } : undefined}>
   <main id="main" class="wrap">
     <article class="article">
+      <div class="read-progress" aria-hidden="true"></div>
       <header class="a-head">
         <Crumbs items={crumbs.slice(0, 2)} />
         <div class="a-kicker">
@@ -74,8 +103,8 @@ const shareUrl = encodeURIComponent(url);
         </div>
       </header>
 
-      <figure class={`a-cover${contain ? " contain" : ""}`}>
-        <div class={`art ${gclass(d.game)}`}>
+      <figure class="a-cover">
+        <div class={`art ${gclass(d.game)}${cover?.product ? " product" : ""}`}>
           {cover && (
             <img src={cover.src} srcset={cover.srcset} sizes={cover.sizes} width={cover.width} height={cover.height}
               alt={d.coverAlt || d.title} loading="eager" fetchpriority="high" decoding="async" />
@@ -91,7 +120,7 @@ const shareUrl = encodeURIComponent(url);
       <div class="a-end">
         <div class="share" data-pagefind-ignore>
           <span class="share-h">Share this story</span>
-          <button class="btn btn-ghost js-share" type="button" data-title={d.title} data-url={url}><Fragment set:html={ICON.share} /><span>Share</span></button>
+          <button class="btn btn-ghost js-share" type="button" data-title={d.title} data-url={url} aria-label="Share"><Fragment set:html={ICON.share} /><span>Share</span></button>
           <button class="iconbtn js-copy" type="button" data-url={url} aria-label="Copy link" set:html={ICON.link}></button>
           <a class="iconbtn" href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener" aria-label="Post on X" set:html={ICON.x}></a>
           <a class="iconbtn" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook" set:html={ICON.facebook}></a>
@@ -114,15 +143,25 @@ const shareUrl = encodeURIComponent(url);
 
       {next.length > 0 && (
         <section class="up-next" aria-labelledby="upNextH" data-pagefind-ignore>
-          <div class="sec-h"><h2 id="upNextH">Up next</h2></div>
+          <div class="sec-h ruled"><h2 id="upNextH">Up next</h2></div>
           <div class="grid all-cards">
             {next.map((s) => <StoryCard s={s} />)}
           </div>
         </section>
       )}
+
+      {more.length > 0 && (
+        <section class="more-in sec" aria-labelledby="moreInH" data-pagefind-ignore>
+          <div class="sec-h">
+            <h2 id="moreInH">More in {moreTitle}</h2>
+          </div>
+          <div class="list">{more.map((s) => <StoryCard s={s} variant="row" />)}</div>
+          <a class="btn btn-ghost more-hub" href={hub ? `/games/${hub.slug}/` : sec.href}><span>{hubLine}</span><Fragment set:html={ICON.chevron} /></a>
+        </section>
+      )}
     </article>
 
-    <NewsletterBox title="Never miss the next big drop" text="Get our best gaming and Marvel stories in your inbox. One email, a few times a week. No spam." />
+    <NewsletterBox />
   </main>
 
   {next.length > 0 && (
@@ -136,75 +175,108 @@ const shareUrl = encodeURIComponent(url);
   )}
 
   <script is:inline>
-    /* F2 fallback for browsers without scroll-driven animations (CSS handles the rest). */
-    (function () {
-      var bar = document.querySelector(".read-progress");
-      var prose = document.querySelector(".article .prose");
-      if (!bar || !prose) return;
-      if (window.CSS && CSS.supports && CSS.supports("animation-timeline: view()")) return;
-      var start = 0, span = 1, ticking = false;
-      function update() {
-        ticking = false;
-        var p = (window.scrollY - start) / span;
-        p = p < 0 ? 0 : p > 1 ? 1 : p;
-        bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
-      }
-      function measure() {
-        var r = prose.getBoundingClientRect();
-        start = r.top + window.scrollY;
-        span = Math.max(1, r.height - window.innerHeight);
-        update();
-      }
-      window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-      window.addEventListener("resize", measure);
-      window.addEventListener("load", measure);
-      if ("ResizeObserver" in window) new ResizeObserver(measure).observe(prose);
-      measure();
-    })();
-    /* F3. Up next bar: shows one screen before the end of the body text, hides once the
-       in-flow Up next cards or the footer are on screen, or when closed. */
-    (function () {
-      var bar = document.getElementById("nextBar");
-      var prose = document.querySelector(".article .prose");
-      var target = document.querySelector(".up-next");
-      if (!bar || !prose || !target || !("IntersectionObserver" in window)) return;
-      var nearEnd = false, cardSeen = false, footSeen = false, dismissed = false, on = false;
-      var end = document.createElement("div");
-      end.setAttribute("aria-hidden", "true");
-      prose.appendChild(end);
-      function render() {
-        var show = nearEnd && !cardSeen && !footSeen && !dismissed;
-        if (show === on) return;
-        on = show;
-        bar.classList.toggle("on", show);
-        if (show) bar.removeAttribute("inert"); else bar.setAttribute("inert", "");
-      }
-      new IntersectionObserver(function (es) {
-        var e = es[es.length - 1];
-        nearEnd = e.isIntersecting || e.boundingClientRect.top < 0;
-        render();
-      }, { rootMargin: "0px 0px 100% 0px" }).observe(end);
-      new IntersectionObserver(function (es) { cardSeen = es[es.length - 1].isIntersecting; render(); }).observe(target);
-      var foot = document.querySelector("footer.site");
-      if (foot) new IntersectionObserver(function (es) { footSeen = es[es.length - 1].isIntersecting; render(); }).observe(foot);
-      bar.querySelector(".nb-x").addEventListener("click", function () { dismissed = true; render(); });
-    })();
-    /* Share: native share sheet on phones, copy link everywhere else. */
-    (function () {
-      var note = document.querySelector(".share-note");
-      function say(t) { if (note) { note.textContent = t; setTimeout(function () { note.textContent = ""; }, 2400); } }
-      function copy(u) {
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say("Link copied"); }, function () { say(u); });
-        else say(u);
-      }
-      var s = document.querySelector(".js-share");
-      if (s) s.addEventListener("click", function () {
-        var u = s.getAttribute("data-url"), t = s.getAttribute("data-title");
-        if (navigator.share) navigator.share({ title: t, url: u }).catch(function () {});
-        else copy(u);
-      });
-      var c = document.querySelector(".js-copy");
-      if (c) c.addEventListener("click", function () { copy(c.getAttribute("data-url")); });
-    })();
+    document.addEventListener("DOMContentLoaded", function () {
+      /* F2 fallback: only when the CSS scroll timeline is not actually attached to the bar
+         (tests the running animation, not CSS.supports). Writes one transform per frame. */
+      (function () {
+        var bar = document.querySelector(".read-progress");
+        var prose = document.querySelector(".article .prose");
+        if (!bar || !prose) return;
+        var anim = bar.getAnimations ? bar.getAnimations()[0] : null;
+        if (anim && anim.timeline) return;
+        if (anim) anim.cancel();
+        var start = 0, span = 1, ticking = false;
+        function update() {
+          ticking = false;
+          var p = (window.scrollY - start) / span;
+          p = p < 0 ? 0 : p > 1 ? 1 : p;
+          bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
+        }
+        function measure() {
+          var r = prose.getBoundingClientRect();
+          start = r.top + window.scrollY;
+          span = Math.max(1, r.height - window.innerHeight);
+          update();
+        }
+        window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+        window.addEventListener("resize", measure);
+        window.addEventListener("load", measure);
+        if ("ResizeObserver" in window) new ResizeObserver(measure).observe(prose);
+        measure();
+      })();
+
+      /* F3. Up next bar.
+         Shows when the end of the body text is in the top two thirds of the screen (so on a
+         short article it never covers body text) or, on a long article (body over two screens),
+         once about 70% of the body has been read. Hides once the in-flow Up next cards reach the
+         upper part of the screen, and whenever the More list, the newsletter box or the footer
+         are on screen. */
+      (function () {
+        var bar = document.getElementById("nextBar");
+        var prose = document.querySelector(".article .prose");
+        if (!bar || !prose || !("IntersectionObserver" in window)) return;
+        var endRead = false, mostRead = false, dismissed = false, on = false;
+        var blockers = new Map();
+        var end = document.createElement("div");
+        end.setAttribute("aria-hidden", "true");
+        prose.appendChild(end);
+        function render() {
+          var blocked = false;
+          blockers.forEach(function (v) { if (v) blocked = true; });
+          var show = (endRead || mostRead) && !blocked && !dismissed;
+          if (show === on) return;
+          on = show;
+          bar.classList.toggle("on", show);
+          if (show) bar.removeAttribute("inert"); else bar.setAttribute("inert", "");
+        }
+        new IntersectionObserver(function (es) {
+          var e = es[es.length - 1];
+          endRead = e.isIntersecting || e.boundingClientRect.top < 0;
+          render();
+        }, { rootMargin: "0px 0px -35% 0px" }).observe(end);
+        // long articles: a marker at the paragraph that starts about 70% of the way down
+        if (prose.offsetHeight > window.innerHeight * 2) {
+          var kids = prose.children, at = null;
+          for (var i = 0; i < kids.length; i++) { if (kids[i].offsetTop - prose.offsetTop >= prose.offsetHeight * 0.7) { at = kids[i]; break; } }
+          if (at) new IntersectionObserver(function (es) {
+            var e = es[es.length - 1];
+            mostRead = e.isIntersecting || e.boundingClientRect.top < 0;
+            render();
+          }).observe(at);
+        }
+        var bo = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { blockers.set(e.target, e.isIntersecting); });
+          render();
+        });
+        [".more-in", "#subscribe", "footer.site"].forEach(function (sel) {
+          var el = document.querySelector(sel);
+          if (el) bo.observe(el);
+        });
+        var up = document.querySelector(".up-next");
+        if (up) new IntersectionObserver(function (es) {
+          es.forEach(function (e) { blockers.set(e.target, e.isIntersecting); });
+          render();
+        }, { rootMargin: "0px 0px -45% 0px" }).observe(up);
+        bar.querySelector(".nb-x").addEventListener("click", function () { dismissed = true; render(); });
+      })();
+
+      /* Share: native share sheet on phones, copy link everywhere else. */
+      (function () {
+        var note = document.querySelector(".share-note");
+        function say(t) { if (note) { note.textContent = t; setTimeout(function () { note.textContent = ""; }, 2400); } }
+        function copy(u) {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say("Link copied"); }, function () { say(u); });
+          else say(u);
+        }
+        var s = document.querySelector(".js-share");
+        if (s) s.addEventListener("click", function () {
+          var u = s.getAttribute("data-url"), t = s.getAttribute("data-title");
+          if (navigator.share) navigator.share({ title: t, url: u }).catch(function () {});
+          else copy(u);
+        });
+        var c = document.querySelector(".js-copy");
+        if (c) c.addEventListener("click", function () { copy(c.getAttribute("data-url")); });
+      })();
+    });
   </script>
 </Base>

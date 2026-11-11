@@ -1,23 +1,27 @@
 ---
-// One story card. variant "card": image on top, chip, headline, date.
-// variant "row": compact thumbnail left. Takes the plain object from toStory().
+// One story card. variant "card": image on top, chip, headline, date. "big": the same, larger
+// (lead of a rail). "row": compact thumbnail left. Takes the plain object from toStory().
+// Product photos (gear covers) are shown as cut-outs on the dark product tile.
 import { imgAttrs, SIZES } from "../lib/img.js";
 interface Props {
   s: any;
-  variant?: "card" | "row";
+  variant?: "card" | "row" | "big";
   eager?: boolean;
+  priority?: boolean;
   h?: "h2" | "h3" | "h4";
 }
-const { s, variant = "card", eager = false, h = "h3" } = Astro.props;
+const { s, variant = "card", eager = false, priority = false, h = "h3" } = Astro.props;
 const H = h;
-const im = imgAttrs(s.cover, { sizes: variant === "row" ? SIZES.row : SIZES.card });
+const im = imgAttrs(s.cover, { sizes: variant === "row" ? SIZES.row : variant === "big" ? SIZES.big : SIZES.card });
 const flag = s.tag && s.tag !== "News" ? s.tag : null;
+const cls = variant === "row" ? "card row" : variant === "big" ? "card big" : "card";
 ---
-<a class={`card${variant === "row" ? " row" : ""}`} href={s.href}>
-  <div class={`art ${s.gclass}`}>
+<a class={cls} href={s.href}>
+  <div class={`art ${s.gclass}${im?.product ? " product" : ""}`}>
     {im && (
       <img src={im.src} srcset={im.srcset} sizes={im.sizes} width={im.width} height={im.height}
-        alt={s.coverAlt} loading={eager ? "eager" : "lazy"} decoding="async" />
+        alt={s.coverAlt} loading={eager || priority ? "eager" : "lazy"} decoding="async"
+        fetchpriority={priority ? "high" : undefined} />
     )}
   </div>
   <div class="card-body">

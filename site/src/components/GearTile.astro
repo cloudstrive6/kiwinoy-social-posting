@@ -1,12 +1,19 @@
 ---
-// One gear product: photo flush on top, name, note, affiliate button.
-interface Props { g: any; h?: "h3" | "h4" }
-const { g, h = "h3" } = Astro.props;
+// One gear product: cut-out photo on the dark product tile, name, note, affiliate button.
+import { imgAttrs, SIZES } from "../lib/img.js";
+interface Props { g: any; h?: "h3" | "h4"; eager?: boolean }
+const { g, h = "h3", eager = false } = Astro.props;
 const H = h;
 const live = g.url && g.url !== "#";
+const im = imgAttrs(g.img, { width: 800, height: 600, sizes: SIZES.gear });
 ---
 <div class="gear-tile">
-  {g.img && <div class="gear-photo"><img src={g.img} alt={g.name} width="624" height="696" loading="lazy" decoding="async" /></div>}
+  {im && (
+    <div class="gear-photo">
+      <img src={im.src} srcset={im.srcset} sizes={im.sizes} width={im.width} height={im.height} alt={g.name}
+        loading={eager ? "eager" : "lazy"} fetchpriority={eager ? "high" : undefined} decoding="async" />
+    </div>
+  )}
   <div class="gear-info">
     <span class="chip">{g.cat}</span>
     <H>{g.name}</H>

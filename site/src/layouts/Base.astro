@@ -16,6 +16,8 @@ export interface Props {
   page?: string;             // body data-page: "article" changes the popup timing
   noSearch?: boolean;        // leave this page out of the Pagefind index
   robots?: string;
+  preloadImage?: { srcset: string; sizes: string };  // the LCP image, fetched with high priority
+  preconnect?: string[];     // third-party image origins used above the fold
 }
 const {
   title,
@@ -29,6 +31,8 @@ const {
   page = "page",
   noSearch = false,
   robots = "max-image-preview:large",
+  preloadImage,
+  preconnect = [],
 } = Astro.props;
 // "Title | BOSS KG", dropping the suffix when the headline is already long.
 const BRAND = "BOSS KG";
@@ -61,7 +65,29 @@ const year = new Date().getFullYear();
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={robots} />
     <meta name="theme-color" content="#0B0B0D" />
+    <!-- Staging safety: on any host other than bosskg.com (Netlify branch deploys, previews,
+         localhost) add noindex and do not load GA4, so test visits never reach the property.
+         On bosskg.com nothing changes: the same gtag.js and the same config call. -->
+    <script is:inline>
+      (function () {
+        var h = location.hostname, prod = h === "bosskg.com" || h === "www.bosskg.com";
+        window.__kgProd = prod;
+        if (prod) {
+          var s = document.createElement("script");
+          s.async = true;
+          s.src = "https://www.googletagmanager.com/gtag/js?id=G-RLDR3M2139";
+          document.head.appendChild(s);
+        } else {
+          var m = document.createElement("meta");
+          m.name = "robots";
+          m.content = "noindex,nofollow";
+          document.head.appendChild(m);
+        }
+      })();
+    </script>
     <link rel="preload" href="/fonts/archivo-v25-latin-wdth75-100-wght600-800.woff2" as="font" type="font/woff2" crossorigin />
+    {preconnect.map((o) => <link rel="preconnect" href={o} />)}
+    {preloadImage && <link rel="preload" as="image" imagesrcset={preloadImage.srcset} imagesizes={preloadImage.sizes} fetchpriority="high" />}
     <meta property="og:site_name" content="BOSS KG" />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={desc} />
@@ -78,8 +104,8 @@ const year = new Date().getFullYear();
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title="BOSS KG" href="/rss.xml" />
     {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
-    <!-- Google Analytics 4: property "Boss KG" (bosskg.com). Keep identical: the 14-day before/after comparison depends on it. -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RLDR3M2139" is:inline></script>
+    <!-- Google Analytics 4: property "Boss KG" (bosskg.com). gtag.js is loaded by the host check above
+         (bosskg.com only). Keep the config identical: the 14-day before/after comparison depends on it. -->
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -110,15 +136,19 @@ const year = new Date().getFullYear();
           if (!e.viewTransition || !e.activation || !e.activation.entry) return;
           var art = artFor(e.activation.entry.url);
           if (!art) return;
+          var own = document.querySelector(".a-cover .art");
+          if (own && own !== art) own.style.viewTransitionName = "none";
           art.style.viewTransitionName = "kg-cover";
-          e.viewTransition.finished.then(function () { art.style.viewTransitionName = ""; });
+          e.viewTransition.finished.then(function () { art.style.viewTransitionName = ""; if (own) own.style.viewTransitionName = ""; });
         });
         window.addEventListener("pagereveal", function (e) {
           if (!e.viewTransition || !window.navigation || !navigation.activation || !navigation.activation.from) return;
           var art = artFor(navigation.activation.from.url);
           if (!art) return;
+          var own = document.querySelector(".a-cover .art");
+          if (own && own !== art) own.style.viewTransitionName = "none";
           art.style.viewTransitionName = "kg-cover";
-          e.viewTransition.ready.then(function () { art.style.viewTransitionName = ""; });
+          e.viewTransition.ready.then(function () { art.style.viewTransitionName = ""; if (own) own.style.viewTransitionName = ""; });
         });
       })();
     </script>
@@ -127,9 +157,8 @@ const year = new Date().getFullYear();
     <a class="skip" href="#main">Skip to content</a>
     <header class="nav">
       <div class="wrap nav-in">
-        <a class="brand" href="/" aria-label="BOSS KG home">
-          <Logo />
-          <span class="brand-mark" aria-hidden="true"><span class="bm-boss">BOSS</span><span class="bm-kg">KG</span></span>
+        <a class="brand" href="/">
+          <span class="brand-mark"><span class="bm-boss">BOSS</span> <span class="bm-kg">KG</span></span><span class="sr-only"> home</span>
         </a>
         <nav class="main" aria-label="Primary">
           {nav.map((n) => (
@@ -196,7 +225,7 @@ const year = new Date().getFullYear();
         </div>
       </div>
       <div class="wrap foot-b">
-        <span>&copy; {year} BOSS KG. Made for gamers, by gamers.</span>
+        <span>&copy; {year} BOSS KG.</span>
         <span>Game and film imagery belongs to its owners and is used for editorial coverage.</span>
       </div>
     </footer>
@@ -208,10 +237,14 @@ const year = new Date().getFullYear();
       (function () {
         var b = document.getElementById("hamburger"), m = document.getElementById("mobileMenu");
         if (!b || !m) return;
-        b.addEventListener("click", function () {
-          var open = m.classList.toggle("open");
+        function set(open) {
+          m.classList.toggle("open", open);
           b.setAttribute("aria-expanded", open ? "true" : "false");
           b.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        }
+        b.addEventListener("click", function () { set(!m.classList.contains("open")); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && m.classList.contains("open")) { set(false); b.focus(); }
         });
       })();
       /* Subscribe buttons jump to this page's own signup box when it has one */

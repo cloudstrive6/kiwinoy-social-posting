@@ -9,13 +9,13 @@ import { ICON } from "../lib/icons.js";
 ---
 <div class="nl-pop" id="nlPop" role="dialog" aria-modal="true" aria-labelledby="nlPopTitle" hidden data-pagefind-ignore>
   <div class="nl-pop-backdrop" data-nl-close></div>
-  <div class="nl-pop-card">
+  <div class="nl-pop-card" tabindex="-1">
     <button class="nl-pop-x" type="button" aria-label="Close" data-nl-close set:html={ICON.close}></button>
 
     <div class="nl-pop-body">
-      <span class="nl-pop-label">The KG Drop</span>
-      <h2 id="nlPopTitle">Don't miss the next big drop.</h2>
-      <p class="nl-pop-sub">The biggest gaming and MCU news, in your inbox before it trends.</p>
+      <span class="nl-pop-label">Free newsletter</span>
+      <h2 id="nlPopTitle">Get the KG Drop</h2>
+      <p class="nl-pop-sub">The biggest gaming and Marvel stories in your inbox, a few times a week.</p>
       <ul class="nl-pop-list">
         <li><Fragment set:html={ICON.gamepad} />New games, trailers and release dates first</li>
         <li><Fragment set:html={ICON.film} />MCU breakdowns and the leaks that matter</li>
@@ -71,10 +71,17 @@ import { ICON } from "../lib/icons.js";
       pop.hidden = false;
       requestAnimationFrame(function () { pop.classList.add("on"); });
       document.documentElement.style.overflow = "hidden";
+      // Everything behind the dialog leaves the tab order and the accessibility tree.
+      [].forEach.call(document.body.children, function (el) {
+        if (el === pop || el.tagName === "SCRIPT" || el.hasAttribute("inert")) return;
+        el.setAttribute("inert", ""); el.setAttribute("data-nl-inert", "");
+      });
+      // Focus moves into the dialog at every width: the email field on desktop, the dialog
+      // itself on phones (announces the heading without popping the keyboard).
       var inp = pop.querySelector('input[type="email"]');
-      if (inp && window.matchMedia("(min-width:700px)").matches) {
-        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 260);
-      }
+      var card = pop.querySelector(".nl-pop-card");
+      var desk = window.matchMedia("(min-width:700px)").matches;
+      try { (desk && inp ? inp : card).focus({ preventScroll: true }); } catch (e) {}
     }
 
     function close() {
@@ -83,6 +90,9 @@ import { ICON } from "../lib/icons.js";
       cleanup();
       pop.classList.remove("on");
       document.documentElement.style.overflow = "";
+      [].forEach.call(document.querySelectorAll("[data-nl-inert]"), function (el) {
+        el.removeAttribute("inert"); el.removeAttribute("data-nl-inert");
+      });
       setTimeout(function () { pop.hidden = true; }, 260);
       if (!subscribed()) remember(false);
       if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
@@ -123,6 +133,7 @@ import { ICON } from "../lib/icons.js";
       });
       if (!f.length) return;
       var first = f[0], last = f[f.length - 1];
+      if (f.indexOf(document.activeElement) === -1) { e.preventDefault(); (e.shiftKey ? last : first).focus(); return; }
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });

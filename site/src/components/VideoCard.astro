@@ -1,21 +1,28 @@
 ---
 // Video card. Long-form videos link to /watch/<slug>/; Shorts (short=true) play in place:
 // the shared facade script in Base.astro swaps .vthumb for a youtube-nocookie iframe on click.
-import { YT_PLAY } from "../lib/icons.js";
+// Thumbnails are decorative (alt="") because the title sits right next to them.
+// Long-form grid cards use YouTube's true 16:9 mqdefault (320 px) with hqdefault for 2x screens.
+import { PLAY_DOT } from "../lib/icons.js";
 import { fmtDate } from "../lib/articles.js";
-interface Props { v: any; short?: boolean; showDate?: boolean }
-const { v, short = false, showDate = false } = Astro.props;
+interface Props { v: any; short?: boolean; showDate?: boolean; big?: boolean }
+const { v, short = false, showDate = false, big = false } = Astro.props;
 const href = v.slug ? `/watch/${v.slug}/` : v.url;
 const ext = !v.slug;
+const base = `https://i.ytimg.com/vi/${v.id}`;
+const srcset = big
+  ? `${base}/hqdefault.jpg 480w, ${base}/sddefault.jpg 640w`
+  : `${base}/mqdefault.jpg 320w, ${base}/hqdefault.jpg 480w`;
+const sizes = big ? "(min-width: 1024px) 590px, (min-width: 641px) 46vw, 92vw" : "(min-width: 1024px) 285px, (min-width: 641px) 46vw, 46vw";
 ---
 {short ? (
-  <button class="vcard" type="button" data-vid={v.id} aria-label={`Play Short: ${v.title}`}>
-    <div class="vthumb"><img src={v.thumb} alt={v.title} width="480" height="360" loading="lazy" decoding="async" /><span class="play" set:html={YT_PLAY}></span></div>
+  <button class="vcard short" type="button" data-vid={v.id} aria-label={`Play Short: ${v.title}`}>
+    <div class="vthumb"><img src={v.thumb} alt="" role="presentation" width="480" height="360" loading="lazy" decoding="async" /><span class="play" set:html={PLAY_DOT}></span></div>
     <div class="vb">{v.title}</div>
   </button>
 ) : (
-  <a class="vcard" href={href} {...(ext ? { target: "_blank", rel: "noopener" } : {})}>
-    <div class="vthumb"><img src={v.thumb} alt={v.title} width="480" height="360" loading="lazy" decoding="async" /><span class="play" set:html={YT_PLAY}></span></div>
+  <a class={`vcard${big ? " big" : ""}`} href={href} {...(ext ? { target: "_blank", rel: "noopener" } : {})}>
+    <div class="vthumb"><img src={`${base}/${big ? "hqdefault" : "mqdefault"}.jpg`} srcset={srcset} sizes={sizes} alt="" role="presentation" width="480" height="270" loading="lazy" decoding="async" /><span class="play" set:html={PLAY_DOT}></span></div>
     <div><div class="vb">{v.title}</div>{showDate && v.published && <div class="vmeta">{fmtDate(v.published)}</div>}</div>
   </a>
 )}

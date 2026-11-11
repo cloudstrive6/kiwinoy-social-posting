@@ -30,9 +30,13 @@ const ld = {
   uploadDate: v.published, contentUrl: v.url,
   embedUrl: `https://www.youtube.com/embed/${v.id}`,
 };
+// 640 px still for phones, 1280 px for desktop (both exist for every channel upload checked 2026-11-12).
+const stillSet = `https://i.ytimg.com/vi/${v.id}/sddefault.jpg 720w, https://i.ytimg.com/vi/${v.id}/hq720.jpg 1280w`;
+const stillSizes = "(min-width: 1060px) 1000px, calc(100vw - 40px)";
 const crumbs = [{ label: "Home", href: "/" }, { label: "Videos", href: "/videos/" }, ...(game ? [{ label: game.title, href: `/games/${game.slug}/` }] : []), { label: v.title }];
 ---
-<Base title={v.title} description={desc} image={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`} type="video.other" jsonLd={[ld, crumbsLd(crumbs)]}>
+<Base title={v.title} description={desc} image={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`} type="video.other" jsonLd={[ld, crumbsLd(crumbs)]}
+  preconnect={["https://i.ytimg.com"]} preloadImage={{ srcset: stillSet, sizes: stillSizes }}>
   <main id="main" class="wrap">
     <article class="article">
       <header class="a-head">
@@ -47,9 +51,9 @@ const crumbs = [{ label: "Home", href: "/" }, { label: "Videos", href: "/videos/
       <div class="a-cover">
         <button class="vfeat" type="button" data-vid={v.id} aria-label={`Play: ${v.title}`}>
           <div class="vthumb">
-            <img src={v.thumb.replace("hqdefault", "sddefault")} alt={v.title} width="640" height="480"
+            <img src={`https://i.ytimg.com/vi/${v.id}/hq720.jpg`} srcset={stillSet} sizes={stillSizes} alt="" role="presentation" width="1280" height="720"
               loading="eager" fetchpriority="high" decoding="async"
-              onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/'+this.closest('[data-vid]').dataset.vid+'/hqdefault.jpg'" />
+              onerror="this.onerror=null;this.removeAttribute('srcset');this.src='https://i.ytimg.com/vi/'+this.closest('[data-vid]').dataset.vid+'/hqdefault.jpg'" />
             <span class="play" set:html={YT_PLAY}></span>
           </div>
         </button>
