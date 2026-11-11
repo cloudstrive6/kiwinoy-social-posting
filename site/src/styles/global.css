@@ -103,12 +103,9 @@ header.nav{position:sticky; top:0; z-index:50; background:color-mix(in srgb, var
   border-bottom:1px solid var(--border)}
 .nav-in{display:flex; align-items:center; gap:var(--s5); height:var(--head-h)}
 .brand{display:flex; align-items:center; min-height:50px; color:var(--text); flex:none}
-.brand .logo{height:46px; width:auto; display:block}
-.brand-mark{display:inline-flex; align-items:baseline; gap:6px; position:relative; padding-bottom:6px}
-.brand-mark .bm-boss{font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:22px; letter-spacing:.02em; line-height:1}
-.brand-mark .bm-kg{font-family:var(--f-text); font-weight:700; font-size:25px; line-height:1}
-.brand-mark::after{content:""; position:absolute; right:0; bottom:0; width:30px; height:4px; border-radius:2px; background:var(--red)}
-@media (min-width:1024px){.brand-mark .bm-boss{font-size:26px} .brand-mark .bm-kg{font-size:30px} .brand-mark::after{width:36px}}
+/* The BOSS KG logo is never redesigned (Bryce, 2026-11-12): Logo.astro as is, at the
+   original sizes (header 40px, footer 44px). The 50px min-height is only the tap area. */
+.brand .logo{height:40px; width:auto; display:block; color:#EDEFF3; --rule:#FF3D46}
 nav.main{display:flex; gap:2px; margin-left:var(--s2)}
 nav.main a{position:relative; display:flex; align-items:center; min-height:44px; padding:0 12px; border-radius:var(--r-s);
   font-weight:600; font-size:15px; color:var(--muted)}
@@ -489,7 +486,7 @@ body{timeline-scope:--kg-read}
 footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background:var(--surface)}
 .foot{display:grid; grid-template-columns:minmax(0,1.5fr) repeat(3, minmax(0,1fr)); gap:var(--s6); padding-top:var(--s7); padding-bottom:var(--s6)}
 .foot-about .brand{min-height:52px}
-.foot .brand .logo{height:52px; display:block}
+.foot .brand .logo{height:44px; display:block}
 .foot-about p{margin-top:var(--s4); font-family:var(--f-text); color:var(--muted); font-size:16px; line-height:1.5; max-width:19em}
 .socrow{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s4)}
 .socrow a{width:44px; height:44px; border-radius:var(--r-m); display:grid; place-items:center; color:var(--muted); border:1px solid var(--border)}
@@ -631,10 +628,8 @@ header.nav{view-transition-name:kg-header}
 header.nav{transition:transform var(--d-ui) var(--ease-drawer), background-color var(--d-hover) ease}
 header.nav::after{content:""; position:absolute; left:0; right:0; bottom:-12px; height:12px; pointer-events:none;
   background:linear-gradient(rgba(0,0,0,.4), transparent); opacity:0; transition:opacity var(--d-hover) ease}
-header.nav .brand{transform-origin:0 50%; transition:transform var(--d-ui) var(--ease-out)}
 header.nav.is-condensed{background-color:var(--surface); border-bottom-color:var(--border-2)}
 header.nav.is-condensed::after{opacity:1}
-header.nav.is-condensed .brand{transform:scale(.9)}
 @media (max-width:1023px){
   header.nav.is-hidden{transform:translateY(-100%)}
   header.nav.is-hidden::after{opacity:0}
@@ -650,7 +645,6 @@ header.nav.is-condensed .brand{transform:scale(.9)}
   html{scroll-behavior:auto}
   *, *::before, *::after{transition-property:opacity, color, background-color, border-color !important}
   header.nav.is-hidden{transform:none}
-  header.nav .brand, header.nav.is-condensed .brand{transform:none}
   .next-bar{transform:none; transition:opacity 150ms ease}
   .nl-pop-card, .nl-pop.on .nl-pop-card{transform:none}
   .card:active, .vcard:active, .lead:active, .partner:active, .gear-tile:active, .soc-tile:active,
