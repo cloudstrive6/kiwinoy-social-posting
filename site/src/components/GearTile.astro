@@ -1,0 +1,18 @@
+---
+// One gear product: photo flush on top, name, note, affiliate button.
+interface Props { g: any; h?: "h3" | "h4" }
+const { g, h = "h3" } = Astro.props;
+const H = h;
+const live = g.url && g.url !== "#";
+---
+<div class="gear-tile">
+  {g.img && <div class="gear-photo"><img src={g.img} alt={g.name} width="624" height="696" loading="lazy" decoding="async" /></div>}
+  <div class="gear-info">
+    <span class="chip">{g.cat}</span>
+    <H>{g.name}</H>
+    <p>{g.note}</p>
+    {live
+      ? <a class="btn btn-primary" href={g.url} target="_blank" rel="sponsored nofollow noopener">View on {g.retailer}</a>
+      : <span class="btn" aria-disabled="true">Link coming soon</span>}
+  </div>
+</div>

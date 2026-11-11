@@ -1,11 +1,12 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import imageVariants from "./integrations/image-variants.mjs";
 
-// Update `site` to your real domain once it's registered (used for canonical URLs,
-// sitemap, RSS). Netlify serves a *.netlify.app URL until the custom domain is attached.
+// `site` drives canonical URLs, the sitemap and RSS. Keep trailingSlash "ignore" and the default
+// directory build format: bots post /news/<slug> without a slash and rely on the 301 to /news/<slug>/.
 export default defineConfig({
   site: "https://bosskg.com",
-  integrations: [sitemap()],
+  integrations: [sitemap(), imageVariants()],
   trailingSlash: "ignore",
 });

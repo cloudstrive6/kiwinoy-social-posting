@@ -1,0 +1,28 @@
+---
+// One story card. variant "card": image on top, chip, headline, date.
+// variant "row": compact thumbnail left. Takes the plain object from toStory().
+import { imgAttrs, SIZES } from "../lib/img.js";
+interface Props {
+  s: any;
+  variant?: "card" | "row";
+  eager?: boolean;
+  h?: "h2" | "h3" | "h4";
+}
+const { s, variant = "card", eager = false, h = "h3" } = Astro.props;
+const H = h;
+const im = imgAttrs(s.cover, { sizes: variant === "row" ? SIZES.row : SIZES.card });
+const flag = s.tag && s.tag !== "News" ? s.tag : null;
+---
+<a class={`card${variant === "row" ? " row" : ""}`} href={s.href}>
+  <div class={`art ${s.gclass}`}>
+    {im && (
+      <img src={im.src} srcset={im.srcset} sizes={im.sizes} width={im.width} height={im.height}
+        alt={s.coverAlt} loading={eager ? "eager" : "lazy"} decoding="async" />
+    )}
+  </div>
+  <div class="card-body">
+    <span class="kick"><span class="chip">{s.cat}</span>{flag && <span class={`flag${flag === "Hot" ? " hot" : ""}`}>{flag}</span>}</span>
+    <H class="card-title">{s.title}</H>
+    <time class="card-date" datetime={s.date}>{s.dateLabel}</time>
+  </div>
+</a>

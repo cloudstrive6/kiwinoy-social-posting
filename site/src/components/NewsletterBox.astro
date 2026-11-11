@@ -1,0 +1,25 @@
+---
+// Inline newsletter signup. Keeps the contract Base.astro's wiring script relies on:
+// form.sub-form, an email input, a text input for the first name, and a .toast next to it.
+interface Props { title?: string; text?: string; formId?: string }
+const {
+  title = "Get the biggest gaming and Marvel news first",
+  text = "The KG Drop: one email, a few times a week. The stories that matter, no spam.",
+  formId,
+} = Astro.props;
+---
+<section class="nl-box" id="subscribe" aria-labelledby="nlBoxTitle" data-pagefind-ignore>
+  <h2 id="nlBoxTitle">{title}</h2>
+  <p>{text}</p>
+  <form class="sub-form" id={formId}>
+    <label>First name
+      <input type="text" name="name" placeholder="Your first name" autocomplete="given-name" required />
+    </label>
+    <label>Email
+      <input type="email" name="email" placeholder="you@email.com" autocomplete="email" inputmode="email" required />
+    </label>
+    <button class="btn btn-primary" type="submit">Join the list</button>
+  </form>
+  <p class="fine">By subscribing you agree to our Privacy Policy. Unsubscribe anytime. We never sell your data.</p>
+  <p class="toast" role="status" aria-live="polite"></p>
+</section>

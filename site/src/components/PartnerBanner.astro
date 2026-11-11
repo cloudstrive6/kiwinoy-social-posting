@@ -1,0 +1,19 @@
+---
+// Affiliate partner banner in the site's own surface system (no partner colour panels).
+// The whole banner is the link and keeps rel="sponsored nofollow noopener".
+import { PARTNERS } from "../lib/gear.js";
+interface Props { id: "luxdrop" | "trybe"; class?: string }
+const { id, class: cls = "" } = Astro.props;
+const p = PARTNERS[id];
+---
+<a class={`partner ${cls}`} href={p.url} target="_blank" rel="sponsored nofollow noopener">
+  {p.img
+    ? <img class="partner-img" src={p.img} alt="" width="375" height="500" loading="lazy" decoding="async" aria-hidden="true" />
+    : <span class="partner-mark" aria-hidden="true">{p.name.slice(0, 1)}</span>}
+  <span class="partner-text">
+    <span class="partner-label">{p.label}</span>
+    <span class="partner-name">{p.name}</span>
+    <span class="partner-sub">{p.sub}</span>
+  </span>
+  <span class="btn btn-ghost">{p.cta}</span>
+</a>

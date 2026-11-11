@@ -1,69 +1,210 @@
 ---
-import { getCollection, render } from "astro:content";
+// Article page: where most readers land (from social). Chip, H1, dek, byline, full-colour cover,
+// serif body, share, tags, source, "Up next" (server-rendered, drafts never included),
+// a slide-up Up next bar near the end (F3) and a reading progress bar (F2).
+import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
+import StoryCard from "../../components/StoryCard.astro";
+import NewsletterBox from "../../components/NewsletterBox.astro";
+import Crumbs from "../../components/Crumbs.astro";
+import { liveArticles, toStory, related, sectionFor, catLabel, gclass, fmtDate, readMinutes, slugify } from "../../lib/articles.js";
+import { imgAttrs, SIZES } from "../../lib/img.js";
+import { ICON } from "../../lib/icons.js";
+import { ORG, crumbsLd, abs } from "../../lib/seo.js";
 
 export async function getStaticPaths() {
-  const articles = await getCollection("articles", ({ data }) => !data.draft);
-  return articles.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const all = await liveArticles();
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, next: related(entry, all, 2).map(toStory) },
+  }));
 }
 
-const { entry } = Astro.props;
+const { entry, next } = Astro.props;
 const { Content } = await render(entry);
 const d = entry.data;
-
-const gmap: Record<string, string> = {
-  wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
-  mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel",
-};
-const gclass = gmap[(d.game || "").toLowerCase()] || "g-marvel";
-const nice = d.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+const sec = sectionFor(d);
+const label = catLabel(d.category);
+const mins = readMinutes(entry.body || "");
+const iso = d.date.toISOString();
+const by = !d.author || d.author === "BOSS KG" ? "KG" : d.author;
+const url = abs(`/news/${entry.id}/`);
+const cover = imgAttrs(d.cover, { sizes: SIZES.cover });
+const contain = /hardware/i.test(d.category || "");
+const credit = d.sourceName ? `Image: ${d.sourceName}` : "Image belongs to its respective owner.";
+const crumbs = [{ label: "Home", href: "/" }, { label: sec.label, href: sec.href }, { label: d.title }];
+const ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: d.title.length > 110 ? d.title.slice(0, 109) + "…" : d.title,
+    description: d.excerpt,
+    image: d.cover ? [abs(d.cover)] : [abs("/og-default.png")],
+    datePublished: iso,
+    dateModified: iso,
+    author: { "@type": "Organization", name: "BOSS KG", url: abs("/about/") },
+    publisher: ORG,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    articleSection: label,
+    keywords: (d.tags || []).join(", "),
+    ...(d.sourceUrl ? { isBasedOn: d.sourceUrl } : {}),
+  },
+  crumbsLd(crumbs),
+];
+const shareText = encodeURIComponent(d.title);
+const shareUrl = encodeURIComponent(url);
 ---
-<Base title={`${d.title} — BOSS KG`} description={d.excerpt} image={d.cover || undefined}>
-  <main class="wrap">
+<Base title={d.title} description={d.excerpt} image={d.cover || undefined} type="article"
+  publishedTime={iso} section={label} tags={d.tags} jsonLd={ld} page="article">
+  <div class="read-progress" aria-hidden="true"></div>
+  <main id="main" class="wrap">
     <article class="article">
-      <div class="a-head">
-        <div class="kicker">
-          <span class="pill news">{d.tag}</span>
-          <span class="eyebrow" style="color:var(--red)">{d.category}</span>
+      <header class="a-head">
+        <Crumbs items={crumbs.slice(0, 2)} />
+        <div class="a-kicker">
+          <a class="chip" href={sec.href}>{label}</a>
+          {d.tag && d.tag !== "News" && <span class={`flag${d.tag === "Hot" ? " hot" : ""}`}>{d.tag}</span>}
         </div>
         <h1>{d.title}</h1>
-        <div class="a-meta"><span>By {d.author}</span><span>•</span><span>{nice}</span></div>
-      </div>
+        {d.excerpt && <p class="a-dek">{d.excerpt}</p>}
+        <div class="a-meta">
+          <span class="a-by">By {by}</span>
+          <time datetime={iso}>{fmtDate(d.date, true)}</time>
+          <span>{mins} min read</span>
+        </div>
+      </header>
 
-      <div class={`a-cover art ${gclass} ${d.cover ? "has-img" : ""} ${d.category === "Hardware" ? "contain" : ""}`}>
-        {d.cover && <img src={d.cover} alt={d.coverAlt} />}
-      </div>
+      <figure class={`a-cover${contain ? " contain" : ""}`}>
+        <div class={`art ${gclass(d.game)}`}>
+          {cover && (
+            <img src={cover.src} srcset={cover.srcset} sizes={cover.sizes} width={cover.width} height={cover.height}
+              alt={d.coverAlt || d.title} loading="eager" fetchpriority="high" decoding="async" />
+          )}
+        </div>
+        {d.cover && <figcaption>{credit}</figcaption>}
+      </figure>
 
       <div class="prose">
         <Content />
       </div>
 
-      {d.tags && d.tags.length > 0 && (
-        <div class="a-tags">
-          {d.tags.map((t) => (
-            <a class="tag-chip" href={`/tag/${t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`}>#{t}</a>
-          ))}
+      <div class="a-end">
+        <div class="share" data-pagefind-ignore>
+          <span class="share-h">Share this story</span>
+          <button class="btn btn-ghost js-share" type="button" data-title={d.title} data-url={url}><Fragment set:html={ICON.share} /><span>Share</span></button>
+          <button class="iconbtn js-copy" type="button" data-url={url} aria-label="Copy link" set:html={ICON.link}></button>
+          <a class="iconbtn" href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener" aria-label="Post on X" set:html={ICON.x}></a>
+          <a class="iconbtn" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook" set:html={ICON.facebook}></a>
+          <span class="share-note" role="status" aria-live="polite"></span>
         </div>
-      )}
 
-      {d.sourceUrl && (
-        <p class="a-source">
-          Source: <a href={d.sourceUrl} target="_blank" rel="noopener nofollow">{d.sourceName ?? "Read more"}</a>.
-          BOSS KG coverage is written independently; imagery belongs to its respective owners.
-        </p>
-      )}
+        {d.tags && d.tags.length > 0 && (
+          <ul class="a-tags" aria-label="Tags">
+            {d.tags.map((t) => <li><a class="tag-chip" href={`/tag/${slugify(t)}/`}>{t}</a></li>)}
+          </ul>
+        )}
 
-      <section class="news" id="subscribe" style="margin-top:40px" aria-label="Newsletter signup">
-        <span class="eyebrow">The KG Drop</span>
-        <h2>Never miss the next big drop</h2>
-        <p>Get our best gaming &amp; Marvel stories in your inbox. No spam, unsubscribe anytime.</p>
-        <form class="sub-form">
-          <input type="text" placeholder="First name" autocomplete="given-name" required />
-          <input type="email" placeholder="you@email.com" autocomplete="email" required />
-          <button class="btn sub" type="submit">Join the list</button>
-        </form>
-        <p class="toast" id="t2">🎉 You're in! Check your inbox for a welcome email.</p>
-      </section>
+        {d.sourceUrl && (
+          <p class="a-source">
+            Source: <a href={d.sourceUrl} target="_blank" rel="noopener nofollow">{d.sourceName ?? "the original report"}</a>.
+            BOSS KG coverage is written independently; imagery belongs to its respective owners.
+          </p>
+        )}
+      </div>
+
+      {next.length > 0 && (
+        <section class="up-next" aria-labelledby="upNextH" data-pagefind-ignore>
+          <div class="sec-h"><h2 id="upNextH">Up next</h2></div>
+          <div class="grid all-cards">
+            {next.map((s) => <StoryCard s={s} />)}
+          </div>
+        </section>
+      )}
     </article>
+
+    <NewsletterBox title="Never miss the next big drop" text="Get our best gaming and Marvel stories in your inbox. One email, a few times a week. No spam." />
   </main>
+
+  {next.length > 0 && (
+    <aside class="next-bar" id="nextBar" aria-label="Up next" inert data-pagefind-ignore>
+      <a class="nb-link" href={next[0].href}>
+        <span class="nb-label">Up next</span>
+        <span class="nb-title">{next[0].title}</span>
+      </a>
+      <button class="nb-x" type="button" aria-label="Hide up next" set:html={ICON.close}></button>
+    </aside>
+  )}
+
+  <script is:inline>
+    /* F2 fallback for browsers without scroll-driven animations (CSS handles the rest). */
+    (function () {
+      var bar = document.querySelector(".read-progress");
+      var prose = document.querySelector(".article .prose");
+      if (!bar || !prose) return;
+      if (window.CSS && CSS.supports && CSS.supports("animation-timeline: view()")) return;
+      var start = 0, span = 1, ticking = false;
+      function update() {
+        ticking = false;
+        var p = (window.scrollY - start) / span;
+        p = p < 0 ? 0 : p > 1 ? 1 : p;
+        bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
+      }
+      function measure() {
+        var r = prose.getBoundingClientRect();
+        start = r.top + window.scrollY;
+        span = Math.max(1, r.height - window.innerHeight);
+        update();
+      }
+      window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+      window.addEventListener("resize", measure);
+      window.addEventListener("load", measure);
+      if ("ResizeObserver" in window) new ResizeObserver(measure).observe(prose);
+      measure();
+    })();
+    /* F3. Up next bar: shows one screen before the end of the body text, hides once the
+       in-flow Up next cards or the footer are on screen, or when closed. */
+    (function () {
+      var bar = document.getElementById("nextBar");
+      var prose = document.querySelector(".article .prose");
+      var target = document.querySelector(".up-next");
+      if (!bar || !prose || !target || !("IntersectionObserver" in window)) return;
+      var nearEnd = false, cardSeen = false, footSeen = false, dismissed = false, on = false;
+      var end = document.createElement("div");
+      end.setAttribute("aria-hidden", "true");
+      prose.appendChild(end);
+      function render() {
+        var show = nearEnd && !cardSeen && !footSeen && !dismissed;
+        if (show === on) return;
+        on = show;
+        bar.classList.toggle("on", show);
+        if (show) bar.removeAttribute("inert"); else bar.setAttribute("inert", "");
+      }
+      new IntersectionObserver(function (es) {
+        var e = es[es.length - 1];
+        nearEnd = e.isIntersecting || e.boundingClientRect.top < 0;
+        render();
+      }, { rootMargin: "0px 0px 100% 0px" }).observe(end);
+      new IntersectionObserver(function (es) { cardSeen = es[es.length - 1].isIntersecting; render(); }).observe(target);
+      var foot = document.querySelector("footer.site");
+      if (foot) new IntersectionObserver(function (es) { footSeen = es[es.length - 1].isIntersecting; render(); }).observe(foot);
+      bar.querySelector(".nb-x").addEventListener("click", function () { dismissed = true; render(); });
+    })();
+    /* Share: native share sheet on phones, copy link everywhere else. */
+    (function () {
+      var note = document.querySelector(".share-note");
+      function say(t) { if (note) { note.textContent = t; setTimeout(function () { note.textContent = ""; }, 2400); } }
+      function copy(u) {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say("Link copied"); }, function () { say(u); });
+        else say(u);
+      }
+      var s = document.querySelector(".js-share");
+      if (s) s.addEventListener("click", function () {
+        var u = s.getAttribute("data-url"), t = s.getAttribute("data-title");
+        if (navigator.share) navigator.share({ title: t, url: u }).catch(function () {});
+        else copy(u);
+      });
+      var c = document.querySelector(".js-copy");
+      if (c) c.addEventListener("click", function () { copy(c.getAttribute("data-url")); });
+    })();
+  </script>
 </Base>

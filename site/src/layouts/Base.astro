@@ -2,51 +2,83 @@
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
 import NewsletterModal from "../components/NewsletterModal.astro";
+import { ICON } from "../lib/icons.js";
+import { trimDesc } from "../lib/seo.js";
 export interface Props {
-  title?: string;
+  title?: string;            // page title without the brand suffix
   description?: string;
   image?: string;
+  type?: "website" | "article" | "video.other";
+  publishedTime?: string;    // ISO, article pages
+  section?: string;
+  tags?: string[];
+  jsonLd?: object[];
+  page?: string;             // body data-page: "article" changes the popup timing
+  noSearch?: boolean;        // leave this page out of the Pagefind index
+  robots?: string;
 }
 const {
-  title = "BOSS KG — Gaming & Marvel News",
-  description = "The drop-first source for video games, the MCU, and the biggest moments in gaming.",
+  title,
+  description = "The drop-first source for video games, the MCU and the biggest moments in gaming.",
   image = "/og-default.png",
+  type = "website",
+  publishedTime,
+  section,
+  tags = [],
+  jsonLd = [],
+  page = "page",
+  noSearch = false,
+  robots = "max-image-preview:large",
 } = Astro.props;
+// "Title | BOSS KG", dropping the suffix when the headline is already long.
+const BRAND = "BOSS KG";
+const fullTitle = !title ? "BOSS KG: Gaming and Marvel News" : title.length > 60 ? title : `${title} | ${BRAND}`;
+const ogTitle = title || "BOSS KG: Gaming and Marvel News";
+const desc = trimDesc(description);
 // Absolute URL for og:image (social scrapers require a full URL, not a site-relative path).
 const site = Astro.site ?? new URL("https://bosskg.com");
 const ogImage = image.startsWith("http") ? image : new URL(image, site).href;
 const canonical = new URL(Astro.url.pathname, site).href;
+const path = Astro.url.pathname.replace(/\/?$/, "/");
 const nav = [
-  { label: "News", href: "/" },
-  { label: "Games", href: "/games" },
-  { label: "MCU", href: "/category/mcu" },
-  { label: "Videos", href: "/videos" },
-  { label: "Follow", href: "/follow" },
-  { label: "Gear", href: "/gear" },
-  { label: "Products", href: "/products" },
+  { label: "News", href: "/", match: (p) => p === "/" || p.startsWith("/news/") || p.startsWith("/tag/") || (p.startsWith("/category/") && !p.startsWith("/category/mcu/")) },
+  { label: "Games", href: "/games/", match: (p) => p.startsWith("/games/") },
+  { label: "MCU", href: "/category/mcu/", match: (p) => p.startsWith("/category/mcu/") },
+  { label: "Videos", href: "/videos/", match: (p) => p.startsWith("/videos/") || p.startsWith("/watch/") },
+  { label: "Gear", href: "/gear/", match: (p) => p.startsWith("/gear/") },
+  { label: "Follow", href: "/follow/", match: (p) => p.startsWith("/follow/") },
+  { label: "Products", href: "/products/", match: (p) => p.startsWith("/products/") },
 ];
-const path = Astro.url.pathname;
+const year = new Date().getFullYear();
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#0B0B0D" />
+    <link rel="preload" href="/fonts/archivo-v25-latin-wdth75-100-wght600-800.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:site_name" content="BOSS KG" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {type === "article" && section && <meta property="article:section" content={section} />}
+    {type === "article" && tags.map((t) => <meta property="article:tag" content={t} />)}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- Google Analytics 4 — property "Boss KG" (bosskg.com) -->
+    <link rel="alternate" type="application/rss+xml" title="BOSS KG" href="/rss.xml" />
+    {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <!-- Google Analytics 4: property "Boss KG" (bosskg.com). Keep identical: the 14-day before/after comparison depends on it. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RLDR3M2139" is:inline></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -54,80 +86,213 @@ const path = Astro.url.pathname;
       gtag('js', new Date());
       gtag('config', 'G-RLDR3M2139');
     </script>
+    <!-- F4 companion: prefetch a story's HTML on hover or press so the next page opens instantly.
+         Prefetch only (not prerender), so GA4 never counts a page nobody opened. -->
+    <script type="speculationrules" is:inline>
+      {"prefetch":[{"where":{"href_matches":"/news/*"},"eagerness":"moderate"},{"where":{"href_matches":"/category/*"},"eagerness":"conservative"}]}
+    </script>
+    <!-- F7: the tapped card's image grows into the article cover (Chrome 126+; harmless elsewhere). -->
+    <script is:inline>
+      (function () {
+        function artFor(url) {
+          var p = new URL(url, location.href).pathname.replace(/\/$/, "");
+          var links = document.querySelectorAll('a[href^="/news/"]');
+          for (var i = 0; i < links.length; i++) {
+            if (links[i].getAttribute("href").replace(/\/$/, "") !== p) continue;
+            var art = links[i].querySelector(".art");
+            if (!art) continue;
+            var r = art.getBoundingClientRect();
+            if (r.bottom > 0 && r.top < innerHeight) return art;
+          }
+          return null;
+        }
+        window.addEventListener("pageswap", function (e) {
+          if (!e.viewTransition || !e.activation || !e.activation.entry) return;
+          var art = artFor(e.activation.entry.url);
+          if (!art) return;
+          art.style.viewTransitionName = "kg-cover";
+          e.viewTransition.finished.then(function () { art.style.viewTransitionName = ""; });
+        });
+        window.addEventListener("pagereveal", function (e) {
+          if (!e.viewTransition || !window.navigation || !navigation.activation || !navigation.activation.from) return;
+          var art = artFor(navigation.activation.from.url);
+          if (!art) return;
+          art.style.viewTransitionName = "kg-cover";
+          e.viewTransition.ready.then(function () { art.style.viewTransitionName = ""; });
+        });
+      })();
+    </script>
   </head>
-  <body>
+  <body data-page={page}>
+    <a class="skip" href="#main">Skip to content</a>
     <header class="nav">
       <div class="wrap nav-in">
         <a class="brand" href="/" aria-label="BOSS KG home">
           <Logo />
+          <span class="brand-mark" aria-hidden="true"><span class="bm-boss">BOSS</span><span class="bm-kg">KG</span></span>
         </a>
         <nav class="main" aria-label="Primary">
           {nav.map((n) => (
-            <a href={n.href} class={path === n.href ? "active" : ""}>{n.label}</a>
+            <a href={n.href} aria-current={n.match(path) ? "page" : undefined}>{n.label}</a>
           ))}
         </nav>
         <div class="nav-right">
-          <a class="iconbtn" href="/search" aria-label="Search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          </a>
-          <a class="btn sub" href="/#subscribe">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6 12 13 2 6"/></svg>
-            <span>Subscribe</span>
-          </a>
-          <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-          </button>
+          <a class="iconbtn" href="/search/" aria-label="Search" set:html={ICON.search}></a>
+          <a class="btn btn-primary js-sub" href="/#subscribe"><Fragment set:html={ICON.mail} /><span>Subscribe</span></a>
+          <button class="iconbtn hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu" set:html={ICON.menu}></button>
         </div>
       </div>
       <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
         {nav.map((n) => (
-          <a href={n.href} class={path === n.href ? "active" : ""}>{n.label}</a>
+          <a href={n.href} aria-current={n.match(path) ? "page" : undefined}>{n.label}</a>
         ))}
-        <a class="sub-cta" href="/#subscribe">Subscribe</a>
+        <a class="btn btn-primary js-sub" href="/#subscribe"><Fragment set:html={ICON.mail} /><span>Subscribe to the KG Drop</span></a>
       </nav>
     </header>
 
-    <slot />
+    {noSearch ? <slot /> : <div data-pagefind-body><slot /></div>}
 
-    <footer class="site">
+    <footer class="site" data-pagefind-ignore>
       <div class="wrap foot">
-        <div class="about">
-          <a class="brand" href="/">
-            <Logo />
-          </a>
-          <p>The drop-first source for video games, the MCU, and the biggest moments in gaming.</p>
+        <div class="foot-about">
+          <a class="brand" href="/" aria-label="BOSS KG home"><Logo /></a>
+          <p>The drop-first source for video games, the MCU and the biggest moments in gaming.</p>
           <div class="socrow">
-            <a href="https://instagram.com/kiwinoygaming" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a>
-            <a href="https://tiktok.com/@kiwinoygamer" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.9 4 4 4.2v2.8c-1.5 0-2.9-.4-4-1.1v6.4a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.1v2.9a3 3 0 1 0 2.1 2.9V3H16Z"/></svg></a>
-            <a href="https://www.youtube.com/@Kiwinoy" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.3-.4-4.9a2.6 2.6 0 0 0-1.8-1.8C19.1 5 12 5 12 5s-7.1 0-8.8.3A2.6 2.6 0 0 0 1.4 7.1C1 8.7 1 12 1 12s0 3.3.4 4.9a2.6 2.6 0 0 0 1.8 1.8C4.9 19 12 19 12 19s7.1 0 8.8-.3a2.6 2.6 0 0 0 1.8-1.8C23 15.3 23 12 23 12ZM10 15V9l5 3Z"/></svg></a>
-            <a href="https://www.facebook.com/KiwinoyGaming" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V7c0-1 .3-1.5 1.6-1.5H17V2.2C16.5 2.1 15.4 2 14.2 2 11.6 2 10 3.6 10 6.4V9H7.5v3.5H10V22h4v-9.5h2.7l.4-3.5H14Z"/></svg></a>
+            <a href="https://www.youtube.com/@Kiwinoy" aria-label="BOSS KG on YouTube" rel="noopener" set:html={ICON.youtube}></a>
+            <a href="https://www.tiktok.com/@kiwinoygamer" aria-label="BOSS KG on TikTok" rel="noopener" set:html={ICON.tiktok}></a>
+            <a href="https://www.instagram.com/kiwinoygaming" aria-label="BOSS KG on Instagram" rel="noopener" set:html={ICON.instagram}></a>
+            <a href="https://www.facebook.com/KiwinoyGaming" aria-label="BOSS KG on Facebook" rel="noopener" set:html={ICON.facebook}></a>
           </div>
         </div>
-        <div><h4>Sections</h4><ul><li><a href="/games">Games</a></li><li><a href="/category/mcu">MCU</a></li><li><a href="/videos">Videos</a></li><li><a href="/category/news">All news</a></li></ul></div>
-        <div><h4>BOSS KG</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/advertise">Advertise</a></li><li><a href="/follow">Follow us</a></li></ul></div>
-        <div><h4>Legal</h4><ul><li><a href="/privacy">Privacy Policy</a></li><li><a href="/terms">Terms of Use</a></li><li><a href="/editorial-standards">Editorial Standards</a></li></ul></div>
+        <div>
+          <p class="foot-h">Sections</p>
+          <ul class="foot-links">
+            <li><a href="/category/news/">All news</a></li>
+            <li><a href="/category/marvel-games/">Marvel games</a></li>
+            <li><a href="/category/mcu/">MCU</a></li>
+            <li><a href="/games/">Games</a></li>
+            <li><a href="/videos/">Videos</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="foot-h">BOSS KG</p>
+          <ul class="foot-links">
+            <li><a href="/about/">About</a></li>
+            <li><a href="/contact/">Contact</a></li>
+            <li><a href="/advertise/">Advertise</a></li>
+            <li><a href="/follow/">Follow us</a></li>
+            <li><a href="/gear/">Gear we use</a></li>
+            <li><a href="/products/">Products</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="foot-h">Legal</p>
+          <ul class="foot-links">
+            <li><a href="/privacy/">Privacy policy</a></li>
+            <li><a href="/terms/">Terms of use</a></li>
+            <li><a href="/editorial-standards/">Editorial standards</a></li>
+            <li><a href="/rss.xml">RSS feed</a></li>
+          </ul>
+        </div>
       </div>
       <div class="wrap foot-b">
-        <span>© {new Date().getFullYear()} BOSS KG. All rights reserved.</span><span class="dot"></span>
-        <span>Made for gamers, by gamers.</span><span class="dot"></span>
-        <span>All game &amp; film imagery belongs to their respective owners; used for editorial coverage.</span>
+        <span>&copy; {year} BOSS KG. Made for gamers, by gamers.</span>
+        <span>Game and film imagery belongs to its owners and is used for editorial coverage.</span>
       </div>
     </footer>
 
     <NewsletterModal />
 
     <script is:inline>
+      /* Hamburger menu (instant: core navigation should not animate) */
       (function () {
         var b = document.getElementById("hamburger"), m = document.getElementById("mobileMenu");
         if (!b || !m) return;
         b.addEventListener("click", function () {
           var open = m.classList.toggle("open");
           b.setAttribute("aria-expanded", open ? "true" : "false");
+          b.setAttribute("aria-label", open ? "Close menu" : "Open menu");
         });
       })();
+      /* Subscribe buttons jump to this page's own signup box when it has one */
+      (function () {
+        if (!document.getElementById("subscribe")) return;
+        document.querySelectorAll("a.js-sub").forEach(function (a) { a.setAttribute("href", "#subscribe"); });
+      })();
+      /* F5. Header condenses; on phones it hides on scroll down and returns on scroll up.
+         One passive listener, one rAF per frame, reads only scrollY, writes classes on change. */
+      (function () {
+        var header = document.querySelector("header.nav");
+        if (!header) return;
+        var menu = document.getElementById("mobileMenu");
+        var small = window.matchMedia("(max-width: 1023px)");
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+        var lastY = Math.max(0, window.scrollY), condensed = false, hidden = false, ticking = false;
+        function setHidden(h) { if (h === hidden) return; hidden = h; header.classList.toggle("is-hidden", h); }
+        function update() {
+          ticking = false;
+          var y = Math.max(0, window.scrollY);
+          var c = y > 8;
+          if (c !== condensed) { condensed = c; header.classList.toggle("is-condensed", c); }
+          var dy = y - lastY;
+          if (Math.abs(dy) < 6) return;
+          lastY = y;
+          var keep = !small.matches || reduce.matches || y < 180 ||
+            (menu && menu.classList.contains("open")) || header.contains(document.activeElement);
+          setHidden(keep ? false : dy > 0);
+        }
+        window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+        header.addEventListener("focusin", function () { setHidden(false); });
+        update();
+      })();
+      /* F6. Reveal below-the-fold cards once as they enter, 60ms apart. Nothing above the fold
+         (and nothing at all without JS or with reduced motion) is ever hidden. */
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        var items = [].slice.call(document.querySelectorAll(".grid > .card, .list > .card, .vgrid > .vcard, .sgrid > .vcard, .gear-grid > .gear-tile"));
+        if (!items.length) return;
+        var vh = window.innerHeight;
+        var below = items.filter(function (el) { return el.getBoundingClientRect().top > vh; });
+        below.forEach(function (el) { el.classList.add("rv"); });
+        function settle(el) {
+          el.addEventListener("transitionend", function done(ev) {
+            if (ev.target !== el || ev.propertyName !== "transform") return;
+            el.removeEventListener("transitionend", done);
+            el.classList.remove("rv", "rv-in");
+            el.style.transitionDelay = "";
+          });
+        }
+        var io = new IntersectionObserver(function (entries) {
+          var step = 0;
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            var el = e.target;
+            io.unobserve(el);
+            el.style.transitionDelay = Math.min(step++, 3) * 60 + "ms";
+            settle(el);
+            el.classList.add("rv-in");
+          });
+        });
+        below.forEach(function (el) { io.observe(el); });
+      })();
+      /* YouTube click-to-play facade: no iframe until the reader taps (keeps LCP and privacy). */
+      document.querySelectorAll("[data-vid]").forEach(function (el) {
+        el.addEventListener("click", function () {
+          var id = el.getAttribute("data-vid"), t = el.querySelector(".vthumb");
+          if (!id || !t || t.querySelector("iframe")) return;
+          var f = document.createElement("iframe");
+          f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0";
+          f.title = "YouTube video player";
+          f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+          f.setAttribute("allowfullscreen", "");
+          t.innerHTML = "";
+          t.appendChild(f);
+        }, { once: true });
+      });
     </script>
 
-    <!-- Newsletter signup — wires every .sub-form on the page to the MailerLite function. -->
+    <!-- Newsletter signup: wires every .sub-form on the page to the MailerLite function. -->
     <script is:inline>
       document.querySelectorAll("form.sub-form").forEach(function (form) {
         form.addEventListener("submit", async function (e) {
@@ -153,8 +318,9 @@ const path = Astro.url.pathname;
           } catch (err) {}
           if (toast) {
             toast.textContent = ok
-              ? "🎉 You're in" + (name ? ", " + name : "") + "! Check your inbox to confirm."
-              : "⚠️ Hmm, that didn't work — please try again in a moment.";
+              ? "You're in" + (name ? ", " + name : "") + ". Check your inbox to confirm."
+              : "That did not go through. Please try again in a moment.";
+            toast.style.color = ok ? "" : "var(--err)";
             toast.classList.add("on");
           }
           if (ok && form.reset) form.reset();

@@ -1,0 +1,21 @@
+---
+// Section chips under the header on the home and section pages: one tap to any section on a phone.
+interface Props { current?: string }
+const { current = "" } = Astro.props;
+const items = [
+  { label: "Latest", href: "/category/news/" },
+  { label: "Marvel games", href: "/category/marvel-games/" },
+  { label: "MCU", href: "/category/mcu/" },
+  { label: "PlayStation", href: "/category/playstation/" },
+  { label: "Games", href: "/games/" },
+  { label: "Videos", href: "/videos/" },
+  { label: "Gear", href: "/gear/" },
+];
+---
+<nav class="section-nav" aria-label="Sections">
+  <ul>
+    {items.map((i) => (
+      <li><a href={i.href} aria-current={current === i.href ? "page" : undefined}>{i.label}</a></li>
+    ))}
+  </ul>
+</nav>

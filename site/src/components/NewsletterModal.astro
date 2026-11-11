@@ -1,37 +1,38 @@
 ---
-// BOSS KG newsletter opt-in popup (exit-intent / delayed / scroll-depth).
-// Frequency-capped so a visitor isn't nagged: dismiss = 10-day cooldown, subscribe = never again.
-// Single email field (lowest friction) → reuses the existing /.netlify/functions/subscribe endpoint.
+// BOSS KG newsletter opt-in popup. Dialog on desktop, bottom sheet on phones.
+// Frequency-capped: dismiss = 7-day cooldown, subscribe = never again (localStorage key kg_nl_pop).
+// Timing (2026-11-11 decision, reversible): on article pages it opens only once the reader has
+// scrolled 92% of the page (they have finished the story and seen Up next) or on desktop exit intent;
+// never on a timer mid-story. Every other page keeps 55% scroll or 18 seconds.
+// Single email field, posts to the same /.netlify/functions/subscribe endpoint.
+import { ICON } from "../lib/icons.js";
 ---
-<div class="nl-pop" id="nlPop" role="dialog" aria-modal="true" aria-labelledby="nlPopTitle" hidden>
+<div class="nl-pop" id="nlPop" role="dialog" aria-modal="true" aria-labelledby="nlPopTitle" hidden data-pagefind-ignore>
   <div class="nl-pop-backdrop" data-nl-close></div>
   <div class="nl-pop-card">
-    <span class="nl-pop-topline" aria-hidden="true"></span>
-    <button class="nl-pop-x" aria-label="Close" data-nl-close>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
+    <button class="nl-pop-x" type="button" aria-label="Close" data-nl-close set:html={ICON.close}></button>
 
     <div class="nl-pop-body">
-      <span class="nl-pop-eyebrow">◆ The KG Drop</span>
-      <h2 id="nlPopTitle">Don’t miss the next big drop.</h2>
-      <p class="nl-pop-sub">Get the biggest <b>gaming</b> &amp; <b>MCU</b> news <b>before it trends</b> — straight to your inbox.</p>
+      <span class="nl-pop-label">The KG Drop</span>
+      <h2 id="nlPopTitle">Don't miss the next big drop.</h2>
+      <p class="nl-pop-sub">The biggest gaming and MCU news, in your inbox before it trends.</p>
       <ul class="nl-pop-list">
-        <li><span>🎮</span> New games, trailers &amp; release dates first</li>
-        <li><span>🎬</span> MCU breakdowns &amp; the leaks that actually matter</li>
-        <li><span>⚡</span> A few emails a week. No spam, ever.</li>
+        <li><Fragment set:html={ICON.gamepad} />New games, trailers and release dates first</li>
+        <li><Fragment set:html={ICON.film} />MCU breakdowns and the leaks that matter</li>
+        <li><Fragment set:html={ICON.bolt} />A few emails a week. No spam, ever.</li>
       </ul>
       <form class="nl-pop-form" id="nlPopForm" novalidate>
-        <input type="email" name="email" placeholder="you@email.com" autocomplete="email" required aria-label="Email address" />
-        <button type="submit">Get the Drop →</button>
+        <input type="email" name="email" placeholder="you@email.com" autocomplete="email" inputmode="email" required aria-label="Email address" />
+        <button class="btn btn-primary" type="submit">Get the Drop</button>
       </form>
-      <p class="nl-pop-fine">Join thousands of gamers in the KG crew. Unsubscribe anytime.</p>
-      <button class="nl-pop-nope" data-nl-close>Maybe later</button>
+      <p class="nl-pop-fine">Free. Unsubscribe anytime.</p>
+      <button class="nl-pop-nope" type="button" data-nl-close>Maybe later</button>
     </div>
 
     <div class="nl-pop-done" hidden>
-      <div class="nl-pop-check">✓</div>
-      <h2>Welcome aboard! 🎮</h2>
-      <p>Check your inbox — your welcome email is on the way.</p>
+      <div class="nl-pop-check" set:html={ICON.check}></div>
+      <h2>Welcome aboard.</h2>
+      <p>Check your inbox: your welcome email is on the way.</p>
     </div>
   </div>
 </div>
@@ -43,52 +44,56 @@
 
     var KEY = "kg_nl_pop";        // { t: <ms>, sub: <bool> }
     var DAYS = 7;                 // dismiss cooldown (subscribers are never shown again)
-    var DELAY = 18000;            // ms before the timed trigger fires
-    var SCROLL_AT = 0.55;         // fraction of page scrolled (mobile-friendly trigger)
+    var ARTICLE = document.body && document.body.getAttribute("data-page") === "article";
+    var DELAY = ARTICLE ? 0 : 18000;          // no timer on articles: never interrupt a story
+    var SCROLL_AT = ARTICLE ? 0.92 : 0.55;    // fraction of the page scrolled
 
     function state() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
     function subscribed() { var s = state(); return !!(s && s.sub); }
     function suppressed() {
       var s = state();
       if (!s) return false;
-      if (s.sub) return true;                       // already subscribed → never again
-      return (Date.now() - s.t) < DAYS * 864e5;     // within cooldown window
+      if (s.sub) return true;
+      return (Date.now() - s.t) < DAYS * 864e5;
     }
     function remember(sub) {
       try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), sub: !!sub })); } catch (e) {}
     }
 
-    if (suppressed()) return;     // don't even arm the triggers
+    if (suppressed()) return;
 
-    var shown = false, closed = false;
+    var shown = false, closed = false, lastFocus = null;
 
     function open() {
       if (shown || suppressed()) return;
       shown = true;
+      lastFocus = document.activeElement;
       pop.hidden = false;
       requestAnimationFrame(function () { pop.classList.add("on"); });
       document.documentElement.style.overflow = "hidden";
       var inp = pop.querySelector('input[type="email"]');
       if (inp && window.matchMedia("(min-width:700px)").matches) {
-        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 320);
+        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 260);
       }
     }
 
     function close() {
       if (closed) return;
-      closed = true;                                 // set the flag *inside* close, after the guard
+      closed = true;
       cleanup();
       pop.classList.remove("on");
       document.documentElement.style.overflow = "";
-      setTimeout(function () { pop.hidden = true; }, 280);
-      if (!subscribed()) remember(false);            // start the dismiss cooldown
+      setTimeout(function () { pop.hidden = true; }, 260);
+      if (!subscribed()) remember(false);
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
     }
 
     // ---- triggers ----
-    var timer = setTimeout(open, DELAY);
+    var timer = DELAY ? setTimeout(open, DELAY) : 0;
+    var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
 
-    function onExit(e) { if (e.clientY <= 0) { clearTimeout(timer); open(); } }   // desktop exit-intent
-    document.addEventListener("mouseout", onExit);
+    function onExit(e) { if (e.clientY <= 0 && !e.relatedTarget) { clearTimeout(timer); open(); } }
+    if (fine) document.addEventListener("mouseout", onExit);
 
     function onScroll() {
       var h = document.documentElement.scrollHeight - window.innerHeight;
@@ -101,7 +106,7 @@
       window.removeEventListener("scroll", onScroll);
     }
 
-    // ---- close handlers (click covers taps too; add touchend for stubborn iOS Safari) ----
+    // ---- close handlers (click covers taps too; touchend for stubborn iOS Safari) ----
     pop.querySelectorAll("[data-nl-close]").forEach(function (el) {
       el.addEventListener("click", close);
       el.addEventListener("touchend", function (e) { e.preventDefault(); close(); }, { passive: false });
@@ -130,7 +135,7 @@
       var email = (inp.value || "").trim();
       if (!email) { inp.focus(); return; }
       var btn = form.querySelector("button");
-      btn.disabled = true; btn.textContent = "Joining…";
+      btn.disabled = true; btn.textContent = "Joining";
       var ok = false;
       try {
         var r = await fetch("/.netlify/functions/subscribe", {
@@ -141,7 +146,7 @@
         ok = r.ok;
       } catch (err) {}
       if (ok) {
-        remember(true);                             // subscribed → never show again
+        remember(true);
         pop.querySelector(".nl-pop-body").hidden = true;
         pop.querySelector(".nl-pop-done").hidden = false;
         setTimeout(close, 3400);
@@ -149,7 +154,7 @@
         btn.disabled = false; btn.textContent = "Try again";
         var er = form.parentElement.querySelector(".nl-pop-err");
         if (!er) { er = document.createElement("p"); er.className = "nl-pop-err"; form.insertAdjacentElement("afterend", er); }
-        er.textContent = "Hmm, that didn’t work — please try again in a moment.";
+        er.textContent = "That did not go through. Please try again in a moment.";
       }
     });
   })();

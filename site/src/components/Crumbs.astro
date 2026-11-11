@@ -1,0 +1,12 @@
+---
+// Visible breadcrumb. The matching BreadcrumbList JSON-LD is built by the page (see crumbsLd in lib/seo.js).
+interface Props { items: { label: string; href?: string }[] }
+const { items } = Astro.props;
+---
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {items.map((c, i) => (
+      <li>{c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+    ))}
+  </ol>
+</nav>
