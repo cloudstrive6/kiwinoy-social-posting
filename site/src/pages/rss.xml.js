@@ -22,7 +22,7 @@ export async function GET(context) {
     title: v.title,
     description:
       clean((v.blurb || "").split(/\n\n+/)[0]).slice(0, 300) ||
-      `${v.title} — full gameplay from Boss KG.`,
+      `${v.title}: full gameplay from BOSS KG.`,
     pubDate: new Date(v.published),
     link: `/watch/${v.slug}/`,
     categories: ["Video"],
@@ -33,7 +33,7 @@ export async function GET(context) {
     .slice(0, 30);
 
   return rss({
-    title: "BOSS KG — Gaming & Marvel News",
+    title: "BOSS KG: Gaming and Marvel News",
     description:
       "The drop-first source for video games, the MCU, and the biggest moments in gaming.",
     site: context.site,

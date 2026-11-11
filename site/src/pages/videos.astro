@@ -1,84 +1,68 @@
 ---
+// Videos: the newest full video as a feature, the rest of the long-form library, then Shorts
+// (click to play in place through the facade in Base.astro).
 import Base from "../layouts/Base.astro";
+import VideoCard from "../components/VideoCard.astro";
+import SectionHead from "../components/SectionHead.astro";
+import SectionNav from "../components/SectionNav.astro";
+import NewsletterBox from "../components/NewsletterBox.astro";
 import { longform, shorts, CHANNEL_URL } from "../lib/youtube.js";
+import { fmtDate } from "../lib/articles.js";
+import { YT_PLAY, ICON } from "../lib/icons.js";
 
 const feat = longform[0];
 const restLong = longform.slice(1);
-const gridShorts = shorts.slice(0, 30);   // landing shows a recent set; per-game pages use all
-const fmt = (d) =>
-  d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
-const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
+const gridShorts = shorts.slice(0, 18);
 const has = longform.length > 0 || shorts.length > 0;
 ---
-<Base title="Videos — BOSS KG" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG.">
-  <main class="wrap">
-    <section class="sec" style="margin-top:34px">
-      <div class="sec-h"><span class="bar"></span><h2>Videos</h2><a href={CHANNEL_URL} rel="noopener">Subscribe on YouTube →</a></div>
+<Base title="Videos" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG.">
+  <SectionNav current="/videos/" />
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <h1>Videos</h1>
+      <p class="lede">Full 4K 60fps HDR playthroughs and quick Shorts from the BOSS KG channel.</p>
+    </header>
 
-      {!has && (
-        <div class="art g-ps" style="aspect-ratio:16/9; border-radius:var(--radius); display:grid; place-items:center; box-shadow:var(--shadow)">
-          <a class="btn red" href={CHANNEL_URL} rel="noopener" style="text-decoration:none">▶ Watch on YouTube</a>
-        </div>
-      )}
+    {!has && (
+      <p class="empty">New videos are on the way. <a href={CHANNEL_URL} rel="noopener">Watch on YouTube</a>.</p>
+    )}
 
-      {feat && (
-        <>
-          <a class="vfeat" href={`/watch/${feat.slug}`} aria-label={feat.title}>
-            <div class="vthumb">
-              <img src={feat.thumb.replace("hqdefault", "sddefault")} alt={feat.title}
-                   onerror="this.onerror=null;this.src=this.src.replace('sddefault','hqdefault')" />
-              <span class="play" set:html={PLAY}></span>
-            </div>
-          </a>
-          <h3 style="margin:16px 0 0; font-size:21px">{feat.title}</h3>
-          <p style="color:var(--faint); font-size:13px; margin-top:6px; font-weight:600">Latest full video · {fmt(feat.published)}</p>
-        </>
-      )}
-
-      {restLong.length > 0 && (
-        <>
-          <div class="sec-h" style="margin:38px 0 0"><span class="bar"></span><h2>Full videos</h2><span style="margin-left:auto;color:var(--faint);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Gameplay · 4K HDR</span></div>
-          <div class="vgrid">
-            {restLong.map((v) => (
-              <a class="vcard" href={`/watch/${v.slug}`}>
-                <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
-                <div class="vb">{v.title}</div>
-              </a>
-            ))}
+    {feat && (
+      <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hFeat">
+        <a class="vfeat" href={`/watch/${feat.slug}/`}>
+          <div class="vthumb">
+            <img src={feat.thumb.replace("hqdefault", "sddefault")} alt={feat.title} width="640" height="480"
+              loading="eager" fetchpriority="high" decoding="async"
+              onerror="this.onerror=null;this.src=this.src.replace('sddefault','hqdefault')" />
+            <span class="play" set:html={YT_PLAY}></span>
           </div>
-        </>
-      )}
-
-      {shorts.length > 0 && (
-        <>
-          <div class="sec-h" style="margin:44px 0 0"><span class="bar"></span><h2>Shorts</h2><span style="margin-left:auto;color:var(--faint);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Vertical clips</span></div>
-          <div class="sgrid">
-            {gridShorts.map((v) => (
-              <button class="vcard" data-vid={v.id} data-short="1" aria-label={`Play Short: ${v.title}`}>
-                <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
-                <div class="vb">{v.title}</div>
-              </button>
-            ))}
+          <div style="margin-top:var(--s4)">
+            <span class="chip">Latest full video</span>
+            <h2 id="hFeat" style="font-size:clamp(24px,3vw,34px); margin-top:var(--s2)">{feat.title}</h2>
+            <p class="card-date" style="margin-top:var(--s2)">{fmtDate(feat.published)}</p>
           </div>
-        </>
-      )}
-    </section>
+        </a>
+      </section>
+    )}
+
+    {restLong.length > 0 && (
+      <section class="sec" aria-labelledby="hFull">
+        <SectionHead id="hFull" title="Full videos" href={CHANNEL_URL} more="YouTube channel" ext />
+        <div class="vgrid">{restLong.map((v) => <VideoCard v={v} showDate />)}</div>
+      </section>
+    )}
+
+    {gridShorts.length > 0 && (
+      <section class="sec" aria-labelledby="hShorts">
+        <SectionHead id="hShorts" title="Shorts" href={`${CHANNEL_URL}/shorts`} more="More on YouTube" ext />
+        <div class="sgrid">{gridShorts.map((v) => <VideoCard v={v} short />)}</div>
+      </section>
+    )}
+
+    <div class="sec">
+      <a class="btn btn-primary" href={CHANNEL_URL} rel="noopener"><Fragment set:html={ICON.youtube} /><span>Subscribe on YouTube</span></a>
+    </div>
+
+    <NewsletterBox />
   </main>
-
-  <script is:inline>
-    document.querySelectorAll(".vfeat[data-vid], .vcard[data-vid]").forEach((el) => {
-      el.addEventListener("click", () => {
-        const id = el.getAttribute("data-vid");
-        const t = el.querySelector(".vthumb");
-        if (!id || !t || t.querySelector("iframe")) return;
-        const f = document.createElement("iframe");
-        f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-        f.title = "YouTube video player";
-        f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-        f.setAttribute("allowfullscreen", "");
-        t.innerHTML = "";
-        t.appendChild(f);           // fills its .vthumb — 16:9 for full videos, 9:16 for shorts
-      }, { once: true });
-    });
-  </script>
 </Base>

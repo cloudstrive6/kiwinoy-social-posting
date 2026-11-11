@@ -8,7 +8,7 @@
 
 export const GAMES = [
   { slug: "spider-man-1", title: "Marvel's Spider-Man", art: "g-spidey", cover: "/game-art/spider-man-1.webp",
-    blurb: "Insomniac's original — Peter Parker's Spider-Man.",
+    blurb: "Insomniac's original: Peter Parker's Spider-Man.",
     match: ["mister negative", "martin li", "sinister six", "doctor octopus", "otto octavius",
             "spider-man remastered", "peter parker", "spider-man", "spider man", "spiderman"],
     exclude: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
@@ -19,7 +19,7 @@ export const GAMES = [
     exclude: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
               "symbiote", "venom", "anti-venom", "kraven"] },
   { slug: "spider-man-2", title: "Marvel's Spider-Man 2", art: "g-spidey", cover: "/game-art/spider-man-2.webp",
-    blurb: "Peter and Miles vs. Venom and the symbiote invasion.",
+    blurb: "Peter and Miles versus Venom and the symbiote invasion.",
     match: ["spider-man 2", "spider man 2", "spider-man2", "spiderman 2", "spiderman2",
             "symbiote", "venom", "kraven", "sandman", "lizard", "harry osborn", "harry", "anti-venom", "wraith"] },
   { slug: "wolverine", title: "Marvel's Wolverine", art: "g-wolv", cover: "/game-art/wolverine.jpg",
@@ -47,7 +47,7 @@ export function gameForText(...parts) {
   return null;
 }
 
-// File a video into a game: prefer its GAME PLAYLIST title (authoritative — set on YouTube),
+// File a video into a game: prefer its GAME PLAYLIST title (authoritative, set on YouTube),
 // falling back to the video title only when it isn't in a recognized game playlist.
 export function gameForVideo(v) {
   for (const p of v?.playlists || []) {

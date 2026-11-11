@@ -1,0 +1,32 @@
+---
+// Branded 404 (Netlify serves dist/404.html for unknown URLs). Keeps the reader on the site:
+// search, the latest stories and the sections. Carries the GA4 tag through Base.astro.
+import Base from "../layouts/Base.astro";
+import StoryCard from "../components/StoryCard.astro";
+import SectionHead from "../components/SectionHead.astro";
+import SectionNav from "../components/SectionNav.astro";
+import { liveArticles, toStory } from "../lib/articles.js";
+import { ICON } from "../lib/icons.js";
+
+const latest = (await liveArticles()).slice(0, 6).map(toStory);
+---
+<Base title="Page not found" description="That page is not here. Search BOSS KG or jump into the latest gaming and Marvel news." noSearch robots="noindex">
+  <SectionNav />
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <h1>That page is not here</h1>
+      <p class="lede">It may have moved, or the link has a typo. Search for it, or jump into the latest stories below.</p>
+      <form class="err-search" action="/search/" method="get" role="search">
+        <label class="sr-only" for="q404">Search BOSS KG</label>
+        <input id="q404" type="search" name="q" placeholder="Search games, news and videos" />
+        <button class="btn btn-primary" type="submit"><Fragment set:html={ICON.search} /><span>Search</span></button>
+      </form>
+    </header>
+    {latest.length > 0 && (
+      <section class="sec" aria-labelledby="hLatest404">
+        <SectionHead id="hLatest404" title="Latest stories" href="/category/news/" more="All news" />
+        <div class="grid three">{latest.map((s) => <StoryCard s={s} />)}</div>
+      </section>
+    )}
+  </main>
+</Base>

@@ -1,161 +1,58 @@
 ---
+// "Gear we use": affiliate landing page. Catalogue lives in src/lib/gear.js (shared with the home page).
+// LEGAL: the disclosure paragraph (.gear-disc) and the 18+ label on LuxDrop are required. Keep them.
 import Base from "../layouts/Base.astro";
-import { getCollection } from "astro:content";
-
-// BOSS KG "Gear We Use" — affiliate landing page. Each item links out to a retailer via an
-// AFFILIATE link, so a purchase earns BOSS KG a small commission at no cost to the buyer.
-//
-// HOW TO FINALISE (once your affiliate accounts are approved):
-//   1) Replace each item's `url` with YOUR affiliate link for that product.
-//      - Amazon Associates: the product's "Get Link" (SiteStripe) short URL (has your tag).
-//      - GFuel / brand programs: your referral/affiliate link (often carries your code).
-//   2) Swap names/blurbs to match the gear you ACTUALLY use/recommend (authenticity sells).
-//   3) Delete any row you don't want. Add rows freely.
-// Until a real link is set, `url: "#"` renders a disabled "Link coming soon" button.
-//
-// LEGAL: the disclosure banner below is required (FTC / platform rules) — keep it.
-
-const GEAR = [
-  { cat: "Console",    name: "PlayStation 5 Pro (2TB)",      note: "The main rig — every 4K/60 HDR playthrough runs here.",             retailer: "Amazon", url: "https://amzn.to/4gBrxEo", img: "/gear/console.jpg" },
-  { cat: "Controller", name: "DualSense — Chroma Pearl",     note: "The everyday PS5 pad: haptics + adaptive triggers.",                retailer: "Amazon", url: "https://amzn.to/45SI81t", img: "/gear/controller.jpg" },
-  { cat: "Controller", name: "DualSense Edge",               note: "Pro pad — back paddles, remappable inputs, tunable sticks.",        retailer: "Amazon", url: "https://amzn.to/4qzh8xn", img: "/gear/controller-edge.jpg" },
-  { cat: "Capture",    name: "Elgato 4K Pro (Internal)",     note: "Internal PCIe card with 8K60 passthrough — the main capture.",      retailer: "Amazon", url: "https://amzn.to/4qEPZcr", img: "/gear/capture-4kpro.jpg" },
-  { cat: "Capture",    name: "Elgato 4K X",                  note: "External HDMI 2.1, 4K144 ultra-low-latency capture.",               retailer: "Amazon", url: "https://amzn.to/4izZJCG", img: "/gear/capture-4kx.jpg" },
-  { cat: "Capture",    name: "Elgato Cam Link 4K",           note: "Turns a DSLR / camera into a clean facecam feed.",                  retailer: "Amazon", url: "https://amzn.to/3UhsqdS", img: "/gear/capture-camlink.jpg" },
-  { cat: "Audio",      name: "SteelSeries Arctis Nova 7P",   note: "Wireless Gen 2 — 2.4GHz + Bluetooth, 50+ hr battery.",              retailer: "Amazon", url: "https://amzn.to/4y84KXX", img: "/gear/headset.jpg" },
-  { cat: "Display",    name: 'LG C5 65" OLED evo 4K',        note: "OLED, 4K/120Hz, Dolby Vision — how these games should look.",       retailer: "Amazon", url: "https://amzn.to/4xp7lNc", img: "/gear/display.jpg" },
-  { cat: "Storage",    name: "WD_BLACK SN850P 4TB (PS5)",    note: "Officially licensed PS5 expansion, up to 7,300MB/s, heatsink.",     retailer: "Amazon", url: "https://amzn.to/4izZTdg", img: "/gear/storage.jpg" },
-  { cat: "Fuel",       name: "DUBBY Energy",                 note: "Jitterless clean energy — use code BOSSKG for 10% off.",             retailer: "Dubby",  url: "https://www.dubby.gg/discount/BossKG?ref=ohipluqb", img: "/gear/dubby.jpg" },
-  { cat: "Fuel",       name: "GFUEL Energy",                 note: "The grind fuel — code + link coming once approved.",                retailer: "GFUEL",  url: "#" },
-  { cat: "Drops",      name: "LuxDrop — Claim your Welcome Bonus", note: "Spin the wheel for a free Welcome Bonus on sign-up — win PS5s, skins & tech. 18+. Claim with my link.", retailer: "LuxDrop", url: "https://luxdrop.com/r/bosskg", card: "/gear/luxdrop-card.jpg" },
-  { cat: "Creators",   name: "Trybe",                        note: "The platform I use to land paid brand & UGC deals — join with my link.",           retailer: "Trybe",   url: "https://jointrybe.com/r/HAGTVAG9" },
-];
+import StoryCard from "../components/StoryCard.astro";
+import GearTile from "../components/GearTile.astro";
+import PartnerBanner from "../components/PartnerBanner.astro";
+import SectionHead from "../components/SectionHead.astro";
+import SectionNav from "../components/SectionNav.astro";
+import { GEAR } from "../lib/gear.js";
+import { liveArticles, toStory } from "../lib/articles.js";
 
 const cats = [...new Set(GEAR.map((g) => g.cat))];
-
-// Gear guides & reviews (our own articles) — surface them at the top of the Gear page.
-// Auto-pulls any published article filed under the "Hardware" category, newest first.
-const guides = (await getCollection("articles"))
-  .filter((a) => !a.data.draft && a.data.category === "Hardware")
-  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date));
+// Gear guides and reviews: any published article filed under "Hardware", newest first.
+const guides = (await liveArticles()).filter((a) => /hardware/i.test(a.data.category || "")).map(toStory);
+const groupTitle = { Console: "Console", Controller: "Controllers", Capture: "Capture", Audio: "Audio", Display: "Display", Storage: "Storage", Fuel: "Fuel" };
 ---
-<Base title="Gear — BOSS KG" description="The gear Boss KG uses to record and play — controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
-  <main class="wrap">
-    <section class="sec" style="margin-top:34px">
-      {guides.length > 0 && (
-        <>
-          <div class="sec-h"><span class="bar"></span><h2>Guides &amp; reviews</h2></div>
-          <p style="color:var(--muted); margin:10px 0 0; font-size:14px; max-width:64ch">First-hand setup guides and honest reviews of the gear we use.</p>
-          <div class="guide-grid">
-            {guides.map((a) => (
-              <a class="guide-card" href={`/news/${a.id}`}>
-                {a.data.cover && <div class="guide-img"><img src={a.data.cover} alt={a.data.coverAlt || a.data.title} loading="lazy" /></div>}
-                <span class="gear-cat">{a.data.tag}</span>
-                <h4>{a.data.title}</h4>
-                <span class="guide-more">Read →</span>
-              </a>
-            ))}
-          </div>
-        </>
-      )}
+<Base title="Gear we use" description="The gear BOSS KG uses to record and play: controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
+  <SectionNav current="/gear/" />
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <h1>Gear we use</h1>
+      <p class="lede">The kit behind the 4K/60 HDR gameplay, plus the odd thing that just makes the grind better. Everything here is stuff we would actually recommend.</p>
+    </header>
 
-      <div class="sec-h" style="margin:38px 0 0"><span class="bar"></span><h2>Gear we use</h2></div>
-      <p style="color:var(--muted); margin:10px 0 0; max-width:64ch">
-        The kit behind the 4K/60 HDR gameplay — plus the odd thing that just makes the grind better.
-        Everything here is stuff we'd actually recommend.
-      </p>
+    <p class="a-source gear-disc" role="note" style="margin-top:var(--s5); max-width:70ch">
+      <strong>Heads up:</strong> some links below are affiliate links. If you buy through them, BOSS KG may earn a small
+      commission at <strong>no extra cost to you</strong>. It is a free way to support the channel, and we only list gear we stand behind.
+    </p>
 
-      <p class="gear-disc" role="note">
-        <strong>Heads up:</strong> some links below are affiliate links. If you buy through them,
-        BOSS KG may earn a small commission — at <strong>no extra cost to you</strong>. It's a free
-        way to support the channel. We only list gear we'd genuinely stand behind.
-      </p>
+    {guides.length > 0 && (
+      <section class="sec" aria-labelledby="hGuides">
+        <SectionHead id="hGuides" title="Guides and reviews" />
+        <div class="grid three all-cards">{guides.map((s) => <StoryCard s={s} />)}</div>
+      </section>
+    )}
 
-      {cats.map((c) => (
-        <>
-          <div class="sec-h" style="margin:30px 0 0"><span class="bar"></span><h3 style="font-size:18px">{c}</h3></div>
-          <div class="gear-grid">
-            {GEAR.filter((g) => g.cat === c).map((g) => (
-              g.card ? (
-                <a class="gear-card gear-card--full" href={g.url} rel="sponsored nofollow noopener" target="_blank" aria-label={g.name}>
-                  <img src={g.card} alt={g.name} loading="lazy" />
-                </a>
-              ) : (
-                <div class="gear-card">
-                  {g.img && <div class="gear-img"><img src={g.img} alt={g.name} loading="lazy" /></div>}
-                  <span class="gear-cat">{g.cat}</span>
-                  <h4>{g.name}</h4>
-                  <p>{g.note}</p>
-                  {g.url && g.url !== "#" ? (
-                    <a class="gear-btn" href={g.url} rel="sponsored nofollow noopener" target="_blank">View on {g.retailer} →</a>
-                  ) : (
-                    <span class="gear-btn is-soon" aria-disabled="true">Link coming soon</span>
-                  )}
-                </div>
-              )
-            ))}
-          </div>
-        </>
-      ))}
+    {cats.map((c) => (
+      <section class="sec" aria-labelledby={`g-${c}`}>
+        <SectionHead id={`g-${c}`} title={groupTitle[c] || c} />
+        <div class="gear-grid">{GEAR.filter((g) => g.cat === c).map((g) => <GearTile g={g} />)}</div>
+      </section>
+    ))}
 
-      <p style="color:var(--faint); font-size:13px; margin-top:34px; max-width:64ch">
-        <strong>As an Amazon Associate I earn from qualifying purchases.</strong>
-        Prices and availability are set by the retailer and can change. Product names and brands
-        belong to their respective owners.
-      </p>
+    <section class="sec" aria-labelledby="hPartners">
+      <SectionHead id="hPartners" title="Partner offers" />
+      <div class="list" style="gap:var(--s4)">
+        <PartnerBanner id="luxdrop" />
+        <PartnerBanner id="trybe" />
+      </div>
     </section>
-  </main>
 
-  <style>
-    .gear-disc {
-      margin: 16px 0 4px; padding: 13px 16px; border-radius: 12px;
-      background: color-mix(in srgb, var(--red) 12%, var(--surface));
-      border: 1px solid color-mix(in srgb, var(--red) 35%, var(--border));
-      color: var(--text); font-size: 14px; line-height: 1.5; max-width: 70ch;
-    }
-    .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0 4px; }
-    .guide-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-      padding: 14px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
-      text-decoration: none; color: var(--text);
-    }
-    .guide-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
-    .guide-img {
-      background: #fff; border-radius: 10px; height: 150px; display: flex; align-items: center;
-      justify-content: center; padding: 10px; overflow: hidden;
-    }
-    .guide-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .guide-card h4 { font-size: 15.5px; margin: 0; line-height: 1.3; }
-    .guide-more { color: var(--red); font-weight: 800; font-size: 13px; margin-top: auto; }
-    .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-    .gear-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-      padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: .16s;
-    }
-    .gear-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
-    .gear-card--full { padding: 0; overflow: hidden; text-decoration: none; }
-    .gear-card--full img { display: block; width: 100%; height: auto; border-radius: 14px; }
-    .gear-img {
-      background: #fff; border-radius: 10px; height: 168px; margin-bottom: 4px;
-      display: flex; align-items: center; justify-content: center; padding: 14px; overflow: hidden;
-    }
-    .gear-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .gear-cat {
-      align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .09em;
-      text-transform: uppercase; color: var(--red);
-      background: color-mix(in srgb, var(--red) 14%, transparent);
-      padding: 3px 9px; border-radius: 999px;
-    }
-    .gear-card h4 { font-size: 17px; margin: 2px 0 0; }
-    .gear-card p { color: var(--muted); font-size: 13.5px; line-height: 1.45; flex: 1; margin: 0; }
-    .gear-btn {
-      align-self: flex-start; margin-top: 6px; font-weight: 800; font-size: 13.5px;
-      text-decoration: none; padding: 9px 15px; border-radius: 10px;
-      background: var(--red); color: #fff; transition: .16s;
-    }
-    .gear-btn:hover { filter: brightness(1.08); }
-    .gear-btn.is-soon { background: color-mix(in srgb, var(--faint) 30%, var(--surface)); color: var(--faint); cursor: default; }
-    @media (max-width: 960px) { .gear-grid, .guide-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .gear-grid, .guide-grid { grid-template-columns: 1fr; } }
-  </style>
+    <p class="empty" style="font-size:15px; max-width:70ch">
+      <strong>As an Amazon Associate I earn from qualifying purchases.</strong> Prices and availability are set by the
+      retailer and can change. Product names and brands belong to their respective owners.
+    </p>
+  </main>
 </Base>

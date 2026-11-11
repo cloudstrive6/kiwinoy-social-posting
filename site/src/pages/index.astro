@@ -1,160 +1,166 @@
 ---
-import { getCollection } from "astro:content";
+// Home: lead story (the featured trend, else the newest; site_featured.py logic unchanged) with a
+// side rail, then sectioned rails (Marvel games, MCU, Shorts, gaming, videos, gear), one partner
+// offer at a time between them, and Latest as a compact list.
 import Base from "../layouts/Base.astro";
+import StoryCard from "../components/StoryCard.astro";
+import SectionHead from "../components/SectionHead.astro";
+import SectionNav from "../components/SectionNav.astro";
+import NewsletterBox from "../components/NewsletterBox.astro";
+import VideoCard from "../components/VideoCard.astro";
+import PartnerBanner from "../components/PartnerBanner.astro";
+import GearTile from "../components/GearTile.astro";
+import { liveArticles, toStory, SECTIONS, sectionFor } from "../lib/articles.js";
+import { imgAttrs, SIZES } from "../lib/img.js";
 import { longform, shorts, CHANNEL_URL } from "../lib/youtube.js";
 import { followers } from "../lib/socials.js";
-const igFollowers = followers("instagram");
-const ttFollowers = followers("tiktok");
-const ytSubs = followers("youtube");
+import { GEAR } from "../lib/gear.js";
+import { ICON } from "../lib/icons.js";
+import { ORG, SITE } from "../lib/seo.js";
 
-const yt = (longform.length ? longform : shorts).slice(0, 4);
-const PLAY = `<svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.3 0 34 0 34 0S12.7 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.7 48 34 48 34 48s21.3 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z" fill="#f00"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>`;
-
-const gmap: Record<string, string> = {
-  wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey",
-  mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel",
+const all = await liveArticles();
+const leadEntry = all.find((a) => a.data.featured) ?? all[0];
+const used = new Set(leadEntry ? [leadEntry.id] : []);
+const take = (list, n) => {
+  const out = [];
+  for (const a of list) {
+    if (out.length >= n) break;
+    if (used.has(a.id)) continue;
+    used.add(a.id);
+    out.push(toStory(a));
+  }
+  return out;
 };
-const gclass = (game?: string) => gmap[(game || "").toLowerCase()] || "g-marvel";
-const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const side = take(all, 4);
+const marvel = take(all.filter((a) => SECTIONS["marvel-games"].match(a.data)), 4);
+const mcu = take(all.filter((a) => SECTIONS.mcu.match(a.data)), 4);
+const gaming = take(all, 4);
+const latest = take(all, 8);
 
-const all = (await getCollection("articles", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const lead = leadEntry ? toStory(leadEntry) : null;
+const leadSec = leadEntry ? sectionFor(leadEntry.data) : null;
+const leadImg = lead ? imgAttrs(lead.cover, { sizes: SIZES.lead }) : null;
 
-const lead = all.find((a) => a.data.featured) ?? all[0];
-// Everything except the CURRENT hero. This is intentional: the hero isn't duplicated in the
-// feed below it, but excluding only the *current* lead means a story that gets rotated OUT of
-// the hero (when a new trend takes over) automatically re-appears in Latest Drops if it's still
-// recent enough to be in the slice.
-const rest = all.filter((a) => a.id !== lead?.id);
-const side = rest.slice(0, 3);
-const latest = rest.slice(0, 8);
+const vids = longform.slice(0, 4);
+const shortList = shorts.slice(0, 6);
+const gearPicks = ["PlayStation 5 Pro (2TB)", "DualSense Edge", "Elgato 4K Pro (internal)", "DUBBY Energy"]
+  .map((n) => GEAR.find((g) => g.name === n)).filter(Boolean);
+const soc = [
+  { name: "YouTube", handle: "Boss KG", href: CHANNEL_URL, icon: ICON.youtube, count: followers("youtube"), unit: "subscribers" },
+  { name: "TikTok", handle: "@kiwinoygamer", href: "https://www.tiktok.com/@kiwinoygamer", icon: ICON.tiktok, count: followers("tiktok"), unit: "followers" },
+  { name: "Instagram", handle: "@kiwinoygaming", href: "https://www.instagram.com/kiwinoygaming", icon: ICON.instagram, count: followers("instagram"), unit: "followers" },
+];
+const ld = [
+  { "@context": "https://schema.org", ...ORG },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "BOSS KG",
+    url: `${SITE}/`,
+    publisher: { "@id": `${SITE}/#org` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${SITE}/search/?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  },
+];
 ---
-<Base>
-  <main class="wrap">
+<Base jsonLd={ld}>
+  <SectionNav />
+  <main id="main" class="wrap">
+    <h1 class="sr-only">BOSS KG: gaming and Marvel news</h1>
+
     {lead && (
       <section class="hero" aria-label="Top stories">
-        <a class={`lead art ${gclass(lead.data.game)} ${lead.data.cover ? 'has-img' : ''}`} href={`/news/${lead.id}`}>
-          {lead.data.cover && <img src={lead.data.cover} alt={lead.data.coverAlt} />}
-          <div class="kicker">
-            <span class="pill news">{lead.data.tag}</span>
-            <span class="eyebrow" style="color:var(--gold)">{lead.data.category}</span>
+        <a class="lead" href={lead.href}>
+          <div class={`art ${lead.gclass}`}>
+            {leadImg && (
+              <img src={leadImg.src} srcset={leadImg.srcset} sizes={leadImg.sizes} width={leadImg.width} height={leadImg.height}
+                alt={lead.coverAlt} loading="eager" fetchpriority="high" decoding="async" />
+            )}
           </div>
-          <h1>{lead.data.title}</h1>
-          <p>{lead.data.excerpt}</p>
-          <div class="meta"><span class="by">By {lead.data.author}</span><span>•</span><span>{fmt(lead.data.date)}</span></div>
+          <div class="lead-body">
+            <span class="kick"><span class="chip">{lead.cat}</span>{lead.tag !== "News" && <span class={`flag${lead.tag === "Hot" ? " hot" : ""}`}>{lead.tag}</span>}</span>
+            <h2>{lead.title}</h2>
+            <p class="lead-dek">{lead.excerpt}</p>
+            <p class="lead-meta">By KG, <time datetime={lead.date}>{lead.dateLabel}</time></p>
+          </div>
         </a>
         <div class="side">
-          {side.map((a) => (
-            <a class="scard" href={`/news/${a.id}`}>
-              <div class={`art ${gclass(a.data.game)} ${a.data.cover ? "has-img" : ""}`}>
-                {a.data.cover && <img src={a.data.cover} alt={a.data.coverAlt} />}
-              </div>
-              <div class="body"><span class="cat">{a.data.category}</span><h3>{a.data.title}</h3><span class="t">{fmt(a.data.date)}</span></div>
-            </a>
-          ))}
+          <p class="side-h">More top stories</p>
+          {side.map((s) => <StoryCard s={s} variant="row" eager />)}
         </div>
       </section>
     )}
 
-    <a class="affad leader luxdrop" href="https://luxdrop.com/r/bosskg" target="_blank" rel="sponsored nofollow noopener">
-      <span class="affad-left">
-        <img class="affad-img" src="/gear/luxdrop-ps5.jpg" alt="" loading="lazy" />
-        <span class="l"><span class="tag">Partner · 18+</span><span class="name">LUX<b>DROP</b></span><span class="sub">Spin the wheel for a free welcome bonus — win PS5s, skins & tech.</span></span>
-      </span>
-      <span class="cta">Claim Welcome Bonus →</span>
-    </a>
+    {marvel.length > 1 && (
+      <section class="sec" aria-labelledby="hMarvel">
+        <SectionHead id="hMarvel" title="Marvel games" href="/category/marvel-games/" more="All Marvel games" />
+        <div class="grid">{marvel.map((s) => <StoryCard s={s} />)}</div>
+      </section>
+    )}
 
-    <section class="sec" aria-label="Latest news">
-      <div class="sec-h"><span class="bar"></span><h2>Latest Drops</h2><a href="/category/news">All news →</a></div>
-      <div class="grid">
-        {latest.map((a) => (
-          <a class="card" href={`/news/${a.id}`}>
-            <div class={`art ${gclass(a.data.game)} ${a.data.cover ? "has-img" : ""}`}>
-              {a.data.cover && <img src={a.data.cover} alt={a.data.coverAlt} />}
-              <span class={`pill ${a.data.tag === "Hot" ? "red dot" : "news"}`}>{a.data.tag}</span>
-            </div>
-            <div class="body"><span class="cat">{a.data.category}</span><h3>{a.data.title}</h3><span class="t">{fmt(a.data.date)}</span></div>
+    <div class="sec"><PartnerBanner id="luxdrop" /></div>
+
+    {mcu.length > 1 && (
+      <section class="sec" aria-labelledby="hMcu">
+        <SectionHead id="hMcu" title="MCU" href="/category/mcu/" more="All MCU" />
+        <div class="grid">{mcu.map((s) => <StoryCard s={s} />)}</div>
+      </section>
+    )}
+
+    {shortList.length > 0 && (
+      <section class="sec" aria-labelledby="hShorts">
+        <SectionHead id="hShorts" title="Shorts" href="/videos/" more="All videos" />
+        <div class="sgrid">{shortList.map((v) => <VideoCard v={v} short />)}</div>
+      </section>
+    )}
+
+    {gaming.length > 1 && (
+      <section class="sec" aria-labelledby="hGaming">
+        <SectionHead id="hGaming" title="Gaming and PlayStation" href="/category/news/" more="All news" />
+        <div class="grid">{gaming.map((s) => <StoryCard s={s} />)}</div>
+      </section>
+    )}
+
+    <NewsletterBox formId="sub-form" />
+
+    {vids.length > 0 && (
+      <section class="sec" aria-labelledby="hVideos">
+        <SectionHead id="hVideos" title="Latest full videos" href="/videos/" more="All videos" />
+        <div class="vgrid">{vids.map((v) => <VideoCard v={v} showDate />)}</div>
+      </section>
+    )}
+
+    {gearPicks.length > 0 && (
+      <section class="sec" aria-labelledby="hGear">
+        <SectionHead id="hGear" title="Gear we use" href="/gear/" more="All gear" />
+        <div class="gear-grid">{gearPicks.map((g) => <GearTile g={g} />)}</div>
+        <div style="margin-top:var(--s5)"><PartnerBanner id="trybe" /></div>
+      </section>
+    )}
+
+    {latest.length > 0 && (
+      <section class="sec" aria-labelledby="hLatest">
+        <SectionHead id="hLatest" title="Latest" href="/category/news/" more="All news" />
+        <div class="list cols">{latest.map((s) => <StoryCard s={s} variant="row" />)}</div>
+      </section>
+    )}
+
+    <section class="sec" aria-labelledby="hFollow">
+      <SectionHead id="hFollow" title="Follow BOSS KG" href="/follow/" more="Every channel" />
+      <div class="follow-row">
+        {soc.map((s) => (
+          <a class="soc-tile" href={s.href} rel="noopener">
+            <span class="soc-ic" set:html={s.icon}></span>
+            <span>
+              <span class="soc-name">{s.name}</span><br />
+              <span class="soc-handle">{s.handle}{s.count && <>, <span class="soc-count">{s.count}</span> {s.unit}</>}</span>
+            </span>
           </a>
         ))}
       </div>
     </section>
-
-    {yt.length > 0 && (
-      <section class="sec" aria-label="Latest videos">
-        <div class="sec-h"><span class="bar"></span><h2>Latest from YouTube</h2><a href="/videos">All videos →</a></div>
-        <div class="vgrid">
-          {yt.map((v) => (
-            <a class="vcard" href={v.slug ? `/watch/${v.slug}` : v.url} target={v.slug ? undefined : "_blank"} rel="noopener">
-              <div class="vthumb"><img src={v.thumb} alt={v.title} loading="lazy" /><span class="play" set:html={PLAY}></span></div>
-              <div class="vb">{v.title}</div>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <section class="follow" aria-label="Follow us on social">
-      <div class="follow-top">
-        <span class="bar" style="width:4px;height:26px;background:var(--red);border-radius:3px"></span>
-        <div><h2>Follow the action</h2><p>Reels, clips and the daily drop — hit follow so you never miss a moment.</p></div>
-      </div>
-      <div class="socgrid">
-        <div class="soc ig">
-          <div class="soc-h">
-            <span class="soc-ic ic-ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span>
-            <div class="who"><b>@kiwinoygaming</b><span>Instagram</span></div>{igFollowers && <div class="cnt"><b>{igFollowers}</b><span>Followers</span></div>}
-          </div>
-          <div class="thumbs">
-            <a class="art v" href="https://www.instagram.com/reel/DayvcPIgbjx/" target="_blank" rel="noopener"><img src="/social/ig1.jpg" alt="Instagram reel" loading="lazy" /></a>
-            <a class="art v" href="https://www.instagram.com/reel/Da9CZqMjoHR/" target="_blank" rel="noopener"><img src="/social/ig2.jpg" alt="Instagram reel" loading="lazy" /></a>
-            <a class="art v" href="https://www.instagram.com/reel/DbisHPcT4PK/" target="_blank" rel="noopener"><img src="/social/ig3.jpg" alt="Instagram reel" loading="lazy" /></a>
-          </div>
-          <a class="btn red" href="https://www.instagram.com/kiwinoygaming" rel="noopener">Follow on Instagram</a>
-        </div>
-        <div class="soc tt">
-          <div class="soc-h">
-            <span class="soc-ic ic-tt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.9 4 4 4.2v2.8c-1.5 0-2.9-.4-4-1.1v6.4a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.1v2.9a3 3 0 1 0 2.1 2.9V3H16Z"/></svg></span>
-            <div class="who"><b>@kiwinoygamer</b><span>TikTok</span></div>{ttFollowers && <div class="cnt"><b>{ttFollowers}</b><span>Followers</span></div>}
-          </div>
-          <div class="thumbs">
-            <a class="art v" href="https://www.tiktok.com/@kiwinoygamer/video/7674212728692673812" target="_blank" rel="noopener"><img src="/social/tt1.jpg" alt="TikTok video" loading="lazy" /></a>
-            <a class="art v" href="https://www.tiktok.com/@kiwinoygamer/video/7506479242209692946" target="_blank" rel="noopener"><img src="/social/tt2.jpg" alt="TikTok video" loading="lazy" /></a>
-            <a class="art v" href="https://www.tiktok.com/@kiwinoygamer/video/7508511521232784658" target="_blank" rel="noopener"><img src="/social/tt3.jpg" alt="TikTok video" loading="lazy" /></a>
-          </div>
-          <a class="btn red" href="https://www.tiktok.com/@kiwinoygamer" rel="noopener">Follow on TikTok</a>
-        </div>
-        <div class="soc yt">
-          <div class="soc-h">
-            <span class="soc-ic ic-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.3-.4-4.9a2.6 2.6 0 0 0-1.8-1.8C19.1 5 12 5 12 5s-7.1 0-8.8.3A2.6 2.6 0 0 0 1.4 7.1C1 8.7 1 12 1 12s0 3.3.4 4.9a2.6 2.6 0 0 0 1.8 1.8C4.9 19 12 19 12 19s7.1 0 8.8-.3a2.6 2.6 0 0 0 1.8-1.8C23 15.3 23 12 23 12ZM10 15V9l5 3Z"/></svg></span>
-            <div class="who"><b>Boss KG</b><span>YouTube</span></div><div class="cnt"><b>{ytSubs ?? "—"}</b><span>Subscribers</span></div>
-          </div>
-          <div class="thumbs">
-            {yt.length ? yt.slice(0, 4).map((v) => (
-              <a class="art" href={v.slug ? `/watch/${v.slug}` : v.url} target={v.slug ? undefined : "_blank"} rel="noopener"><img src={v.thumb} alt={v.title} loading="lazy" /></a>
-            )) : (<><div class="art g-ps"></div><div class="art g-wolv"></div><div class="art g-spidey"></div><div class="art g-mcu"></div></>)}
-          </div>
-          <a class="btn red" href={CHANNEL_URL} rel="noopener">Subscribe on YouTube</a>
-        </div>
-      </div>
-    </section>
-
-    <a class="affad inline trybe" href="https://jointrybe.com/r/HAGTVAG9" target="_blank" rel="sponsored nofollow noopener">
-      <span class="l"><span class="tag">Partner · For creators</span><span class="name">TRY<b>BE</b></span><span class="sub">Get paid for brand & UGC deals — the platform I use.</span></span>
-      <span class="cta">Join free →</span>
-    </a>
-
-    <section class="news" id="subscribe" aria-label="Newsletter signup">
-      <span class="eyebrow">The KG Drop</span>
-      <h2>Get the biggest gaming &amp; Marvel news first</h2>
-      <p>One email, a few times a week. The stories that matter, no spam. Unsubscribe anytime.</p>
-      <form class="sub-form" id="sub-form">
-        <input id="sub-name" type="text" name="name" placeholder="First name" autocomplete="given-name" required />
-        <input id="sub-email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required />
-        <button class="btn sub" type="submit">Join the list</button>
-      </form>
-      <p class="fine">By subscribing you agree to our Privacy Policy. We'll never sell your data.</p>
-      <p class="toast" id="toast">🎉 You're in! Check your inbox for a welcome email.</p>
-    </section>
   </main>
-
 </Base>

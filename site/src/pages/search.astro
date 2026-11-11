@@ -1,34 +1,45 @@
 ---
 import Base from "../layouts/Base.astro";
-// Search is powered by Pagefind, which indexes dist/ after `astro build`
-// (see package.json build script) and serves its UI + index from /pagefind/ at runtime.
+// Search is powered by Pagefind, which indexes dist/ after `astro build` (see package.json)
+// and serves its UI and index from /pagefind/ at runtime. /search/?q=<words> runs a search on load
+// (used by the 404 page and the WebSite SearchAction on the home page).
 ---
-<Base title="Search — BOSS KG" description="Search BOSS KG for games, news and videos.">
-  <main class="wrap">
-    <section class="sec" style="margin-top:34px; min-height:60vh">
-      <div class="sec-h"><span class="bar"></span><h2>Search</h2></div>
-      <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<Base title="Search" description="Search BOSS KG for games, news and videos." noSearch>
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <h1>Search</h1>
+      <p class="lede">Find any story, game or video on BOSS KG.</p>
+    </header>
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <div class="sec" style="margin-top:var(--s6); min-height:50vh">
       <div id="search" class="pf"></div>
-      <noscript><p style="color:var(--muted)">Search needs JavaScript enabled.</p></noscript>
-    </section>
+      <noscript><p class="empty">Search needs JavaScript enabled.</p></noscript>
+    </div>
   </main>
   <style is:global>
-    /* redefine Pagefind's vars on .pagefind-ui itself (higher specificity than its own defaults) */
+    /* Pagefind's variables, redefined on .pagefind-ui itself (beats its own defaults) */
     #search .pagefind-ui{
       --pagefind-ui-primary:var(--red); --pagefind-ui-text:var(--text);
-      --pagefind-ui-background:var(--surface); --pagefind-ui-border:var(--border);
-      --pagefind-ui-tag:var(--surface-2); --pagefind-ui-border-radius:12px; --pagefind-ui-font:var(--fbody);
+      --pagefind-ui-background:var(--surface); --pagefind-ui-border:var(--border-2);
+      --pagefind-ui-tag:var(--raise); --pagefind-ui-border-radius:12px; --pagefind-ui-font:var(--f-ui);
+      --pagefind-ui-scale:1;
     }
-    #search .pagefind-ui__search-input{background:var(--surface); color:var(--text)}
-    #search .pagefind-ui__search-input::placeholder{color:var(--faint)}
-    #search .pagefind-ui__result-title a,
-    #search .pagefind-ui__result a{color:var(--text)}
-    #search .pagefind-ui__result-excerpt{color:var(--muted)}
+    #search .pagefind-ui__search-input{background:var(--surface); color:var(--text); font-size:17px}
+    #search .pagefind-ui__search-input::placeholder{color:var(--faint); opacity:1}
+    #search .pagefind-ui__result-title{font-family:var(--f-head); font-stretch:92%}
+    #search .pagefind-ui__result-title a, #search .pagefind-ui__result a{color:var(--text)}
+    #search .pagefind-ui__result-excerpt{color:var(--muted); font-family:var(--f-text)}
+    #search .pagefind-ui__result-excerpt mark{background:var(--red-tint); color:var(--text)}
+    #search .pagefind-ui__button{min-height:44px; background:var(--surface); color:var(--text); border-color:var(--border-2)}
+    #search .pagefind-ui__search-clear{color:var(--muted); min-height:44px}
   </style>
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
   <script is:inline>
-    window.addEventListener("DOMContentLoaded", () => {
-      if (window.PagefindUI) new window.PagefindUI({ element: "#search", showSubResults: true, showImages: false });
+    window.addEventListener("DOMContentLoaded", function () {
+      if (!window.PagefindUI) return;
+      var ui = new window.PagefindUI({ element: "#search", showSubResults: true, showImages: false });
+      var q = new URLSearchParams(location.search).get("q");
+      if (q) ui.triggerSearch(q);
     });
   </script>
 </Base>

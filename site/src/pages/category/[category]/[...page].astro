@@ -1,0 +1,63 @@
+---
+// Section pages: /category/<slug>/ (page 1) and /category/<slug>/2/ and on, 24 stories a page.
+// The four slugs are fixed (tools/site_qa.py checks them). Each page has its own canonical.
+import Base from "../../../layouts/Base.astro";
+import StoryCard from "../../../components/StoryCard.astro";
+import SectionNav from "../../../components/SectionNav.astro";
+import Crumbs from "../../../components/Crumbs.astro";
+import NewsletterBox from "../../../components/NewsletterBox.astro";
+import { liveArticles, toStory, SECTIONS } from "../../../lib/articles.js";
+import { crumbsLd } from "../../../lib/seo.js";
+import { ICON } from "../../../lib/icons.js";
+
+export async function getStaticPaths({ paginate }) {
+  const all = await liveArticles();
+  return Object.entries(SECTIONS).flatMap(([category, sec]) =>
+    paginate(all.filter((a) => sec.match(a.data)).map(toStory), {
+      params: { category },
+      props: { title: sec.title, blurb: sec.blurb },
+      pageSize: 24,
+    }),
+  );
+}
+
+const { page, title, blurb } = Astro.props;
+const { category } = Astro.params;
+const base = `/category/${category}/`;
+const n = page.currentPage;
+const cards = page.data.slice(0, 6);
+const rows = page.data.slice(6);
+const crumbs = [{ label: "Home", href: "/" }, { label: title, href: base }];
+const fullTitle = n > 1 ? `${title}, page ${n}` : title;
+const prev = page.url.prev ? page.url.prev.replace(/\/?$/, "/") : null;
+const next = page.url.next ? page.url.next.replace(/\/?$/, "/") : null;
+---
+<Base title={fullTitle} description={blurb} jsonLd={[crumbsLd(crumbs)]}>
+  <SectionNav current={base} />
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <Crumbs items={crumbs.slice(0, 1)} />
+      <h1>{title}</h1>
+      <p class="lede">{blurb}{n > 1 && ` Page ${n} of ${page.lastPage}.`}</p>
+    </header>
+
+    {page.data.length ? (
+      <>
+        <div class="sec"><div class="grid three">{cards.map((s) => <StoryCard s={s} h="h2" />)}</div></div>
+        {rows.length > 0 && <div class="sec"><div class="list cols">{rows.map((s) => <StoryCard s={s} variant="row" h="h2" />)}</div></div>}
+      </>
+    ) : (
+      <p class="empty">No stories in this section yet. <a href="/category/news/">See the latest news</a>.</p>
+    )}
+
+    {page.lastPage > 1 && (
+      <nav class="pager" aria-label="Pages">
+        {prev ? <a class="btn btn-ghost" href={prev} rel="prev">Newer stories</a> : <span></span>}
+        <span>Page {n} of {page.lastPage}</span>
+        {next ? <a class="btn btn-ghost" href={next} rel="next">Older stories<Fragment set:html={ICON.chevron} /></a> : <span></span>}
+      </nav>
+    )}
+
+    <NewsletterBox />
+  </main>
+</Base>

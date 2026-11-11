@@ -1,46 +1,34 @@
 ---
-import { getCollection } from "astro:content";
+// Tag pages: /tag/<slug>/. Slug rule matches the tag chips on articles (lib/articles.js slugify).
 import Base from "../../layouts/Base.astro";
+import StoryCard from "../../components/StoryCard.astro";
+import Crumbs from "../../components/Crumbs.astro";
+import { liveArticles, toStory, slugify } from "../../lib/articles.js";
+import { crumbsLd } from "../../lib/seo.js";
 
 export async function getStaticPaths() {
-  const gmap = { wolverine: "g-wolv", "spider-man2": "g-spidey", "spider-man": "g-spidey", mcu: "g-mcu", playstation: "g-ps", marvel: "g-marvel" };
-  const gclass = (game) => gmap[(game || "").toLowerCase()] || "g-marvel";
-  const fmt = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const slugify = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-  const arts = (await getCollection("articles", ({ data }) => !data.draft))
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   const map = {};
-  for (const a of arts) {
+  for (const a of await liveArticles()) {
     for (const t of a.data.tags || []) {
-      const slug = slugify(t);
-      (map[slug] ||= { label: t, posts: [] }).posts.push({
-        id: a.id, title: a.data.title, category: a.data.category, tag: a.data.tag,
-        cover: a.data.cover ?? null, coverAlt: a.data.coverAlt ?? "",
-        gclass: gclass(a.data.game), dateLabel: fmt(a.data.date),
-      });
+      (map[slugify(t)] ||= { label: t, posts: [] }).posts.push(toStory(a));
     }
   }
   return Object.entries(map).map(([tag, { label, posts }]) => ({ params: { tag }, props: { label, posts } }));
 }
 
 const { label, posts } = Astro.props;
+const crumbs = [{ label: "Home", href: "/" }, { label: "News", href: "/category/news/" }, { label }];
+const count = `${posts.length} ${posts.length === 1 ? "story" : "stories"}`;
 ---
-<Base title={`${label} — BOSS KG`} description={`All BOSS KG coverage tagged ${label}.`}>
-  <main class="wrap">
-    <section class="sec" style="margin-top:34px">
-      <div class="sec-h"><span class="bar"></span><h2>#{label}</h2><a href="/">← Home</a></div>
-      <div class="grid">
-        {posts.map((a) => (
-          <a class="card" href={`/news/${a.id}`}>
-            <div class={`art ${a.gclass} ${a.cover ? "has-img" : ""}`}>
-              {a.cover && <img src={a.cover} alt={a.coverAlt} />}
-              <span class={`pill ${a.tag === "Hot" ? "red dot" : "news"}`}>{a.tag}</span>
-            </div>
-            <div class="body"><span class="cat">{a.category}</span><h3>{a.title}</h3><span class="t">{a.dateLabel}</span></div>
-          </a>
-        ))}
-      </div>
-    </section>
+<Base title={label} description={`All BOSS KG coverage tagged ${label}: ${count}.`} jsonLd={[crumbsLd(crumbs)]}>
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <Crumbs items={crumbs.slice(0, 2)} />
+      <h1>{label}</h1>
+      <p class="lede">Every BOSS KG story tagged {label}, newest first. {count}.</p>
+    </header>
+    <div class="sec">
+      <div class={`grid three${posts.length <= 3 ? " all-cards" : ""}`}>{posts.map((s) => <StoryCard s={s} h="h2" />)}</div>
+    </div>
   </main>
 </Base>
