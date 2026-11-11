@@ -8,7 +8,7 @@ import NewsletterBox from "../../components/NewsletterBox.astro";
 import { longform, CHANNEL_URL } from "../../lib/youtube.js";
 import { gameForText, gameBySlug } from "../../lib/games.js";
 import { liveArticles, toStory, fmtDate } from "../../lib/articles.js";
-import { YT_PLAY, ICON } from "../../lib/icons.js";
+import { PLAY_DOT, ICON } from "../../lib/icons.js";
 import { crumbsLd } from "../../lib/seo.js";
 
 export function getStaticPaths() {
@@ -54,7 +54,7 @@ const crumbs = [{ label: "Home", href: "/" }, { label: "Videos", href: "/videos/
             <img src={`https://i.ytimg.com/vi/${v.id}/hq720.jpg`} srcset={stillSet} sizes={stillSizes} alt="" role="presentation" width="1280" height="720"
               loading="eager" fetchpriority="high" decoding="async"
               onerror="this.onerror=null;this.removeAttribute('srcset');this.src='https://i.ytimg.com/vi/'+this.closest('[data-vid]').dataset.vid+'/hqdefault.jpg'" />
-            <span class="play" set:html={YT_PLAY}></span>
+            <span class="play" set:html={PLAY_DOT}></span>
           </div>
         </button>
       </div>

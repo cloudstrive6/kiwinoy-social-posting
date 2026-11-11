@@ -8,7 +8,7 @@ const p = PARTNERS[id];
 ---
 <a class={`partner ${cls}`} href={p.url} target="_blank" rel="sponsored nofollow noopener">
   {p.img
-    ? <img class="partner-img" src={p.img} alt="" width="375" height="500" loading="lazy" decoding="async" aria-hidden="true" />
+    ? <img class="partner-img" src={p.img.replace(/^\/gear\/(.+)\.(jpe?g|png)$/, "/img/480/gear/$1.webp")} alt="" width="375" height="500" loading="lazy" decoding="async" aria-hidden="true" />
     : <span class="partner-mark">{p.name.toLowerCase()}</span>}
   <span class="partner-text">
     <span class="partner-label">{p.label}</span>

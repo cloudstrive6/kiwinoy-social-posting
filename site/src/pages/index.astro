@@ -5,7 +5,6 @@
 import Base from "../layouts/Base.astro";
 import StoryCard from "../components/StoryCard.astro";
 import SectionHead from "../components/SectionHead.astro";
-import SectionNav from "../components/SectionNav.astro";
 import NewsletterBox from "../components/NewsletterBox.astro";
 import VideoCard from "../components/VideoCard.astro";
 import PartnerBanner from "../components/PartnerBanner.astro";
@@ -66,7 +65,6 @@ const ld = [
 ];
 ---
 <Base jsonLd={ld} preloadImage={leadImg && leadImg.srcset ? { srcset: leadImg.srcset, sizes: leadImg.sizes } : undefined}>
-  <SectionNav />
   <main id="main" class="wrap">
     <h1 class="sr-only">BOSS KG: gaming and Marvel news</h1>
 
@@ -121,12 +119,12 @@ const ld = [
 
     {gaming.length > 1 && (
       <section class="sec" aria-labelledby="hGaming">
-        <SectionHead id="hGaming" title="Gaming and PlayStation" href="/category/news/" more="All news" />
-        <ol class="numbered">
+        <SectionHead id="hGaming" title="Fresh in gaming and PlayStation" href="/category/news/" more="All news" />
+        <ul class="numbered">
           {gaming.map((s) => (
             <li><a href={s.href}><span class="n-body"><span class="chip">{s.cat}</span><h3 class="card-title">{s.title}</h3><time class="card-date" datetime={s.date}>{s.dateLabel}</time></span></a></li>
           ))}
-        </ol>
+        </ul>
       </section>
     )}
 

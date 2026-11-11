@@ -102,7 +102,7 @@ a, button, summary, [role="button"]{touch-action:manipulation}
 header.nav{position:sticky; top:0; z-index:50; background:color-mix(in srgb, var(--bg) 94%, transparent);
   border-bottom:1px solid var(--border)}
 .nav-in{display:flex; align-items:center; gap:var(--s5); height:var(--head-h)}
-.brand{display:flex; align-items:center; min-height:44px; color:var(--text); flex:none}
+.brand{display:flex; align-items:center; min-height:50px; color:var(--text); flex:none}
 .brand .logo{height:46px; width:auto; display:block}
 .brand-mark{display:inline-flex; align-items:baseline; gap:6px; position:relative; padding-bottom:6px}
 .brand-mark .bm-boss{font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:22px; letter-spacing:.02em; line-height:1}
@@ -147,13 +147,13 @@ nav.main a[aria-current="page"]::after{content:""; position:absolute; left:12px;
 
 /* ---------- section heads ---------- */
 .sec{margin-top:var(--s8)}
-.sec-h{display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s4); margin-bottom:var(--s5)}
-.sec-h h2{font-size:26px; position:relative}
-.sec-h.ruled h2{padding-bottom:12px}
-.sec-h.ruled h2::after{content:""; position:absolute; left:0; bottom:0; width:40px; height:4px; border-radius:2px; background:var(--red)}
+.sec-h{display:flex; align-items:baseline; justify-content:space-between; gap:var(--s4); margin-bottom:var(--s5); position:relative; padding-bottom:12px}
+.sec-h h2{font-size:26px}
+.sec-h::after{content:""; position:absolute; left:0; bottom:0; width:40px; height:4px; border-radius:2px; background:var(--red)}
 .sec-more{display:inline-flex; align-items:center; gap:6px; min-height:44px; font-weight:700; font-size:14px; color:var(--muted); white-space:nowrap}
 .sec-more svg{width:16px; height:16px}
 .page-head{padding-top:var(--s7)}
+@media (max-width:640px){.page-head{padding-top:var(--s5)} .page-head .lede{font-size:16px}}
 .page-head h1{font-size:clamp(34px, 6vw, var(--t-3xl))}
 .page-head .lede{margin-top:var(--s3); color:var(--muted); font-family:var(--f-text); font-size:var(--t-m); line-height:1.55; max-width:32em}
 .crumbs ol{list-style:none; margin:0 0 var(--s3); padding:0; display:flex; flex-wrap:wrap; align-items:center; gap:2px 6px; font-size:14px; color:var(--muted)}
@@ -409,7 +409,7 @@ form.sub-form .btn{align-self:flex-end; min-height:48px}
   .crumbs ol{margin-bottom:0}
   .a-kicker{margin-bottom:var(--s2)}
   .a-head h1{font-size:30px; line-height:1.06}
-  .a-dek{margin-top:var(--s3); font-size:17px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+  .a-dek{margin-top:var(--s3); font-size:16px; line-height:1.45}
   .a-meta{margin-top:var(--s3)}
   .a-cover{margin-top:var(--s4)}
   .prose{margin-top:var(--s5)}
@@ -444,9 +444,10 @@ body{timeline-scope:--kg-read}
   transition:transform var(--d-ui) var(--ease-drawer), opacity var(--d-ui) ease}
 .next-bar.on{opacity:1; transform:none; pointer-events:auto}
 .next-bar::before{content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px; border-radius:0 3px 3px 0; background:var(--red)}
-.nb-link{flex:1; min-width:0; min-height:48px; display:flex; flex-direction:column; justify-content:center; gap:2px}
+.nb-link{flex:1; min-width:0; min-height:48px; display:flex; flex-direction:column; justify-content:center; gap:2px; padding:6px 0}
 .nb-label{font-size:12px; font-weight:700; color:var(--red-hi)}
-.nb-title{font-family:var(--f-head); font-stretch:92%; font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.nb-title{font-family:var(--f-head); font-stretch:92%; font-size:15px; line-height:1.2; font-weight:700; color:var(--text);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:normal; word-break:normal}
 .nb-x{flex:none; width:44px; height:44px; display:grid; place-items:center; border:0; border-radius:var(--r-m); background:none; color:var(--muted); cursor:pointer}
 .nb-x svg{width:16px; height:16px}
 
@@ -521,6 +522,7 @@ footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background
 .vfeat-text h2{font-size:clamp(24px, 2.6vw, 32px); line-height:1.1}
 .vfeat-text h2 a{display:flex; align-items:center; min-height:44px}
 .vfeat-text p{font-family:var(--f-text); color:var(--body); font-size:16px; line-height:1.55}
+.vfeat-text .card-date, .card-date, time{font-family:var(--f-ui)}
 .vfeat-actions{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s2)}
 @media (max-width:1023px){.vfeat-row{grid-template-columns:minmax(0,1fr); gap:var(--s4)}}
 /* mixed grid: the first two cards are large */
@@ -555,10 +557,9 @@ details.more-videos > .vgrid{margin-top:0}
 @media (max-width:1023px){.rail-lead{grid-template-columns:minmax(0,1fr); gap:var(--s4)}}
 
 /* compact numbered list */
-.numbered{list-style:none; margin:0; padding:0; counter-reset:n; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0 var(--s6)}
-.numbered li{counter-increment:n; border-top:1px solid var(--border)}
-.numbered a{display:grid; grid-template-columns:44px minmax(0,1fr); gap:var(--s3); padding:var(--s4) 0; min-height:44px; color:var(--text)}
-.numbered a::before{content:counter(n); font-family:var(--f-head); font-weight:800; font-stretch:80%; font-size:34px; line-height:.9; color:var(--red)}
+.numbered{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0 var(--s6)}
+.numbered li{border-top:1px solid var(--border)}
+.numbered a{display:block; padding:var(--s4) 0; min-height:44px; color:var(--text)}
 .numbered .card-title{font-size:17px; line-height:1.22}
 .numbered .n-body{display:flex; flex-direction:column; gap:6px; min-width:0}
 @media (max-width:767px){.numbered{grid-template-columns:minmax(0,1fr)}}
@@ -566,7 +567,8 @@ details.more-videos > .vgrid{margin-top:0}
 
 /* article: More in list and hub link */
 .more-in{margin-top:var(--s7)}
-.more-in .more-hub{margin-top:var(--s5)}
+.more-in .more-hub{margin-top:var(--s5); max-width:100%; white-space:normal; text-align:left; line-height:1.25; padding-top:10px; padding-bottom:10px}
+.more-hub span{min-width:0}
 .more-hub svg{width:16px; height:16px}
 .nl-pop-card:focus{outline:none}
 
@@ -660,3 +662,9 @@ header.nav.is-condensed .brand{transform:scale(.9)}
   .rv{opacity:1 !important; transform:none !important}
   body{background:var(--white); color:var(--black)}
 }
+
+/* phone menu: section links under the main links */
+.mobile-menu .menu-h{margin:var(--s3) var(--gutter) 0; padding-top:var(--s3); border-top:1px solid var(--border); font-size:13px; font-weight:700; color:var(--muted)}
+.mobile-menu a.menu-sub{min-height:48px; font-size:16px; font-weight:600; color:var(--body)}
+/* Shorts rail on desktop: one row of six, no sideways scroll */
+@media (min-width:1024px){.srail > :nth-child(n+7){display:none}}

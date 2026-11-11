@@ -5,11 +5,10 @@
 import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
 import SectionHead from "../components/SectionHead.astro";
-import SectionNav from "../components/SectionNav.astro";
 import NewsletterBox from "../components/NewsletterBox.astro";
 import { longform, shorts, CHANNEL_URL } from "../lib/youtube.js";
 import { fmtDate } from "../lib/articles.js";
-import { YT_PLAY, ICON } from "../lib/icons.js";
+import { PLAY_DOT, ICON } from "../lib/icons.js";
 
 const feat = longform[0];
 const restLong = longform.slice(1);
@@ -26,7 +25,6 @@ const blurb = feat && feat.blurb ? feat.blurb.replace(/\s+/g, " ").split(/(?<=[.
 ---
 <Base title="Videos" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG."
   preloadImage={feat ? { srcset: featSrcset, sizes: featSizes } : undefined}>
-  <SectionNav current="/videos/" />
   <main id="main" class="wrap">
     <header class="page-head">
       <h1>Videos</h1>
@@ -44,7 +42,7 @@ const blurb = feat && feat.blurb ? feat.blurb.replace(/\s+/g, " ").split(/(?<=[.
             <img src={`/img/yt/${feat.id}-800.webp`} srcset={featSrcset} sizes={featSizes} alt="" width="1280" height="720"
               loading="eager" fetchpriority="high" decoding="async"
               onerror={`this.onerror=null;this.removeAttribute('srcset');this.src='${yt(feat.id, "hq720")}'`} />
-            <span class="play" set:html={YT_PLAY}></span>
+            <span class="play" set:html={PLAY_DOT}></span>
           </div>
         </a>
         <div class="vfeat-text">

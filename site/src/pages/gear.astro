@@ -6,7 +6,6 @@ import StoryCard from "../components/StoryCard.astro";
 import GearTile from "../components/GearTile.astro";
 import PartnerBanner from "../components/PartnerBanner.astro";
 import SectionHead from "../components/SectionHead.astro";
-import SectionNav from "../components/SectionNav.astro";
 import { GEAR } from "../lib/gear.js";
 import { liveArticles, toStory } from "../lib/articles.js";
 
@@ -14,20 +13,19 @@ import { liveArticles, toStory } from "../lib/articles.js";
 const guides = (await liveArticles()).filter((a) => /hardware/i.test(a.data.category || "")).map(toStory);
 ---
 <Base title="Gear we use" description="The gear BOSS KG uses to record and play: controllers, capture cards, headsets and more. Affiliate links support the channel at no extra cost to you.">
-  <SectionNav current="/gear/" />
   <main id="main" class="wrap">
     <header class="page-head">
       <h1>Gear we use</h1>
-      <p class="lede">The kit behind the 4K/60 HDR gameplay, plus the odd thing that just makes the grind better. Everything here is stuff we would actually recommend.</p>
+      <p class="lede">The kit behind the 4K/60 HDR gameplay, all stuff we would actually recommend.</p>
     </header>
 
-    <p class="a-source gear-disc" role="note" style="margin-top:var(--s5); max-width:37em">
-      <strong>Heads up:</strong> some links below are affiliate links. If you buy through them, BOSS KG may earn a small
-      commission at <strong>no extra cost to you</strong>. It is a free way to support the channel, and we only list gear we stand behind.
+    <p class="a-source gear-disc" role="note" style="margin-top:var(--s4); max-width:37em">
+      <strong>Heads up:</strong> some links below are affiliate links. BOSS KG may earn a small commission at
+      <strong>no extra cost to you</strong>, and we only list gear we stand behind.
     </p>
 
     {guides.length > 0 && (
-      <section class="sec" aria-labelledby="hGuides">
+      <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hGuides">
         <SectionHead id="hGuides" title="Guides and reviews" ruled />
         <div class="grid three all-cards">{guides.map((s, i) => <StoryCard s={s} priority={i === 0} />)}</div>
       </section>

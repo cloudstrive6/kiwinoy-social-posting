@@ -1,7 +1,6 @@
 ---
 // Games hub: every franchise we cover, with its newest stories right under the tile.
 import Base from "../../layouts/Base.astro";
-import SectionNav from "../../components/SectionNav.astro";
 import NewsletterBox from "../../components/NewsletterBox.astro";
 import { GAMES, gameForText, gameForVideo } from "../../lib/games.js";
 import { longform, shorts } from "../../lib/youtube.js";
@@ -19,24 +18,26 @@ const rows = GAMES.map((g) => {
     videos: vids.filter((v) => gameForVideo(v) === g.slug).length,
     im: imgAttrs(g.cover, { sizes: SIZES.tile }),
   };
-});
+})
+  // Most coverage first (stories plus videos); hubs with nothing yet go to the end.
+  .map((g, i) => ({ ...g, i }))
+  .sort((a, b) => (b.articles + b.videos) - (a.articles + a.videos) || a.i - b.i);
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 ---
 <Base title="Games" description="Every game BOSS KG covers: Marvel's Spider-Man, Wolverine, Final Fantasy VII, Halo and more, with the latest stories and videos for each.">
-  <SectionNav current="/games/" />
   <main id="main" class="wrap">
     <header class="page-head">
       <h1>Games</h1>
-      <p class="lede">The franchises we play and cover. Pick one for its news, full videos and Shorts.</p>
+      <p class="lede">Pick a franchise for its news, full videos and Shorts.</p>
     </header>
-    <div class="sec">
+    <div class="sec" style="margin-top:var(--s5)">
       <div class="grid three all-cards">
         {rows.map((g, i) => (
           <div class="game-tile card">
             <a class="card" href={`/games/${g.slug}/`}>
               <div class={`art ${g.art}`}>
                 {g.im && <img src={g.im.src} srcset={g.im.srcset} sizes={g.im.sizes} width={g.im.width} height={g.im.height}
-                  alt={`${g.title} key art`} loading={i < 3 ? "eager" : "lazy"} decoding="async" />}
+                  alt={`${g.title} key art`} loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : undefined} decoding="async" />}
               </div>
               <div class="card-body">
                 <span class="game-count">{[g.articles && plural(g.articles, "story", "stories"), g.videos && plural(g.videos, "video", "videos")].filter(Boolean).join(", ") || "Coverage coming soon"}</span>

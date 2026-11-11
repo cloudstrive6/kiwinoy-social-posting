@@ -18,6 +18,7 @@ export interface Props {
   robots?: string;
   preloadImage?: { srcset: string; sizes: string };  // the LCP image, fetched with high priority
   preconnect?: string[];     // third-party image origins used above the fold
+  imageSize?: { width: number; height: number };  // og:image dimensions when known
 }
 const {
   title,
@@ -33,10 +34,17 @@ const {
   robots = "max-image-preview:large",
   preloadImage,
   preconnect = [],
+  imageSize,
 } = Astro.props;
 // "Title | BOSS KG", dropping the suffix when the headline is already long.
 const BRAND = "BOSS KG";
-const fullTitle = !title ? "BOSS KG: Gaming and Marvel News" : title.length > 60 ? title : `${title} | ${BRAND}`;
+// "Title | BOSS KG" when that fits in 70 characters, otherwise the headline alone.
+const fullTitle = !title ? "BOSS KG: Gaming and Marvel News" : `${title} | ${BRAND}`.length <= 70 ? `${title} | ${BRAND}` : title;
+// Staging builds (PUBLIC_SITE_ENV=staging, set only on the staging branch in deploy-site.yml)
+// carry noindex in the served HTML; the host check below stays as a second guard.
+const isStaging = import.meta.env.PUBLIC_SITE_ENV === "staging";
+// og:image size: the default share image is 1200 x 630; article covers are 1200 x 675.
+const ogSize = imageSize || (image === "/og-default.png" ? { width: 1200, height: 630 } : null);
 const ogTitle = title || "BOSS KG: Gaming and Marvel News";
 const desc = trimDesc(description);
 // Absolute URL for og:image (social scrapers require a full URL, not a site-relative path).
@@ -53,6 +61,12 @@ const nav = [
   { label: "Follow", href: "/follow/", match: (p) => p.startsWith("/follow/") },
   { label: "Products", href: "/products/", match: (p) => p.startsWith("/products/") },
 ];
+// Section pages, listed in the phone menu (the section chip strip is gone from the pages).
+const sections = [
+  { label: "Latest news", href: "/category/news/" },
+  { label: "Marvel games", href: "/category/marvel-games/" },
+  { label: "PlayStation", href: "/category/playstation/" },
+];
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -64,6 +78,7 @@ const year = new Date().getFullYear();
     <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={robots} />
+    {isStaging && <meta name="robots" content="noindex,nofollow" />}
     <meta name="theme-color" content="#0B0B0D" />
     <!-- Staging safety: on any host other than bosskg.com (Netlify branch deploys, previews,
          localhost) add noindex and do not load GA4, so test visits never reach the property.
@@ -94,6 +109,8 @@ const year = new Date().getFullYear();
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    {ogSize && <meta property="og:image:width" content={String(ogSize.width)} />}
+    {ogSize && <meta property="og:image:height" content={String(ogSize.height)} />}
     {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {type === "article" && section && <meta property="article:section" content={section} />}
     {type === "article" && tags.map((t) => <meta property="article:tag" content={t} />)}
@@ -174,6 +191,10 @@ const year = new Date().getFullYear();
       <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
         {nav.map((n) => (
           <a href={n.href} aria-current={n.match(path) ? "page" : undefined}>{n.label}</a>
+        ))}
+        <p class="menu-h">Sections</p>
+        {sections.map((n) => (
+          <a class="menu-sub" href={n.href} aria-current={path === n.href ? "page" : undefined}>{n.label}</a>
         ))}
         <a class="btn btn-primary js-sub" href="/#subscribe"><Fragment set:html={ICON.mail} /><span>Subscribe to the KG Drop</span></a>
       </nav>

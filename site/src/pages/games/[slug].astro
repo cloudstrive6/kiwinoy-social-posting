@@ -1,5 +1,7 @@
 ---
-// One game: key-art banner, latest stories, full videos and Shorts (click to play in place).
+// One game hub: key-art banner, the newest story large with the next 11 as a two-column list
+// (each story's own cover), the rest behind "Show more" (native <details>, nothing loads until
+// opened), then full videos (4 up front) and a Shorts rail that plays in place.
 import Base from "../../layouts/Base.astro";
 import StoryCard from "../../components/StoryCard.astro";
 import VideoCard from "../../components/VideoCard.astro";
@@ -21,18 +23,24 @@ const g = gameBySlug(slug);
 const articles = (await liveArticles())
   .filter((a) => gameForText(a.data.game, a.data.category, a.data.title) === slug)
   .map((a) => ({ ...toStory(a), gclass: gclass(a.data.game, g.art) }));
+const leadStory = articles[0];
+const listed = articles.slice(1, 12);
+const moreStories = articles.slice(12);
 const vlong = longform.filter((v) => gameForVideo(v) === slug);
 const vshort = shorts.filter((v) => gameForVideo(v) === slug);
+const shortRail = vshort.slice(0, 12);
 const empty = !articles.length && !vlong.length && !vshort.length;
 const banner = imgAttrs(g.cover, { sizes: SIZES.cover });
 const crumbs = [{ label: "Home", href: "/" }, { label: "Games", href: "/games/" }, { label: g.title }];
+const count = [articles.length && `${articles.length} ${articles.length === 1 ? "story" : "stories"}`, vlong.length + vshort.length && `${vlong.length + vshort.length} videos`].filter(Boolean).join(", ");
 ---
-<Base title={g.title} description={`${g.blurb} News, full 4K gameplay videos and Shorts from BOSS KG.`} image={g.cover} jsonLd={[crumbsLd(crumbs)]}>
+<Base title={g.title} description={`${g.blurb} News, full 4K gameplay videos and Shorts from BOSS KG.`} image={g.cover} jsonLd={[crumbsLd(crumbs)]}
+  preloadImage={banner && banner.srcset ? { srcset: banner.srcset, sizes: banner.sizes } : undefined}>
   <main id="main" class="wrap">
     <header class="page-head">
       <Crumbs items={crumbs.slice(0, 2)} />
       <h1>{g.title}</h1>
-      <p class="lede">{g.blurb}</p>
+      <p class="lede">{g.blurb}{count && ` ${count}.`}</p>
     </header>
     {banner && (
       <div class="game-banner">
@@ -43,24 +51,42 @@ const crumbs = [{ label: "Home", href: "/" }, { label: "Games", href: "/games/" 
       </div>
     )}
 
-    {articles.length > 0 && (
+    {leadStory && (
       <section class="sec" aria-labelledby="hStories">
         <SectionHead id="hStories" title="Latest stories" />
-        <div class={`grid${articles.length <= 4 ? " all-cards" : ""}`}>{articles.map((s) => <StoryCard s={s} />)}</div>
+        <div class={listed.length ? "rail-lead" : ""}>
+          <StoryCard s={leadStory} variant="big" />
+          {listed.length > 0 && <div class="list">{listed.slice(0, 3).map((s) => <StoryCard s={s} variant="row" />)}</div>}
+        </div>
+        {listed.length > 3 && (
+          <div class="list cols" style="margin-top:var(--s6)">{listed.slice(3).map((s) => <StoryCard s={s} variant="row" />)}</div>
+        )}
+        {moreStories.length > 0 && (
+          <details class="more-videos">
+            <summary class="btn btn-ghost">Show {moreStories.length} more {moreStories.length === 1 ? "story" : "stories"}</summary>
+            <div class="list cols" style="margin-top:var(--s5)">{moreStories.map((s) => <StoryCard s={s} variant="row" />)}</div>
+          </details>
+        )}
       </section>
     )}
 
     {vlong.length > 0 && (
       <section class="sec" aria-labelledby="hFull">
         <SectionHead id="hFull" title="Full videos" href={CHANNEL_URL} more="YouTube channel" ext />
-        <div class="vgrid">{vlong.map((v) => <VideoCard v={v} showDate />)}</div>
+        <div class="vgrid">{vlong.slice(0, 4).map((v) => <VideoCard v={v} showDate />)}</div>
+        {vlong.length > 4 && (
+          <details class="more-videos">
+            <summary class="btn btn-ghost">Show {vlong.length - 4} more videos</summary>
+            <div class="vgrid" style="margin-top:var(--s5)">{vlong.slice(4).map((v) => <VideoCard v={v} showDate />)}</div>
+          </details>
+        )}
       </section>
     )}
 
-    {vshort.length > 0 && (
+    {shortRail.length > 0 && (
       <section class="sec" aria-labelledby="hShorts">
-        <SectionHead id="hShorts" title="Shorts" />
-        <div class="sgrid">{vshort.map((v) => <VideoCard v={v} short />)}</div>
+        <SectionHead id="hShorts" title="Shorts" href={`${CHANNEL_URL}/shorts`} more="More on YouTube" ext />
+        <div class="srail">{shortRail.map((v) => <VideoCard v={v} short />)}</div>
       </section>
     )}
 

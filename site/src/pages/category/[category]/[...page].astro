@@ -3,7 +3,6 @@
 // The four slugs are fixed (tools/site_qa.py checks them). Each page has its own canonical.
 import Base from "../../../layouts/Base.astro";
 import StoryCard from "../../../components/StoryCard.astro";
-import SectionNav from "../../../components/SectionNav.astro";
 import Crumbs from "../../../components/Crumbs.astro";
 import NewsletterBox from "../../../components/NewsletterBox.astro";
 import { liveArticles, toStory, SECTIONS } from "../../../lib/articles.js";
@@ -33,7 +32,6 @@ const prev = page.url.prev ? page.url.prev.replace(/\/?$/, "/") : null;
 const next = page.url.next ? page.url.next.replace(/\/?$/, "/") : null;
 ---
 <Base title={fullTitle} description={blurb} jsonLd={[crumbsLd(crumbs)]}>
-  <SectionNav current={base} />
   <main id="main" class="wrap">
     <header class="page-head">
       <Crumbs items={crumbs.slice(0, 1)} />

@@ -4,14 +4,12 @@
 import Base from "../layouts/Base.astro";
 import StoryCard from "../components/StoryCard.astro";
 import SectionHead from "../components/SectionHead.astro";
-import SectionNav from "../components/SectionNav.astro";
 import { liveArticles, toStory } from "../lib/articles.js";
 import { ICON } from "../lib/icons.js";
 
 const latest = (await liveArticles()).slice(0, 6).map(toStory);
 ---
 <Base title="Page not found" description="That page is not here. Search BOSS KG or jump into the latest gaming and Marvel news." noSearch robots="noindex">
-  <SectionNav />
   <main id="main" class="wrap">
     <header class="page-head">
       <h1>That page is not here</h1>

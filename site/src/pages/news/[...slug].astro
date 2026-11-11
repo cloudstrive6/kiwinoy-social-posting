@@ -78,13 +78,20 @@ const ld = [
 ];
 const shareText = encodeURIComponent(d.title);
 const shareUrl = encodeURIComponent(url);
+// Up next bar title: at most about two lines at 360 px, cut at a word boundary (never mid-word).
+const nbTitle = (t) => {
+  if (!t || t.length <= 62) return t;
+  const cut = t.slice(0, 61);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,:;.\u2014\u2013-]+$/, "") + "…";
+};
 const hubLine = hub
   ? `All ${hub.title} news${hub.videos ? ` and ${hub.videos} ${hub.videos === 1 ? "video" : "videos"}` : ""}`
   : `All ${sec.label} stories`;
 ---
 <Base title={d.title} description={d.excerpt} image={d.cover || undefined} type="article"
   publishedTime={iso} section={label} tags={d.tags} jsonLd={ld} page="article"
-  preloadImage={cover && cover.srcset ? { srcset: cover.srcset, sizes: cover.sizes } : undefined}>
+  preloadImage={cover && cover.srcset ? { srcset: cover.srcset, sizes: cover.sizes } : undefined}
+  imageSize={d.cover && d.cover.startsWith("/covers/") ? { width: 1200, height: 675 } : undefined}>
   <main id="main" class="wrap">
     <article class="article">
       <div class="read-progress" aria-hidden="true"></div>
@@ -168,7 +175,7 @@ const hubLine = hub
     <aside class="next-bar" id="nextBar" aria-label="Up next" inert data-pagefind-ignore>
       <a class="nb-link" href={next[0].href}>
         <span class="nb-label">Up next</span>
-        <span class="nb-title">{next[0].title}</span>
+        <span class="nb-title">{nbTitle(next[0].title)}</span>
       </a>
       <button class="nb-x" type="button" aria-label="Hide up next" set:html={ICON.close}></button>
     </aside>
@@ -206,16 +213,15 @@ const hubLine = hub
       })();
 
       /* F3. Up next bar.
-         Shows when the end of the body text is in the top two thirds of the screen (so on a
-         short article it never covers body text) or, on a long article (body over two screens),
-         once about 70% of the body has been read. Hides once the in-flow Up next cards reach the
-         upper part of the screen, and whenever the More list, the newsletter box or the footer
-         are on screen. */
+         Shows only once the end of the body text has scrolled above the bar's top edge, so it
+         never covers the paragraph being read, at any length or screen size. Hides once the
+         in-flow Up next cards reach the upper part of the screen, and whenever the More list,
+         the newsletter box or the footer are on screen. */
       (function () {
         var bar = document.getElementById("nextBar");
         var prose = document.querySelector(".article .prose");
         if (!bar || !prose || !("IntersectionObserver" in window)) return;
-        var endRead = false, mostRead = false, dismissed = false, on = false;
+        var endRead = false, dismissed = false, on = false;
         var blockers = new Map();
         var end = document.createElement("div");
         end.setAttribute("aria-hidden", "true");
@@ -223,27 +229,20 @@ const hubLine = hub
         function render() {
           var blocked = false;
           blockers.forEach(function (v) { if (v) blocked = true; });
-          var show = (endRead || mostRead) && !blocked && !dismissed;
+          var show = endRead && !blocked && !dismissed;
           if (show === on) return;
           on = show;
           bar.classList.toggle("on", show);
           if (show) bar.removeAttribute("inert"); else bar.setAttribute("inert", "");
         }
+        // The marker counts as "read" once it is above the bar's top edge (bar height + its
+        // 12 px offset + a 16 px gap). Measured once; the bar is laid out even while hidden.
+        var clear = Math.ceil(bar.getBoundingClientRect().height) + 28;
         new IntersectionObserver(function (es) {
           var e = es[es.length - 1];
           endRead = e.isIntersecting || e.boundingClientRect.top < 0;
           render();
-        }, { rootMargin: "0px 0px -35% 0px" }).observe(end);
-        // long articles: a marker at the paragraph that starts about 70% of the way down
-        if (prose.offsetHeight > window.innerHeight * 2) {
-          var kids = prose.children, at = null;
-          for (var i = 0; i < kids.length; i++) { if (kids[i].offsetTop - prose.offsetTop >= prose.offsetHeight * 0.7) { at = kids[i]; break; } }
-          if (at) new IntersectionObserver(function (es) {
-            var e = es[es.length - 1];
-            mostRead = e.isIntersecting || e.boundingClientRect.top < 0;
-            render();
-          }).observe(at);
-        }
+        }, { rootMargin: "0px 0px -" + clear + "px 0px" }).observe(end);
         var bo = new IntersectionObserver(function (es) {
           es.forEach(function (e) { blockers.set(e.target, e.isIntersecting); });
           render();

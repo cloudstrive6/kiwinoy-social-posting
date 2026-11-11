@@ -59,6 +59,10 @@ jobs:
 
       - name: Build
         working-directory: site
+        env:
+          # Staging builds render <meta name="robots" content="noindex,nofollow"> in the HTML
+          # (see site/src/layouts/Base.astro). Empty on main, so production builds are unchanged.
+          PUBLIC_SITE_ENV: ${{ github.ref_name == 'staging' && 'staging' || '' }}
         run: npm run build
 
       - name: Deploy to Netlify
