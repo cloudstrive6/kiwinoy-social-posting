@@ -18,13 +18,13 @@ const later = restLong.slice(12);
 const gridShorts = shorts.slice(0, 12);
 const has = longform.length > 0 || shorts.length > 0;
 const yt = (id, f) => `https://i.ytimg.com/vi/${id}/${f}.jpg`;
-// sddefault is 640 px wide (letterboxed); it covers phone screens, hq720 (1280 px) covers desktop.
-const featSrcset = feat ? `${yt(feat.id, "sddefault")} 720w, ${yt(feat.id, "hq720")} 1280w` : "";
+// Same-origin WebP copies of the 1280 px still, written at build time by integrations/image-variants.mjs.
+// If they are missing, the onerror handler falls back to YouTube's own hq720 image.
+const featSrcset = feat ? [480, 800, 1280].map((w) => `/img/yt/${feat.id}-${w}.webp ${w}w`).join(", ") : "";
 const featSizes = "(min-width: 1024px) 760px, calc(100vw - 40px)";
 const blurb = feat && feat.blurb ? feat.blurb.replace(/\s+/g, " ").split(/(?<=[.!?])\s/).slice(0, 2).join(" ") : "";
 ---
 <Base title="Videos" description="4K 60fps HDR gameplay, full walkthroughs and Shorts from BOSS KG."
-  preconnect={["https://i.ytimg.com"]}
   preloadImage={feat ? { srcset: featSrcset, sizes: featSizes } : undefined}>
   <SectionNav current="/videos/" />
   <main id="main" class="wrap">
@@ -41,9 +41,9 @@ const blurb = feat && feat.blurb ? feat.blurb.replace(/\s+/g, " ").split(/(?<=[.
       <section class="vfeat-row" aria-labelledby="hFeat">
         <a class="vfeat" href={`/watch/${feat.slug}/`} aria-hidden="true" tabindex="-1">
           <div class="vthumb">
-            <img src={yt(feat.id, "hq720")} srcset={featSrcset} sizes={featSizes} alt="" width="1280" height="720"
+            <img src={`/img/yt/${feat.id}-800.webp`} srcset={featSrcset} sizes={featSizes} alt="" width="1280" height="720"
               loading="eager" fetchpriority="high" decoding="async"
-              onerror="this.onerror=null;this.removeAttribute('srcset');this.src=this.src.replace(/(hq720|sddefault)/,'hqdefault')" />
+              onerror={`this.onerror=null;this.removeAttribute('srcset');this.src='${yt(feat.id, "hq720")}'`} />
             <span class="play" set:html={YT_PLAY}></span>
           </div>
         </a>

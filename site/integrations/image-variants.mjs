@@ -112,6 +112,26 @@ export default function imageVariants() {
           }
         }
         logger.info(`image variants: ${made} WebP written, ${cutMade} product cut-outs, ${copied} copied as fallback`);
+
+        // The /videos/ feature still (the page's LCP image): fetched once from YouTube at build time
+        // and served same-origin as WebP, so a phone does not open a third-party connection first.
+        // On any failure nothing is written and the page's onerror falls back to the YouTube URL.
+        try {
+          const data = JSON.parse(await fs.readFile(path.join(process.cwd(), "src", "data", "videos.json"), "utf8"));
+          const id = data.longform && data.longform[0] && data.longform[0].id;
+          if (id && sharp && /^[\w-]{6,20}$/.test(id)) {
+            const r = await fetch(`https://i.ytimg.com/vi/${id}/hq720.jpg`, { signal: AbortSignal.timeout(15000) });
+            if (!r.ok) throw new Error("status " + r.status);
+            const buf = Buffer.from(await r.arrayBuffer());
+            await fs.mkdir(path.join(out, "img", "yt"), { recursive: true });
+            for (const w of [480, 800, 1280]) {
+              await sharp(buf).resize({ width: w, withoutEnlargement: true }).webp({ quality: 76 }).toFile(path.join(out, "img", "yt", `${id}-${w}.webp`));
+            }
+            logger.info(`video feature still: /img/yt/${id}-{480,800,1280}.webp`);
+          }
+        } catch (e) {
+          logger.warn(`video feature still not cached (${String(e).slice(0, 80)}): /videos/ uses the YouTube URL`);
+        }
       },
     },
   };
