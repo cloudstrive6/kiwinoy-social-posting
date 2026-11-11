@@ -8,6 +8,7 @@ game: "mcu"
 cover: "/covers/james-gunn-and-peter-safran-step-down-as-dc-studios-co-heads-ex-marvel.jpg"
 date: 2026-11-09
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/james-gunn-peter-safran-stepping-down-as-dc-studios-heads-former-marvel-exec-taking-over/"
