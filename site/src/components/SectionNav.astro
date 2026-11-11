@@ -1,21 +1,27 @@
 ---
-// Section chips under the header on the home and section pages: one tap to any section on a phone.
+// Section chips under the header (home, sections, hubs): one tap to a section on phones and tablets.
+// Desktop hides it (the main nav is visible there). Phones show the four news sections in one row
+// (Games, Videos and Gear stay in the menu), so the row never scrolls sideways.
 interface Props { current?: string }
 const { current = "" } = Astro.props;
 const items = [
   { label: "Latest", href: "/category/news/" },
   { label: "Marvel games", href: "/category/marvel-games/" },
   { label: "MCU", href: "/category/mcu/" },
-  { label: "PlayStation", href: "/category/playstation/" },
-  { label: "Games", href: "/games/" },
-  { label: "Videos", href: "/videos/" },
-  { label: "Gear", href: "/gear/" },
+  { label: "PlayStation", short: "PS5", href: "/category/playstation/" },
+  { label: "Games", href: "/games/", wide: true },
+  { label: "Videos", href: "/videos/", wide: true },
+  { label: "Gear", href: "/gear/", wide: true },
 ];
 ---
 <nav class="section-nav" aria-label="Sections">
   <ul>
     {items.map((i) => (
-      <li><a href={i.href} aria-current={current === i.href ? "page" : undefined}>{i.label}</a></li>
+      <li class={i.wide ? "wide" : undefined}>
+        <a href={i.href} aria-current={current === i.href ? "page" : undefined}>
+          {i.short ? <><span class="long">{i.label}</span><span class="short">{i.short}</span></> : i.label}
+        </a>
+      </li>
     ))}
   </ul>
 </nav>

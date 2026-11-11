@@ -62,7 +62,7 @@ const shareUrl = encodeURIComponent(url);
       <header class="a-head">
         <Crumbs items={crumbs.slice(0, 2)} />
         <div class="a-kicker">
-          <a class="chip" href={sec.href}>{label}</a>
+          <a class="chip" href={sec.href}><span>{label}</span></a>
           {d.tag && d.tag !== "News" && <span class={`flag${d.tag === "Hot" ? " hot" : ""}`}>{d.tag}</span>}
         </div>
         <h1>{d.title}</h1>

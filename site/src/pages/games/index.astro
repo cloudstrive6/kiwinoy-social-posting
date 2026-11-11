@@ -20,7 +20,7 @@ const rows = GAMES.map((g) => {
     im: imgAttrs(g.cover, { sizes: SIZES.tile }),
   };
 });
-const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 ---
 <Base title="Games" description="Every game BOSS KG covers: Marvel's Spider-Man, Wolverine, Final Fantasy VII, Halo and more, with the latest stories and videos for each.">
   <SectionNav current="/games/" />
@@ -39,7 +39,7 @@ const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
                   alt={`${g.title} key art`} loading={i < 3 ? "eager" : "lazy"} decoding="async" />}
               </div>
               <div class="card-body">
-                <span class="game-count">{plural(g.articles, "story")}, {plural(g.videos, "video")}</span>
+                <span class="game-count">{plural(g.articles, "story", "stories")}, {plural(g.videos, "video", "videos")}</span>
                 <h2 class="card-title">{g.title}</h2>
                 <p>{g.blurb}</p>
               </div>

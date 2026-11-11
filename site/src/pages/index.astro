@@ -34,7 +34,7 @@ const take = (list, n) => {
 const side = take(all, 4);
 const marvel = take(all.filter((a) => SECTIONS["marvel-games"].match(a.data)), 4);
 const mcu = take(all.filter((a) => SECTIONS.mcu.match(a.data)), 4);
-const gaming = take(all, 4);
+const gaming = take(all.filter((a) => !SECTIONS["marvel-games"].match(a.data) && !SECTIONS.mcu.match(a.data)), 4);
 const latest = take(all, 8);
 
 const lead = leadEntry ? toStory(leadEntry) : null;
@@ -136,7 +136,7 @@ const ld = [
     {gearPicks.length > 0 && (
       <section class="sec" aria-labelledby="hGear">
         <SectionHead id="hGear" title="Gear we use" href="/gear/" more="All gear" />
-        <div class="gear-grid">{gearPicks.map((g) => <GearTile g={g} />)}</div>
+        <div class="gear-grid compact">{gearPicks.map((g) => <GearTile g={g} />)}</div>
         <div style="margin-top:var(--s5)"><PartnerBanner id="trybe" /></div>
       </section>
     )}
