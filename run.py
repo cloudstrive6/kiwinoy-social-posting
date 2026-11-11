@@ -91,10 +91,20 @@ def _with_backup(track_key: str, label: str, backup: bool, dry_run: bool, fn) ->
             return 0
         print(f"[backup] {label}: no recent post — posting the make-up.", flush=True)
     try:
-        fn()
+        res = fn()
     except Exception as e:
         print(f"[{label}] ERROR: {e}", file=sys.stderr, flush=True)
         return 1
+    # A SKIPPED slot (e.g. the lore-only YouTube track when no card passes the fact-check)
+    # posted nothing: do not stamp it as posted, so the next backup trigger makes it up
+    # (and never Telegram "posted the make-up" for a post that did not happen). 2026-11-12.
+    # YouTube track only: the other tracks skip on purpose (disabled, empty queue) and must
+    # keep stamping the marker, or every backup fire would re-run them.
+    if (track_key == "youtube_reel" and isinstance(res, dict)
+            and res.get("skipped") in ("lore_refused", "no_media")):
+        print(f"[{label}] slot skipped ({res.get('skipped')}) — not marked as posted, "
+              f"so the backup trigger can make it up.", flush=True)
+        return 0
     if not dry_run:
         try:
             _ghr.mark_posted(track_key)

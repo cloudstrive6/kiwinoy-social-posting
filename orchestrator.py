@@ -721,6 +721,50 @@ def run_gameplay_reel(
     else:                                        # feed = FB/IG only (YouTube left the bundle)
         pick_platforms = [t for t in CONFIG.platforms.get("video_post_to", ["facebook", "instagram"])
                           if t in _ghr.LEDGER_PLATFORMS]
+    # LORE-STRICT tracks (user, 2026-11-12: "only post the lore format for YouTube Shorts").
+    # On these platforms a lore slot NEVER falls back to classic/triptych/fill: it tries more
+    # moments, and if nothing survives the fact-check the slot is skipped (the make-up step
+    # posts later). The fallback below used to send a 157s triptych to YouTube on 2026-11-11.
+    lore_strict = (layout == "lore" and not layout_override
+                   and _lp in set(gcfg.get("lore_strict_platforms", ["youtube"]) or []))
+    # When a lore-strict track's cutscene moments run out or keep failing the fact-check, it
+    # moves on to OTHER footage (user, 2026-11-12: "it should choose other footages for the
+    # lore - we have lots of footages"): this game's cutscenes, then this game's gameplay
+    # footage, then other games' cutscenes, then other games' gameplay footage. A stage that
+    # comes back empty is dropped for the rest of the run.
+    _lore_stages: list = []
+    _lore_said: list = [f"{brief.get('game')}-cutscene"]   # pools already announced in the log
+
+    def _next_lore(seconds: float, exclude: set):
+        if not _lore_stages:
+            g0 = str(brief.get("game") or "")
+            try:
+                _cg = [g for g in b2_store.cutscene_games() if g != g0]
+            except Exception:
+                _cg = []
+            try:
+                _fg = [g for g in (reel_composer.list_games() or {})
+                       if not str(g).endswith(("-vertical", "-cutscene")) and g != g0]
+            except Exception:
+                _fg = []
+            random.shuffle(_cg)
+            random.shuffle(_fg)
+            _lore_stages.extend([(g0, f"{g0}-cutscene"), (g0, g0)]
+                                + [(g, f"{g}-cutscene") for g in _cg] + [(g, g) for g in _fg])
+        while _lore_stages:
+            _g, _pool = _lore_stages[0]
+            _p, _cid, _st = reel_composer.pick_unused_cutscene(
+                _g, pick_platforms, seconds, exclude=exclude, pool=_pool)
+            if _p:
+                if _lore_said and _lore_said[-1] != _pool:
+                    log(f"LORE moves on to {_pool} for this slot.")
+                _lore_said.append(_pool)
+                if _g != brief.get("game"):
+                    brief["game"] = _g
+                    brief["subject"] = str((CONFIG.reels.get("game_names", {}) or {}).get(_g, _g))
+                return _p, _cid, float(_st)
+            _lore_stages.pop(0)
+        return None, None, 0.0
     reel_path = run_dir / "reel.mp4"
     fps = int(gcfg.get("fps", CONFIG.reels.get("fps", 60)))
     rw, rh = int(gcfg.get("width", 1080)), int(gcfg.get("height", 1920))
@@ -755,7 +799,7 @@ def run_gameplay_reel(
         _lsec = _lore_seconds(gcfg.get("lore", {}) or {})
         clip_path, clip_id, lore_start = reel_composer.pick_unused_cutscene(
             brief["game"], pick_platforms, _lsec)
-        if not clip_path:
+        if not clip_path and not lore_strict:    # strict tracks walk _next_lore instead
             # The track's game may be locked by prefer_override to a game with no cutscenes
             # (wolverine, while the cutscenes are spider-man2/thelastofus2), which made a
             # lore-only platform fall back every single slot. Cross over to a game that HAS
@@ -774,6 +818,14 @@ def run_gameplay_reel(
                     brief["game"], brief["subject"] = _alt, _an
                     clip_path, clip_id, lore_start = _cp, _cid, _st
                     break
+        if not clip_path and lore_strict:
+            log(f"No unused CUTSCENE footage ({ckey}) — this track is lore-only, so the card "
+                "is built from other footage instead of switching format.")
+            clip_path, clip_id, lore_start = _next_lore(_lsec, set())
+            if not clip_path:
+                log("No unused footage anywhere for a lore card — skipping the slot.")
+                return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay",
+                                       "brief": brief}, "no_media")
         if not clip_path:
             _prev = [l for l in main_layouts if l != "lore"] or [
                 l for l in (gcfg.get("layouts") or ["classic"]) if l != "rotated"] or ["classic"]
@@ -831,7 +883,8 @@ def run_gameplay_reel(
         # abort the whole run, so one unsupported sentence meant no post on any platform
         # that slot. Try other moments first; only then drop the format (bench 2026-10-08).
         lore_out, _ldir, _tried = None, run_dir / "lore", set()
-        for _try in range(3):
+        _max_tries = int(lcfg.get("strict_tries", 12)) if lore_strict else 3
+        for _try in range(_max_tries):
             _ldir = run_dir / ("lore" if _try == 0 else f"lore_retry{_try}")
             try:
                 lore_out = _build_lore(Path(clip_path), brief.get("game", ""), _start, _dur,
@@ -843,11 +896,20 @@ def run_gameplay_reel(
                 # window three times and the slot fell through to triptych while claiming
                 # it was trying other moments (user, 2026-10-09).
                 _tried.add(str(clip_id))
-                _np, _nid, _ns = reel_composer.pick_unused_cutscene(
-                    brief["game"], pick_platforms, _dur, exclude=_tried)
+                if lore_strict:                  # walk on to other footage, never re-format
+                    _np, _nid, _ns = _next_lore(_dur, _tried)
+                else:
+                    _np, _nid, _ns = reel_composer.pick_unused_cutscene(
+                        brief["game"], pick_platforms, _dur, exclude=_tried)
                 if not _np:
                     break
                 clip_path, clip_id, _start = _np, _nid, float(_ns)
+        if lore_out is None and lore_strict:
+            log(f"No lore card survived the fact-check after {_max_tries} moments across the "
+                "footage pools — skipping the slot (lore-only track: no triptych/classic "
+                "fallback; the backup trigger makes it up).")
+            return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief},
+                         "lore_refused")
         if lore_out is None:
             # Every candidate moment was refused. Post the slot as a normal composited reel
             # rather than losing it: same hook/caption path as the classic layout below.

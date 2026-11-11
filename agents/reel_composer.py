@@ -294,7 +294,8 @@ def _frange(a: float, b: float, step: float) -> list[float]:
 
 
 def pick_unused_cutscene(game: str, platforms, seconds: float,
-                         cache: Optional[Path] = None, exclude=None):
+                         cache: Optional[Path] = None, exclude=None,
+                         pool: Optional[str] = None):
     """Pick (clip_path, clip_id, start) for a LORE short: a RANDOM cutscene WINDOW that is
     unused on every platform in `platforms`. Ids are '<game>-cutscene__<file>@<start>', so the
     SAME recording is reused for different moments until its windows run out. Returns
@@ -303,8 +304,11 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
     RANDOM, not first-free: walking the pool in order meant every lore short came out of the
     same recording until its ~9 windows ran out, so days of posts were all one scene from one
     clip from one game (user, 2026-10-09). `exclude` skips ids a caller already tried.
+    `pool` picks windows from another footage pool instead (e.g. the game's own gameplay
+    footage key '<game>'), used when the lore-only YouTube track runs out of cutscene moments
+    that pass the fact-check (user, 2026-11-12: "we have lots of footages").
     """
-    key = f"{game}-cutscene"
+    key = pool or f"{game}-cutscene"
     plats = [str(p) for p in (platforms or []) if p]
     skip = {str(x) for x in (exclude or [])}
     pool = list(_candidates(key))
