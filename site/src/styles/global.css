@@ -519,6 +519,7 @@ footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background
 .vfeat-row{display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); gap:var(--s6); align-items:center; margin-top:var(--s6)}
 .vfeat-text{display:flex; flex-direction:column; align-items:flex-start; gap:var(--s3)}
 .vfeat-text h2{font-size:clamp(24px, 2.6vw, 32px); line-height:1.1}
+.vfeat-text h2 a{display:flex; align-items:center; min-height:44px}
 .vfeat-text p{font-family:var(--f-text); color:var(--body); font-size:16px; line-height:1.55}
 .vfeat-actions{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s2)}
 @media (max-width:1023px){.vfeat-row{grid-template-columns:minmax(0,1fr); gap:var(--s4)}}
