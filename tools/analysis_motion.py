@@ -68,9 +68,9 @@ FONT_FILES = {
     "heavy": ROOT / "assets/fonts/montserrat/Montserrat-ExtraBold.ttf",
     "label": ROOT / "assets/fonts/montserrat/Montserrat-SemiBold.ttf",
 }
-# Quotes: the plan wants Source Serif 4 Italic (SIL OFL). Not shipped yet (it needs a download
-# Bryce has to approve), so quotes use Montserrat SemiBold until the file is added here.
-FONT_FILES["quote"] = FONT_FILES["label"]
+# Quotes: Source Serif 4 Italic (SIL OFL, Adobe), a static Medium instance (wght 500, opsz 36)
+# made with fontTools from Google Fonts' variable file; Bryce approved the download 2026-11-13.
+FONT_FILES["quote"] = ROOT / "assets/fonts/source-serif-4/SourceSerif4-MediumItalic.ttf"
 FONT_FILES["serif"] = FONT_FILES["quote"]
 
 USED_SIZES: set = set()

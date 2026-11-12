@@ -217,7 +217,8 @@ def g_card(spec: dict, n: int, grab=None) -> M.Graphic:
 
 
 def g_quote(spec: dict, n: int, grab=None) -> M.Graphic:
-    lines = M.wrap(spec["text"], M.NAME, "quote", 1400)
+    text = spec["text"].replace("'", "’")  # typographic apostrophes in the serif
+    lines = M.wrap_balanced(text, M.NAME, "quote", 1400)  # balanced lines, no one-word widow
     lh = 92
     ts = [M.text(ln, M.NAME, "quote") for ln in lines]
     first = 540 - (len(lines) - 1) * lh / 2 - 40 + cap(M.NAME, "quote") / 2
@@ -232,7 +233,7 @@ def g_quote(spec: dict, n: int, grab=None) -> M.Graphic:
     sp0 = stg * (len(lines) - 1) + 18
     c = Clock(n, sp0 + 22)
     key = None
-    kw = str(spec.get("key", "")).strip().lower()
+    kw = str(spec.get("key", "")).strip().lower().replace("'", "’")
     if kw:
         for k, ln in enumerate(lines):
             m = re.search(r"\b" + re.escape(kw) + r"\b", ln, re.I)
