@@ -64,6 +64,30 @@ class Clips:
             self._urls[idx] = (u, time.time())
         return u
 
+    def fetch(self, idx: int, src: float, span: float, work: Path) -> Path:
+        """Copy one source range to a local file first (fix 2026-11-12): with many B2 inputs
+        open in one ffmpeg graph, a later shot's HTTP connection idled while earlier shots
+        encoded, B2 closed it, and the shot ran out of frames after about 2 s (stuck frames in
+        the first test render). One input at a time, with reconnects, then a length check."""
+        out = work / "pieces" / f"{idx:03d}_{src:.3f}_{span:.3f}.mkv"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        if out.exists():
+            return out
+        want = span + 0.3
+        for attempt in range(3):
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-reconnect", "1", "-reconnect_at_eof", "1",
+                            "-reconnect_streamed", "1", "-reconnect_on_network_error", "1",
+                            "-reconnect_delay_max", "10", "-ss", f"{src:.3f}", "-i", self.url(idx),
+                            "-t", f"{want:.3f}", "-map", "0:v:0", "-map", "0:a:0?",
+                            "-c:v", "libx264", "-preset", "ultrafast", "-crf", "12",
+                            "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(out)], check=False)
+            got = probe_seconds(out, "v") if out.exists() else 0.0
+            if got >= want - 0.25:
+                return out
+            print(f"clip {idx}@{src:.1f}: fetched {got:.2f}s of {want:.2f}s, retry {attempt + 1}", flush=True)
+            self._urls.pop(idx, None)
+        raise RuntimeError(f"could not fetch clip {idx} at {src:.1f}s for {want:.1f}s")
+
     def length(self, idx: int) -> float:
         return float(self.map[str(idx)]["seconds"])
 
@@ -72,6 +96,17 @@ class Clips:
                               "-frames:v", "1", "-f", "image2", "-c:v", "png", "-"],
                              capture_output=True, check=True).stdout
         return Image.open(BytesIO(raw)).convert("RGB")
+
+
+def probe_seconds(path: Path, stream: str = "v") -> float:
+    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", f"{stream}:0", "-count_packets",
+                          "-show_entries", "stream=nb_read_packets,r_frame_rate", "-of", "json", str(path)],
+                         capture_output=True, text=True).stdout
+    try:
+        st = json.loads(out)["streams"][0]
+        return int(st["nb_read_packets"]) / float(Fraction(st["r_frame_rate"]))
+    except Exception:
+        return 0.0
 
 
 def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
@@ -110,7 +145,7 @@ def vchain(label_in: str, p: dict, out_label: str) -> str:
     if crop == "sub":
         f.append("crop=iw*0.84:ih*0.84:(iw-ow)/2:ih*0.02")
     elif crop == "hud":
-        f.append("crop=iw*0.8:ih*0.8:(iw-ow)/2:(ih-oh)/2")
+        f.append("crop=iw*0.8:ih*0.8:(iw-ow)/2:ih*0.05")
     f.append("scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1")
     if p.get("blur"):
         f.append("gblur=sigma=14")
@@ -153,11 +188,14 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
         pieces = [p]
     else:
         pieces = plan_shots(b["shots"], dur, clips)
+        for p in pieces:  # game subtitles under the voice show lines nobody hears
+            if "split" not in p and not p.get("crop"):
+                p["crop"] = "sub"
     for k, p in enumerate(pieces):
         if "split" in p:
             l, r = p["split"]
-            il = add_input(["-ss", f"{l['in']:.3f}", "-t", f"{p['out'] + 0.5:.3f}", "-i", clips.url(l["clip"])])
-            ir = add_input(["-ss", f"{r['in']:.3f}", "-t", f"{p['out'] + 0.5:.3f}", "-i", clips.url(r["clip"])])
+            il = add_input(["-i", str(clips.fetch(l["clip"], l["in"], p["out"] + 0.2, work))])
+            ir = add_input(["-i", str(clips.fetch(r["clip"], r["in"], p["out"] + 0.2, work))])
             graph.append(f"color=c=0x0c0c10:s=1920x1080:r={FPS}:d={p['out']:.4f}[bg{k}]")
             for side, ii in (("l", il), ("r", ir)):
                 graph.append(f"[{ii}:v]scale=944:531,setsar=1,setpts=PTS-STARTPTS,fps={FPS},"
@@ -166,7 +204,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
                          f"format=yuv420p[v{k}]")
             graph.append(f"anullsrc=r=48000:cl=stereo,atrim=duration={p['out']:.4f}[a{k}]")
         else:
-            i = add_input(["-ss", f"{p['src']:.3f}", "-t", f"{p['span'] + 0.3:.3f}", "-i", clips.url(p["clip"])])
+            i = add_input(["-i", str(clips.fetch(p["clip"], p["src"], p["span"], work))])
             graph.append(vchain(f"{i}:v", p, f"v{k}"))
             if b["type"] == "game":
                 graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
@@ -296,6 +334,8 @@ def main() -> int:
             continue
         wav = narr_dir / f"{b['id']}.wav" if b["type"] == "narr" else None
         render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg)
+        for f in (work / "pieces").glob("*.mkv"):
+            f.unlink()
         print(f"{b['id']} {b['type']} {dur:.1f}s done ({time.time() - t0:.0f}s elapsed)", flush=True)
     (out / "timeline.json").write_text(json.dumps(timeline, indent=1), encoding="utf-8")
     chap_txt = "\n".join(f"{fmt_ts(s)} {title}" for s, title in chapters)
