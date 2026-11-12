@@ -1,0 +1,52 @@
+name: Analysis long-form (manual)
+
+# KG long-form analysis format (Bryce 2026-11-12: manual runs for the first sample, automation
+# later). Manual-only: no schedule, never uploads to YouTube or any platform. Each step leaves
+# its files as a workflow artifact for review.
+#   inventory: read-only list of a game's footage on B2 (sizes, durations, resolution).
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Step to run (inventory)"
+        required: true
+        default: "inventory"
+      game:
+        description: "Game key as used on B2, e.g. wolverine"
+        required: true
+        default: "wolverine"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kiwinoy-analysis-longform
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Install ffprobe
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Footage inventory (read-only)
+        if: ${{ github.event.inputs.step == 'inventory' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+        run: python tools/footage_inventory.py "$GAME" --probe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: analysis-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
+          path: output/inventory/
+          retention-days: 14
