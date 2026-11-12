@@ -5,12 +5,13 @@ name: Analysis long-form (manual)
 # its files as a workflow artifact for review.
 #   inventory: read-only list of a game's footage on B2 (sizes, durations, resolution).
 #   frames: contact sheets (3 stills per clip) of cutscenes/<game>/ and footage/<game>/, the
-#           only source folders for analysis videos (rule, Bryce 2026-11-12).
+#           source folders for analysis videos (rule, Bryce 2026-11-12).
+#   transcribe: timestamped dialogue of the same clips (faster-whisper on CPU, free).
 on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames)"
+        description: "Step to run (inventory, frames, transcribe)"
         required: true
         default: "inventory"
       game:
@@ -28,7 +29,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 300
     env:
       B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
@@ -52,6 +53,13 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
         run: python tools/footage_frames.py "$GAME"
+      - name: Dialogue transcripts with faster-whisper (read-only, approved 2026-11-12)
+        if: ${{ github.event.inputs.step == 'transcribe' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+        run: |
+          pip install "faster-whisper==1.1.1"
+          python tools/footage_transcribe.py "$GAME"
       - uses: actions/upload-artifact@v4
         with:
           name: analysis-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
