@@ -10,7 +10,7 @@ name: Analysis long-form (manual)
 #   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
 #   narrate: full narration from data/analysis/<game>/edl.json (voice Orus, picked 2026-11-12).
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
-#           drafts/analysis/ with a 7-day review link. Optional "only" renders a few beats
+#           renders/analysis/<game>/ (kept) with a 7-day review link. Optional "only" renders a few beats
 #           as a small preview instead (test runs).
 on:
   workflow_dispatch:

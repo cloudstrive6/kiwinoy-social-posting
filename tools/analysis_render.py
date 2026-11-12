@@ -12,7 +12,7 @@ Each beat renders to its own segment (1920x1080, 60 fps, PCM audio):
   game: the clip's own audio at full level (normalised), narration paused, 15 s or less.
 Then: concat, two-pass loudnorm to -14 LUFS / -1.5 dBTP, chapters from the real cut, QC
 (resolution, fps, loudness, black frames, freezes over 2 s), three thumbnails, and an upload
-of the draft to B2 drafts/analysis/ with a 7-day review link. Never posts to any platform.
+of the render to B2 renders/analysis/<game>/ (kept for good) with a 7-day review link. Never posts to any platform.
 
     python tools/analysis_render.py wolverine [--only b000,b001] [--no-upload]
 """
@@ -38,6 +38,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
+import analysis_brand as brand_lt  # noqa: E402
 import analysis_gfx as gfx  # noqa: E402
 from core import b2_store  # noqa: E402
 
@@ -211,7 +212,7 @@ def achain(label_in: str, p: dict, out_label: str, gain_db: float) -> str:
 
 
 def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, under_db: float,
-                narr_wav: Path | None, seg: Path) -> None:
+                narr_wav: Path | None, seg: Path, brand: tuple | None = None) -> None:
     inputs: list[str] = []
     graph: list[str] = []
     vlabels, alabels = [], []
@@ -273,6 +274,13 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
                 graph.append(f"[{cur}][g{li}]overlay=0:0:enable='between(t,{s:.3f},{e:.3f})'[o{li}]")
                 cur = f"o{li}"
                 li += 1
+    if brand:  # the Subscribe To Boss KG lower third (analysis_brand.py), offset from this beat's start
+        mov, off, secs = brand
+        bi = add_input(["-i", str(mov)])
+        sh = f"trim=start={-off:.4f},setpts=PTS-STARTPTS" if off < 0 else f"setpts=PTS-STARTPTS+{off:.4f}/TB"
+        graph.append(f"[{bi}:v]format=rgba,{sh}[brd]")
+        graph.append(f"[{cur}][brd]overlay=0:0:eof_action=pass:enable='between(t,{max(0.0, off):.3f},{off + secs:.3f})'[obr]")
+        cur = "obr"
     graph.append(f"[{cur}]format=yuv420p[vout]")
     if narr_wav is not None:
         ni = add_input(["-i", str(narr_wav)])
@@ -388,11 +396,48 @@ def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, piec
 
 RENDER_VER = "2026-11-13a"  # bump when a change to this file should re-render every beat
 GFX_SRC = hashlib.sha1((ROOT / "tools/analysis_gfx.py").read_bytes()).hexdigest()[:10]
+BRAND_SRC = hashlib.sha1((ROOT / "tools/analysis_brand.py").read_bytes() + (ROOT / "assets/brand/kg-avatar.png").read_bytes()
+                         + GFX_SRC.encode()).hexdigest()[:10]
 
 
-def beat_signature(b: dict, gfx_specs: dict, timings: dict, dur: float) -> str:
+def brand_config(gfx_specs: dict) -> dict | None:
+    """Subscribe lower third settings: defaults, then data/analysis/brand.json, then the game's
+    gfx.json "brand" key (false turns it off for that video)."""
+    over = gfx_specs.get("brand", {})
+    if over is False:
+        return None
+    cfg = dict(brand_lt.DEFAULTS)
+    shared = ROOT / "data/analysis/brand.json"
+    if shared.exists():
+        cfg.update(json.loads(shared.read_text(encoding="utf-8")).get("subscribe", {}))
+    if isinstance(over, dict):
+        cfg.update(over)
+    return cfg
+
+
+def brand_side(beats_t: list[tuple[dict, float, float]], gfx_specs: dict, cfg: dict) -> str:
+    """Keep the lower third clear of a title lower third: switch sides if one is on screen."""
+    a, z = float(cfg["at"]), float(cfg["at"]) + brand_lt.total_seconds(cfg)
+    for b, start, dur in beats_t:
+        if start >= z or start + dur <= a:
+            continue
+        for gid in b.get("gfx", []):
+            for spec in gfx_specs.get(gid, []):
+                if spec.get("kind") != "lower":
+                    continue
+                s0 = start + max(0.0, gfx._t(spec, "at", "at_frac", dur, 0.0))
+                s1 = start + (min(dur, s0 - start + float(spec["dur"])) if spec.get("dur") else dur)
+                if s0 < z and s1 > a:
+                    return "right" if cfg.get("side", "left") == "left" else "left"
+    return cfg.get("side", "left")
+
+
+def beat_signature(b: dict, gfx_specs: dict, timings: dict, dur: float, brand: tuple | None = None,
+                   brand_cfg: dict | None = None) -> str:
     parts = [RENDER_VER, json.dumps(b, sort_keys=True), f"{dur:.3f}",
              json.dumps(timings.get(b["id"], {}), sort_keys=True)]
+    if brand:  # only the beats the lower third crosses change when it does
+        parts += [BRAND_SRC, f"{brand[1]:.3f}", json.dumps(brand_cfg, sort_keys=True)]
     if b.get("gfx"):
         parts += [GFX_SRC, json.dumps([gfx_specs.get(g) for g in b["gfx"]], sort_keys=True)]
     return hashlib.sha1("|".join(parts).encode()).hexdigest()
@@ -467,14 +512,32 @@ def main() -> int:
         for b in beats:
             if b["id"] in over:
                 b["shots"] = over[b["id"]]
+    def beat_dur(b: dict) -> float:
+        if b["type"] == "narr":
+            return LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
+        return b["out"] - b["in"]
+
+    beats_t, acc = [], 0.0
+    for b in beats:
+        beats_t.append((b, acc, beat_dur(b)))
+        acc += beats_t[-1][2]
+    bcfg = brand_config(gfx_specs)
+    bmov, bsecs = None, 0.0
+    if bcfg:
+        bcfg["side"] = brand_side(beats_t, gfx_specs, bcfg)
+        bmov = work / f"brand-{hashlib.sha1((BRAND_SRC + json.dumps(bcfg, sort_keys=True)).encode()).hexdigest()[:10]}.mov"
+        bsecs = brand_lt.total_seconds(bcfg)
+        if not bmov.exists():
+            brand_lt.render_mov(bmov, bcfg)
+        print(f"subscribe lower third at {bcfg['at']:.1f}s for {bsecs:.2f}s on the {bcfg['side']}", flush=True)
     t = 0.0
     chapters, timeline = [], []
     t0 = time.time()
     for b in beats:
-        if b["type"] == "narr":
-            dur = LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
-        else:
-            dur = b["out"] - b["in"]
+        dur = beat_dur(b)
+        bt = None
+        if bmov and t < float(bcfg["at"]) + bsecs and t + dur > float(bcfg["at"]):
+            bt = (bmov, float(bcfg["at"]) - t, bsecs)
         if b.get("chapter"):
             chapters.append((t, b["chapter"]))
         timeline.append({"id": b["id"], "type": b["type"], "start": round(t, 2), "seconds": round(dur, 2)})
@@ -482,12 +545,12 @@ def main() -> int:
         if only and b["id"] not in only:
             continue
         seg = segs / f"{b['id']}.mkv"
-        sig = beat_signature(b, gfx_specs, timings, dur)
+        sig = beat_signature(b, gfx_specs, timings, dur, bt, bcfg if bt else None)
         sigf = segs / f"{b['id']}.sig"
         if seg.exists() and sigf.exists() and sigf.read_text() == sig:
             continue  # unchanged since a cached render (segments are cached between runs)
         wav = narr_dir / f"{b['id']}.wav" if b["type"] == "narr" else None
-        render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg)
+        render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg, bt)
         sigf.write_text(sig)
         for f in (work / "pieces").glob("*.mkv"):
             f.unlink()
@@ -547,13 +610,21 @@ def main() -> int:
 
     if a.no_upload:
         return 0 if report["pass"] else 2
-    key = f"drafts/analysis/{final.name}"
+    # Every render is kept on B2 under renders/analysis/<game>/ (Bryce, 2026-11-13: "save our renders
+    # for these kinds of long form videos in a folder in B2"), with its thumbnails, chapters and QC.
+    folder = f"renders/analysis/{game}"
+    key = f"{folder}/{final.name}"
     rc = subprocess.run(["rclone", "copyto", str(final), f"kgb2:{b2_store._bucket()}/{key}",
                          "--b2-chunk-size", "100M"], env=b2_env()).returncode
+    for extra in [*sorted(out.glob("thumb-*.jpg")), out / "chapters.txt", out / "music-credits.txt",
+                  out / "qc.json", out / "timeline.json"]:
+        if extra.exists():
+            subprocess.run(["rclone", "copyto", str(extra),
+                            f"kgb2:{b2_store._bucket()}/{folder}/{a.version}/{extra.name}"], env=b2_env())
     if rc == 0:
         link = b2_store.presigned_url(key, valid_seconds=7 * 24 * 3600) or ""
         (out / "review-link.txt").write_text(f"{key}\n{link}\n", encoding="utf-8")
-        print(f"uploaded draft to B2 {key} (review link in the artifact)", flush=True)
+        print(f"uploaded render to B2 {key} (review link in the artifact)", flush=True)
     else:
         print(f"B2 upload failed rc={rc}", flush=True)
     return 0 if report["pass"] else 2
