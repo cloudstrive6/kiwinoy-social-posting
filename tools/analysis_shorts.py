@@ -14,8 +14,9 @@ snapped to the known narration text so the spelling is the script's.
 Layout (1080x1920, 60 fps): blurred, darkened fill of the same frames; the 16:9 picture full
 width in the middle band (or "zoom": a 4:3 centre crop, larger); the hook at the top (Anton,
 off-white #F2EEE8, one KG red #FF3D46 word); word-by-word captions in the lower-middle safe area
-(above the bottom 20% and left of the right 15%), active word on a red box; @Kiwinoy and the KG
-avatar as a small watermark; an optional SPOILERS tag; the last 1.5 s holds the frame with the
+(above the bottom 20%), centred on the frame but never past x=918 where the Shorts buttons sit,
+active word on a red box; BOSS KG and the KG avatar as a small watermark on the left; an optional
+SPOILERS tag on the right; the last 1.5 s holds the frame with the
 end line "Full video on the channel". Audio: two-pass loudnorm to -14 LUFS, true peak -1 dBTP or
 lower. Fonts only from assets/fonts.
 
@@ -61,12 +62,16 @@ ROW_Y = 600                            # watermark and SPOILERS row (centre)
 BAND = {"band": (650, 1080, 608),      # top, width, height of the picture
         "zoom": (600, 1080, 810)}
 CAP_Y = {"band": 1395, "zoom": 1468}   # caption line centre
-# Everything of ours sits in x 54..918: clear of the right 15% where the Shorts buttons are
-# (review 2026-11-13 measured boxes and the end card out to x=969 when centred on 540).
+# Hook, captions and end card are centred on the frame (Bryce, 2026-11-13: "align-center").
+# To stay clear of the right 15% where the Shorts buttons are, every line is kept narrow enough
+# to end before x=918 while centred on 540 (so it spans at most 162..918).
 SAFE_L, SAFE_R = 54, 918
-CX = (SAFE_L + SAFE_R) // 2            # 486, the centre line for hook, captions and end card
-CAP_MAX_W = 700                        # text 136..836; the active box and its pop stay inside
-HOOK_MAX_W = 850
+EDGE = 57                              # outer margin of the watermark row, both sides
+CX = W // 2                            # 540, the centre line for hook, captions and end card
+HALF = SAFE_R - CX                     # 378: the widest half-line that still clears the buttons
+CAP_MAX_W = 2 * HALF - 76              # 680: text 200..880; the active box and its pop stay inside
+HOOK_MAX_W = 2 * HALF - 20             # 736
+WATERMARK = "BOSS KG"                  # channel name, not the @handle (Bryce, 2026-11-13)
 SAFE_BOTTOM = int(H * 0.80)            # nothing of ours below this line
 TAIL = 1.5                             # end line hold
 END_LINE = "Full video on the channel"
@@ -537,7 +542,7 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
             draw_shadowed(im, (x, y), w, f, (*col, 255), stroke=5, shadow=12)
             x += text_w(f, w) + sp
         y += lh
-    # watermark: KG avatar + @Kiwinoy, left, just above the picture
+    # watermark: KG avatar + BOSS KG, left, just above the picture
     top = BAND[frame][0]
     row = top - 50 if frame == "band" else top - 46
     av = Image.open(AVATAR).convert("RGBA").resize((60, 60), Image.LANCZOS)
@@ -549,13 +554,13 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     im.alpha_composite(ring, (57, row - 33))
     im.alpha_composite(av, (60, row - 30))
     fw = font(MONT, 34, "Bold")
-    ImageDraw.Draw(im).text((138, row), "@Kiwinoy", font=fw, fill=(*OFFWHITE, 225), anchor="lm",
+    ImageDraw.Draw(im).text((138, row), WATERMARK, font=fw, fill=(*OFFWHITE, 225), anchor="lm",
                             stroke_width=2, stroke_fill=(*INK, 200))
     if s.get("spoilers"):
         ft = font(ANTON, 36)
         label = "SPOILERS"
         tw = text_w(ft, label)
-        x1 = SAFE_R
+        x1 = W - EDGE                    # right-aligned, mirroring the avatar's left margin
         x0 = x1 - tw - 36
         d = ImageDraw.Draw(im)
         d.rounded_rectangle((x0, row - 26, x1, row + 26), radius=10, fill=(*RED, 240))
@@ -572,8 +577,8 @@ def end_layer(frame: str) -> Image.Image:
     # one line: "FULL VIDEO" in red, the rest off-white
     a, b = "FULL VIDEO", " ON THE CHANNEL"
     tw = text_w(f, a + b)
-    if tw > SAFE_R - SAFE_L - 60:
-        f = font(ANTON, int(84 * (SAFE_R - SAFE_L - 60) / tw))
+    if tw > 2 * HALF - 40:
+        f = font(ANTON, int(84 * (2 * HALF - 40) / tw))
         tw = text_w(f, a + b)
     x = CX - tw // 2
     draw_shadowed(im, (x, y), a, f, (*RED, 255), stroke=5, shadow=12)
@@ -587,7 +592,7 @@ def end_layer(frame: str) -> Image.Image:
 
 # --------------------------------------------------------------------------- captions
 
-CAP_SIZE = 80
+CAP_SIZE = 68                          # was 80; Bryce asked for a little smaller (2026-11-13)
 CAP_STRIP_H = 220
 
 
