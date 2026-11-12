@@ -15,12 +15,13 @@ import argparse
 import json
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+
+import numpy as np  # noqa: E402
 
 from core import b2_store  # noqa: E402
 
@@ -55,16 +56,21 @@ def main() -> int:
         url = b2_store.presigned_url(c["key"], valid_seconds=3600) or ""
         segs = []
         if url:
-            with tempfile.TemporaryDirectory() as td:
-                wav = Path(td) / "a.wav"
-                subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", url, "-vn", "-ac", "1",
-                                "-ar", "16000", str(wav)], capture_output=True, timeout=600)
-                if wav.exists():
-                    parts, _ = model.transcribe(str(wav), language="en", beam_size=1,
+            try:
+                # Decode to 16 kHz mono float32 with ffmpeg and pass the array, so PyAV is never
+                # used (faster-whisper 1.1.1 breaks with PyAV 19's open() signature).
+                raw = subprocess.run(["ffmpeg", "-v", "error", "-i", url, "-vn", "-ac", "1",
+                                      "-ar", "16000", "-f", "f32le", "-"],
+                                     capture_output=True, timeout=900).stdout
+                audio = np.frombuffer(raw, dtype=np.float32)
+                if audio.size:
+                    parts, _ = model.transcribe(audio, language="en", beam_size=1,
                                                 vad_filter=True, initial_prompt=prompt,
                                                 condition_on_previous_text=False)
                     segs = [{"start": round(s.start, 1), "end": round(s.end, 1),
                              "text": s.text.strip()} for s in parts]
+            except Exception as e:  # one bad clip must not stop the run
+                print(f"clip {i} failed: {e}", flush=True)
         (out / f"{i:03d}.json").write_text(json.dumps(
             {"idx": i, "pool": c["pool"], "name": c["name"], "key": c["key"], "segments": segs},
             indent=1), encoding="utf-8")

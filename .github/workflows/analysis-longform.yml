@@ -61,6 +61,7 @@ jobs:
           pip install "faster-whisper==1.1.1"
           python tools/footage_transcribe.py "$GAME"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: analysis-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
           path: output/inventory/
