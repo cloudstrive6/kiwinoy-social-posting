@@ -194,7 +194,7 @@ def strip(items: list[str], lit: int, shown: int) -> Image.Image:
     seg = (W - 240) // n
     y = 940
     d.line([(120, y), (W - 120, y)], fill=(255, 255, 255, 140), width=4)
-    fh, fs = font("display", 44), font("label", 28)
+    fh, fs = font("display", 46), font("label", 36)
     for i, it in enumerate(items[:shown]):
         x = 120 + i * seg
         on = i == lit
@@ -270,13 +270,13 @@ def split_labels(left: str, right: str, drop: str | None) -> Image.Image:
 
 def node(d, cx, cy, s, fill=(0, 0, 0, 220), col=WHITE, sub: str | None = None, edge=WHITE):
     f = font("display", 46)
-    w = max(tw(d, s, f), tw(d, sub, font("label", 26)) if sub else 0)
+    w = max(tw(d, s, f), tw(d, sub, font("label", 32)) if sub else 0)
     h = 84 if sub else 64
     d.rounded_rectangle([cx - w // 2 - 26, cy - h // 2, cx + w // 2 + 26, cy + h // 2], 12,
                         fill=fill, outline=edge, width=3)
     d.text((cx, cy - (14 if sub else 0)), s, font=f, fill=col, anchor="mm")
     if sub:
-        d.text((cx, cy + 26), sub, font=font("label", 26), fill=(220, 220, 220, 255), anchor="mm")
+        d.text((cx, cy + 26), sub, font=font("label", 32), fill=(220, 220, 220, 255), anchor="mm")
 
 
 def dashed(d, a, b, fill, width=4, dash=18):
@@ -301,9 +301,9 @@ def rel_map(stage: int) -> Image.Image:
     node(d, cx, 200, "ESSEX", col=WHITE)
     d.line([(cx, 236), (cx, 330)], fill=WHITE, width=4)
     d.polygon([(cx - 12, 318), (cx + 12, 318), (cx, 340)], fill=WHITE)
-    d.text((cx + 22, 285), "built Team X", font=font("label", 28), fill=(220, 220, 220, 255), anchor="lm")
+    d.text((cx + 22, 285), "built Team X", font=font("label", 36), fill=(220, 220, 220, 255), anchor="lm")
     d.ellipse([cx - 330, 350, cx + 330, 540], outline=(255, 255, 255, 170), width=3)
-    d.text((cx, 380), "TEAM X", font=font("label", 30), fill=ORANGE, anchor="mm")
+    d.text((cx, 380), "TEAM X", font=font("label", 34), fill=ORANGE, anchor="mm")
     node(d, cx - 160, 465, "SABRETOOTH", sub="Victor Creed",
          col=ORANGE if stage == 3 else WHITE, edge=ORANGE if stage == 3 else WHITE)
     node(d, cx + 180, 465, "MYSTIQUE")
@@ -312,13 +312,13 @@ def rel_map(stage: int) -> Image.Image:
     # Logan
     ly = 690
     dashed(d, (cx, 545), (cx, ly - 34), (255, 255, 255, 200))
-    d.text((cx + 22, 615), "left 3 years ago", font=font("label", 28), fill=(220, 220, 220, 255), anchor="lm")
+    d.text((cx + 22, 615), "left 3 years ago", font=font("label", 36), fill=(220, 220, 220, 255), anchor="lm")
     node(d, cx, ly, "LOGAN", fill=(40, 40, 46, 235))
     if stage == 3:
         for i in range(5):
             fx, fy = cx - 200 + i * 100, ly + 90
             d.rectangle([fx - 40, fy - 23, fx + 40, fy + 23], fill=(250, 250, 250, 235))
-        d.text((cx, ly + 145), "memories: blank", font=font("label", 26), fill=(230, 230, 230, 255), anchor="mm")
+        d.text((cx, ly + 145), "memories: blank", font=font("label", 36), fill=(230, 230, 230, 255), anchor="mm")
     if stage >= 2:
         node(d, cx + 300, ly, "JEAN", sub='"Red"', col=ORANGE, edge=ORANGE)
         d.line([(cx + 90, ly), (cx + 200, ly)], fill=ORANGE, width=5)
@@ -482,10 +482,12 @@ def layers(spec: dict, dur: float, workdir: Path, name: str,
     return out
 
 
-def thumbnail(frame: Image.Image, words: str, out: Path) -> Path:
+def thumbnail(frame: Image.Image, words: str, out: Path, bright: float = 1.0, contrast: float = 1.08,
+              accent=ORANGE) -> Path:
     im = frame.convert("RGB").resize((1280, 720))
     im = ImageEnhance.Color(im).enhance(1.2)
-    im = ImageEnhance.Contrast(im).enhance(1.08).convert("RGBA")
+    im = ImageEnhance.Brightness(im).enhance(bright)
+    im = ImageEnhance.Contrast(im).enhance(contrast).convert("RGBA")
     g = Image.new("RGBA", (1280, 720), (0, 0, 0, 0))
     gd = ImageDraw.Draw(g)
     for y in range(300):
@@ -496,7 +498,7 @@ def thumbnail(frame: Image.Image, words: str, out: Path) -> Path:
     parts = words.split()
     x = 50
     for i, w in enumerate(parts):
-        fill = ORANGE if i == len(parts) - 1 else WHITE
+        fill = accent if i == len(parts) - 1 else WHITE
         d.text((x, 650), w, font=f, fill=fill, anchor="ls", stroke_width=8, stroke_fill=(0, 0, 0, 255))
         x += tw(d, w, f) + 26
     d.rectangle([0, 700, 1280, 720], fill=RED)

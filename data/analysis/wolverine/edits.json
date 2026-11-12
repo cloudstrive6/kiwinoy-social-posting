@@ -1,0 +1,24 @@
+{
+ "note": "Shot changes after the independent review of render v1 (2026-11-13): b033 had 23 s of bloodied Logan in clip 26; now 8 s of it, then Sinister and the Sentinel fight.",
+ "shots": {
+  "b033": [
+   {
+    "clip": 26,
+    "in": 21.0,
+    "out": 29.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 15,
+    "in": 0.0,
+    "out": 10.0
+   },
+   {
+    "clip": 21,
+    "in": 25.0,
+    "out": 35.0,
+    "crop": "hud"
+   }
+  ]
+ }
+}

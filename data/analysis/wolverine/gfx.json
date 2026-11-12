@@ -15,7 +15,7 @@
  "G09": [{"kind": "strip", "items": ["LATE 1800s: the Rockies, the first burn", "MANY LIVES: Jean reborn", "NOW: the Helix Engine, Tokyo"], "reveal": true, "at": 1.0}],
  "G10": [{"kind": "loop", "stops": ["DARKNESS", "BURN", "FIND EACH OTHER"], "caption": "KG'S READING", "at_frac": 0.42, "dur": 14.0}],
  "G11": [{"kind": "chapter", "num": 3, "title": "ESSEX, THE OTHER MAN IN HIS HEAD", "at": 0.3, "dur": 4.8}],
- "G12": [{"kind": "counter", "value": "10,473", "label": "ACTIVE MUTANTS", "at": 5.5, "dur": 6.5}],
+ "G12": [{"kind": "counter", "value": "10,473", "label": "ACTIVE MUTANTS", "at": 3.3, "dur": 6.5}],
  "G13": [{"kind": "dossier", "title": "NATHANIEL ESSEX", "lines": ["BORN 1830", "PHYSICIAN"], "stamps": ["1891", "1936", "1940"], "foot": "NOT AGED A DAY", "at": 0.8}],
  "G14": [{"kind": "split", "left": "ESSEX: ADDS HIMSELF", "right": "JEAN: TAKES AWAY", "drop": "WILLINGLY?", "drop_frac": 0.62, "at": 0.3}],
  "G15": [{"kind": "card", "text": "SHE BURNED IT OUT BEFORE. HE DID IT WORSE.", "at": 0.3, "dur": 6.0}],

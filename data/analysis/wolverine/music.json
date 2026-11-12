@@ -14,16 +14,16 @@
  "under_game_db": -30,
  "xfade": 2.5,
  "sections": [
-  {"from": "b000", "track": "theme", "offset": 0, "gain_db": -16},
+  {"from": "b000", "track": "theme", "offset": 0, "gain_db": -18},
   {"from": "b001", "track": "theme", "offset": 10},
   {"from": "b009", "track": "jean", "offset": 0},
   {"from": "b019", "track": "tension", "offset": 0, "gain_db": -21},
   {"from": "b029", "track": "tension", "offset": 45},
   {"from": "b035", "track": null},
-  {"from": "b036", "track": "theme", "offset": 78, "gain_db": -16},
+  {"from": "b036", "track": "theme", "offset": 78, "gain_db": -18},
   {"from": "b037", "track": "jean", "offset": 30},
   {"from": "b043", "track": "jean", "offset": 0},
   {"from": "b052", "track": "tension", "offset": 0, "gain_db": -22},
-  {"from": "b057", "track": "theme", "offset": 78, "gain_db": -16}
+  {"from": "b057", "track": "theme", "offset": 78, "gain_db": -18}
  ]
 }

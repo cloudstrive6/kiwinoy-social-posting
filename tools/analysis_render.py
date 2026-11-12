@@ -182,7 +182,7 @@ def vchain(label_in: str, p: dict, out_label: str) -> str:
     if crop == "sub":
         f.append("crop=iw*0.78:ih*0.78:(iw-ow)/2:ih*0.012")  # game subtitles sit at 82-84% height
     elif crop == "hud":
-        f.append("crop=iw*0.74:ih*0.74:(iw-ow)/2:ih*0.06")  # HUD plus subtitles
+        f.append("crop=iw*0.70:ih*0.70:(iw-ow)/2:ih*0.10")  # boss bars (to ~10%) plus subtitles (82%+)
     f.append("scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1")
     if p.get("blur"):
         f.append("gblur=sigma=14")
@@ -235,7 +235,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
             ir = add_input(["-i", str(clips.fetch_clean(r["clip"], r["in"], p["out"] + 0.2, work))])
             graph.append(f"color=c=0x0c0c10:s=1920x1080:r={FPS}:d={p['out']:.4f}[bg{k}]")
             for side, ii in (("l", il), ("r", ir)):
-                graph.append(f"[{ii}:v]scale=944:531,setsar=1,setpts=PTS-STARTPTS,fps={FPS},"
+                graph.append(f"[{ii}:v]crop=iw*0.78:ih*0.78:(iw-ow)/2:ih*0.012,scale=944:531,setsar=1,setpts=PTS-STARTPTS,fps={FPS},"
                              f"trim=duration={p['out']:.4f},setpts=PTS-STARTPTS[s{side}{k}]")
             graph.append(f"[bg{k}][sl{k}]overlay=12:300[t{k}];[t{k}][sr{k}]overlay=964:300,"
                          f"format=yuv420p[v{k}]")
@@ -245,7 +245,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
             graph.append(vchain(f"{i}:v", p, f"v{k}"))
             if b["type"] == "game":
                 graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
-                             f"atrim=duration={p['out']:.4f},loudnorm=I=-16:TP=-2:LRA=11,"
+                             f"atrim=duration={p['out']:.4f},loudnorm=I=-18:TP=-2:LRA=11,"
                              f"aformat=sample_rates=48000:channel_layouts=stereo,"
                              f"afade=t=in:d=0.08,afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
                              f"apad,atrim=duration={p['out']:.4f}[a{k}]")
@@ -461,6 +461,12 @@ def main() -> int:
     only = set(filter(None, a.only.split(",")))
 
     beats = edl["beats"]
+    edits_path = d / "edits.json"  # post-review edit changes that are not in the script cues
+    if edits_path.exists():
+        over = json.loads(edits_path.read_text(encoding="utf-8")).get("shots", {})
+        for b in beats:
+            if b["id"] in over:
+                b["shots"] = over[b["id"]]
     t = 0.0
     chapters, timeline = [], []
     t0 = time.time()
@@ -527,15 +533,17 @@ def main() -> int:
     (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps(report, indent=1), flush=True)
 
-    # Thumbnails (script v2 packaging): frame, words.
-    thumbs = [(33, 0.90, "HE FORGOT HER", None), (32, 0.90, "HE ASKED FOR IT", "sub"),
-              (32, 0.50, "NOTHING LEFT", "sub")]
-    for i, (c, frac, words, crop) in enumerate(thumbs, 1):
-        im = clips.grab(c, clips.length(c) * frac)
+    # Thumbnails: script packaging, frames picked by eye after review v1 (3 words or fewer).
+    thumbs = [(33, 60.0, "HE FORGOT HER", None, 1.0, 1.08),
+              (32, 44.0, "HE CHOSE THIS", "sub", 0.82, 1.25),
+              (33, 14.0, "NOTHING LEFT", None, 1.0, 1.08)]
+    for i, (c, sec, words, crop, br, ct) in enumerate(thumbs, 1):
+        im = clips.grab(c, sec)
         if crop == "sub":
             w, h = im.size
             im = im.crop((int(w * 0.11), int(h * 0.01), int(w * 0.89), int(h * 0.79)))
-        gfx.thumbnail(im, words, out / f"thumb-{i}.jpg")
+        # orange accent vanishes on the orange Phoenix frame, so thumb 2 is all white
+        gfx.thumbnail(im, words, out / f"thumb-{i}.jpg", br, ct, gfx.WHITE if c == 32 else gfx.ORANGE)
 
     if a.no_upload:
         return 0 if report["pass"] else 2
