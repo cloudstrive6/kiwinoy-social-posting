@@ -1,5 +1,9 @@
 ---
-// Every live BOSS KG channel, in the site's own surface system (platform colour only on the icon).
+// Every live BOSS KG channel. Channel cards restored to the live site's look on 2026-11-12 (owner:
+// "each social's avatar is gone"): the BOSS KG avatar in a platform-coloured ring, the platform
+// badge, handle, live follower count and a platform-coloured button. `pc` is the brand colour
+// (ring, badge); `btn` is a darker shade where white text on `pc` would fail WCAG AA.
+// The social highlight feeds sit under the cards.
 import Base from "../layouts/Base.astro";
 import NewsletterBox from "../components/NewsletterBox.astro";
 import SectionHead from "../components/SectionHead.astro";
@@ -9,15 +13,15 @@ import { followers } from "../lib/socials.js";
 
 const letter = (l) => `<b aria-hidden="true">${l}</b>`;
 const socials = [
-  { key: "youtube", name: "YouTube", handle: "Boss KG, @Kiwinoy", url: "https://www.youtube.com/@Kiwinoy", icon: ICON.youtube, count: followers("youtube"), unit: "subscribers" },
-  { key: "tiktok", name: "TikTok", handle: "@kiwinoygamer", url: "https://www.tiktok.com/@kiwinoygamer", icon: ICON.tiktok, count: followers("tiktok"), unit: "followers" },
-  { key: "instagram", name: "Instagram", handle: "@kiwinoygaming", url: "https://www.instagram.com/kiwinoygaming", icon: ICON.instagram, count: followers("instagram"), unit: "followers" },
-  { key: "facebook", name: "Facebook", handle: "Boss KG", url: "https://www.facebook.com/KiwinoyGaming", icon: ICON.facebook },
-  { key: "twitch", name: "Twitch", handle: "kiwinoy", url: "https://www.twitch.tv/kiwinoy", icon: ICON.twitch },
-  { key: "kick", name: "Kick", handle: "kiwinoy", url: "https://kick.com/kiwinoy", icon: letter("K") },
-  { key: "trovo", name: "Trovo", handle: "Kiwinoy", url: "https://trovo.live/s/Kiwinoy", icon: letter("T") },
-  { key: "threads", name: "Threads", handle: "@kiwinoygaming", url: "https://www.threads.com/@kiwinoygaming", icon: ICON.threads },
-  { key: "discord", name: "Discord", handle: "KG Crew server", url: "https://discord.gg/JxJ7ZYnXM", icon: ICON.discord },
+  { key: "youtube", name: "YouTube", handle: "Boss KG, @Kiwinoy", url: "https://www.youtube.com/@Kiwinoy", icon: ICON.youtube, count: followers("youtube"), unit: "subscribers", pc: "#FF0000", btn: "#CC0000", ink: "#fff", cta: "Subscribe" },
+  { key: "facebook", name: "Facebook", handle: "Boss KG", url: "https://www.facebook.com/KiwinoyGaming", icon: ICON.facebook, pc: "#1877F2", btn: "#0B5FCC", ink: "#fff" },
+  { key: "tiktok", name: "TikTok", handle: "@kiwinoygamer", url: "https://www.tiktok.com/@kiwinoygamer", icon: ICON.tiktok, count: followers("tiktok"), unit: "followers", pc: "#25F4EE", btn: "#000000", ink: "#fff" },
+  { key: "instagram", name: "Instagram", handle: "@kiwinoygaming", url: "https://www.instagram.com/kiwinoygaming", icon: ICON.instagram, count: followers("instagram"), unit: "followers", pc: "#E1306C", btn: "#C1255A", ink: "#fff" },
+  { key: "twitch", name: "Twitch", handle: "kiwinoy", url: "https://www.twitch.tv/kiwinoy", icon: ICON.twitch, pc: "#9146FF", btn: "#772CE8", ink: "#fff" },
+  { key: "kick", name: "Kick", handle: "kiwinoy", url: "https://kick.com/kiwinoy", icon: letter("K"), pc: "#53FC18", btn: "#53FC18", ink: "#0B0B0D" },
+  { key: "trovo", name: "Trovo", handle: "Kiwinoy", url: "https://trovo.live/s/Kiwinoy", icon: letter("T"), pc: "#19D66B", btn: "#19D66B", ink: "#0B0B0D" },
+  { key: "threads", name: "Threads", handle: "@kiwinoygaming", url: "https://www.threads.com/@kiwinoygaming", icon: ICON.threads, pc: "#FFFFFF", btn: "#000000", ink: "#fff" },
+  { key: "discord", name: "Discord", handle: "KG Crew server", url: "https://discord.gg/JxJ7ZYnXM", icon: ICON.discord, pc: "#5865F2", btn: "#4752C4", ink: "#fff", cta: "Join" },
 ];
 ---
 <Base title="Follow" description="Follow BOSS KG on YouTube, Twitch, Kick, Facebook, TikTok, Instagram and Trovo for gameplay, streams, clips and the daily drop.">
@@ -26,24 +30,62 @@ const socials = [
       <h1>Follow BOSS KG</h1>
       <p class="lede">Gameplay, live streams, clips and the daily drop. Pick your platform and hit follow so you never miss a moment.</p>
     </header>
-    <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hLatestSoc">
-      <SectionHead id="hLatestSoc" title="Latest from our channels" />
-      <SocialFeeds />
-    </section>
-    <section class="sec" aria-labelledby="hEvery">
+    <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hEvery">
       <SectionHead id="hEvery" title="Every channel" />
-      <div class="follow-row follow-all">
+      <div class="chan-grid">
         {socials.map((s) => (
-          <a class="soc-tile" href={s.url} rel="noopener" aria-label={`BOSS KG on ${s.name}`}>
-            <span class="soc-ic" set:html={s.icon}></span>
-            <span>
-              <span class="soc-name">{s.name}</span><br />
-              <span class="soc-handle">{s.handle}{s.count && <>, <span class="soc-count">{s.count}</span> {s.unit}</>}</span>
+          <a class="chan" href={s.url} rel="noopener" target="_blank" aria-label={`BOSS KG on ${s.name}${s.count ? `, ${s.count} ${s.unit}` : ""}`}
+             style={`--pc:${s.pc}; --btn:${s.btn}; --ink:${s.ink}`}>
+            <span class="chan-av">
+              <img src="/avatar.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" />
+              <span class={`chan-badge b-${s.key}`} set:html={s.icon}></span>
             </span>
+            <span class="chan-name">{s.name}</span>
+            <span class="chan-handle">{s.handle}</span>
+            {s.count ? <span class="chan-count"><b>{s.count}</b> {s.unit}</span> : <span class="chan-count chan-count-empty" aria-hidden="true">&nbsp;</span>}
+            <span class="chan-btn">{s.cta || "Follow"}</span>
           </a>
         ))}
       </div>
     </section>
+    <section class="sec" aria-labelledby="hLatestSoc">
+      <SectionHead id="hLatestSoc" title="Latest from our channels" />
+      <SocialFeeds />
+    </section>
     <NewsletterBox />
   </main>
+
+  <style>
+    .chan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--s4); }
+    .chan { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--s1);
+      padding: var(--s5) var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-l);
+      color: var(--text); text-decoration: none; transition: border-color var(--d-hover) var(--ease-out), transform var(--d-hover) var(--ease-out); }
+    @media (hover: hover) and (pointer: fine) {
+      .chan:hover { border-color: color-mix(in srgb, var(--pc) 55%, var(--border)); transform: translateY(-2px); }
+    }
+    .chan:focus-visible { outline: 2px solid var(--pc); outline-offset: 3px; }
+    .chan-av { position: relative; width: 80px; height: 80px; margin-bottom: var(--s3); }
+    .chan-av img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block;
+      box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--pc); }
+    .chan-badge { position: absolute; right: -4px; bottom: -4px; width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center; background: var(--btn); color: var(--ink); box-shadow: 0 0 0 3px var(--surface); }
+    .chan-badge :global(svg) { width: 15px; height: 15px; }
+    .chan-badge :global(b) { font-family: var(--f-head); font-size: 14px; line-height: 1; }
+    .b-instagram { background: linear-gradient(45deg, #F58529, #DD2A7B 50%, #8134AF); }
+    .b-threads, .b-tiktok { box-shadow: 0 0 0 3px var(--surface), inset 0 0 0 1px var(--border-2); }
+    .chan-name { font-weight: 700; font-size: 17px; }
+    .chan-handle { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+    .chan-count { font-size: 13px; color: var(--muted); }
+    .chan-count b { color: var(--text); }
+    .chan-btn { margin-top: var(--s3); min-height: 44px; min-width: 120px; padding: 0 var(--s5); border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;
+      background: var(--btn); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+    @media (max-width: 640px) {
+      .chan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+      .chan { padding: var(--s4) var(--s3); }
+      .chan-av, .chan-av img { width: 64px; height: 64px; }
+      .chan-btn { min-width: 0; width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { .chan { transition: none; } }
+  </style>
 </Base>
