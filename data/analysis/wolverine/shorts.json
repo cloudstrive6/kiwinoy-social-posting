@@ -1,0 +1,788 @@
+{
+ "note": "YouTube Shorts cut from the Wolverine analysis long-form (render v3, public 2026-11-13 as https://youtu.be/ibU1j1niRQM). Bryce, 2026-11-13: 2 Shorts a day replace the paused lore Shorts. Each pick is one question and its answer from the script's own claims, cut on narration sentence boundaries. parts: a run of beats with an optional first phrase (from) and last phrase (to); several parts join with a hard cut. Ending-spoiler picks come after the first three and carry a SPOILERS tag. start, end, seconds, cuts, description and tags are written by tools/analysis_shorts.py; youtube is written by --upload.",
+ "full_video": "https://youtu.be/ibU1j1niRQM",
+ "slots_utc": [
+  "15:00",
+  "23:00"
+ ],
+ "hashtags_base": [
+  "#MarvelsWolverine",
+  "#Wolverine",
+  "#PS5",
+  "#KiwinoyGaming"
+ ],
+ "tags_base": [
+  "Marvel's Wolverine",
+  "Wolverine",
+  "Wolverine PS5",
+  "Wolverine ending explained",
+  "Wolverine story",
+  "Logan",
+  "Jean Grey",
+  "Insomniac",
+  "PS5",
+  "Kiwinoy Gaming",
+  "Boss KG"
+ ],
+ "game_lines": {
+  "_note": "Game lines as heard in the v3 render and shown in the game's own subtitles (frames checked 2026-11-13). Several edl cues quote a different line than the render plays: b005 carries no clear line (the subtitle 'I'd like to help you, if I could.' clears at 108.1 s, so the line sits under the end of b004's narration; Whisper hears only a grunt), b040 stops before 'and that you are loved', b050 plays 'And so was she.' (clip 36 at 110-113 s), not 'It's a nice story.' (clip 36 at 116.8-120.3 s). b032 is labelled Essex in the game's subtitle (clip 26 at 17.5-21 s, hidden by the HUD crop); b035 opens with Logan's lines before Jean's warning; b045 ends with Jean asking 'A story?'.",
+  "b005": "",
+  "b012": "I burnt every trace of Death out of your mind. Or so I thought.",
+  "b026": "She participated willingly.",
+  "b032": "Forget her. Look at me! You'd be nothing...",
+  "b040": "Why is this happening... Because I needed you to know that I remember. And that I forgive you.",
+  "b045": "Even if I wanted to remember, it just sounds like a... A story?",
+  "b048": "And for a while, the boy was happy.",
+  "b050": "And so was she.",
+  "b035": "Too strong... You have to... Like Callisto and... Please... They were just corrupted. Death is a part of you. If I burn it out... There will be nothing of you left."
+ },
+ "shorts": [
+  {
+   "id": "s01",
+   "order": 1,
+   "spoilers": false,
+   "hook": "One line predicts the ending",
+   "accent": "predicts",
+   "title": "Marvel's Wolverine: Walter's Line Predicts the Ending",
+   "blurb": "Walter tells Logan he is lucky he doesn't remember his past. I think that line tells you early which idea wins at the end of Marvel's Wolverine.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "Walter",
+    "Team X",
+    "Wolverine memory"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b003"
+     ],
+     "from": "Logan, real name James Howlett",
+     "to": "who he is."
+    },
+    {
+     "beats": [
+      "b007",
+      "b008"
+     ],
+     "from": "By the midpoint Trask is gone"
+    }
+   ],
+   "start": 57.89,
+   "end": 181.61,
+   "seconds": 40.6,
+   "cuts": [
+    [
+     57.89,
+     65.75
+    ],
+    [
+     150.37,
+     181.61
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nWalter tells Logan he is lucky he doesn't remember his past. I think that line tells you early which idea wins at the end of Marvel's Wolverine.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Walter",
+    "Team X",
+    "Wolverine memory"
+   ]
+  },
+  {
+   "id": "s02",
+   "order": 2,
+   "spoilers": false,
+   "hook": "Who is the wild man?",
+   "accent": "wild man",
+   "title": "Marvel's Wolverine: Who Is the Wild Man in the Jungle?",
+   "blurb": "A frightened wild man in a jungle and a calm voice offering him a home. The scene never names him, but it suggests who he is, and the voice gives its own name.",
+   "hashtags_extra": [
+    "#NathanielEssex"
+   ],
+   "tags_extra": [
+    "Nathaniel Essex",
+    "Mister Sinister",
+    "Sabretooth",
+    "Wolverine intro"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b004"
+     ]
+    },
+    {
+     "beats": [
+      "b006"
+     ],
+     "to": "with Jean doing the telling."
+    }
+   ],
+   "start": 92.76,
+   "end": 132.67,
+   "seconds": 37.2,
+   "cuts": [
+    [
+     92.76,
+     107.51
+    ],
+    [
+     111.72,
+     132.67
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nA frightened wild man in a jungle and a calm voice offering him a home. The scene never names him, but it suggests who he is, and the voice gives its own name.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #NathanielEssex",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Nathaniel Essex",
+    "Mister Sinister",
+    "Sabretooth",
+    "Wolverine intro"
+   ]
+  },
+  {
+   "id": "s03",
+   "order": 3,
+   "spoilers": false,
+   "hook": "Jean's secret from the 1800s",
+   "accent": "1800s",
+   "title": "Marvel's Wolverine: What Jean Did to Logan in the 1800s",
+   "blurb": "Jean tells Logan how they first met, in the Rockies in the late 1800s, and what she burned out of his mind back then.",
+   "hashtags_extra": [
+    "#JeanGrey"
+   ],
+   "tags_extra": [
+    "Jean Grey",
+    "Apocalypse",
+    "Horseman of Death",
+    "Wolverine 1800s"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b009",
+      "b012"
+     ]
+    },
+    {
+     "beats": [
+      "b013"
+     ],
+     "from": "By her account",
+     "to": "kiss her or kill her, and neither did he."
+    }
+   ],
+   "start": 181.66,
+   "end": 240.15,
+   "seconds": 58.29,
+   "cuts": [
+    [
+     181.66,
+     215.55
+    ],
+    [
+     217.25,
+     240.15
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean tells Logan how they first met, in the Rockies in the late 1800s, and what she burned out of his mind back then.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Apocalypse",
+    "Horseman of Death",
+    "Wolverine 1800s"
+   ]
+  },
+  {
+   "id": "s04",
+   "order": 4,
+   "spoilers": true,
+   "hook": "Why Essex is Jean's mirror",
+   "accent": "mirror",
+   "title": "Marvel's Wolverine: Why Essex Is Jean's Mirror",
+   "blurb": "Essex says his wife participated willingly. Put him next to Jean and the design of the ending gets clearer.",
+   "hashtags_extra": [
+    "#MisterSinister"
+   ],
+   "tags_extra": [
+    "Mister Sinister",
+    "Nathaniel Essex",
+    "Jean Grey",
+    "Wolverine villain"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b025",
+      "b028"
+     ],
+     "to": "both show him a home."
+    },
+    {
+     "beats": [
+      "b028"
+     ],
+     "from": "Each of them also has a story"
+    }
+   ],
+   "start": 411.2,
+   "end": 469.68,
+   "seconds": 51.9,
+   "cuts": [
+    [
+     411.2,
+     441.86
+    ],
+    [
+     449.94,
+     469.68
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nEssex says his wife participated willingly. Put him next to Jean and the design of the ending gets clearer. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #MisterSinister",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Mister Sinister",
+    "Nathaniel Essex",
+    "Wolverine villain"
+   ]
+  },
+  {
+   "id": "s05",
+   "order": 5,
+   "spoilers": true,
+   "hook": "The villain's order came true",
+   "accent": "came true",
+   "title": "Marvel's Wolverine: How 'Forget Her' Came True",
+   "blurb": "In Tokyo, Essex gives Logan a simple order. By the final scene it has been carried out, by the one person fighting it.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "Tokyo",
+    "Helix Engine",
+    "Apocalypse",
+    "Forget her"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b030"
+     ]
+    },
+    {
+     "beats": [
+      "b032"
+     ]
+    },
+    {
+     "beats": [
+      "b033"
+     ],
+     "from": "the order is simple",
+     "why": "skips b031 ('a voice cuts into his head') and 'The game doesn't put a name on that voice': the game's subtitle labels the line Essex, who is on screen"
+    },
+    {
+     "beats": [
+      "b042"
+     ],
+     "from": "Forget her, the voice said."
+    }
+   ],
+   "start": 485.52,
+   "end": 649.44,
+   "seconds": 39.43,
+   "cuts": [
+    [
+     485.52,
+     500.19
+    ],
+    [
+     504.91,
+     508.91
+    ],
+    [
+     517.91,
+     524.45
+    ],
+    [
+     636.72,
+     649.44
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nIn Tokyo, Essex gives Logan a simple order. By the final scene it has been carried out, by the one person fighting it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Tokyo",
+    "Helix Engine",
+    "Apocalypse",
+    "Forget her"
+   ]
+  },
+  {
+   "id": "s06",
+   "order": 6,
+   "spoilers": true,
+   "hook": "She warned him. He asked anyway.",
+   "accent": "warned",
+   "title": "Marvel's Wolverine: Jean's Warning, Nothing of You Left",
+   "blurb": "Before the Phoenix Force burns the Death out of Logan, Jean tells him the price in one breath.",
+   "hashtags_extra": [
+    "#JeanGrey"
+   ],
+   "tags_extra": [
+    "Jean Grey",
+    "Phoenix Force",
+    "Wolverine ending",
+    "Nothing of you left"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b034",
+      "b036"
+     ],
+     "to": "than kill her."
+    }
+   ],
+   "start": 524.83,
+   "end": 574.37,
+   "seconds": 51.04,
+   "cuts": [
+    [
+     524.83,
+     574.37
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nBefore the Phoenix Force burns the Death out of Logan, Jean tells him the price in one breath. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Phoenix Force",
+    "Wolverine ending",
+    "Nothing of you left"
+   ]
+  },
+  {
+   "id": "s07",
+   "order": 7,
+   "spoilers": true,
+   "hook": "What the ending never shows",
+   "accent": "never",
+   "title": "Marvel's Wolverine Ending: What the Game Never Shows",
+   "blurb": "There is no shot of Logan's memories burning away. The game shows you something else instead, from the side of the person who gets to keep it.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "Wolverine ending explained",
+    "Jean Grey",
+    "Wolverine garden scene"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b037",
+      "b041"
+     ]
+    }
+   ],
+   "start": 580.14,
+   "end": 633.82,
+   "seconds": 55.18,
+   "cuts": [
+    [
+     580.14,
+     633.82
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThere is no shot of Logan's memories burning away. The game shows you something else instead, from the side of the person who gets to keep it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Wolverine garden scene"
+   ]
+  },
+  {
+   "id": "s08",
+   "order": 8,
+   "spoilers": true,
+   "hook": "Logan's 4 saddest words",
+   "accent": "4",
+   "title": "Marvel's Wolverine Ending: Logan's 4 Saddest Words",
+   "blurb": "Jean's bedtime story about a girl named Red, and the four words Logan says back.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "It's a nice story",
+    "Jean Grey",
+    "Wolverine ending explained",
+    "Red"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b047",
+      "b048"
+     ],
+     "from": "A girl named Red"
+    },
+    {
+     "beats": [
+      "b050"
+     ]
+    },
+    {
+     "clip": 36,
+     "in": 116.3,
+     "out": 120.8,
+     "text": "It's a nice story.",
+     "why": "the four words, straight from the source clip (the v3 render's b050 burst ends before them)"
+    },
+    {
+     "beats": [
+      "b051"
+     ]
+    }
+   ],
+   "start": 708.6,
+   "end": 786.94,
+   "seconds": 59.4,
+   "cuts": [
+    [
+     708.6,
+     744.31
+    ],
+    [
+     769.2,
+     772.2
+    ],
+    {
+     "clip": 36,
+     "in": 116.3,
+     "out": 120.8
+    },
+    [
+     772.25,
+     786.94
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean's bedtime story about a girl named Red, and the four words Logan says back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "It's a nice story",
+    "Red"
+   ]
+  },
+  {
+   "id": "s09",
+   "order": 9,
+   "spoilers": true,
+   "hook": "Has Jean done this before?",
+   "accent": "before",
+   "title": "Marvel's Wolverine: Is Jean and Logan's Story a Loop?",
+   "blurb": "My reading: this may not be the first time Jean has gone through this with Logan. Here is what it rests on.",
+   "hashtags_extra": [
+    "#JeanGrey"
+   ],
+   "tags_extra": [
+    "Jean Grey",
+    "Wolverine theory",
+    "Phoenix"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b014",
+      "b016"
+     ]
+    },
+    {
+     "beats": [
+      "b017"
+     ],
+     "from": "A darkness settles on Logan"
+    }
+   ],
+   "start": 248.46,
+   "end": 320.15,
+   "seconds": 52.51,
+   "cuts": [
+    [
+     248.46,
+     282.81
+    ],
+    [
+     303.49,
+     320.15
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nMy reading: this may not be the first time Jean has gone through this with Logan. Here is what it rests on. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Wolverine theory",
+    "Phoenix"
+   ]
+  },
+  {
+   "id": "s10",
+   "order": 10,
+   "spoilers": true,
+   "hook": "Why Logan walks away from Jean",
+   "accent": "walks away",
+   "title": "Marvel's Wolverine Ending: Why Logan Walks Away",
+   "blurb": "Jean asks him to stay and help the new mutants. He won't. The game opened with a man who wanted his past back.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "Wolverine ending explained",
+    "Jean Grey",
+    "Wolverine balcony scene"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b044",
+      "b046"
+     ]
+    }
+   ],
+   "start": 663.66,
+   "end": 704.74,
+   "seconds": 42.58,
+   "cuts": [
+    [
+     663.66,
+     704.74
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean asks him to stay and help the new mutants. He won't. The game opened with a man who wanted his past back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Wolverine balcony scene"
+   ]
+  },
+  {
+   "id": "s11",
+   "order": 11,
+   "spoilers": true,
+   "hook": "Apocalypse was never defeated",
+   "accent": "never",
+   "title": "Marvel's Wolverine: Apocalypse Was Never Defeated",
+   "blurb": "The Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan with one word: family.",
+   "hashtags_extra": [
+    "#Sabretooth"
+   ],
+   "tags_extra": [
+    "Apocalypse",
+    "Sabretooth",
+    "Victor Creed",
+    "Wolverine sequel"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b052"
+     ],
+     "picture": {
+      "at": 24.507,
+      "clip": 165,
+      "in": 54.0,
+      "crop": "sub",
+      "why": "the render ends b052 on a 7 s bloodied Sabretooth close-up (clip 167); clip 165 at 54 s is the same glowing-eyed Sabretooth without blood"
+     }
+    }
+   ],
+   "start": 787.13,
+   "end": 817.12,
+   "seconds": 31.49,
+   "cuts": [
+    [
+     787.13,
+     817.12
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThe Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan with one word: family. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #Sabretooth",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Apocalypse",
+    "Sabretooth",
+    "Victor Creed",
+    "Wolverine sequel"
+   ]
+  },
+  {
+   "id": "s12",
+   "order": 12,
+   "spoilers": true,
+   "hook": "Rescue or erasure? My answer.",
+   "accent": "erasure?",
+   "title": "Marvel's Wolverine Ending: Did Jean Rescue or Erase Logan?",
+   "blurb": "Where the ending leaves Jean, Logan and the voice, and my answer to the big question.",
+   "hashtags_extra": [
+    "#WolverineEnding"
+   ],
+   "tags_extra": [
+    "Wolverine ending explained",
+    "Jean Grey",
+    "Phoenix Force",
+    "Apocalypse"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b056",
+      "b057"
+     ],
+     "to": "before she did it."
+    },
+    {
+     "beats": [
+      "b058"
+     ],
+     "to": "yes or no?"
+    }
+   ],
+   "start": 842.76,
+   "end": 882.93,
+   "seconds": 31.58,
+   "cuts": [
+    [
+     842.76,
+     868.17
+    ],
+    [
+     878.26,
+     882.93
+    ]
+   ],
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nWhere the ending leaves Jean, Logan and the voice, and my answer to the big question. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "tags": [
+    "Marvel's Wolverine",
+    "Wolverine",
+    "Wolverine PS5",
+    "Wolverine ending explained",
+    "Wolverine story",
+    "Logan",
+    "Jean Grey",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Phoenix Force",
+    "Apocalypse"
+   ]
+  }
+ ]
+}

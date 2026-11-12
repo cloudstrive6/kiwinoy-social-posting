@@ -185,3 +185,16 @@ Attribution ("Author · Source") renders on card + short. `quote.pick_music(univ
 prefers `qmusic__<game>__*` (drop tracks in `<music_dir>/<game>/`), else universal.
 Quote posts are 3×/day, all `story` (`quotes.daily_themes {story:3}`), fired by the
 cron-job.org "Quote Cards" job at UTC 1,9,17 (PH 9:15a/5:15p/1:15a), evenly 24h.
+
+**Analysis Shorts (2026-11-13, Bryce: 2 Shorts a day cut from the narrated analysis
+long-forms; they replace the paused YouTube lore Shorts).** `tools/analysis_shorts.py`
+cuts the picks in `data/analysis/<game>/shorts.json` from the final long-form on B2
+(`renders/analysis/<game>/<game>-analysis-<version>.mp4` plus `<version>/timeline.json`)
+into 1080x1920 60 fps Shorts in `output/analysis/<game>/shorts/` (16:9 band over a
+blurred fill, Anton hook, word-by-word captions from faster-whisper snapped to the
+script and to the game's own subtitles via `game_lines`, -14 LUFS / -1 dBTP or lower,
+QC table and a contact sheet per Short). A pick can splice a source-clip range
+(`clip`) or swap a gory tail for a clean clip (`picture`). `--dry-run` prints the
+slot plan (15:00 and 23:00 UTC, skipping scheduled uploads); `--upload` uploads
+private with publishAt, files each in the game playlist and records the ids in
+shorts.json. Never upload without the coordinator's review.
