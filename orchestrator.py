@@ -1467,7 +1467,15 @@ def run_gameplay_reel(
                 log("Reposting reel to Facebook Story...")
                 _fbtags = content._reel_hashtags({"game": brief.get("game")}, 1)
                 _sh = fb_story_hook or hook      # lore card failed -> fall back to the reel hook
+                # FILL reels have no hook, so a failed FB lore card left the Story with an
+                # empty caption and Post for Me refused it ("caption is required", 2026-11-12).
+                # Fall back to the post caption's first line, then the game hashtag.
+                if not str(_sh or "").strip():
+                    _sh = next((l.strip() for l in str(caption or "").splitlines()
+                                if l.strip() and not l.strip().startswith("#")), "")
                 story_cap = (f"{_sh}\n\n{_fbtags[0]}".strip() if (_sh and _fbtags) else _sh)
+                if not str(story_cap or "").strip():
+                    story_cap = (_fbtags[0] if _fbtags else str(brief.get("subject") or "KG"))
                 result["fb_story_result"] = publisher.run_fb_story(
                     caption=story_cap, media_bytes=fb_story_bytes, is_video=True,
                     scheduled_at=scheduled_at)
