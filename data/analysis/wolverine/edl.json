@@ -107,7 +107,7 @@
     {
      "clip": 0,
      "in": 0.0,
-     "out": 24.0
+     "out": 22.8
     },
     {
      "clip": 0,
@@ -121,9 +121,9 @@
   {
    "type": "game",
    "clip": 0,
-   "in": 25.0,
-   "out": 29.0,
-   "cue": "GAME AUDIO 0, 25-29 s: \"I have a home here for people who are special, like you.\"",
+   "in": 23.0,
+   "out": 25.6,
+   "cue": "GAME AUDIO 0, 23-25.6 s: \"I'd like to help you, if I could.\" (v4: 25-29 s had no dialogue)",
    "id": "b005"
   },
   {
@@ -563,8 +563,8 @@
   },
   {
    "type": "narr",
-   "text": "The game doesn't put a name on that voice in this moment. The voice that has followed Logan all game is Apocalypse, and whoever is speaking here, the order is simple: forget her. That order does get carried out, just not the way the voice meant.",
-   "tts": "The game doesn't put a name on that voice in this moment. The voice that has followed Logan all game is Apocalypse, and whoever is speaking here, the order is simple: forget her. That order does get carried out, just not the way the voice meant.",
+   "text": "The subtitle names this voice: Essex. The voice that has followed Logan all game is Apocalypse, but this order comes from Essex, and it's simple: forget her. That order does get carried out, just not the way he meant.",
+   "tts": "The subtitle names this voice: Essex. The voice that has followed Logan all game is Apocalypse, but this order comes from Essex, and it's simple: forget her. That order does get carried out, just not the way he meant.",
    "shots": [
     {
      "clip": 26,
@@ -803,8 +803,13 @@
    "shots": [
     {
      "clip": 36,
-     "in": 105.0,
-     "out": 111.0
+     "in": 80.0,
+     "out": 96.0
+    },
+    {
+     "clip": 36,
+     "in": 110.8,
+     "out": 116.0
     }
    ],
    "gfx": [],
@@ -813,9 +818,9 @@
   {
    "type": "game",
    "clip": 36,
-   "in": 110.0,
-   "out": 113.0,
-   "cue": "GAME AUDIO 36, 110-113 s: \"It's a nice story.\"",
+   "in": 116.0,
+   "out": 120.6,
+   "cue": "GAME AUDIO 36, 116-120.6 s: \"Logan: It's a nice story.\" (v4: v3 played Jean's 'And so was she.' at 110-113)",
    "id": "b050"
   },
   {
@@ -825,8 +830,13 @@
    "shots": [
     {
      "clip": 36,
-     "in": 113.0,
-     "out": 125.0
+     "in": 120.6,
+     "out": 131.4
+    },
+    {
+     "clip": 35,
+     "in": 30.0,
+     "out": 36.0
     }
    ],
    "gfx": [],

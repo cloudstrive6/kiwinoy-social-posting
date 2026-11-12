@@ -36,7 +36,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: kiwinoy-analysis-longform
+  group: kiwinoy-analysis-longform-wolverine-v4
   cancel-in-progress: false
 
 jobs:
