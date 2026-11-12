@@ -8,7 +8,8 @@ runs use B2 only). Plain code, no AI.
 Each beat renders to its own segment (1920x1080, 60 fps, PCM audio):
   narr: the cue's shots are fitted to the paragraph (jump cuts inside long ranges, gentle slow
         motion up to 1.5x when a range is short), game audio ducked to -24 dB under the voice,
-        graphics faded on top.
+        graphics on top as animated transparent .mov overlays (analysis_gfx on analysis_motion),
+        each placed at its x,y from its start time in the beat.
   game: the clip's own audio at full level (normalised), narration paused, 15 s or less.
 Then: concat, two-pass loudnorm to -14 LUFS / -1.5 dBTP, chapters from the real cut, QC
 (resolution, fps, loudness, black frames, freezes over 2 s), three thumbnails, and an upload
@@ -46,7 +47,6 @@ FPS = 60
 MAX_SHOT = 7.0     # longest single shot before a jump cut inside the range
 MAX_SLOW = 1.5     # most slow motion used to stretch a short range
 LEAD, TAIL = 0.15, 0.35  # breath before and after each narration paragraph
-FADE = 0.25
 
 
 def run(cmd: list[str], **kw) -> subprocess.CompletedProcess:
@@ -211,6 +211,18 @@ def achain(label_in: str, p: dict, out_label: str, gain_db: float) -> str:
     return f"[{label_in}]{','.join(f)}[{out_label}]"
 
 
+def overlay_gfx(graph: list[str], add_input, cur: str, items: list[tuple], tag: str = "g") -> str:
+    """Chain graphics overlays [(mov, x, y, start, seconds)] onto label `cur`; returns the new label.
+    Each clip is shifted to its start inside the beat and passes the picture through once it ends."""
+    for k, (mov, x, y, s, secs) in enumerate(items):
+        ii = add_input(["-i", str(mov)])
+        graph.append(f"[{ii}:v]format=rgba,setpts=PTS-STARTPTS+{s:.4f}/TB[{tag}{k}]")
+        graph.append(f"[{cur}][{tag}{k}]overlay={x}:{y}:eof_action=pass:"
+                     f"enable='between(t,{s:.3f},{s + secs:.3f})'[{tag}o{k}]")
+        cur = f"{tag}o{k}"
+    return cur
+
+
 def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, under_db: float,
                 narr_wav: Path | None, seg: Path, brand: tuple | None = None) -> None:
     inputs: list[str] = []
@@ -256,24 +268,12 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
         alabels.append(f"[a{k}]")
     n = len(pieces)
     graph.append(f"{''.join(v + a for v, a in zip(vlabels, alabels))}concat=n={n}:v=1:a=1[vb][ab]")
-    # Graphics layers.
-    cur = "vb"
-    li = 0
+    # Graphics: each one is an animated overlay clip with its own entrance and exit.
+    items = []
     for gid in b.get("gfx", []):
         for si, spec in enumerate(gfx_specs.get(gid, [])):
-            for png, s, e, fi, fo in gfx.layers(spec, dur, work, f"{b['id']}_{gid}_{si}", clips.grab):
-                if e - s < 0.05:
-                    continue
-                ii = add_input(["-loop", "1", "-framerate", str(FPS), "-t", f"{dur:.3f}", "-i", str(png)])
-                fl = ["format=rgba"]
-                if fi:
-                    fl.append(f"fade=t=in:st={s:.3f}:d={FADE}:alpha=1")
-                if fo:
-                    fl.append(f"fade=t=out:st={max(s, e - FADE):.3f}:d={FADE}:alpha=1")
-                graph.append(f"[{ii}:v]{','.join(fl)}[g{li}]")
-                graph.append(f"[{cur}][g{li}]overlay=0:0:enable='between(t,{s:.3f},{e:.3f})'[o{li}]")
-                cur = f"o{li}"
-                li += 1
+            items += gfx.overlays(spec, dur, work, f"{b['id']}_{gid}_{si}", clips.grab)
+    cur = overlay_gfx(graph, add_input, "vb", items)
     if brand:  # the Subscribe To Boss KG lower third (analysis_brand.py), offset from this beat's start
         mov, off, secs = brand
         bi = add_input(["-i", str(mov)])
@@ -394,8 +394,8 @@ def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, piec
     return out
 
 
-RENDER_VER = "2026-11-13a"  # bump when a change to this file should re-render every beat
-GFX_SRC = hashlib.sha1((ROOT / "tools/analysis_gfx.py").read_bytes()).hexdigest()[:10]
+RENDER_VER = "2026-11-13b"  # bump when a change to this file should re-render every beat
+GFX_SRC = gfx.CODE_HASH  # analysis_gfx.py, analysis_motion.py and the font files: beats re-render when they change
 BRAND_SRC = hashlib.sha1((ROOT / "tools/analysis_brand.py").read_bytes() + (ROOT / "assets/brand/kg-avatar.png").read_bytes()
                          + GFX_SRC.encode()).hexdigest()[:10]
 
