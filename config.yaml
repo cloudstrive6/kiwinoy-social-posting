@@ -821,7 +821,15 @@ reels:
       youtube:
         games:   [spider-man2]                   # lore only, SM2 only for now
         formats: [lore]
+    # LORE-STRICT platforms (user, 2026-11-12): a lore slot here NEVER falls back to
+    # classic/triptych/fill. When a card fails the fact-check it moves on to other footage:
+    # this game's cutscenes, this game's gameplay footage, other games' cutscenes, then other
+    # games' footage ("we have lots of footages"). Only after lore.strict_tries refused moments
+    # is the slot skipped, and the backup trigger makes it up. Before this, refused cards sent
+    # a 157s triptych to YouTube (2026-11-11).
+    lore_strict_platforms: [youtube]
     lore:
+      strict_tries: 12    # moments tried on a lore-strict platform before skipping the slot
       seconds: 8          # old flat length; used only if seconds_min/max are removed
       seconds_min: 15     # each lore clip is a random 15-20s (user, 2026-11-09);
       seconds_max: 20     # a cutscene shorter than 15s is used whole
