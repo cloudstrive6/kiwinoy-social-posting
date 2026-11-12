@@ -2,6 +2,8 @@
 // Every live BOSS KG channel, in the site's own surface system (platform colour only on the icon).
 import Base from "../layouts/Base.astro";
 import NewsletterBox from "../components/NewsletterBox.astro";
+import SectionHead from "../components/SectionHead.astro";
+import SocialFeeds from "../components/SocialFeeds.astro";
 import { ICON } from "../lib/icons.js";
 import { followers } from "../lib/socials.js";
 
@@ -24,7 +26,12 @@ const socials = [
       <h1>Follow BOSS KG</h1>
       <p class="lede">Gameplay, live streams, clips and the daily drop. Pick your platform and hit follow so you never miss a moment.</p>
     </header>
-    <div class="sec" style="margin-top:var(--s6)">
+    <section class="sec" style="margin-top:var(--s6)" aria-labelledby="hLatestSoc">
+      <SectionHead id="hLatestSoc" title="Latest from our channels" />
+      <SocialFeeds />
+    </section>
+    <section class="sec" aria-labelledby="hEvery">
+      <SectionHead id="hEvery" title="Every channel" />
       <div class="follow-row follow-all">
         {socials.map((s) => (
           <a class="soc-tile" href={s.url} rel="noopener" aria-label={`BOSS KG on ${s.name}`}>
@@ -36,7 +43,7 @@ const socials = [
           </a>
         ))}
       </div>
-    </div>
+    </section>
     <NewsletterBox />
   </main>
 </Base>

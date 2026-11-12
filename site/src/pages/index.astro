@@ -9,6 +9,7 @@ import NewsletterBox from "../components/NewsletterBox.astro";
 import VideoCard from "../components/VideoCard.astro";
 import PartnerBanner from "../components/PartnerBanner.astro";
 import GearTile from "../components/GearTile.astro";
+import SocialFeeds from "../components/SocialFeeds.astro";
 import { liveArticles, toStory, SECTIONS, sectionFor } from "../lib/articles.js";
 import { imgAttrs, SIZES } from "../lib/img.js";
 import { longform, shorts, CHANNEL_URL } from "../lib/youtube.js";
@@ -43,11 +44,6 @@ const vids = longform.slice(0, 4);
 const shortList = shorts.slice(0, 8);
 const gearPicks = ["PlayStation 5 Pro (2TB)", "DualSense Edge", "Elgato 4K Pro (internal)", "DUBBY Energy"]
   .map((n) => GEAR.find((g) => g.name === n)).filter(Boolean);
-const soc = [
-  { name: "YouTube", handle: "Boss KG", href: CHANNEL_URL, icon: ICON.youtube, count: followers("youtube"), unit: "subscribers" },
-  { name: "TikTok", handle: "@kiwinoygamer", href: "https://www.tiktok.com/@kiwinoygamer", icon: ICON.tiktok, count: followers("tiktok"), unit: "followers" },
-  { name: "Instagram", handle: "@kiwinoygaming", href: "https://www.instagram.com/kiwinoygaming", icon: ICON.instagram, count: followers("instagram"), unit: "followers" },
-];
 const ld = [
   { "@context": "https://schema.org", ...ORG },
   {
@@ -154,17 +150,7 @@ const ld = [
 
     <section class="sec" aria-labelledby="hFollow">
       <SectionHead id="hFollow" title="Follow BOSS KG" href="/follow/" more="Every channel" />
-      <div class="follow-row">
-        {soc.map((s) => (
-          <a class="soc-tile" href={s.href} rel="noopener">
-            <span class="soc-ic" set:html={s.icon}></span>
-            <span>
-              <span class="soc-name">{s.name}</span><br />
-              <span class="soc-handle">{s.handle}{s.count && <>, <span class="soc-count">{s.count}</span> {s.unit}</>}</span>
-            </span>
-          </a>
-        ))}
-      </div>
+      <SocialFeeds />
     </section>
   </main>
 </Base>

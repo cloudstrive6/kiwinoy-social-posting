@@ -482,6 +482,44 @@ body{timeline-scope:--kg-read}
 @media (max-width:1023px){.follow-row, .follow-all{grid-template-columns:repeat(2, minmax(0,1fr))}}
 @media (max-width:640px){.follow-row, .follow-all{grid-template-columns:minmax(0,1fr)}}
 
+/* Social highlight feeds (restored 2026-11-12 at the owner's request). One card per platform:
+   head (icon, handle, count), thumbnails that open the posts, a full-width follow button.
+   Phone: one column. Tablet: IG + TikTok side by side, YouTube full width (4 in a row). */
+.feeds{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:var(--s4)}
+.feed{display:flex; flex-direction:column; gap:var(--s4); padding:var(--s5); min-width:0;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-l)}
+.feed-h{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:var(--s3)}
+.feed-ic{width:44px; height:44px; border-radius:var(--r-m); display:grid; place-items:center; color:#fff}
+.feed-ic svg{width:22px; height:22px}
+.ic-ig{background:linear-gradient(45deg,#F58529,#DD2A7B 50%,#8134AF)}
+.ic-tt{background:#000; box-shadow:inset 0 0 0 1px var(--border-2)}
+.ic-yt{background:#FF0000}
+.feed-who{display:flex; flex-direction:column; min-width:0}
+.feed-who b{font-size:16px; overflow-wrap:anywhere}
+.feed-who span{font-size:14px; color:var(--muted)}
+.feed-cnt{display:flex; flex-direction:column; align-items:flex-end; text-align:right}
+.feed-cnt b{font-family:var(--f-head); font-size:20px; line-height:1.1}
+.feed-cnt span{font-size:13px; color:var(--muted)}
+.feed-thumbs{display:grid; gap:var(--s2); flex:1; align-content:start}
+.feed-thumbs.v{grid-template-columns:repeat(3, minmax(0,1fr))}
+.feed-thumbs.h{grid-template-columns:repeat(2, minmax(0,1fr))}
+.feed-thumbs a{display:block; border-radius:var(--r-m); overflow:hidden; background:var(--raise); outline-offset:2px}
+.feed-thumbs.v a{aspect-ratio:9 / 16}
+.feed-thumbs.h a{aspect-ratio:16 / 9}
+.feed-thumbs img{width:100%; height:100%; object-fit:cover; display:block; transition:transform var(--d-hover) var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.feed-thumbs a:hover img{transform:scale(1.04)}}
+.feed-btn{width:100%}
+@media (max-width:1023px){
+  .feeds{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .feed-yt{grid-column:1 / -1}
+  .feed-yt .feed-thumbs.h{grid-template-columns:repeat(4, minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .feeds{grid-template-columns:minmax(0,1fr)}
+  .feed-yt .feed-thumbs.h{grid-template-columns:repeat(2, minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){.feed-thumbs img{transition:none}}
+
 /* ---------- footer ---------- */
 footer.site{margin-top:var(--s9); border-top:1px solid var(--border); background:var(--surface)}
 .foot{display:grid; grid-template-columns:minmax(0,1.5fr) repeat(3, minmax(0,1fr)); gap:var(--s6); padding-top:var(--s7); padding-bottom:var(--s6)}
