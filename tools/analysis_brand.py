@@ -38,7 +38,8 @@ DEFAULTS = {
     "line1": "SUBSCRIBE TO",
     "line1_accent": "BOSS KG",
     "line2": "@Kiwinoy",
-    "side": "left",     # the renderer switches to "right" if a title lower third is on screen
+    "side": "left",
+    "max_delay": 40.0,  # the renderer may start it later (up to this) to wait for a clear lower band
 }
 ENTER, EXIT = 0.62, 0.42
 
@@ -68,6 +69,20 @@ def _seg(t: float, a: float, b: float) -> float:
 
 
 _AV: dict = {}
+_HANDLE: dict = {}
+
+
+def handle_font(size: int):
+    """Montserrat Bold, shipped in the repo, so the handle looks the same locally and in Actions."""
+    if size not in _HANDLE:
+        from PIL import ImageFont
+        f = ImageFont.truetype(str(ROOT / "assets/fonts/montserrat/Montserrat.ttf"), size)
+        try:
+            f.set_variation_by_name("Bold")
+        except Exception:
+            pass
+        _HANDLE[size] = f
+    return _HANDLE[size]
 
 
 def _avatar(d: int) -> Image.Image:
@@ -96,12 +111,12 @@ def frame(t: float, cfg: dict) -> Image.Image:
         cfg.get("line2", DEFAULTS["line2"])
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    f1, f2 = gfx.font("display", 58), gfx.font("label", 36)
+    f1, f2 = gfx.font("display", 58), handle_font(38)
 
     out_t = t - (ENTER + hold)  # >= 0 during the exit
     # Progress of each element: enter staggered photo -> bar -> name -> handle; exit reversed, faster.
     if out_t < 0:
-        av = _ease_out_back(_seg(t, 0.0, 0.34))
+        av = _ease_out_back(_seg(t, 0.0, 0.34), 1.4)
         av_a = _seg(t, 0.0, 0.12)
         bar = _ease_out_cubic(_seg(t, 0.10, 0.48))
         n1 = _ease_out_cubic(_seg(t, 0.26, 0.56))
@@ -116,7 +131,7 @@ def frame(t: float, cfg: dict) -> Image.Image:
     margin = 96                        # 5% title-safe
     D = 184                            # photo diameter
     cy = 884                           # photo centre, about 82% down
-    bar_h = 124
+    bar_h = 140
     pad = 30
     w1 = gfx.tw(d, l1 + " ", f1) + gfx.tw(d, acc, f1)
     w2 = gfx.tw(d, l2, f2)
@@ -148,7 +163,7 @@ def frame(t: float, cfg: dict) -> Image.Image:
     # Text sits inside the bar and is revealed with it (clipped to the bar), sliding 30 px.
     txt = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     td = ImageDraw.Draw(txt)
-    y1, y2 = cy - 4, cy + 40
+    y1, y2 = cy + 2, cy + 46   # about 20 px clear above line 1 and below the handle
     if n1 > 0:
         off = int((1 - n1) * 30) * -sign
         a = int(255 * n1)
@@ -156,7 +171,7 @@ def frame(t: float, cfg: dict) -> Image.Image:
         td.text((tx + off + gfx.tw(td, l1 + " ", f1), y1), acc, font=f1, fill=BRAND_RED[:3] + (a,), anchor="ls")
     if n2 > 0:
         off = int((1 - n2) * 30) * -sign
-        td.text((tx + off, y2), l2, font=f2, fill=(200, 200, 208, int(255 * n2)), anchor="ls")
+        td.text((tx + off, y2), l2, font=f2, fill=(225, 225, 230, int(255 * n2)), anchor="ls")
     clip = Image.new("L", (W, H), 0)
     if bar > 0.001:
         ImageDraw.Draw(clip).rectangle([min(x0, x1), cy - bar_h // 2, max(x0, x1), cy + bar_h // 2], fill=255)

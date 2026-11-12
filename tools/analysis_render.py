@@ -415,21 +415,33 @@ def brand_config(gfx_specs: dict) -> dict | None:
     return cfg
 
 
-def brand_side(beats_t: list[tuple[dict, float, float]], gfx_specs: dict, cfg: dict) -> str:
-    """Keep the lower third clear of a title lower third: switch sides if one is on screen."""
-    a, z = float(cfg["at"]), float(cfg["at"]) + brand_lt.total_seconds(cfg)
+# Graphics that keep clear of the lower band where the subscribe lower third sits.
+BRAND_SAFE_KINDS = {"question", "tag", "counter", "slam", "quote"}
+
+
+def brand_start(beats_t: list[tuple[dict, float, float]], gfx_specs: dict, cfg: dict) -> float | None:
+    """Earliest start at or after cfg["at"] when no other graphic uses the lower band for the whole
+    window (review 2026-11-13: never two lower thirds side by side, never over a chapter card)."""
+    busy = []
     for b, start, dur in beats_t:
-        if start >= z or start + dur <= a:
-            continue
         for gid in b.get("gfx", []):
             for spec in gfx_specs.get(gid, []):
-                if spec.get("kind") != "lower":
+                k = spec.get("kind")
+                if k in BRAND_SAFE_KINDS or (k == "caption" and spec.get("pos", "top") == "top"):
                     continue
-                s0 = start + max(0.0, gfx._t(spec, "at", "at_frac", dur, 0.0))
-                s1 = start + (min(dur, s0 - start + float(spec["dur"])) if spec.get("dur") else dur)
-                if s0 < z and s1 > a:
-                    return "right" if cfg.get("side", "left") == "left" else "left"
-    return cfg.get("side", "left")
+                s0 = max(0.0, gfx._t(spec, "at", "at_frac", dur, 0.0))
+                s1 = min(dur, s0 + float(spec["dur"])) if spec.get("dur") else dur
+                if k == "endscreen":
+                    s0 = max(0.0, s1 - float(spec.get("last", 20)))
+                busy.append((start + s0 - 0.3, start + s1 + 0.3))
+    span = brand_lt.total_seconds(cfg)
+    t, last = float(cfg["at"]), float(cfg["at"]) + float(cfg.get("max_delay", 40.0))
+    while t <= last:
+        clash = [z for a, z in busy if a < t + span and z > t]
+        if not clash:
+            return round(t, 2)
+        t = max(clash)
+    return None
 
 
 def beat_signature(b: dict, gfx_specs: dict, timings: dict, dur: float, brand: tuple | None = None,
@@ -524,7 +536,14 @@ def main() -> int:
     bcfg = brand_config(gfx_specs)
     bmov, bsecs = None, 0.0
     if bcfg:
-        bcfg["side"] = brand_side(beats_t, gfx_specs, bcfg)
+        start = brand_start(beats_t, gfx_specs, bcfg)
+        if start is None:
+            print("subscribe lower third skipped: no clear lower band in the first "
+                  f"{bcfg['at'] + bcfg.get('max_delay', 40):.0f} s", flush=True)
+            bcfg = None
+        else:
+            bcfg["at"] = start
+    if bcfg:
         bmov = work / f"brand-{hashlib.sha1((BRAND_SRC + json.dumps(bcfg, sort_keys=True)).encode()).hexdigest()[:10]}.mov"
         bsecs = brand_lt.total_seconds(bcfg)
         if not bmov.exists():
