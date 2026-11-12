@@ -1402,7 +1402,7 @@ tiktok:
 # oldest recording first, each going public at its NZ slot. Suit in a title ONLY if the
 # filename has it ("Wolverine Part 3 - Classic Brown Suit.mp4"). Telegram "prioritise <game>".
 longform_auto:
-  enabled: true            # LIVE 2026-09-21 — skips quietly while the B2 queue is empty
+  enabled: false           # PAUSED 2026-11-13 (Bryce): analysis long-forms take the daily YouTube long-form slot. Was LIVE 2026-09-21.
   timezone: Pacific/Auckland
   # ONE upload a day (per user 2026-10-05), timed from YouTube Analytics rather than guessed:
   # "When your viewers are on YouTube" peaks 5-8 AM NZ, brightest Sun/Mon ~6 AM, and the
