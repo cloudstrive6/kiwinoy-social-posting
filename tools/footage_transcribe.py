@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -25,12 +26,36 @@ import numpy as np  # noqa: E402
 
 from core import b2_store  # noqa: E402
 
+POOLS = [p.strip() for p in (os.environ.get("POOLS") or "cutscenes,footage").split(",") if p.strip()]
+
+
+def source_clips(game: str) -> list[dict]:
+    """Clips from the pools in POOLS (env, default cutscenes,footage). Spider-Man 2 has 450
+    gameplay clips (200 GB), so its story runs use POOLS=cutscenes (2026-11-13)."""
+    out = []
+    if "cutscenes" in POOLS:
+        out += [dict(c, pool="cutscenes") for c in b2_store.list_cutscenes(game)]
+    if "footage" in POOLS:
+        out += [dict(c, pool="footage") for c in b2_store.list_footage(game)]
+    return out
+
 # Spelling hints only (names from core/lore.py), so Whisper writes them correctly.
 NAMES = {
     "wolverine": "Logan, Wolverine, James Howlett, Jean Grey, Phoenix, Sabretooth, Victor Creed, "
                  "Mystique, Nathaniel Essex, Mister Sinister, Omega Red, Arkady Rossovich, "
                  "Apocalypse, Trask, Reavers, Sentinel, Helix Engine, Madripoor, Shiro Yoshida, "
                  "Sunfire, Lady Deathstrike, the Hand, Weapon X, Canada, Japan.",
+    "spider-man1": "Peter Parker, Spider-Man, Otto Octavius, Doctor Octopus, Mary Jane Watson, Aunt May, "
+                   "Miles Morales, Martin Li, Mister Negative, Wilson Fisk, Kingpin, Norman Osborn, Harry Osborn, "
+                   "Yuri Watanabe, F.E.A.S.T., Oscorp, Devil's Breath, Sinister Six, Electro, Vulture, Rhino, "
+                   "Scorpion, Silver Sable, Sable International, Jefferson Davis, J. Jonah Jameson.",
+    "spider-man-miles-morales": "Miles Morales, Spider-Man, Peter Parker, Phin Mason, the Tinkerer, Simon Krieger, "
+                                "Roxxon, Nuform, Aaron Davis, Prowler, Rio Morales, Ganke Lee, Underground, "
+                                "Harlem, Rhino, Hailey, Uncle Aaron.",
+    "spider-man2": "Peter Parker, Miles Morales, Spider-Man, Kraven, Sergei Kravinoff, Venom, symbiote, "
+                   "Harry Osborn, Norman Osborn, Mary Jane Watson, Martin Li, Mister Negative, Curt Connors, "
+                   "Lizard, Flint Marko, Sandman, Mysterio, Quentin Beck, Wraith, Yuri Watanabe, Cletus Kasady, "
+                   "Carnage, Hailey, Ganke, Rio Morales, Emily-May Foundation, Oscorp, Hunters.",
 }
 
 
@@ -43,8 +68,7 @@ def main() -> int:
 
     from faster_whisper import WhisperModel  # installed by the workflow step only
 
-    clips = ([dict(c, pool="cutscenes") for c in b2_store.list_cutscenes(game)]
-             + [dict(c, pool="footage") for c in b2_store.list_footage(game)])
+    clips = source_clips(game)
     clips.sort(key=lambda c: (c["pool"], c["name"]))
     out = ROOT / "output" / "inventory" / "transcripts" / game
     out.mkdir(parents=True, exist_ok=True)

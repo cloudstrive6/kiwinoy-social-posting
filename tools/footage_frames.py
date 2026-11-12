@@ -11,6 +11,7 @@ Writes output/inventory/frames/<game>/sheet_NN.jpg and index.json. Never uploads
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +22,19 @@ sys.path.insert(0, str(ROOT))
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
 from core import b2_store  # noqa: E402
+
+POOLS = [p.strip() for p in (os.environ.get("POOLS") or "cutscenes,footage").split(",") if p.strip()]
+
+
+def source_clips(game: str) -> list[dict]:
+    """Clips from the pools in POOLS (env, default cutscenes,footage). Spider-Man 2 has 450
+    gameplay clips (200 GB), so its story runs use POOLS=cutscenes (2026-11-13)."""
+    out = []
+    if "cutscenes" in POOLS:
+        out += [dict(c, pool="cutscenes") for c in b2_store.list_cutscenes(game)]
+    if "footage" in POOLS:
+        out += [dict(c, pool="footage") for c in b2_store.list_footage(game)]
+    return out
 
 W, H = 320, 180
 PER_SHEET = 8
@@ -44,8 +58,7 @@ def grab(url: str, t: float, out: Path) -> bool:
 
 def main() -> int:
     game = (sys.argv[1] if len(sys.argv) > 1 else "wolverine").lower()
-    clips = ([dict(c, pool="cutscenes") for c in b2_store.list_cutscenes(game)]
-             + [dict(c, pool="footage") for c in b2_store.list_footage(game)])
+    clips = source_clips(game)
     clips.sort(key=lambda c: (c["pool"], c["name"]))
     out = ROOT / "output" / "inventory" / "frames" / game
     tmp = out / "_tmp"

@@ -20,13 +20,17 @@ on:
         required: true
         default: "inventory"
       game:
-        description: "Game key as used on B2, e.g. wolverine"
+        description: "Game key as used on B2, e.g. wolverine (frames and transcribe take a comma list)"
         required: true
         default: "wolverine"
       only:
         description: "render only: comma list of beat ids for a test preview (blank = full video)"
         required: false
         default: ""
+      pools:
+        description: "frames and transcribe: B2 pools to read (cutscenes,footage or cutscenes)"
+        required: false
+        default: "cutscenes,footage"
       version:
         description: "render: draft version name on B2 (e.g. v3), so earlier drafts are kept"
         required: false
@@ -65,14 +69,17 @@ jobs:
         if: ${{ github.event.inputs.step == 'frames' }}
         env:
           GAME: ${{ github.event.inputs.game }}
-        run: python tools/footage_frames.py "$GAME"
+          POOLS: ${{ github.event.inputs.pools }}
+        run: |
+          for g in ${GAME//,/ }; do python tools/footage_frames.py "$g"; done
       - name: Dialogue transcripts with faster-whisper (read-only, approved 2026-11-12)
         if: ${{ github.event.inputs.step == 'transcribe' }}
         env:
           GAME: ${{ github.event.inputs.game }}
+          POOLS: ${{ github.event.inputs.pools }}
         run: |
           pip install "faster-whisper==1.1.1"
-          python tools/footage_transcribe.py "$GAME"
+          for g in ${GAME//,/ }; do python tools/footage_transcribe.py "$g"; done
       - name: Narrator auditions (Chirp 3 HD)
         if: ${{ github.event.inputs.step == 'audition' }}
         env:
