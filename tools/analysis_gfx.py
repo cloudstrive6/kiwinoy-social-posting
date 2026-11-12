@@ -76,7 +76,9 @@ def gradient_bottom(im: Image.Image, top: int, alpha: int = 200) -> None:
 
 
 def dim(im: Image.Image, alpha: int) -> None:
-    im.alpha_composite(Image.new("RGBA", (W, H), (0, 0, 0, alpha)))
+    # Dark warm grey, not black: a black wash over a dark shot reads as black frames in QC
+    # and on screen (Walter quote card, first full render 2026-11-12).
+    im.alpha_composite(Image.new("RGBA", (W, H), (36, 32, 30, alpha)))
 
 
 def save(im: Image.Image, workdir: Path, name: str) -> Path:

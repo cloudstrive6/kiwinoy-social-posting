@@ -88,6 +88,13 @@ jobs:
           GAME: ${{ github.event.inputs.game }}
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
         run: python tools/analysis_narrate.py "$GAME"
+      - name: Restore rendered beats
+        if: ${{ github.event.inputs.step == 'render' && github.event.inputs.only == '' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/segs
+          key: segs-${{ github.event.inputs.game }}-${{ github.run_id }}
+          restore-keys: segs-${{ github.event.inputs.game }}-
       - name: Render the analysis video (draft only, never posted)
         if: ${{ github.event.inputs.step == 'render' }}
         env:
@@ -100,6 +107,12 @@ jobs:
           else
             python tools/analysis_render.py "$GAME"
           fi
+      - name: Save rendered beats (unchanged beats are reused next run)
+        if: ${{ always() && github.event.inputs.step == 'render' && github.event.inputs.only == '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/segs
+          key: segs-${{ github.event.inputs.game }}-${{ github.run_id }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

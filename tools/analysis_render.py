@@ -19,6 +19,7 @@ of the draft to B2 drafts/analysis/ with a 7-day review link. Never posts to any
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -89,6 +90,26 @@ class Clips:
             self._urls.pop(idx, None)
         raise RuntimeError(f"could not fetch clip {idx} at {src:.1f}s for {want:.1f}s")
 
+    def fetch_clean(self, idx: int, src: float, span: float, work: Path) -> Path:
+        """fetch(), then make sure the range has no black or frozen stretch (clip ends often
+        hold a still or fade to black: clips 33 and 37 in the first full render). If it does,
+        slide the window clear of it and fetch again."""
+        clip_len = self.length(idx)
+        for attempt in range(4):
+            path = self.fetch(idx, src, span, work)
+            bad = bad_interval(path)
+            if not bad:
+                return path
+            b0, b1 = bad
+            new_src = src - (span - b0) - 0.3 if b0 > 0.6 else src + b1 + 0.3
+            new_src = min(max(0.0, new_src), max(0.0, clip_len - span - 1.0))
+            print(f"clip {idx}@{src:.1f}+{span:.1f}: black or frozen {b0:.1f}-{b1:.1f}s, "
+                  f"moving to {new_src:.1f}", flush=True)
+            if abs(new_src - src) < 0.05:
+                return path
+            src = new_src
+        return path
+
     def length(self, idx: int) -> float:
         return float(self.map[str(idx)]["seconds"])
 
@@ -108,6 +129,21 @@ def probe_seconds(path: Path, stream: str = "v") -> float:
         return int(st["nb_read_packets"]) / float(Fraction(st["r_frame_rate"]))
     except Exception:
         return 0.0
+
+
+def bad_interval(path: Path) -> tuple[float, float] | None:
+    """First black (0.3 s+) or frozen (1.5 s+) stretch in a local piece, or None."""
+    log = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path), "-an", "-vf",
+                          "blackdetect=d=0.3:pix_th=0.08,freezedetect=n=-70dB:d=1.5", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    hits = []
+    for a, b in re.findall(r"black_start:([\d.]+) black_end:([\d.]+)", log):
+        hits.append((float(a), float(b)))
+    fs = re.findall(r"freeze_start: ([\d.]+)", log)
+    fe = re.findall(r"freeze_end: ([\d.]+)", log)
+    for i, a in enumerate(fs):
+        hits.append((float(a), float(fe[i]) if i < len(fe) else probe_seconds(path)))
+    return min(hits) if hits else None
 
 
 def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
@@ -134,8 +170,8 @@ def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
             f = min(a / L, MAX_SLOW)
             span = a / f
             start = s["in"]
-            if start + span > clip_len - 0.2:
-                start = max(0.0, clip_len - 0.2 - span)
+            if start + span > clip_len - 1.0:
+                start = max(0.0, clip_len - 1.0 - span)
             pieces.append({**s, "src": start, "span": span, "out": a})
     return pieces
 
@@ -195,8 +231,8 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
     for k, p in enumerate(pieces):
         if "split" in p:
             l, r = p["split"]
-            il = add_input(["-i", str(clips.fetch(l["clip"], l["in"], p["out"] + 0.2, work))])
-            ir = add_input(["-i", str(clips.fetch(r["clip"], r["in"], p["out"] + 0.2, work))])
+            il = add_input(["-i", str(clips.fetch_clean(l["clip"], l["in"], p["out"] + 0.2, work))])
+            ir = add_input(["-i", str(clips.fetch_clean(r["clip"], r["in"], p["out"] + 0.2, work))])
             graph.append(f"color=c=0x0c0c10:s=1920x1080:r={FPS}:d={p['out']:.4f}[bg{k}]")
             for side, ii in (("l", il), ("r", ir)):
                 graph.append(f"[{ii}:v]scale=944:531,setsar=1,setpts=PTS-STARTPTS,fps={FPS},"
@@ -205,7 +241,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
                          f"format=yuv420p[v{k}]")
             graph.append(f"anullsrc=r=48000:cl=stereo,atrim=duration={p['out']:.4f}[a{k}]")
         else:
-            i = add_input(["-i", str(clips.fetch(p["clip"], p["src"], p["span"], work))])
+            i = add_input(["-i", str(clips.fetch_clean(p["clip"], p["src"], p["span"], work))])
             graph.append(vchain(f"{i}:v", p, f"v{k}"))
             if b["type"] == "game":
                 graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
@@ -350,6 +386,18 @@ def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, piec
     return out
 
 
+RENDER_VER = "2026-11-13a"  # bump when a change to this file should re-render every beat
+GFX_SRC = hashlib.sha1((ROOT / "tools/analysis_gfx.py").read_bytes()).hexdigest()[:10]
+
+
+def beat_signature(b: dict, gfx_specs: dict, timings: dict, dur: float) -> str:
+    parts = [RENDER_VER, json.dumps(b, sort_keys=True), f"{dur:.3f}",
+             json.dumps(timings.get(b["id"], {}), sort_keys=True)]
+    if b.get("gfx"):
+        parts += [GFX_SRC, json.dumps([gfx_specs.get(g) for g in b["gfx"]], sort_keys=True)]
+    return hashlib.sha1("|".join(parts).encode()).hexdigest()
+
+
 def fmt_ts(t: float) -> str:
     t = int(t)
     return f"{t // 60}:{t % 60:02d}" if t < 3600 else f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}"
@@ -428,10 +476,13 @@ def main() -> int:
         if only and b["id"] not in only:
             continue
         seg = segs / f"{b['id']}.mkv"
-        if seg.exists() and not only:
-            continue
+        sig = beat_signature(b, gfx_specs, timings, dur)
+        sigf = segs / f"{b['id']}.sig"
+        if seg.exists() and sigf.exists() and sigf.read_text() == sig:
+            continue  # unchanged since a cached render (segments are cached between runs)
         wav = narr_dir / f"{b['id']}.wav" if b["type"] == "narr" else None
         render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg)
+        sigf.write_text(sig)
         for f in (work / "pieces").glob("*.mkv"):
             f.unlink()
         print(f"{b['id']} {b['type']} {dur:.1f}s done ({time.time() - t0:.0f}s elapsed)", flush=True)
