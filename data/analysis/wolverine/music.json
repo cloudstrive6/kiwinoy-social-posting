@@ -1,0 +1,28 @@
+{
+ "note": "Music bed for the Wolverine analysis sample. Bryce, 2026-11-12: 'epic cinematic orchestra like the soundtrack of games / movies'; picked Last Dawn (theme), Epic and Dramatic Trailer Music (tension) and Red (tender, read as track 3 of the audition). Red is Jean's theme: her 1800s story, the garden and the fairy tale. Never the game's own soundtrack. Sections start at a beat; offset is seconds into the track; gain_db is the bed level under narration (the track is first normalised to -16 LUFS, the same as the voice).",
+ "tracks": {
+  "theme": "data/analysis/music/last-dawn-ross-bugden.mp3",
+  "tension": "data/analysis/music/epic-dramatic-trailer-ross-bugden.mp3",
+  "jean": "data/analysis/music/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -19,
+ "under_game_db": -30,
+ "xfade": 2.5,
+ "sections": [
+  {"from": "b000", "track": "theme", "offset": 0, "gain_db": -16},
+  {"from": "b001", "track": "theme", "offset": 10},
+  {"from": "b009", "track": "jean", "offset": 0},
+  {"from": "b019", "track": "tension", "offset": 0, "gain_db": -21},
+  {"from": "b029", "track": "tension", "offset": 45},
+  {"from": "b035", "track": null},
+  {"from": "b036", "track": "theme", "offset": 78, "gain_db": -16},
+  {"from": "b037", "track": "jean", "offset": 30},
+  {"from": "b043", "track": "jean", "offset": 0},
+  {"from": "b052", "track": "tension", "offset": 0, "gain_db": -22},
+  {"from": "b057", "track": "theme", "offset": 78, "gain_db": -16}
+ ]
+}

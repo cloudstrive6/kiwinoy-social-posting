@@ -21,7 +21,7 @@
  "G15": [{"kind": "card", "text": "SHE BURNED IT OUT BEFORE. HE DID IT WORSE.", "at": 0.3, "dur": 6.0}],
  "G16": [{"kind": "chapter", "num": 4, "title": "NOTHING OF YOU LEFT", "at": 0.3, "dur": 4.8}],
  "G17": [{"kind": "strip", "items": ["LATE 1800s: first burn", "NOW: TOKYO"], "lit": 1, "at": 5.5, "dur": 7.0}],
- "G18": [{"kind": "memory", "frames": [[6, 1.0], [109, 5.0], [10, 8.0], [35, 6.0]], "at_frac": 0.12, "dur": null}],
+ "G18": [{"kind": "memory", "frames": [[6, 8.0], [109, 5.0], [10, 8.0], [35, 6.0]], "at_frac": 0.12, "dur": null}],
  "G19": [{"kind": "slam", "text": "FORGET HER", "at": 0.1, "dur": 2.6}],
  "G20": [{"kind": "chapter", "num": 5, "title": "IT'S A NICE STORY", "at": 0.3, "dur": 4.8}],
  "G21": [{"kind": "strip", "items": ["LATE 1800s: first burn", "NOW: TOKYO", "AFTER: new mutants waking up"], "lit": 2, "at": 2.0, "dur": 8.0}],

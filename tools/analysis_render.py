@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 
+import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
 import analysis_gfx as gfx  # noqa: E402
@@ -143,9 +144,9 @@ def vchain(label_in: str, p: dict, out_label: str) -> str:
     f = []
     crop = p.get("crop")
     if crop == "sub":
-        f.append("crop=iw*0.84:ih*0.84:(iw-ow)/2:ih*0.02")
+        f.append("crop=iw*0.78:ih*0.78:(iw-ow)/2:ih*0.012")  # game subtitles sit at 82-84% height
     elif crop == "hud":
-        f.append("crop=iw*0.8:ih*0.8:(iw-ow)/2:ih*0.05")
+        f.append("crop=iw*0.74:ih*0.74:(iw-ow)/2:ih*0.06")  # HUD plus subtitles
     f.append("scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1")
     if p.get("blur"):
         f.append("gblur=sigma=14")
@@ -252,6 +253,97 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
          "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(seg)])
 
 
+SR = 48000
+
+
+def _decode(path: Path) -> "np.ndarray":
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-af", "loudnorm=I=-16:TP=-2:LRA=11",
+                          "-ar", str(SR), "-ac", "2", "-f", "f32le", "-"], capture_output=True, check=True).stdout
+    return np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).copy()
+
+
+def _looped(track: "np.ndarray", offset: float, n: int, xf: int) -> "np.ndarray":
+    """n samples of the track from `offset`; when it runs out it restarts just after the intro,
+    crossfaded over xf samples."""
+    out = track[int(offset * SR) % max(1, len(track) - xf):].copy()
+    loop = track[2 * SR:] if len(track) > 4 * SR + xf else track
+    while len(out) < n:
+        k = min(xf, len(out), len(loop))
+        ramp = np.linspace(0, 1, k, dtype=np.float32)[:, None]
+        head = loop[:k] * ramp
+        out[-k:] = out[-k:] * (1 - ramp) + head
+        out = np.concatenate([out, loop[k:]])
+    return out[:n].copy()
+
+
+def build_music(game: str, timeline: list[dict], total: float, work: Path) -> Path | None:
+    """The orchestral bed (data/analysis/<game>/music.json): sections that start at beats,
+    crossfaded, levelled under the voice and ducked further under game-audio bursts."""
+    cfg_path = ROOT / "data/analysis" / game / "music.json"
+    if not cfg_path.exists():
+        return None
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    starts = {b["id"]: b["start"] for b in timeline}
+    n = int(total * SR) + 1
+    bed = np.zeros((n, 2), dtype=np.float32)
+    xf = int(float(cfg.get("xfade", 2.5)) * SR)
+    cache: dict[str, np.ndarray] = {}
+    secs = cfg["sections"]
+    base = float(cfg.get("under_narration_db", -19))
+    for i, sec in enumerate(secs):
+        s0 = int(starts[sec["from"]] * SR)
+        s1 = int(starts[secs[i + 1]["from"]] * SR) if i + 1 < len(secs) else n
+        if not sec.get("track"):
+            continue
+        tr = cache.setdefault(sec["track"], _decode(ROOT / cfg["tracks"][sec["track"]]))
+        a = max(0, s0 - xf // 2)
+        b = min(n, s1 + xf // 2)
+        seg = _looped(tr, float(sec.get("offset", 0)), b - a, xf)
+        fin = xf if s0 > 0 else int(0.6 * SR)
+        fout = xf if s1 < n else int(4 * SR)
+        seg[:fin] *= np.linspace(0, 1, fin, dtype=np.float32)[:, None]
+        seg[-fout:] *= np.linspace(1, 0, fout, dtype=np.float32)[:, None]
+        seg *= 10 ** (float(sec.get("gain_db", base)) / 20)
+        bed[a:b] += seg
+    # Duck under game-audio bursts (the game's own dialogue), relative to the section level.
+    env = np.ones(n, dtype=np.float32)
+    duck = 10 ** ((float(cfg.get("under_game_db", -30)) - base) / 20)
+    ramp = int(0.3 * SR)
+    for bt in timeline:
+        if bt["type"] != "game":
+            continue
+        g0, g1 = int(bt["start"] * SR), int((bt["start"] + bt["seconds"]) * SR)
+        env[g0:g1] = np.minimum(env[g0:g1], duck)
+        lo = max(0, g0 - ramp)
+        env[lo:g0] = np.minimum(env[lo:g0], np.linspace(1, duck, g0 - lo, dtype=np.float32))
+        hi = min(n, g1 + ramp)
+        env[g1:hi] = np.minimum(env[g1:hi], np.linspace(duck, 1, hi - g1, dtype=np.float32))
+    bed *= env[:, None]
+    out = work / "music_bed.wav"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", "-",
+                    "-c:a", "pcm_f32le", str(out)], input=bed.tobytes(), check=True)
+    (work.parent / "music-credits.txt").write_text("Music:" + chr(10) + chr(10).join(cfg.get("credits", [])) + chr(10),
+                                                  encoding="utf-8")
+    return out
+
+
+def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, pieces=None) -> Path:
+    """Audio of `video` plus the bed (whole timeline, or the given [start, seconds] pieces)."""
+    if bed is None:
+        run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vn", "-c:a", "pcm_f32le", str(out)])
+        return out
+    if pieces:
+        parts = "".join(f"[1:a]atrim=start={s:.3f}:duration={d:.3f},asetpts=PTS-STARTPTS[m{i}];"
+                        for i, (s, d) in enumerate(pieces))
+        cat = "".join(f"[m{i}]" for i in range(len(pieces))) + f"concat=n={len(pieces)}:v=0:a=1[bed];"
+        graph = parts + cat + "[0:a][bed]amix=inputs=2:normalize=0:duration=first[a]"
+    else:
+        graph = "[0:a][1:a]amix=inputs=2:normalize=0:duration=first[a]"
+    run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-i", str(bed), "-filter_complex", graph,
+         "-map", "[a]", "-c:a", "pcm_f32le", str(out)])
+    return out
+
+
 def fmt_ts(t: float) -> str:
     t = int(t)
     return f"{t // 60}:{t % 60:02d}" if t < 3600 else f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}"
@@ -345,8 +437,13 @@ def main() -> int:
         lst = work / "preview.txt"
         lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats
                                if b["id"] in only), encoding="utf-8")
-        run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c:v", "copy",
-             "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "preview.mp4")])
+        joined = work / "preview.mkv"
+        run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(joined)])
+        bed = build_music(game, timeline, t, work)
+        pieces = [(x["start"], x["seconds"]) for x in timeline if x["id"] in only]
+        mixed = mix_music(joined, bed, work / "preview_mix.wav", pieces=pieces)
+        run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-i", str(mixed), "-map", "0:v", "-map", "1:a",
+             "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "preview.mp4")])
         return 0
 
     # Concat, then two-pass loudness to -14 LUFS.
@@ -354,16 +451,20 @@ def main() -> int:
     lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats), encoding="utf-8")
     joined = work / "joined.mkv"
     run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(joined)])
-    meas = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(joined), "-vn", "-af",
+    bed = build_music(game, timeline, t, work)
+    mixed = mix_music(joined, bed, work / "mixed.wav")
+    meas = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(mixed), "-vn", "-af",
                            "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                           capture_output=True, text=True).stderr
     m = json.loads(meas[meas.rfind("{"):meas.rfind("}") + 1])
     final = out / f"{game}-analysis-{a.version}.mp4"
-    run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-c:v", "copy", "-af",
+    run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-i", str(mixed), "-map", "0:v", "-map", "1:a",
+         "-c:v", "copy", "-af",
          f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
          f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:"
          "linear=true,aresample=48000", "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(final)])
     joined.unlink(missing_ok=True)
+    mixed.unlink(missing_ok=True)
     report = qc(final)
     report["chapters"] = chap_txt
     (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
@@ -376,7 +477,7 @@ def main() -> int:
         im = clips.grab(c, clips.length(c) * frac)
         if crop == "sub":
             w, h = im.size
-            im = im.crop((int(w * 0.08), int(h * 0.02), int(w * 0.92), int(h * 0.86)))
+            im = im.crop((int(w * 0.11), int(h * 0.01), int(w * 0.89), int(h * 0.79)))
         gfx.thumbnail(im, words, out / f"thumb-{i}.jpg")
 
     if a.no_upload:
