@@ -1,0 +1,1078 @@
+{
+ "game": "wolverine",
+ "voice": "Orus",
+ "speaking_rate": 0.85,
+ "under_narration_db": -24,
+ "source": "wolverine-script-v2.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "You saw a rescue. But Jean Grey freed Logan from Apocalypse by erasing his past, and Marvel's Wolverine told you the cost before she did it.",
+   "tts": "You saw a rescue. But Jean Grey freed Logan from Apocalypse by erasing his past, and Marvel's Wolverine told you the cost before she did it.",
+   "shots": [
+    {
+     "clip": 32,
+     "in": 36.0,
+     "out": 50.0,
+     "crop": "sub",
+     "push": true
+    }
+   ],
+   "gfx": [
+    "G01"
+   ],
+   "chapter": "Rescue or erasure?",
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "It is easy to read the ending as a sad rescue. Logan survives and walks away with a clean slate. This video argues the other side. The ending is an erasure, and the game sets it up long before the final fight. So did Jean rescue Logan, or did she erase him? Fair warning: full spoilers for the whole game, including the post-credits scene.",
+   "tts": "It is easy to read the ending as a sad rescue. Logan survives and walks away with a clean slate. This video argues the other side. The ending is an erasure, and the game sets it up long before the final fight. So did Jean rescue Logan, or did she erase him? Fair warning: full spoilers for the whole game, including the post-credits scene.",
+   "shots": [
+    {
+     "clip": 35,
+     "in": 0.0,
+     "out": 14.0
+    },
+    {
+     "clip": 33,
+     "in": 20.0,
+     "out": 32.0
+    }
+   ],
+   "gfx": [
+    "G02"
+   ],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "The answer comes down to one warning Jean gives and four words Logan says back. The four words sound kind. By the end of this video they'll sound like the saddest line in the game. Getting there takes a story Jean tells about the 1800s, and a villain who spent the whole game reaching into Logan's head too.",
+   "tts": "The answer comes down to one warning Jean gives and four words Logan says back. The four words sound kind. By the end of this video they'll sound like the saddest line in the game. Getting there takes a story Jean tells about the eighteen hundreds, and a villain who spent the whole game reaching into Logan's head too.",
+   "shots": [
+    {
+     "clip": 36,
+     "in": 100.0,
+     "out": 110.0
+    },
+    {
+     "clip": 109,
+     "in": 0.0,
+     "out": 12.0
+    },
+    {
+     "clip": 160,
+     "in": 40.0,
+     "out": 50.0
+    }
+   ],
+   "gfx": [
+    "G03"
+   ],
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "Start with what the game wants you to believe. Logan, real name James Howlett, has holes in his memory, and the whole story is him trying to piece together who he is. About three years before it starts, he walked out on Team X, his old black-ops unit. Now the unit is back together, because the man who built it, Nathaniel Essex, has been captured. The old team blames Logan for leaving, Sabretooth loudest of all. Logan heals from almost anything. That matters, because the wound this ending leaves is one his healing factor can't touch.",
+   "tts": "Start with what the game wants you to believe. Logan, real name James Howlett, has holes in his memory, and the whole story is him trying to piece together who he is. About three years before it starts, he walked out on Team X, his old black-ops unit. Now the unit is back together, because the man who built it, Nathaniel Essex, has been captured. The old team blames Logan for leaving, Sabretooth loudest of all. Logan heals from almost anything. That matters, because the wound this ending leaves is one his healing factor can't touch.",
+   "shots": [
+    {
+     "clip": 10,
+     "in": 5.0,
+     "out": 25.0
+    },
+    {
+     "clip": 6,
+     "in": 0.0,
+     "out": 15.0
+    },
+    {
+     "clip": 11,
+     "in": 0.0,
+     "out": 12.0
+    }
+   ],
+   "gfx": [
+    "G04",
+    "G05"
+   ],
+   "chapter": "The man who wanted his past back",
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "For most of the game he's the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
+   "tts": "For most of the game he's the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
+   "shots": [
+    {
+     "clip": 0,
+     "in": 0.0,
+     "out": 24.0
+    },
+    {
+     "clip": 0,
+     "in": 60.0,
+     "out": 80.0
+    }
+   ],
+   "gfx": [],
+   "id": "b004"
+  },
+  {
+   "type": "game",
+   "clip": 0,
+   "in": 25.0,
+   "out": 29.0,
+   "cue": "GAME AUDIO 0, 25-29 s: \"I have a home here for people who are special, like you.\"",
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "The scene never names the wild man, but it suggests he's Logan, and the voice gives its own name: Nathaniel Essex. Then it asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
+   "tts": "The scene never names the wild man, but it suggests he's Logan, and the voice gives its own name: Nathaniel Essex. Then it asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
+   "shots": [
+    {
+     "clip": 0,
+     "in": 74.0,
+     "out": 94.0
+    }
+   ],
+   "gfx": [],
+   "id": "b006"
+  },
+  {
+   "type": "narr",
+   "text": "The first half runs on a simpler villain. Bolivar Trask and his cyborg soldiers, the Reavers, are abducting mutants, children included. Jean Grey fights at Logan's side, and he calls her Red. By the midpoint Trask is gone, and a Team X scientist named Walter says something that sounds like small talk at the time.",
+   "tts": "The first half runs on a simpler villain. Bolivar Trask and his cyborg soldiers, the Reavers, are abducting mutants, children included. Jean Grey fights at Logan's side, and he calls her Red. By the midpoint Trask is gone, and a Team X scientist named Walter says something that sounds like small talk at the time.",
+   "shots": [
+    {
+     "clip": 38,
+     "in": 0.0,
+     "out": 20.0
+    },
+    {
+     "clip": 49,
+     "in": 0.0,
+     "out": 8.0,
+     "blur": true
+    },
+    {
+     "clip": 53,
+     "in": 0.0,
+     "out": 10.0
+    }
+   ],
+   "gfx": [
+    "G06"
+   ],
+   "id": "b007"
+  },
+  {
+   "type": "narr",
+   "text": "In a way, Walter tells him, he's lucky he doesn't remember his past. So the game plants two ideas early. Logan wants his past back, and forgetting might be a mercy. I think Walter's line is the game being honest with you ahead of time about which of those ideas will win. The ending puts both to the test.",
+   "tts": "In a way, Walter tells him, he's lucky he doesn't remember his past. So the game plants two ideas early. Logan wants his past back, and forgetting might be a mercy. I think Walter's line is the game being honest with you ahead of time about which of those ideas will win. The ending puts both to the test.",
+   "shots": [
+    {
+     "clip": 10,
+     "in": 30.0,
+     "out": 45.0
+    }
+   ],
+   "gfx": [
+    "G07"
+   ],
+   "id": "b008"
+  },
+  {
+   "type": "narr",
+   "text": "Jean tells Logan how they first met. It was the late 1800s, in the Rockies in Canada, and she says the man she met back then wasn't really him. He had another name.",
+   "tts": "Jean tells Logan how they first met. It was the late eighteen hundreds, in the Rockies in Canada, and she says the man she met back then wasn't really him. He had another name.",
+   "shots": [
+    {
+     "clip": 109,
+     "in": 0.0,
+     "out": 18.0
+    },
+    {
+     "clip": 109,
+     "in": 20.0,
+     "out": 40.0
+    }
+   ],
+   "gfx": [
+    "G08"
+   ],
+   "chapter": "She burned it out once before",
+   "id": "b009"
+  },
+  {
+   "type": "game",
+   "clip": 109,
+   "in": 40.0,
+   "out": 44.0,
+   "cue": "GAME AUDIO 109, 40-44 s: \"The Shinigami. Death.\"",
+   "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "The game's lore ties that name to Apocalypse, the ancient mutant Logan once served as his Horseman of Death. Back then, Jean did something about it.",
+   "tts": "The game's lore ties that name to Apocalypse, the ancient mutant Logan once served as his Horseman of Death. Back then, Jean did something about it.",
+   "shots": [
+    {
+     "clip": 109,
+     "in": 44.0,
+     "out": 84.0
+    }
+   ],
+   "gfx": [],
+   "id": "b011"
+  },
+  {
+   "type": "game",
+   "clip": 109,
+   "in": 84.0,
+   "out": 92.0,
+   "cue": "GAME AUDIO 109, 84-92 s: \"I burned all trace of Death... out of your mind. Or so I thought.\" (Whisper heard \"burned trace of death\"; check by ear)",
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "Or so she thought. By her account, Logan chased her across the world for ages. She died a few times and was reborn into other lives, and somehow he kept finding her. When she came across a cabin he'd built, she ran to the only place she felt safe. She calls it home. She also admits she didn't know if he'd come to kiss her or kill her, and neither did he. Even in her oldest memory, the Death in Logan might hurt her. The finale asks that question again.",
+   "tts": "Or so she thought. By her account, Logan chased her across the world for ages. She died a few times and was reborn into other lives, and somehow he kept finding her. When she came across a cabin he'd built, she ran to the only place she felt safe. She calls it home. She also admits she didn't know if he'd come to kiss her or kill her, and neither did he. Even in her oldest memory, the Death in Logan might hurt her. The finale asks that question again.",
+   "shots": [
+    {
+     "clip": 109,
+     "in": 92.0,
+     "out": 130.0
+    },
+    {
+     "clip": 110,
+     "in": 0.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [
+    "G09"
+   ],
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "That changes how to read the finale, because this may not be the first time Jean has gone through this with him. In the aftermath she says she has lived so many lives, and she doesn't think she was meant to remember them. The Helix energy changed that. Then, talking to another mutant about Logan, she says this, almost in passing.",
+   "tts": "That changes how to read the finale, because this may not be the first time Jean has gone through this with him. In the aftermath she says she has lived so many lives, and she doesn't think she was meant to remember them. The Helix energy changed that. Then, talking to another mutant about Logan, she says this, almost in passing.",
+   "shots": [
+    {
+     "clip": 34,
+     "in": 36.0,
+     "out": 60.0
+    },
+    {
+     "clip": 147,
+     "in": 88.0,
+     "out": 110.0
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "game",
+   "clip": 34,
+   "in": 52.0,
+   "out": 57.0,
+   "cue": "GAME AUDIO 34, 52-57 s: \"You don't understand how many times I've done this with him.\"",
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "Before the raid on Essex, she also asks Logan for a psychic link, in case they get separated again.",
+   "tts": "Before the raid on Essex, she also asks Logan for a psychic link, in case they get separated again.",
+   "shots": [
+    {
+     "clip": 147,
+     "in": 100.0,
+     "out": 127.0
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "narr",
+   "text": "That's my reading, and here's what it rests on: the first burn didn't hold, she talks about how many times she's done this with him, she plans for being separated again, and her fairy tale, which we'll get to, ends with \"for a while\". The game never draws the circle, but those pieces make a loop. A darkness settles on Logan, Jean burns it out, it comes back, and they find each other again. This time Jean keeps her memories and Logan loses his. If I'm right, this rescue doesn't end the story. It starts it over.",
+   "tts": "That's my reading, and here's what it rests on: the first burn didn't hold, she talks about how many times she's done this with him, she plans for being separated again, and her fairy tale, which we'll get to, ends with \"for a while\". The game never draws the circle, but those pieces make a loop. A darkness settles on Logan, Jean burns it out, it comes back, and they find each other again. This time Jean keeps her memories and Logan loses his. If I'm right, this rescue doesn't end the story. It starts it over.",
+   "shots": [
+    {
+     "clip": 109,
+     "in": 130.0,
+     "out": 160.0
+    },
+    {
+     "clip": 33,
+     "in": 0.0,
+     "out": 10.0
+    }
+   ],
+   "gfx": [
+    "G10"
+   ],
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "Before judging it, look at the game's villain, the other man who spent this story inside Logan's head.",
+   "tts": "Before judging it, look at the game's villain, the other man who spent this story inside Logan's head.",
+   "shots": [
+    {
+     "clip": 147,
+     "in": 125.0,
+     "out": 136.0
+    }
+   ],
+   "gfx": [],
+   "id": "b018"
+  },
+  {
+   "type": "narr",
+   "text": "At the midpoint, Essex counts exactly 10,473 active mutants on the planet, then tells Logan that with Trask's resources he doesn't need him anymore. After Logan and Jean push back, he gives them one last mission.",
+   "tts": "At the midpoint, Essex counts exactly ten thousand, four hundred and seventy-three active mutants on the planet, then tells Logan that with Trask's resources he doesn't need him anymore. After Logan and Jean push back, he gives them one last mission.",
+   "shots": [
+    {
+     "clip": 95,
+     "in": 0.0,
+     "out": 12.0
+    },
+    {
+     "clip": 95,
+     "in": 60.0,
+     "out": 72.0
+    }
+   ],
+   "gfx": [
+    "G11",
+    "G12"
+   ],
+   "chapter": "Essex, the other man in his head",
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "Then Tyger, who runs the Princess bar, digs up his history. Born in 1830, a physician whose lectures about mutants cost him his practice and his wife. After that he turns up across the decades without aging a day.",
+   "tts": "Then Tyger, who runs the Princess bar, digs up his history. Born in eighteen thirty, a physician whose lectures about mutants cost him his practice and his wife. After that he turns up across the decades without aging a day.",
+   "shots": [
+    {
+     "clip": 162,
+     "in": 0.0,
+     "out": 22.0
+    }
+   ],
+   "gfx": [
+    "G13"
+   ],
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "In Lowtown, Logan tells him he isn't even a mutant. Essex says he's augmented, like Logan. Then comes a run of lines about family.",
+   "tts": "In Lowtown, Logan tells him he isn't even a mutant. Essex says he's augmented, like Logan. Then comes a run of lines about family.",
+   "shots": [
+    {
+     "clip": 134,
+     "in": 0.0,
+     "out": 22.0
+    }
+   ],
+   "gfx": [],
+   "id": "b021"
+  },
+  {
+   "type": "game",
+   "clip": 134,
+   "in": 22.0,
+   "out": 30.0,
+   "cue": "GAME AUDIO 134, 22-30 s: \"You were nothing until I made you a team.\" / \"I thought we were family.\" (two speakers; no speaker captions; the 35 s line \"It is our family who will hurt us the most\" is left out because its speaker is unclear)",
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "When Logan finally reaches him, Essex pulls him into a purple, frozen bar that plays like a psychic vision. Then a snowy cabin, where Essex offers him the life he wanted, until Logan tells him to get out of his head. Then Essex shows what he is. Blue skin, a red gem, Mister Sinister. And he explains what he did to the Helix Engine.",
+   "tts": "When Logan finally reaches him, Essex pulls him into a purple, frozen bar that plays like a psychic vision. Then a snowy cabin, where Essex offers him the life he wanted, until Logan tells him to get out of his head. Then Essex shows what he is. Blue skin, a red gem, Mister Sinister. And he explains what he did to the Helix Engine.",
+   "shots": [
+    {
+     "clip": 154,
+     "in": 0.0,
+     "out": 30.0
+    },
+    {
+     "clip": 159,
+     "in": 0.0,
+     "out": 30.0
+    },
+    {
+     "clip": 160,
+     "in": 20.0,
+     "out": 35.0
+    }
+   ],
+   "gfx": [],
+   "id": "b023"
+  },
+  {
+   "type": "game",
+   "clip": 160,
+   "in": 24.0,
+   "out": 31.0,
+   "cue": "GAME AUDIO 160, 24-31 s: \"The engine's influence was problematic. I replaced it with my own.\"",
+   "id": "b024"
+  },
+  {
+   "type": "narr",
+   "text": "Later he tells Logan the rest. His wife was a mutant. He wanted to unravel her evolution so he could trigger his own, and in the end he grafted the X-gene onto himself. He's firm about one detail.",
+   "tts": "Later he tells Logan the rest. His wife was a mutant. He wanted to unravel her evolution so he could trigger his own, and in the end he grafted the X-gene onto himself. He's firm about one detail.",
+   "shots": [
+    {
+     "clip": 162,
+     "in": 23.0,
+     "out": 60.0
+    }
+   ],
+   "gfx": [],
+   "id": "b025"
+  },
+  {
+   "type": "game",
+   "clip": 162,
+   "in": 44.0,
+   "out": 48.0,
+   "cue": "GAME AUDIO 162, 44-48 s: \"She participated willingly!\" (check by ear)",
+   "id": "b026"
+  },
+  {
+   "type": "narr",
+   "text": "Keep that word, willingly, next to home.",
+   "tts": "Keep that word, willingly, next to home.",
+   "shots": [
+    {
+     "clip": 162,
+     "in": 50.0,
+     "out": 58.0
+    }
+   ],
+   "gfx": [],
+   "id": "b027"
+  },
+  {
+   "type": "narr",
+   "text": "Put Essex next to Jean and the design gets clearer. Both of them reach into Logan's mind, and both show him a home. Essex builds a cabin out of what Logan wants. Jean, as you'll see, takes him to a garden made of what they had. Each of them also has a story about someone they loved who agreed to it. Essex took from his wife to make himself more. Jean is about to take from Logan and leave him less. The game makes the villain's version easy to condemn. Hers is much harder, and I think that's the point.",
+   "tts": "Put Essex next to Jean and the design gets clearer. Both of them reach into Logan's mind, and both show him a home. Essex builds a cabin out of what Logan wants. Jean, as you'll see, takes him to a garden made of what they had. Each of them also has a story about someone they loved who agreed to it. Essex took from his wife to make himself more. Jean is about to take from Logan and leave him less. The game makes the villain's version easy to condemn. Hers is much harder, and I think that's the point.",
+   "shots": [
+    {
+     "split": [
+      {
+       "clip": 159,
+       "in": 20.0,
+       "out": 40.0
+      },
+      {
+       "clip": 33,
+       "in": 0.0,
+       "out": 15.0
+      }
+     ]
+    }
+   ],
+   "gfx": [
+    "G14"
+   ],
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "So far: by her own account, Jean burned the Death out of Logan once before, and the villain spent the game doing something crueler to him. But the real reason the ending is an erasure is what Jean says right before she does it.",
+   "tts": "So far: by her own account, Jean burned the Death out of Logan once before, and the villain spent the game doing something crueler to him. But the real reason the ending is an erasure is what Jean says right before she does it.",
+   "shots": [
+    {
+     "clip": 14,
+     "in": 20.0,
+     "out": 40.0
+    }
+   ],
+   "gfx": [
+    "G15"
+   ],
+   "id": "b029"
+  },
+  {
+   "type": "narr",
+   "text": "Tokyo. Essex launches the Helix Engine to wake dormant X-genes all over the world, and the city fills with Sentinels. Essex, now in a red cape, says he can feel thousands of mutants coming alive.",
+   "tts": "Tokyo. Essex launches the Helix Engine to wake dormant X-genes all over the world, and the city fills with Sentinels. Essex, now in a red cape, says he can feel thousands of mutants coming alive.",
+   "shots": [
+    {
+     "clip": 14,
+     "in": 0.0,
+     "out": 20.0
+    },
+    {
+     "clip": 21,
+     "in": 25.0,
+     "out": 42.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 24,
+     "in": 10.0,
+     "out": 30.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 15,
+     "in": 0.0,
+     "out": 10.0
+    }
+   ],
+   "gfx": [
+    "G16",
+    "G17"
+   ],
+   "chapter": "Nothing of you left",
+   "id": "b030"
+  },
+  {
+   "type": "narr",
+   "text": "Then, with Logan on his knees, a voice cuts into his head.",
+   "tts": "Then, with Logan on his knees, a voice cuts into his head.",
+   "shots": [
+    {
+     "clip": 26,
+     "in": 0.0,
+     "out": 16.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b031"
+  },
+  {
+   "type": "game",
+   "clip": 26,
+   "in": 17.0,
+   "out": 21.0,
+   "cue": "GAME AUDIO 26, 17-21 s: \"Forget her! Look at me!\" (picture stays on 26; crop HUD)",
+   "crop": "hud",
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "The game doesn't put a name on that voice in this moment. The voice that has followed Logan all game is Apocalypse, and whoever is speaking here, the order is simple: forget her. That order does get carried out, just not the way the voice meant.",
+   "tts": "The game doesn't put a name on that voice in this moment. The voice that has followed Logan all game is Apocalypse, and whoever is speaking here, the order is simple: forget her. That order does get carried out, just not the way the voice meant.",
+   "shots": [
+    {
+     "clip": 26,
+     "in": 21.0,
+     "out": 44.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b033"
+  },
+  {
+   "type": "narr",
+   "text": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and she tells him the price in one breath.",
+   "tts": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and she tells him the price in one breath.",
+   "shots": [
+    {
+     "clip": 27,
+     "in": 0.0,
+     "out": 20.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 28,
+     "in": 0.0,
+     "out": 8.0
+    },
+    {
+     "clip": 30,
+     "in": 0.0,
+     "out": 20.0
+    },
+    {
+     "clip": 31,
+     "in": 0.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [],
+   "id": "b034"
+  },
+  {
+   "type": "game",
+   "clip": 32,
+   "in": 2.0,
+   "out": 16.0,
+   "cue": "GAME AUDIO 32, 2-16 s: \"Death is a part of you. If I burn it out, there will be nothing of you left.\"",
+   "id": "b035"
+  },
+  {
+   "type": "narr",
+   "text": "Listen to how she describes him. Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described. And Logan asks her to do it anyway. He would rather give up nearly all of who he is than kill her. That request is part of the game's story, though my footage doesn't catch it clearly.",
+   "tts": "Listen to how she describes him. Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described. And Logan asks her to do it anyway. He would rather give up nearly all of who he is than kill her. That request is part of the game's story, though my footage doesn't catch it clearly.",
+   "shots": [
+    {
+     "clip": 32,
+     "in": 20.0,
+     "out": 50.0,
+     "push": true
+    }
+   ],
+   "gfx": [
+    "G18"
+   ],
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "Now look at what comes next. In my playthrough, the warning cuts almost straight to a garden in sunlight. There's no shot of memories burning away. Jean calls it a memory, frozen in time. They lived there, she says, and it was nice. Then she tells him how this works.",
+   "tts": "Now look at what comes next. In my playthrough, the warning cuts almost straight to a garden in sunlight. There's no shot of memories burning away. Jean calls it a memory, frozen in time. They lived there, she says, and it was nice. Then she tells him how this works.",
+   "shots": [
+    {
+     "clip": 33,
+     "in": 0.0,
+     "out": 30.0
+    },
+    {
+     "clip": 33,
+     "in": 36.0,
+     "out": 48.0
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
+  },
+  {
+   "type": "game",
+   "clip": 33,
+   "in": 48.0,
+   "out": 56.0,
+   "cue": "GAME AUDIO 33, 48-56 s: \"And you won't remember, but a lot of other people will.\"",
+   "id": "b038"
+  },
+  {
+   "type": "narr",
+   "text": "And she finishes the goodbye.",
+   "tts": "And she finishes the goodbye.",
+   "shots": [
+    {
+     "clip": 33,
+     "in": 56.0,
+     "out": 66.0
+    }
+   ],
+   "gfx": [],
+   "id": "b039"
+  },
+  {
+   "type": "game",
+   "clip": 33,
+   "in": 66.0,
+   "out": 78.0,
+   "cue": "GAME AUDIO 33, 66-78 s: \"Because I needed you to know that I remember, and that I forgive you, and that you are loved.\"",
+   "id": "b040"
+  },
+  {
+   "type": "narr",
+   "text": "The whole ending runs on that imbalance. She remembers, and he won't. Instead of showing the erasure, the game shows what's being erased, from the side of the person who gets to keep it.",
+   "tts": "The whole ending runs on that imbalance. She remembers, and he won't. Instead of showing the erasure, the game shows what's being erased, from the side of the person who gets to keep it.",
+   "shots": [
+    {
+     "clip": 33,
+     "in": 78.0,
+     "out": 87.0
+    }
+   ],
+   "gfx": [],
+   "id": "b041"
+  },
+  {
+   "type": "narr",
+   "text": "Now think back to Tokyo. Forget her, the voice said. By the final scene, Logan has. The order is carried out by the one person fighting it, because that was the only way to get the voice out of him.",
+   "tts": "Now think back to Tokyo. Forget her, the voice said. By the final scene, Logan has. The order is carried out by the one person fighting it, because that was the only way to get the voice out of him.",
+   "shots": [
+    {
+     "clip": 26,
+     "in": 17.0,
+     "out": 21.0,
+     "crop": "hud",
+     "gray": true
+    },
+    {
+     "clip": 35,
+     "in": 36.0,
+     "out": 46.0
+    }
+   ],
+   "gfx": [
+    "G19"
+   ],
+   "id": "b042"
+  },
+  {
+   "type": "narr",
+   "text": "On the news, the robots have stopped almost at the same moment, and the anchors are calling it a mutant outbreak. Essex is dead. Logan finished him in Tokyo, though my footage never catches the moment.",
+   "tts": "On the news, the robots have stopped almost at the same moment, and the anchors are calling it a mutant outbreak. Essex is dead. Logan finished him in Tokyo, though my footage never catches the moment.",
+   "shots": [
+    {
+     "clip": 34,
+     "in": 60.0,
+     "out": 92.0
+    }
+   ],
+   "gfx": [
+    "G20"
+   ],
+   "chapter": "It's a nice story",
+   "id": "b043"
+  },
+  {
+   "type": "narr",
+   "text": "Then the balcony. Logan comes to see Jean, and she has a present for him, something to remember them by. She takes his memories, then hands him a keepsake. He tries to be honest with her.",
+   "tts": "Then the balcony. Logan comes to see Jean, and she has a present for him, something to remember them by. She takes his memories, then hands him a keepsake. He tries to be honest with her.",
+   "shots": [
+    {
+     "clip": 35,
+     "in": 0.0,
+     "out": 30.0
+    }
+   ],
+   "gfx": [],
+   "id": "b044"
+  },
+  {
+   "type": "game",
+   "clip": 35,
+   "in": 46.0,
+   "out": 54.0,
+   "cue": "GAME AUDIO 35, 46-54 s: \"Even if I wanted to remember it, it just sounds like a... A story.\" (check by ear and who says \"A story\")",
+   "id": "b045"
+  },
+  {
+   "type": "narr",
+   "text": "They talk about the new mutants about to wake up in a world that hates them, and Jean asks him to stay and help. He won't. He wants to figure out who he was. The game opened with a man who wanted his past back. It ends with that man leaving to go and look for it, because the person who knew it best burned it away, at his own request.",
+   "tts": "They talk about the new mutants about to wake up in a world that hates them, and Jean asks him to stay and help. He won't. He wants to figure out who he was. The game opened with a man who wanted his past back. It ends with that man leaving to go and look for it, because the person who knew it best burned it away, at his own request.",
+   "shots": [
+    {
+     "clip": 35,
+     "in": 85.0,
+     "out": 145.0
+    }
+   ],
+   "gfx": [
+    "G21"
+   ],
+   "id": "b046"
+  },
+  {
+   "type": "narr",
+   "text": "Before he goes, she tells him one more story. A girl named Red has a perfect life. However many times she goes to sleep, she wakes up again to summer and sunshine. She meets a boy, strange and dirty, with a dark cloud hanging over him, and the cloud whispers dark, scary words. So she rips it out of the sky so he can see the sunshine.",
+   "tts": "Before he goes, she tells him one more story. A girl named Red has a perfect life. However many times she goes to sleep, she wakes up again to summer and sunshine. She meets a boy, strange and dirty, with a dark cloud hanging over him, and the cloud whispers dark, scary words. So she rips it out of the sky so he can see the sunshine.",
+   "shots": [
+    {
+     "clip": 36,
+     "in": 0.0,
+     "out": 80.0
+    }
+   ],
+   "gfx": [
+    "G22"
+   ],
+   "id": "b047"
+  },
+  {
+   "type": "game",
+   "clip": 36,
+   "in": 96.0,
+   "out": 110.0,
+   "cue": "GAME AUDIO 36, 96-110 s: \"And for a while the boy was happy. And so was she.\"",
+   "id": "b048"
+  },
+  {
+   "type": "narr",
+   "text": "It's hard not to hear the whole game in that. Red waking up to summer every time reads as Jean being reborn. The cloud reads as the voice, and ripping it out of the sky is the Phoenix. Two words matter most: for a while. Even her own fairy tale admits the cure doesn't last. And then Logan answers.",
+   "tts": "It's hard not to hear the whole game in that. Red waking up to summer every time reads as Jean being reborn. The cloud reads as the voice, and ripping it out of the sky is the Phoenix. Two words matter most: for a while. Even her own fairy tale admits the cure doesn't last. And then Logan answers.",
+   "shots": [
+    {
+     "clip": 36,
+     "in": 105.0,
+     "out": 111.0
+    }
+   ],
+   "gfx": [],
+   "id": "b049"
+  },
+  {
+   "type": "game",
+   "clip": 36,
+   "in": 110.0,
+   "out": 113.0,
+   "cue": "GAME AUDIO 36, 110-113 s: \"It's a nice story.\"",
+   "id": "b050"
+  },
+  {
+   "type": "narr",
+   "text": "Those are the four words. He's hearing the most important thing that ever happened to him, and to him it's fiction. Jean freed him from the voice, and the only place his past still exists is a bedtime story someone else tells him.",
+   "tts": "Those are the four words. He's hearing the most important thing that ever happened to him, and to him it's fiction. Jean freed him from the voice, and the only place his past still exists is a bedtime story someone else tells him.",
+   "shots": [
+    {
+     "clip": 36,
+     "in": 113.0,
+     "out": 125.0
+    }
+   ],
+   "gfx": [],
+   "id": "b051"
+  },
+  {
+   "type": "narr",
+   "text": "There's one more reason this isn't a clean rescue. Apocalypse is never defeated. The Phoenix forces him out of Logan's mind, and that's all. Victor Creed fights beside Logan for most of the game, and only once, late, do they turn on each other. His reason is the word this whole game keeps coming back to: family. You destroyed our family, he tells Logan. KG's notes add that he used the Helix Engine on himself and now carries Apocalypse's voice too.",
+   "tts": "There's one more reason this isn't a clean rescue. Apocalypse is never defeated. The Phoenix forces him out of Logan's mind, and that's all. Victor Creed fights beside Logan for most of the game, and only once, late, do they turn on each other. His reason is the word this whole game keeps coming back to: family. You destroyed our family, he tells Logan. K G's notes add that he used the Helix Engine on himself and now carries Apocalypse's voice too.",
+   "shots": [
+    {
+     "clip": 165,
+     "in": 0.0,
+     "out": 30.0
+    },
+    {
+     "clip": 166,
+     "in": 0.0,
+     "out": 4.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 167,
+     "in": 95.0,
+     "out": 117.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G23"
+   ],
+   "chapter": "The cloud comes back",
+   "id": "b052"
+  },
+  {
+   "type": "narr",
+   "text": "Then the post-credits scene. A figure walks into a teal ruin, and a man says this.",
+   "tts": "Then the post-credits scene. A figure walks into a teal ruin, and a man says this.",
+   "shots": [
+    {
+     "clip": 37,
+     "in": 0.0,
+     "out": 18.0
+    }
+   ],
+   "gfx": [
+    "G24"
+   ],
+   "id": "b053"
+  },
+  {
+   "type": "game",
+   "clip": 37,
+   "in": 18.0,
+   "out": 22.0,
+   "cue": "GAME AUDIO 37, 18-22 s: \"Because I can't get your goddamn voice out of my head.\" (mild profanity; bleep optional)",
+   "id": "b054"
+  },
+  {
+   "type": "narr",
+   "text": "A subtitle labels one voice Apocalypse, but the man who has to listen is never named on screen. KG's own notes point to Sabretooth as the next Horseman. The cloud from Jean's story didn't disappear. It found someone else.",
+   "tts": "A subtitle labels one voice Apocalypse, but the man who has to listen is never named on screen. K G's own notes point to Sabretooth as the next Horseman. The cloud from Jean's story didn't disappear. It found someone else.",
+   "shots": [
+    {
+     "clip": 37,
+     "in": 60.0,
+     "out": 82.0,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b055"
+  },
+  {
+   "type": "narr",
+   "text": "Look at where that leaves everyone. Jean remembers what Logan can't, and she carries it alone. The world wakes up to thousands of new mutants, and the voice is still out there looking for someone to live in.",
+   "tts": "Look at where that leaves everyone. Jean remembers what Logan can't, and she carries it alone. The world wakes up to thousands of new mutants, and the voice is still out there looking for someone to live in.",
+   "shots": [
+    {
+     "clip": 35,
+     "in": 140.0,
+     "out": 150.0
+    },
+    {
+     "clip": 34,
+     "in": 36.0,
+     "out": 50.0
+    },
+    {
+     "clip": 35,
+     "in": 120.0,
+     "out": 140.0
+    }
+   ],
+   "gfx": [
+    "G25"
+   ],
+   "id": "b056"
+  },
+  {
+   "type": "narr",
+   "text": "So, did Jean rescue Logan, or erase him? Jean freed Logan from Apocalypse by erasing his past, and the game told us the price before she did it. That's the shot this video opened on: Jean in the Phoenix Force, wings open, Logan below her. It looks like a rescue. Now you know what she's about to take.",
+   "tts": "So, did Jean rescue Logan, or erase him? Jean freed Logan from Apocalypse by erasing his past, and the game told us the price before she did it. That's the shot this video opened on: Jean in the Phoenix Force, wings open, Logan below her. It looks like a rescue. Now you know what she's about to take.",
+   "shots": [
+    {
+     "clip": 32,
+     "in": 36.0,
+     "out": 50.0,
+     "push": true
+    }
+   ],
+   "gfx": [
+    "G26"
+   ],
+   "id": "b057"
+  },
+  {
+   "type": "narr",
+   "text": "One question for the comments. Was Jean right to do it, yes or no? Next, I'm putting every Insomniac Marvel game into one story, from Spider-Man to Wolverine. Subscribe if you want that one. Thanks for watching. KG.",
+   "tts": "One question for the comments. Was Jean right to do it, yes or no? Next, I'm putting every Insomniac Marvel game into one story, from Spider-Man to Wolverine. Subscribe if you want that one. Thanks for watching. K G.",
+   "shots": [
+    {
+     "clip": 36,
+     "in": 125.0,
+     "out": 131.0
+    },
+    {
+     "clip": 35,
+     "in": 140.0,
+     "out": 150.0
+    }
+   ],
+   "gfx": [
+    "G27"
+   ],
+   "id": "b058"
+  }
+ ],
+ "gfx_cues": [
+  {
+   "id": "G01",
+   "cue": "title text \"MARVEL'S WOLVERINE: THE ENDING\" fades in at 0:03, lower third; no channel logo, no greeting"
+  },
+  {
+   "id": "G02",
+   "cue": "question card \"RESCUE or ERASURE?\", ERASURE in Phoenix orange; then the spoiler line on screen: \"SPOILERS: FULL GAME AND POST-CREDITS\""
+  },
+  {
+   "id": "G03",
+   "cue": "three quick \"evidence\" tags flick over the clips: \"THE 1800s\", \"THE WARNING\", \"4 WORDS\""
+  },
+  {
+   "id": "G04",
+   "cue": "chapter card 1 \"THE MAN WHO WANTED HIS PAST BACK\", rides under the first line"
+  },
+  {
+   "id": "G05",
+   "cue": "relationship map builds: LOGAN in the centre; TEAM X ring with SABRETOOTH (Victor Creed) and MYSTIQUE; ESSEX above with an arrow \"built Team X\"; a broken line from Logan to Team X labelled \"left 3 years ago\""
+  },
+  {
+   "id": "G06",
+   "cue": "relationship map adds TRASK and the REAVERS in red as the enemy, and JEAN beside Logan with the tag \"Red\""
+  },
+  {
+   "id": "G07",
+   "cue": "quote card, white serif on dark: \"In a way, you're lucky you don't remember your past.\" WALTER. No bar footage here: clip 90 is on the music-risk list"
+  },
+  {
+   "id": "G08",
+   "cue": "chapter card 2 \"SHE BURNED IT OUT ONCE BEFORE\""
+  },
+  {
+   "id": "G09",
+   "cue": "timeline strip slides in along the bottom: \"LATE 1800s: the Rockies, the first burn\" then \"MANY LIVES: Jean reborn\" then \"NOW: the Helix Engine, Tokyo\""
+  },
+  {
+   "id": "G10",
+   "cue": "the timeline strip bends into a circle with three stops: \"DARKNESS\", \"BURN\", \"FIND EACH OTHER\"; a marker runs round it once; small caption under the circle: \"KG'S READING\""
+  },
+  {
+   "id": "G11",
+   "cue": "chapter card 3 \"ESSEX, THE OTHER MAN IN HIS HEAD\""
+  },
+  {
+   "id": "G12",
+   "cue": "number counter \"10,473\" ticks up beside Essex"
+  },
+  {
+   "id": "G13",
+   "cue": "dossier card built in graphics, not the game's photo frame: \"NATHANIEL ESSEX. BORN 1830. PHYSICIAN.\" with \"1891\", \"1936\", \"1940\" stamping past and the line \"NOT AGED A DAY\""
+  },
+  {
+   "id": "G14",
+   "cue": "split-screen labels \"ESSEX: ADDS HIMSELF\" and \"JEAN: TAKES AWAY\"; then one word, \"WILLINGLY?\", drops across both halves"
+  },
+  {
+   "id": "G15",
+   "cue": "one-line recap card: \"SHE BURNED IT OUT BEFORE. HE DID IT WORSE.\""
+  },
+  {
+   "id": "G16",
+   "cue": "chapter card 4 \"NOTHING OF YOU LEFT\""
+  },
+  {
+   "id": "G17",
+   "cue": "timeline strip returns: \"NOW: TOKYO\" lights up"
+  },
+  {
+   "id": "G18",
+   "cue": "memory-erase visual: a ring of Logan's memory frames (the helicopter, the farm, the cabin fire, the balcony) orbits him; as Jean's wings open, each frame whitens from the edges and peels away to blank paper. Phoenix orange light only, no literal flames on Logan; the Phoenix is psychic energy, not fire"
+  },
+  {
+   "id": "G19",
+   "cue": "the words \"FORGET HER\" slam back on screen, then fade to nothing"
+  },
+  {
+   "id": "G20",
+   "cue": "chapter card 5 \"IT'S A NICE STORY\""
+  },
+  {
+   "id": "G21",
+   "cue": "timeline strip adds \"AFTER: new mutants waking up\""
+  },
+  {
+   "id": "G22",
+   "cue": "storybook frame: the fairy tale drawn as simple paper-cut panels in Phoenix orange and grey (a girl, a dirty boy, a dark cloud, the sun), each panel appearing on its line"
+  },
+  {
+   "id": "G23",
+   "cue": "chapter card 6 \"THE CLOUD COMES BACK\""
+  },
+  {
+   "id": "G24",
+   "cue": "timeline strip completes: \"LATE 1800s: first burn\" then \"TOKYO: second burn\" then \"POST-CREDITS: the voice moves on\""
+  },
+  {
+   "id": "G25",
+   "cue": "timeline strip collapses into the relationship map from chapter 1, now with Logan's ring of memory frames blank, Jean's lines intact and Sabretooth tagged \"NEXT?\""
+  },
+  {
+   "id": "G26",
+   "cue": "callback: the cold-open title returns with \"RESCUE or ERASURE?\"; RESCUE is struck through"
+  },
+  {
+   "id": "G27",
+   "cue": "end screen: next-video slot \"THE INSOMNIAC MARVEL UNIVERSE SO FAR: SPIDER-MAN TO WOLVERINE\" and a subscribe button, both only in the final 20 s"
+  }
+ ]
+}

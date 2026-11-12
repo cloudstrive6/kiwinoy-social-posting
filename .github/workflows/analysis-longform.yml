@@ -8,17 +8,25 @@ name: Analysis long-form (manual)
 #           source folders for analysis videos (rule, Bryce 2026-11-12).
 #   transcribe: timestamped dialogue of the same clips (faster-whisper on CPU, free).
 #   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
+#   narrate: full narration from data/analysis/<game>/edl.json (voice Orus, picked 2026-11-12).
+#   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
+#           drafts/analysis/ with a 7-day review link. Optional "only" renders a few beats
+#           as a small preview instead (test runs).
 on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition)"
+        description: "Step to run (inventory, frames, transcribe, audition, narrate, render)"
         required: true
         default: "inventory"
       game:
         description: "Game key as used on B2, e.g. wolverine"
         required: true
         default: "wolverine"
+      only:
+        description: "render only: comma list of beat ids for a test preview (blank = full video)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -43,7 +51,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
       - name: Install ffprobe
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
       - name: Footage inventory (read-only)
         if: ${{ github.event.inputs.step == 'inventory' }}
         env:
@@ -67,9 +75,40 @@ jobs:
           GAME: ${{ github.event.inputs.game }}
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
         run: python tools/voice_audition.py "data/analysis/$GAME/audition.txt" Orus Enceladus Algenib
+      - name: Narration cache
+        if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
+        uses: actions/cache@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/narration
+          key: narration-${{ github.event.inputs.game }}-${{ hashFiles(format('data/analysis/{0}/edl.json', github.event.inputs.game)) }}
+          restore-keys: narration-${{ github.event.inputs.game }}-
+      - name: Narration (Chirp 3 HD)
+        if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+          GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+        run: python tools/analysis_narrate.py "$GAME"
+      - name: Render the analysis video (draft only, never posted)
+        if: ${{ github.event.inputs.step == 'render' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          if [ -n "$ONLY" ]; then
+            python tools/analysis_render.py "$GAME" --only "$ONLY" --no-upload
+          else
+            python tools/analysis_render.py "$GAME"
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: analysis-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
-          path: output/inventory/
+          path: |
+            output/inventory/
+            output/analysis/
+            !output/analysis/*/segs/
+            !output/analysis/*/work/
+            !output/analysis/*/*-analysis-*.mp4
+            !output/analysis/*/narration/*.wav
           retention-days: 14

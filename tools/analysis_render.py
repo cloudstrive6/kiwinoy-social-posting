@@ -1,0 +1,357 @@
+"""Render a KG analysis long-form from its edit list (2026-11-12, manual runs first).
+
+Inputs: data/analysis/<game>/edl.json (beats from the approved script), gfx.json (graphics),
+clips.json (clip index to B2 key) and the narration from tools/analysis_narrate.py. Footage
+streams from B2 over short-lived presigned URLs (rule: any footage of the same game; automated
+runs use B2 only). Plain code, no AI.
+
+Each beat renders to its own segment (1920x1080, 60 fps, PCM audio):
+  narr: the cue's shots are fitted to the paragraph (jump cuts inside long ranges, gentle slow
+        motion up to 1.5x when a range is short), game audio ducked to -24 dB under the voice,
+        graphics faded on top.
+  game: the clip's own audio at full level (normalised), narration paused, 15 s or less.
+Then: concat, two-pass loudnorm to -14 LUFS / -1.5 dBTP, chapters from the real cut, QC
+(resolution, fps, loudness, black frames, freezes over 2 s), three thumbnails, and an upload
+of the draft to B2 drafts/analysis/ with a 7-day review link. Never posts to any platform.
+
+    python tools/analysis_render.py wolverine [--only b000,b001] [--no-upload]
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import re
+import subprocess
+import sys
+import time
+from fractions import Fraction
+from io import BytesIO
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "tools"))
+
+from PIL import Image  # noqa: E402
+
+import analysis_gfx as gfx  # noqa: E402
+from core import b2_store  # noqa: E402
+
+FPS = 60
+MAX_SHOT = 7.0     # longest single shot before a jump cut inside the range
+MAX_SLOW = 1.5     # most slow motion used to stretch a short range
+LEAD, TAIL = 0.15, 0.35  # breath before and after each narration paragraph
+FADE = 0.25
+
+
+def run(cmd: list[str], **kw) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, check=True, **kw)
+
+
+class Clips:
+    def __init__(self, game: str):
+        self.map = json.loads((ROOT / "data/analysis" / game / "clips.json").read_text(encoding="utf-8"))["clips"]
+        self._urls: dict[int, tuple[str, float]] = {}
+
+    def url(self, idx: int) -> str:
+        u, t = self._urls.get(idx, ("", 0.0))
+        if not u or time.time() - t > 2400:
+            u = b2_store.presigned_url(self.map[str(idx)]["key"], valid_seconds=3600) or ""
+            if not u:
+                raise RuntimeError(f"no presigned URL for clip {idx}")
+            self._urls[idx] = (u, time.time())
+        return u
+
+    def length(self, idx: int) -> float:
+        return float(self.map[str(idx)]["seconds"])
+
+    def grab(self, idx: int, sec: float) -> Image.Image:
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{sec:.2f}", "-i", self.url(idx),
+                              "-frames:v", "1", "-f", "image2", "-c:v", "png", "-"],
+                             capture_output=True, check=True).stdout
+        return Image.open(BytesIO(raw)).convert("RGB")
+
+
+def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
+    """Fit the cue's shots to `dur` seconds. Returns pieces: {clip, src, span, out, flags} where
+    span is source seconds and out is screen seconds (out/span is the slow-motion factor)."""
+    lens = [max((x["out"] - x["in"]) for x in s["split"]) if "split" in s else s["out"] - s["in"]
+            for s in shots]
+    total = sum(lens)
+    pieces = []
+    for s, L in zip(shots, lens):
+        a = dur * L / total
+        if "split" in s:
+            pieces.append({"split": s["split"], "out": a})
+            continue
+        clip_len = clips.length(s["clip"])
+        if L >= a:  # enough source: jump cuts spread across the range
+            n = max(1, math.ceil(a / MAX_SHOT))
+            piece = a / n
+            free = L - a
+            for i in range(n):
+                start = s["in"] + i * piece + (free * i / (n - 1) if n > 1 else 0)
+                pieces.append({**s, "src": start, "span": piece, "out": piece})
+        else:  # short range: slow it down a little, then run on past the cue if still short
+            f = min(a / L, MAX_SLOW)
+            span = a / f
+            start = s["in"]
+            if start + span > clip_len - 0.2:
+                start = max(0.0, clip_len - 0.2 - span)
+            pieces.append({**s, "src": start, "span": span, "out": a})
+    return pieces
+
+
+def vchain(label_in: str, p: dict, out_label: str) -> str:
+    f = []
+    crop = p.get("crop")
+    if crop == "sub":
+        f.append("crop=iw*0.84:ih*0.84:(iw-ow)/2:ih*0.02")
+    elif crop == "hud":
+        f.append("crop=iw*0.8:ih*0.8:(iw-ow)/2:(ih-oh)/2")
+    f.append("scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1")
+    if p.get("blur"):
+        f.append("gblur=sigma=14")
+    if p.get("gray"):
+        f.append("hue=s=0")
+    slow = p["out"] / p["span"]
+    f.append(f"setpts=(PTS-STARTPTS)*{slow:.5f}")
+    f.append(f"fps={FPS}")
+    f.append(f"trim=duration={p['out']:.4f},setpts=PTS-STARTPTS")
+    if p.get("push"):
+        frames = max(1, int(p["out"] * FPS))
+        f.append("scale=3840:2160")
+        f.append(f"zoompan=z='1+0.07*on/{frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                 f":d=1:s=1920x1080:fps={FPS}")
+    f.append("setsar=1,format=yuv420p")
+    return f"[{label_in}]{','.join(f)}[{out_label}]"
+
+
+def achain(label_in: str, p: dict, out_label: str, gain_db: float) -> str:
+    slow = p["out"] / p["span"]
+    f = ["asetpts=PTS-STARTPTS", "aformat=sample_rates=48000:channel_layouts=stereo"]
+    if abs(slow - 1) > 0.01:
+        f.append(f"atempo={1 / slow:.5f}")
+    f += [f"volume={gain_db}dB", f"apad,atrim=duration={p['out']:.4f}"]
+    return f"[{label_in}]{','.join(f)}[{out_label}]"
+
+
+def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, under_db: float,
+                narr_wav: Path | None, seg: Path) -> None:
+    inputs: list[str] = []
+    graph: list[str] = []
+    vlabels, alabels = [], []
+
+    def add_input(args: list[str]) -> int:
+        inputs.extend(args)
+        return sum(1 for x in inputs if x == "-i") - 1
+
+    if b["type"] == "game":
+        p = {**b, "src": b["in"], "span": b["out"] - b["in"], "out": b["out"] - b["in"]}
+        pieces = [p]
+    else:
+        pieces = plan_shots(b["shots"], dur, clips)
+    for k, p in enumerate(pieces):
+        if "split" in p:
+            l, r = p["split"]
+            il = add_input(["-ss", f"{l['in']:.3f}", "-t", f"{p['out'] + 0.5:.3f}", "-i", clips.url(l["clip"])])
+            ir = add_input(["-ss", f"{r['in']:.3f}", "-t", f"{p['out'] + 0.5:.3f}", "-i", clips.url(r["clip"])])
+            graph.append(f"color=c=0x0c0c10:s=1920x1080:r={FPS}:d={p['out']:.4f}[bg{k}]")
+            for side, ii in (("l", il), ("r", ir)):
+                graph.append(f"[{ii}:v]scale=944:531,setsar=1,setpts=PTS-STARTPTS,fps={FPS},"
+                             f"trim=duration={p['out']:.4f},setpts=PTS-STARTPTS[s{side}{k}]")
+            graph.append(f"[bg{k}][sl{k}]overlay=12:300[t{k}];[t{k}][sr{k}]overlay=964:300,"
+                         f"format=yuv420p[v{k}]")
+            graph.append(f"anullsrc=r=48000:cl=stereo,atrim=duration={p['out']:.4f}[a{k}]")
+        else:
+            i = add_input(["-ss", f"{p['src']:.3f}", "-t", f"{p['span'] + 0.3:.3f}", "-i", clips.url(p["clip"])])
+            graph.append(vchain(f"{i}:v", p, f"v{k}"))
+            if b["type"] == "game":
+                graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
+                             f"atrim=duration={p['out']:.4f},loudnorm=I=-16:TP=-2:LRA=11,"
+                             f"aformat=sample_rates=48000:channel_layouts=stereo,"
+                             f"afade=t=in:d=0.08,afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
+                             f"apad,atrim=duration={p['out']:.4f}[a{k}]")
+            else:
+                graph.append(achain(f"{i}:a", p, f"a{k}", under_db))
+        vlabels.append(f"[v{k}]")
+        alabels.append(f"[a{k}]")
+    n = len(pieces)
+    graph.append(f"{''.join(v + a for v, a in zip(vlabels, alabels))}concat=n={n}:v=1:a=1[vb][ab]")
+    # Graphics layers.
+    cur = "vb"
+    li = 0
+    for gid in b.get("gfx", []):
+        for si, spec in enumerate(gfx_specs.get(gid, [])):
+            for png, s, e, fi, fo in gfx.layers(spec, dur, work, f"{b['id']}_{gid}_{si}", clips.grab):
+                if e - s < 0.05:
+                    continue
+                ii = add_input(["-loop", "1", "-framerate", str(FPS), "-t", f"{dur:.3f}", "-i", str(png)])
+                fl = ["format=rgba"]
+                if fi:
+                    fl.append(f"fade=t=in:st={s:.3f}:d={FADE}:alpha=1")
+                if fo:
+                    fl.append(f"fade=t=out:st={max(s, e - FADE):.3f}:d={FADE}:alpha=1")
+                graph.append(f"[{ii}:v]{','.join(fl)}[g{li}]")
+                graph.append(f"[{cur}][g{li}]overlay=0:0:enable='between(t,{s:.3f},{e:.3f})'[o{li}]")
+                cur = f"o{li}"
+                li += 1
+    graph.append(f"[{cur}]format=yuv420p[vout]")
+    if narr_wav is not None:
+        ni = add_input(["-i", str(narr_wav)])
+        graph.append(f"[{ni}:a]aformat=sample_rates=48000:channel_layouts=stereo,"
+                     f"adelay={int(LEAD * 1000)}:all=1,apad,atrim=duration={dur:.4f}[nv]")
+        graph.append("[ab][nv]amix=inputs=2:normalize=0:duration=first[aout]")
+    else:
+        graph.append("[ab]anull[aout]")
+    script = work / f"{b['id']}.filter"
+    script.write_text(";\n".join(graph), encoding="utf-8")
+    run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex_script", str(script),
+         "-map", "[vout]", "-map", "[aout]", "-t", f"{dur:.4f}", "-r", str(FPS),
+         "-c:v", "libx264", "-preset", "faster", "-crf", "18", "-pix_fmt", "yuv420p", "-g", "120",
+         "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(seg)])
+
+
+def fmt_ts(t: float) -> str:
+    t = int(t)
+    return f"{t // 60}:{t % 60:02d}" if t < 3600 else f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}"
+
+
+def qc(path: Path) -> dict:
+    pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+                                    "stream=codec_type,width,height,r_frame_rate:format=duration",
+                                    "-of", "json", str(path)], capture_output=True, text=True).stdout)
+    v = next(s for s in pr["streams"] if s["codec_type"] == "video")
+    log = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path),
+                          "-vf", "blackdetect=d=0.1:pix_th=0.08,freezedetect=n=-60dB:d=2",
+                          "-af", "ebur128=peak=true", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    summary = log[log.rfind("Summary:"):]
+    i_m = re.search(r"I:\s+(-?[\d.]+) LUFS", summary)
+    p_m = re.search(r"Peak:\s+(-?[\d.]+) dBFS", summary)
+    blacks = re.findall(r"black_start:([\d.]+) black_end:([\d.]+)", log)
+    freezes = re.findall(r"freeze_start: ([\d.]+)", log)
+    fps = float(Fraction(v["r_frame_rate"]))  # e.g. "60/1"
+    res = {"width": v["width"], "height": v["height"], "fps": round(fps, 2),
+           "seconds": round(float(pr["format"]["duration"]), 2),
+           "lufs": float(i_m.group(1)) if i_m else None,
+           "true_peak": float(p_m.group(1)) if p_m else None,
+           "black": [[float(a), float(b)] for a, b in blacks], "freezes": [float(x) for x in freezes]}
+    res["pass"] = (res["width"] == 1920 and res["height"] == 1080 and abs(res["fps"] - 60) < 0.1
+                   and res["lufs"] is not None and abs(res["lufs"] + 14) <= 1
+                   and res["true_peak"] is not None and res["true_peak"] <= -1.0
+                   and not res["black"] and not res["freezes"])
+    return res
+
+
+def b2_env() -> dict:
+    env = dict(os.environ)
+    env["RCLONE_CONFIG_KGB2_TYPE"] = "b2"
+    env["RCLONE_CONFIG_KGB2_ACCOUNT"] = os.environ.get("B2_KEY_ID", "")
+    env["RCLONE_CONFIG_KGB2_KEY"] = os.environ.get("B2_APP_KEY", "")
+    return env
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("game", nargs="?", default="wolverine")
+    ap.add_argument("--only", default="", help="comma list of beat ids (test renders)")
+    ap.add_argument("--no-upload", action="store_true")
+    ap.add_argument("--version", default="v1")
+    a = ap.parse_args()
+    game = a.game
+    d = ROOT / "data/analysis" / game
+    edl = json.loads((d / "edl.json").read_text(encoding="utf-8"))
+    gfx_specs = json.loads((d / "gfx.json").read_text(encoding="utf-8"))
+    tails = gfx_specs.get("beat_tail", {})
+    out = ROOT / "output/analysis" / game
+    narr_dir = out / "narration"
+    timings = json.loads((narr_dir / "timings.json").read_text(encoding="utf-8"))
+    work = out / "work"
+    segs = out / "segs"
+    work.mkdir(parents=True, exist_ok=True)
+    segs.mkdir(parents=True, exist_ok=True)
+    clips = Clips(game)
+    only = set(filter(None, a.only.split(",")))
+
+    beats = edl["beats"]
+    t = 0.0
+    chapters, timeline = [], []
+    t0 = time.time()
+    for b in beats:
+        if b["type"] == "narr":
+            dur = LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
+        else:
+            dur = b["out"] - b["in"]
+        if b.get("chapter"):
+            chapters.append((t, b["chapter"]))
+        timeline.append({"id": b["id"], "type": b["type"], "start": round(t, 2), "seconds": round(dur, 2)})
+        t += dur
+        if only and b["id"] not in only:
+            continue
+        seg = segs / f"{b['id']}.mkv"
+        if seg.exists() and not only:
+            continue
+        wav = narr_dir / f"{b['id']}.wav" if b["type"] == "narr" else None
+        render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg)
+        print(f"{b['id']} {b['type']} {dur:.1f}s done ({time.time() - t0:.0f}s elapsed)", flush=True)
+    (out / "timeline.json").write_text(json.dumps(timeline, indent=1), encoding="utf-8")
+    chap_txt = "\n".join(f"{fmt_ts(s)} {title}" for s, title in chapters)
+    (out / "chapters.txt").write_text(chap_txt + "\n", encoding="utf-8")
+    print(f"planned runtime {fmt_ts(t)} ({t:.1f} s)\n{chap_txt}", flush=True)
+    if only:  # test render: one small preview of just those beats, in edit order
+        lst = work / "preview.txt"
+        lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats
+                               if b["id"] in only), encoding="utf-8")
+        run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c:v", "copy",
+             "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "preview.mp4")])
+        return 0
+
+    # Concat, then two-pass loudness to -14 LUFS.
+    lst = work / "segs.txt"
+    lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats), encoding="utf-8")
+    joined = work / "joined.mkv"
+    run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(joined)])
+    meas = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(joined), "-vn", "-af",
+                           "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                          capture_output=True, text=True).stderr
+    m = json.loads(meas[meas.rfind("{"):meas.rfind("}") + 1])
+    final = out / f"{game}-analysis-{a.version}.mp4"
+    run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-c:v", "copy", "-af",
+         f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
+         f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:"
+         "linear=true,aresample=48000", "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(final)])
+    joined.unlink(missing_ok=True)
+    report = qc(final)
+    report["chapters"] = chap_txt
+    (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
+    print(json.dumps(report, indent=1), flush=True)
+
+    # Thumbnails (script v2 packaging): frame, words.
+    thumbs = [(33, 0.90, "HE FORGOT HER", None), (32, 0.90, "HE ASKED FOR IT", "sub"),
+              (32, 0.50, "NOTHING LEFT", "sub")]
+    for i, (c, frac, words, crop) in enumerate(thumbs, 1):
+        im = clips.grab(c, clips.length(c) * frac)
+        if crop == "sub":
+            w, h = im.size
+            im = im.crop((int(w * 0.08), int(h * 0.02), int(w * 0.92), int(h * 0.86)))
+        gfx.thumbnail(im, words, out / f"thumb-{i}.jpg")
+
+    if a.no_upload:
+        return 0 if report["pass"] else 2
+    key = f"drafts/analysis/{final.name}"
+    rc = subprocess.run(["rclone", "copyto", str(final), f"kgb2:{b2_store._bucket()}/{key}",
+                         "--b2-chunk-size", "100M"], env=b2_env()).returncode
+    if rc == 0:
+        link = b2_store.presigned_url(key, valid_seconds=7 * 24 * 3600) or ""
+        (out / "review-link.txt").write_text(f"{key}\n{link}\n", encoding="utf-8")
+        print(f"uploaded draft to B2 {key} (review link in the artifact)", flush=True)
+    else:
+        print(f"B2 upload failed rc={rc}", flush=True)
+    return 0 if report["pass"] else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
