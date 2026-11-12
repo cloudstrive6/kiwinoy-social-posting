@@ -42,8 +42,8 @@ const feeds = [
       </header>
       <div class="feed-thumbs v">
         {f.posts.map((p, i) => (
-          <a href={p.href} target="_blank" rel="noopener" aria-label={`Watch ${f.name} post ${i + 1} from ${f.handle} (opens ${f.name})`}>
-            <img src={p.img} alt="" width="360" height="640" loading="lazy" decoding="async" />
+          <a href={p.href} target="_blank" rel="noopener">
+            <img src={p.img} alt={`${f.name} reel ${i + 1} from ${f.handle}`} width="360" height="640" loading="lazy" decoding="async" />
           </a>
         ))}
       </div>
@@ -58,8 +58,8 @@ const feeds = [
     </header>
     <div class="feed-thumbs h">
       {yt.map((v) => (
-        <a href={v.slug ? `/watch/${v.slug}/` : v.url} {...(v.slug ? {} : { target: "_blank", rel: "noopener" })} aria-label={`Watch: ${v.title}`}>
-          <img src={ytLong ? `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg` : v.thumb} alt="" width="320" height="180" loading="lazy" decoding="async" />
+        <a href={v.slug ? `/watch/${v.slug}/` : v.url} {...(v.slug ? {} : { target: "_blank", rel: "noopener" })}>
+          <img src={ytLong ? `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg` : v.thumb} alt={`Watch: ${v.title}`} width="320" height="180" loading="lazy" decoding="async" />
         </a>
       ))}
     </div>
