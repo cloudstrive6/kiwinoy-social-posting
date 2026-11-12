@@ -7,11 +7,12 @@ name: Analysis long-form (manual)
 #   frames: contact sheets (3 stills per clip) of cutscenes/<game>/ and footage/<game>/, the
 #           source folders for analysis videos (rule, Bryce 2026-11-12).
 #   transcribe: timestamped dialogue of the same clips (faster-whisper on CPU, free).
+#   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
 on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe)"
+        description: "Step to run (inventory, frames, transcribe, audition)"
         required: true
         default: "inventory"
       game:
@@ -60,6 +61,12 @@ jobs:
         run: |
           pip install "faster-whisper==1.1.1"
           python tools/footage_transcribe.py "$GAME"
+      - name: Narrator auditions (Chirp 3 HD)
+        if: ${{ github.event.inputs.step == 'audition' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+          GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+        run: python tools/voice_audition.py "data/analysis/$GAME/audition.txt" Orus Enceladus Algenib
       - uses: actions/upload-artifact@v4
         if: always()
         with:
