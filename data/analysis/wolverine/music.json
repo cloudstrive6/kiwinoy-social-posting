@@ -1,9 +1,10 @@
 {
  "note": "Music bed for the Wolverine analysis sample. Bryce, 2026-11-12: 'epic cinematic orchestra like the soundtrack of games / movies'; picked Last Dawn (theme), Epic and Dramatic Trailer Music (tension) and Red (tender, read as track 3 of the audition). Red is Jean's theme: her 1800s story, the garden and the fairy tale. Never the game's own soundtrack. Sections start at a beat; offset is seconds into the track; gain_db is the bed level under narration (the track is first normalised to -16 LUFS, the same as the voice).",
+ "tracks_note": "B2 keys in the private bucket (licensed tracks stay out of the public repo, 2026-11-12).",
  "tracks": {
-  "theme": "data/analysis/music/last-dawn-ross-bugden.mp3",
-  "tension": "data/analysis/music/epic-dramatic-trailer-ross-bugden.mp3",
-  "jean": "data/analysis/music/red-scott-buckley.mp3"
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "jean": "music/analysis/red-scott-buckley.mp3"
  },
  "credits": [
   "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",

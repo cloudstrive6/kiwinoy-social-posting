@@ -256,7 +256,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
 SR = 48000
 
 
-def _decode(path: Path) -> "np.ndarray":
+def _decode(path) -> "np.ndarray":
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-af", "loudnorm=I=-16:TP=-2:LRA=11",
                           "-ar", str(SR), "-ac", "2", "-f", "f32le", "-"], capture_output=True, check=True).stdout
     return np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).copy()
@@ -295,7 +295,13 @@ def build_music(game: str, timeline: list[dict], total: float, work: Path) -> Pa
         s1 = int(starts[secs[i + 1]["from"]] * SR) if i + 1 < len(secs) else n
         if not sec.get("track"):
             continue
-        tr = cache.setdefault(sec["track"], _decode(ROOT / cfg["tracks"][sec["track"]]))
+        if sec["track"] not in cache:
+            ref = cfg["tracks"][sec["track"]]
+            local = ROOT / ref
+            # Tracks live on private B2 (music/analysis/), never in this public repo.
+            src = local if local.exists() else b2_store.presigned_url(ref, valid_seconds=3600)
+            cache[sec["track"]] = _decode(src)
+        tr = cache[sec["track"]]
         a = max(0, s0 - xf // 2)
         b = min(n, s1 + xf // 2)
         seg = _looped(tr, float(sec.get("offset", 0)), b - a, xf)

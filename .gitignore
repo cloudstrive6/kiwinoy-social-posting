@@ -99,3 +99,4 @@ thumbnails/
 reels/assets/4k60fps/**
 !reels/assets/4k60fps/**/
 !reels/assets/4k60fps/**/.gitkeep
+data/analysis/music/
