@@ -4,11 +4,13 @@ name: Analysis long-form (manual)
 # later). Manual-only: no schedule, never uploads to YouTube or any platform. Each step leaves
 # its files as a workflow artifact for review.
 #   inventory: read-only list of a game's footage on B2 (sizes, durations, resolution).
+#   frames: contact sheets (3 stills per clip) of cutscenes/<game>/ and footage/<game>/, the
+#           only source folders for analysis videos (rule, Bryce 2026-11-12).
 on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory)"
+        description: "Step to run (inventory, frames)"
         required: true
         default: "inventory"
       game:
@@ -45,6 +47,11 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
         run: python tools/footage_inventory.py "$GAME" --probe
+      - name: Contact sheets of the analysis footage (read-only)
+        if: ${{ github.event.inputs.step == 'frames' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+        run: python tools/footage_frames.py "$GAME"
       - uses: actions/upload-artifact@v4
         with:
           name: analysis-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
