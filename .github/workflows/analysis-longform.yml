@@ -35,12 +35,17 @@ on:
         description: "render: draft version name on B2 (e.g. v3), so earlier drafts are kept"
         required: false
         default: "v1"
+      voices:
+        description: "audition: space-separated Chirp 3 HD voice names (blank = Orus Enceladus Algenib)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
 
 concurrency:
-  group: kiwinoy-analysis-longform
+  # one queue per step and game, so a short audition does not wait behind a long transcribe
+  group: kiwinoy-analysis-longform-${{ github.event.inputs.step }}-${{ github.event.inputs.game }}
   cancel-in-progress: false
 
 jobs:
@@ -85,7 +90,9 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
-        run: python tools/voice_audition.py "data/analysis/$GAME/audition.txt" Orus Enceladus Algenib
+          VOICES: ${{ github.event.inputs.voices }}
+          AUDITION_RATE: "0.85"
+        run: python tools/voice_audition.py "data/analysis/$GAME/audition.txt" ${VOICES:-Orus Enceladus Algenib}
       - name: Narration cache
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
         uses: actions/cache@v4

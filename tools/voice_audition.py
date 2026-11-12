@@ -20,10 +20,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
+RATE = float(os.environ.get("AUDITION_RATE") or 1.0)  # 0.85 = the analysis narration speed
+
+
 def synth(text: str, voice: str, key: str) -> bytes:
     body = {"input": {"text": text},
             "voice": {"languageCode": "en-US", "name": f"en-US-Chirp3-HD-{voice}"},
-            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 48000}}
+            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 48000,
+                            "speakingRate": RATE}}
     req = urllib.request.Request(
         f"https://texttospeech.googleapis.com/v1/text:synthesize?key={key}",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
@@ -41,7 +45,7 @@ def main() -> int:
     words = len(text.split())
     out = ROOT / "output" / "inventory" / "auditions"
     out.mkdir(parents=True, exist_ok=True)
-    lines = [f"# Narrator auditions ({words} words, Chirp 3 HD, -14 LUFS)", ""]
+    lines = [f"# Narrator auditions ({words} words, Chirp 3 HD, rate {RATE}, -14 LUFS)", ""]
     for v in voices:
         wav = out / f"{v}.wav"
         mp3 = out / f"{v}.mp3"
