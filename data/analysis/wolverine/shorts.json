@@ -41,9 +41,9 @@
    "id": "s01",
    "order": 1,
    "spoilers": false,
-   "hook": "One line predicts the ending",
-   "accent": "predicts",
-   "title": "Marvel's Wolverine: Walter's Line Predicts the Ending",
+   "hook": "Does one line predict the ending?",
+   "accent": "predict",
+   "title": "Marvel's Wolverine: Does Walter's Line Predict the Ending?",
    "blurb": "Walter tells Logan he is lucky he doesn't remember his past. I think that line tells you early which idea wins at the end of Marvel's Wolverine.",
    "hashtags_extra": [
     "#WolverineEnding"
@@ -59,7 +59,14 @@
       "b003"
      ],
      "from": "Logan, real name James Howlett",
-     "to": "who he is."
+     "to": "who he is.",
+     "picture": [
+      {
+       "at": 0,
+       "lf": 59.62,
+       "why": "the long-form chapter card covers the opening; the same shot 1.7 s later, past the card"
+      }
+     ]
     },
     {
      "beats": [
@@ -98,7 +105,10 @@
     "Walter",
     "Team X",
     "Wolverine memory"
-   ]
+   ],
+   "flash_holds": {
+    "1": 0.4817
+   }
   },
   {
    "id": "s02",
@@ -160,7 +170,8 @@
     "Mister Sinister",
     "Sabretooth",
     "Wolverine intro"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s03",
@@ -184,6 +195,16 @@
      "beats": [
       "b009",
       "b012"
+     ],
+     "picture": [
+      {
+       "at": 0,
+       "until": 5.31,
+       "clip": 109,
+       "in": 0.05,
+       "crop": "sub",
+       "why": "the long-form chapter card covers the opening; the same clip 109 frames without it"
+      }
      ]
     },
     {
@@ -223,7 +244,8 @@
     "Apocalypse",
     "Horseman of Death",
     "Wolverine 1800s"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s04",
@@ -246,9 +268,16 @@
     {
      "beats": [
       "b025",
+      "b026"
+     ],
+     "from": "His wife was a mutant."
+    },
+    {
+     "beats": [
       "b028"
      ],
-     "to": "both show him a home."
+     "to": "both show him a home.",
+     "why": "drops b027 'Keep that word, willingly, next to home.' (its setup is not in the Short)"
     },
     {
      "beats": [
@@ -257,12 +286,16 @@
      "from": "Each of them also has a story"
     }
    ],
-   "start": 411.2,
+   "start": 413.43,
    "end": 469.68,
-   "seconds": 51.9,
+   "seconds": 45.53,
    "cuts": [
     [
-     411.2,
+     413.43,
+     429.07
+    ],
+    [
+     433.21,
      441.86
     ],
     [
@@ -286,7 +319,10 @@
     "Mister Sinister",
     "Nathaniel Essex",
     "Wolverine villain"
-   ]
+   ],
+   "flash_holds": {
+    "1": 0.0727
+   }
   },
   {
    "id": "s05",
@@ -295,7 +331,7 @@
    "hook": "The villain's order came true",
    "accent": "came true",
    "title": "Marvel's Wolverine: How 'Forget Her' Came True",
-   "blurb": "In Tokyo, Essex gives Logan a simple order. By the final scene it has been carried out, by the one person fighting it.",
+   "blurb": "In Tokyo, Essex gives Logan a simple order: forget her. By the final scene Logan has, and the order is carried out by the one person fighting it.",
    "hashtags_extra": [
     "#WolverineEnding"
    ],
@@ -309,6 +345,24 @@
     {
      "beats": [
       "b030"
+     ],
+     "picture": [
+      {
+       "at": 0,
+       "until": 3.85,
+       "clip": 14,
+       "in": 4.65,
+       "crop": "sub",
+       "why": "the long-form chapter card covers the opening"
+      },
+      {
+       "at": 3.85,
+       "until": 5.3,
+       "clip": 21,
+       "in": 25.11,
+       "crop": "hud",
+       "why": "the long-form chapter card covers the opening"
+      }
      ]
     },
     {
@@ -321,18 +375,20 @@
       "b033"
      ],
      "from": "the order is simple",
-     "why": "skips b031 ('a voice cuts into his head') and 'The game doesn't put a name on that voice': the game's subtitle labels the line Essex, who is on screen"
+     "to": "forget her.",
+     "why": "no line calls the speaker 'the voice': the subtitle labels Essex, and the voice Jean burns out is Apocalypse"
     },
     {
      "beats": [
       "b042"
      ],
-     "from": "Forget her, the voice said."
+     "from": "By the final scene",
+     "to": "by the one person fighting it"
     }
    ],
    "start": 485.52,
-   "end": 649.44,
-   "seconds": 39.43,
+   "end": 646.43,
+   "seconds": 29.9,
    "cuts": [
     [
      485.52,
@@ -344,14 +400,14 @@
     ],
     [
      517.91,
-     524.45
+     520.25
     ],
     [
-     636.72,
-     649.44
+     639.04,
+     646.43
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nIn Tokyo, Essex gives Logan a simple order. By the final scene it has been carried out, by the one person fighting it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nIn Tokyo, Essex gives Logan a simple order: forget her. By the final scene Logan has, and the order is carried out by the one person fighting it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -368,7 +424,10 @@
     "Helix Engine",
     "Apocalypse",
     "Forget her"
-   ]
+   ],
+   "flash_holds": {
+    "1": 0.1407
+   }
   },
   {
    "id": "s06",
@@ -393,16 +452,16 @@
       "b034",
       "b036"
      ],
-     "to": "than kill her."
+     "why": "runs to the end of b036 to keep 'That request is part of the game's story, though my footage doesn't catch it clearly.'"
     }
    ],
    "start": 524.83,
-   "end": 574.37,
-   "seconds": 51.04,
+   "end": 579.93,
+   "seconds": 56.6,
    "cuts": [
     [
      524.83,
-     574.37
+     579.93
     ]
    ],
    "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nBefore the Phoenix Force burns the Death out of Logan, Jean tells him the price in one breath. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
@@ -421,7 +480,10 @@
     "Phoenix Force",
     "Wolverine ending",
     "Nothing of you left"
-   ]
+   ],
+   "flash_holds": {
+    "0": 0.0927
+   }
   },
   {
    "id": "s07",
@@ -444,15 +506,16 @@
      "beats": [
       "b037",
       "b041"
-     ]
+     ],
+     "from": "In my playthrough"
     }
    ],
-   "start": 580.14,
+   "start": 582.65,
    "end": 633.82,
-   "seconds": 55.18,
+   "seconds": 52.67,
    "cuts": [
     [
-     580.14,
+     582.65,
      633.82
     ]
    ],
@@ -470,7 +533,8 @@
     "Kiwinoy Gaming",
     "Boss KG",
     "Wolverine garden scene"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s08",
@@ -492,22 +556,24 @@
    "parts": [
     {
      "beats": [
-      "b047",
-      "b048"
+      "b047"
      ],
      "from": "A girl named Red"
     },
     {
      "beats": [
-      "b050"
-     ]
+      "b048"
+     ],
+     "from": "And for a while",
+     "to": "the boy was happy."
     },
     {
      "clip": 36,
-     "in": 116.3,
-     "out": 120.8,
-     "text": "It's a nice story.",
-     "why": "the four words, straight from the source clip (the v3 render's b050 burst ends before them)"
+     "in": 116.2,
+     "out": 120.5,
+     "crop": "sub",
+     "text": "It's... it's a nice story.",
+     "why": "the four words from the source clip (the v3 render's b050 burst ends before them); subtitle cropped so it does not show before he says it"
     },
     {
      "beats": [
@@ -517,20 +583,20 @@
    ],
    "start": 708.6,
    "end": 786.94,
-   "seconds": 59.4,
+   "seconds": 45.03,
    "cuts": [
     [
      708.6,
-     744.31
+     730.04
     ],
     [
-     769.2,
-     772.2
+     737.33,
+     740.43
     ],
     {
      "clip": 36,
-     "in": 116.3,
-     "out": 120.8
+     "in": 116.2,
+     "out": 120.5
     },
     [
      772.25,
@@ -552,7 +618,10 @@
     "Boss KG",
     "It's a nice story",
     "Red"
-   ]
+   ],
+   "flash_holds": {
+    "3": 0.1197
+   }
   },
   {
    "id": "s09",
@@ -575,7 +644,8 @@
      "beats": [
       "b014",
       "b016"
-     ]
+     ],
+     "from": "this may not be the first time"
     },
     {
      "beats": [
@@ -584,12 +654,12 @@
      "from": "A darkness settles on Logan"
     }
    ],
-   "start": 248.46,
+   "start": 250.87,
    "end": 320.15,
-   "seconds": 52.51,
+   "seconds": 50.1,
    "cuts": [
     [
-     248.46,
+     250.87,
      282.81
     ],
     [
@@ -612,7 +682,8 @@
     "Boss KG",
     "Wolverine theory",
     "Phoenix"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s10",
@@ -635,15 +706,16 @@
      "beats": [
       "b044",
       "b046"
-     ]
+     ],
+     "from": "Logan comes to see Jean"
     }
    ],
-   "start": 663.66,
+   "start": 665.39,
    "end": 704.74,
-   "seconds": 42.58,
+   "seconds": 40.85,
    "cuts": [
     [
-     663.66,
+     665.39,
      704.74
     ]
    ],
@@ -661,7 +733,8 @@
     "Kiwinoy Gaming",
     "Boss KG",
     "Wolverine balcony scene"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s11",
@@ -670,7 +743,7 @@
    "hook": "Apocalypse was never defeated",
    "accent": "never",
    "title": "Marvel's Wolverine: Apocalypse Was Never Defeated",
-   "blurb": "The Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan with one word: family.",
+   "blurb": "The Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan over one word: family.",
    "hashtags_extra": [
     "#Sabretooth"
    ],
@@ -685,25 +758,30 @@
      "beats": [
       "b052"
      ],
-     "picture": {
-      "at": 24.507,
-      "clip": 165,
-      "in": 54.0,
-      "crop": "sub",
-      "why": "the render ends b052 on a 7 s bloodied Sabretooth close-up (clip 167); clip 165 at 54 s is the same glowing-eyed Sabretooth without blood"
-     }
+     "to": "he tells Logan.",
+     "picture": [
+      {
+       "at": 0,
+       "until": 5.39,
+       "clip": 165,
+       "in": 4.3,
+       "crop": "sub",
+       "why": "the long-form chapter card covers the opening and the flash at 0.1 s; same clip 165 frames without it"
+      }
+     ],
+     "why": "ends on a complete statement before 'KG's notes add' and before the bloodied clip 167 close-up"
     }
    ],
    "start": 787.13,
-   "end": 817.12,
-   "seconds": 31.49,
+   "end": 810.34,
+   "seconds": 24.71,
    "cuts": [
     [
      787.13,
-     817.12
+     810.34
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThe Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan with one word: family. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #Sabretooth",
+   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThe Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan over one word: family. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #Sabretooth",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -720,7 +798,8 @@
     "Sabretooth",
     "Victor Creed",
     "Wolverine sequel"
-   ]
+   ],
+   "flash_holds": {}
   },
   {
    "id": "s12",
@@ -782,7 +861,11 @@
     "Boss KG",
     "Phoenix Force",
     "Apocalypse"
-   ]
+   ],
+   "flash_holds": {
+    "0": 0.1617,
+    "1": 0.1677
+   }
   }
  ]
 }

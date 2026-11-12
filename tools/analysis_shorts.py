@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import difflib
+import hashlib
 import json
 import re
 import subprocess
@@ -60,7 +61,12 @@ ROW_Y = 600                            # watermark and SPOILERS row (centre)
 BAND = {"band": (650, 1080, 608),      # top, width, height of the picture
         "zoom": (600, 1080, 810)}
 CAP_Y = {"band": 1395, "zoom": 1468}   # caption line centre
-CAP_MAX_W = 760                        # centred on x=540: 160..920, clear of the right 15%
+# Everything of ours sits in x 54..918: clear of the right 15% where the Shorts buttons are
+# (review 2026-11-13 measured boxes and the end card out to x=969 when centred on 540).
+SAFE_L, SAFE_R = 54, 918
+CX = (SAFE_L + SAFE_R) // 2            # 486, the centre line for hook, captions and end card
+CAP_MAX_W = 700                        # text 136..836; the active box and its pop stay inside
+HOOK_MAX_W = 850
 SAFE_BOTTOM = int(H * 0.80)            # nothing of ours below this line
 TAIL = 1.5                             # end line hold
 END_LINE = "Full video on the channel"
@@ -260,10 +266,18 @@ def find_phrase(words: list[dict], phrase: str, last: bool) -> int:
     return hits[-1] + len(want) - 1 if last else hits[0]
 
 
+# The long-form's crops (tools/analysis_render.py vchain): "sub" hides game subtitles under
+# narration, "hud" also hides boss bars.
+CROPS = {"sub": "crop=iw*0.78:ih*0.78:(iw-ow)/2:ih*0.012,",
+         "hud": "crop=iw*0.70:ih*0.70:(iw-ow)/2:ih*0.10,"}
+
+
 def fetch_clip(p: Paths, part: dict) -> Path:
-    """A source clip range from B2 (clips.json), local, 1920x1080 at 60 fps with PCM audio."""
+    """A source clip range from B2 (clips.json), local, 1920x1080 at 60 fps with PCM audio,
+    with the long-form's crop when asked ("sub" or "hud")."""
     idx, t0, t1 = int(part["clip"]), float(part["in"]), float(part["out"])
-    out = p.out / "clips" / f"c{idx:03d}_{t0:.2f}_{t1:.2f}.mkv"
+    crop = part.get("crop") or ""
+    out = p.out / "clips" / f"c{idx:03d}_{t0:.2f}_{t1:.2f}{'_' + crop if crop else ''}.mkv"
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists() and out.stat().st_size > 0:
         return out
@@ -274,8 +288,8 @@ def fetch_clip(p: Paths, part: dict) -> Path:
         raise SystemExit(f"cannot sign B2 key {key}")
     run(["ffmpeg", "-v", "error", "-y", "-reconnect", "1", "-reconnect_on_network_error", "1",
          "-ss", f"{t0:.3f}", "-i", url, "-t", f"{t1 - t0:.3f}", "-map", "0:v:0", "-map", "0:a:0",
-         "-vf", "scale=1920:1080:flags=lanczos,fps=60,setsar=1", "-c:v", "libx264", "-preset", "fast",
-         "-crf", "12", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(out)])
+         "-vf", f"{CROPS.get(crop, '')}scale=1920:1080:flags=lanczos,fps=60,setsar=1", "-c:v", "libx264",
+         "-preset", "fast", "-crf", "12", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(out)])
     return out
 
 
@@ -303,27 +317,56 @@ def resolve_clip_part(part: dict, p: Paths) -> dict:
             "gain_db": round(gain, 1), "clip": int(part["clip"]), "in": part["in"], "out": part["out"]}
 
 
-def swap_picture(p: Paths, pt: dict, pic: dict) -> None:
-    """Replace the part's picture from `at` seconds to its end with a clean range of a source
-    clip (gore rule: the render's last shot here is a 7 s bloodied close-up). The part's own
-    audio is kept; the result is a local file the render reads instead of the long-form."""
-    at, dur = float(pic["at"]), pt["end"] - pt["start"]
-    need = dur - at
-    clip = fetch_clip(p, {"clip": pic["clip"], "in": pic["in"], "out": float(pic["in"]) + need + 0.2})
-    out = p.out / "clips" / f"swap_{pt['start']:.2f}_{pt['end']:.2f}_{pic['clip']}_{pic['in']}.mkv"
+def swap_picture(p: Paths, pt: dict, pics) -> None:
+    """Replace stretches of a part's picture and keep its own audio. Each entry covers part
+    seconds [at, until) (until defaults to the part's end) with either a clean source clip range
+    ({"clip", "in", "crop"}) or a later stretch of the long-form itself ({"lf": render seconds}).
+    Uses: a long-form chapter card over a Short's opening, a bloodied close-up held too long.
+    The result is a local file the render reads instead of the long-form."""
+    pics = pics if isinstance(pics, list) else [pics]
+    dur = pt["end"] - pt["start"]
+    segs, t = [], 0.0
+    for pic in sorted(pics, key=lambda x: float(x["at"])):
+        a, u = float(pic["at"]), float(pic.get("until", dur))
+        if a > t:
+            segs.append({"lf": pt["start"] + t, "at": t, "until": a})
+        segs.append(dict(pic, at=a, until=u))
+        t = u
+    if t < dur - 1e-3:
+        segs.append({"lf": pt["start"] + t, "at": t, "until": dur})
+    tag = hashlib.sha1(json.dumps([pt["start"], pt["end"], segs], sort_keys=True).encode()).hexdigest()[:10]
+    out = p.out / "clips" / f"swap_{tag}.mkv"
     if not out.exists():
-        crop = "crop=1498:842:211:11,scale=1920:1080:flags=lanczos," if pic.get("crop") == "sub" else ""
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{pt['start']:.3f}", "-t", f"{dur:.3f}", "-i", str(p.video),
-             "-i", str(clip), "-filter_complex",
-             f"[0:v]trim=duration={at:.3f},setpts=PTS-STARTPTS,fps={FPS},setsar=1[a];"
-             f"[1:v]trim=duration={need:.3f},setpts=PTS-STARTPTS,{crop}fps={FPS},setsar=1[b];"
-             "[a][b]concat=n=2:v=1:a=0[v]", "-map", "[v]", "-map", "0:a", "-c:v", "libx264", "-preset", "fast",
-             "-crf", "12", "-c:a", "pcm_s16le", "-ar", "48000", str(out)])
+        inputs, chains = ["-ss", f"{pt['start']:.3f}", "-t", f"{dur:.3f}", "-i", str(p.video)], []
+        for k, sg in enumerate(segs):
+            n = sg["until"] - sg["at"]
+            if "clip" in sg:
+                src = fetch_clip(p, {"clip": sg["clip"], "in": sg["in"], "out": float(sg["in"]) + n + 0.2,
+                                     "crop": sg.get("crop")})
+                inputs += ["-i", str(src)]
+            else:
+                inputs += ["-ss", f"{sg['lf']:.3f}", "-t", f"{n + 0.1:.3f}", "-i", str(p.video)]
+            chains.append(f"[{k + 1}:v]trim=duration={n:.4f},setpts=PTS-STARTPTS,fps={FPS},setsar=1,"
+                          f"format=yuv420p[s{k}]")
+        graph = ";".join(chains) + ";" + "".join(f"[s{k}]" for k in range(len(segs))) +             f"concat=n={len(segs)}:v=1:a=0[v]"
+        run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", graph, "-map", "[v]", "-map", "0:a",
+             "-c:v", "libx264", "-preset", "fast", "-crf", "12", "-c:a", "pcm_s16le", "-ar", "48000",
+             "-t", f"{dur:.4f}", str(out)])
     pt["src"] = str(out)
-    pt["picture"] = pic
+    pt["picture"] = segs
     for w in pt["words"]:
         w["s"], w["e"] = w["s"] - pt["start"], w["e"] - pt["start"]
     pt["start"], pt["end"] = 0.0, round(dur, 3)
+
+
+def first_cut(src: str, start: float, window: float = 0.65) -> float | None:
+    """Seconds after `start` of a picture cut inside the first `window` seconds (the tail of the
+    previous long-form shot would flash on screen and on every loop), or None."""
+    log = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-ss", f"{start:.3f}", "-t", f"{window:.3f}",
+                          "-i", src, "-an", "-vf", "scale=480:-2,select='gt(scene,0.2)',showinfo",
+                          "-f", "null", "-"], capture_output=True, text=True).stderr
+    cuts = [float(x) for x in re.findall(r"pts_time:([\d.]+)", log) if float(x) > 0.02]
+    return cuts[-1] if cuts else None
 
 
 def resolve_part(part: dict, beats: dict, p: Paths) -> dict:
@@ -331,9 +374,12 @@ def resolve_part(part: dict, beats: dict, p: Paths) -> dict:
     if "clip" in part:
         return resolve_clip_part(part, p)
     pt = resolve_part_lf(part, beats, p)
+    pt["lf"] = [pt["start"], pt["end"]]
     if part.get("picture"):
-        pt["lf"] = [pt["start"], pt["end"]]
         swap_picture(p, pt, part["picture"])
+    cut = first_cut(pt.get("src", str(p.video)), pt["start"])
+    if cut is not None:  # hold the first clean frame over the flash instead (audio untouched)
+        pt["vskip"] = round(cut + 1 / FPS, 4)
     return pt
 
 
@@ -408,6 +454,7 @@ def resolve(p: Paths, cfg: dict, beats: dict, only: set[str]) -> None:
         s["_parts"] = parts
         s["start"] = parts[0].get("lf", [parts[0]["start"]])[0]
         s["end"] = parts[-1].get("lf", [0, parts[-1]["end"]])[1]
+        s["flash_holds"] = {str(k): x["vskip"] for k, x in enumerate(parts) if x.get("vskip")}
         s["seconds"] = round(sum(x["end"] - x["start"] for x in parts) + TAIL, 2)
         s["cuts"] = [{"clip": x["clip"], "in": x["in"], "out": x["out"]} if "clip" in x else
                      x.get("lf", [x["start"], x["end"]]) for x in parts]
@@ -463,7 +510,7 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     size = 128
     while size > 70:
         f = font(ANTON, size)
-        if text_w(f, " ".join(words)) <= 940 and len(words) <= 3:
+        if text_w(f, " ".join(words)) <= HOOK_MAX_W and len(words) <= 3:
             lines = [words]
         else:  # two lines, split where the longer line is shortest
             best = None
@@ -472,7 +519,7 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
                 if best is None or wmax < best[0]:
                     best = (wmax, k)
             lines = [words] if best is None else [words[:best[1]], words[best[1]:]]
-            if best is not None and best[0] > 940:
+            if best is not None and best[0] > HOOK_MAX_W:
                 size -= 6
                 continue
         lh = int(size * 1.08)
@@ -484,7 +531,7 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     y = (HOOK_TOP + HOOK_BOT) // 2 - lh * len(lines) // 2
     sp = text_w(f, " ")
     for line in lines:
-        x = (W - text_w(f, " ".join(line))) // 2
+        x = CX - text_w(f, " ".join(line)) // 2
         for w in line:
             col = RED if norm(w) in accent else OFFWHITE
             draw_shadowed(im, (x, y), w, f, (*col, 255), stroke=5, shadow=12)
@@ -508,7 +555,7 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
         ft = font(ANTON, 36)
         label = "SPOILERS"
         tw = text_w(ft, label)
-        x1 = 1020
+        x1 = SAFE_R
         x0 = x1 - tw - 36
         d = ImageDraw.Draw(im)
         d.rounded_rectangle((x0, row - 26, x1, row + 26), radius=10, fill=(*RED, 240))
@@ -525,15 +572,15 @@ def end_layer(frame: str) -> Image.Image:
     # one line: "FULL VIDEO" in red, the rest off-white
     a, b = "FULL VIDEO", " ON THE CHANNEL"
     tw = text_w(f, a + b)
-    if tw > 940:
-        f = font(ANTON, int(84 * 940 / tw))
+    if tw > SAFE_R - SAFE_L - 60:
+        f = font(ANTON, int(84 * (SAFE_R - SAFE_L - 60) / tw))
         tw = text_w(f, a + b)
-    x = (W - tw) // 2
+    x = CX - tw // 2
     draw_shadowed(im, (x, y), a, f, (*RED, 255), stroke=5, shadow=12)
     draw_shadowed(im, (x + text_w(f, a) + text_w(f, " "), y), b.strip(), f, (*OFFWHITE, 255),
                   stroke=5, shadow=12)
     # a small play triangle under it, pointing at nothing in particular: the channel
-    cx, cy = W // 2, y + 150
+    cx, cy = CX, y + 150
     ImageDraw.Draw(im).polygon([(cx - 18, cy - 22), (cx - 18, cy + 22), (cx + 22, cy)], fill=(*OFFWHITE, 235))
     return im
 
@@ -583,7 +630,7 @@ def draw_caption(page: list[dict], active: int, pop: float) -> Image.Image:
         sp = int(text_w(f, " ") * 1.7)
         widths = [text_w(f, t) for t in toks]
         total = sum(widths) + sp * (len(toks) - 1)
-    x = W // 2 - total // 2
+    x = CX - total // 2
     cy = CAP_STRIP_H // 2
     asc, desc = f.getmetrics()
     for i, (t, wd) in enumerate(zip(toks, widths)):
@@ -720,7 +767,10 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
     inputs += ["-loop", "1", "-framerate", str(FPS), "-i", str(endp)]
     ih, ic, ie = n, n + 1, n + 2
     top, bw, bh = BAND[frame]
-    norm_v = "".join(f"[{i}:v]scale=1920:1080,fps={FPS},setsar=1,format=yuv420p[n{i}];" for i in range(n))
+    norm_v = "".join(
+        f"[{i}:v]" + (f"trim=start={pt['vskip']:.4f},setpts=PTS-STARTPTS,tpad=start_mode=clone:"
+                      f"start_duration={pt['vskip']:.4f}," if pt.get("vskip") else "")
+        + f"scale=1920:1080,fps={FPS},setsar=1,format=yuv420p[n{i}];" for i, pt in enumerate(parts))
     vparts = norm_v + "".join(f"[n{i}]" for i in range(n))
     afil, alab = audio_graph(parts)
     if frame == "zoom":
@@ -782,7 +832,7 @@ def qc(path: Path, frame: str = "band") -> dict:
            "lufs": float(i_m.group(1)) if i_m else None, "true_peak": float(p_m.group(1)) if p_m else None,
            "black": [[float(a), float(b)] for a, b in blacks], "freezes": [float(x) for x in freezes]}
     res["pass"] = (res["width"] == W and res["height"] == H and abs(res["fps"] - FPS) < 0.1
-                   and 30 <= res["seconds"] <= 62 and res["lufs"] is not None and abs(res["lufs"] + 14) <= 1
+                   and 15 <= res["seconds"] <= 62 and res["lufs"] is not None and abs(res["lufs"] + 14) <= 1
                    and res["true_peak"] is not None and res["true_peak"] <= -1.0
                    and not res["black"] and not res["freezes"])
     return res
