@@ -409,7 +409,7 @@ reels:
     # NOTE: YouTube previously throttled the channel's Shorts reach from bulk auto-posting
     # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
-    enabled: true    # WOLVERINE Shorts LIVE 2026-09-15 (user). Was paused for the pivot.
+    enabled: false   # PAUSED 2026-11-13 (Bryce): lore Shorts off on YouTube; Shorts cut from the analysis long-forms replace them. Was LIVE 2026-09-15.
     # data_api (default) = upload via our YouTube Data API client (returns the video id ->
     # playlist filing). postforme = route through Post for Me instead (no playlist filing).
     # QUOTA (checked in Cloud Console 2026-09-21, project kg-postforme): uploads have their
