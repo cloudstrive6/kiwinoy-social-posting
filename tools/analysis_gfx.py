@@ -102,7 +102,7 @@ def chapter(num: int, title: str) -> Image.Image:
     im, d = canvas()
     gradient_bottom(im, 640, 215)
     d.rectangle([110, 812, 118, 978], fill=ORANGE)
-    text(d, (140, 832), f"CHAPTER {num}", font("label", 34), fill=ORANGE, anchor="lm", stroke=2)
+    text(d, (140, 832), f"CHAPTER {num}", font("label", 36), fill=ORANGE, anchor="lm", stroke=2)
     text(d, (138, 920), title, font("display", 92), anchor="lm")
     return im
 
@@ -270,13 +270,13 @@ def split_labels(left: str, right: str, drop: str | None) -> Image.Image:
 
 def node(d, cx, cy, s, fill=(0, 0, 0, 220), col=WHITE, sub: str | None = None, edge=WHITE):
     f = font("display", 46)
-    w = max(tw(d, s, f), tw(d, sub, font("label", 32)) if sub else 0)
-    h = 84 if sub else 64
+    w = max(tw(d, s, f), tw(d, sub, font("label", 36)) if sub else 0)
+    h = 90 if sub else 64
     d.rounded_rectangle([cx - w // 2 - 26, cy - h // 2, cx + w // 2 + 26, cy + h // 2], 12,
                         fill=fill, outline=edge, width=3)
     d.text((cx, cy - (14 if sub else 0)), s, font=f, fill=col, anchor="mm")
     if sub:
-        d.text((cx, cy + 26), sub, font=font("label", 32), fill=(220, 220, 220, 255), anchor="mm")
+        d.text((cx, cy + 28), sub, font=font("label", 36), fill=(220, 220, 220, 255), anchor="mm")
 
 
 def dashed(d, a, b, fill, width=4, dash=18):
@@ -303,7 +303,7 @@ def rel_map(stage: int) -> Image.Image:
     d.polygon([(cx - 12, 318), (cx + 12, 318), (cx, 340)], fill=WHITE)
     d.text((cx + 22, 285), "built Team X", font=font("label", 36), fill=(220, 220, 220, 255), anchor="lm")
     d.ellipse([cx - 330, 350, cx + 330, 540], outline=(255, 255, 255, 170), width=3)
-    d.text((cx, 380), "TEAM X", font=font("label", 34), fill=ORANGE, anchor="mm")
+    d.text((cx, 380), "TEAM X", font=font("label", 36), fill=ORANGE, anchor="mm")
     node(d, cx - 160, 465, "SABRETOOTH", sub="Victor Creed",
          col=ORANGE if stage == 3 else WHITE, edge=ORANGE if stage == 3 else WHITE)
     node(d, cx + 180, 465, "MYSTIQUE")
@@ -501,6 +501,5 @@ def thumbnail(frame: Image.Image, words: str, out: Path, bright: float = 1.0, co
         fill = accent if i == len(parts) - 1 else WHITE
         d.text((x, 650), w, font=f, fill=fill, anchor="ls", stroke_width=8, stroke_fill=(0, 0, 0, 255))
         x += tw(d, w, f) + 26
-    d.rectangle([0, 700, 1280, 720], fill=RED)
     im.convert("RGB").save(out, quality=92)
     return out

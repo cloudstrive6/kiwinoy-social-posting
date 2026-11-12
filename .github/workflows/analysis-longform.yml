@@ -27,6 +27,10 @@ on:
         description: "render only: comma list of beat ids for a test preview (blank = full video)"
         required: false
         default: ""
+      version:
+        description: "render: draft version name on B2 (e.g. v3), so earlier drafts are kept"
+        required: false
+        default: "v1"
 
 permissions:
   contents: read
@@ -100,12 +104,13 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
           ONLY: ${{ github.event.inputs.only }}
+          VERSION: ${{ github.event.inputs.version }}
         run: |
           curl -fsSL https://rclone.org/install.sh | sudo bash
           if [ -n "$ONLY" ]; then
             python tools/analysis_render.py "$GAME" --only "$ONLY" --no-upload
           else
-            python tools/analysis_render.py "$GAME"
+            python tools/analysis_render.py "$GAME" --version "${VERSION:-v1}"
           fi
       - name: Save rendered beats (unchanged beats are reused next run)
         if: ${{ always() && github.event.inputs.step == 'render' && github.event.inputs.only == '' }}
