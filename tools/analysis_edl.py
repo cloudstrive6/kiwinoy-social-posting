@@ -134,11 +134,13 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
     return {"beats": beats, "gfx_cues": gfx_cues, "problems": problems}
 
 
-# The BOSS KG narrator (Bryce, 2026-11-13): an ElevenLabs voice designed for the channel ("KG
-# Essayist", take 3), read on Multilingual v2. It reads about 176 wpm; speed barely moves that on v2.
-NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Essayist take 3",
-            "voice_id": "ms9Irzl0730aqqKYFuVm", "model_id": "eleven_multilingual_v2",
-            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.9}
+# The BOSS KG narrator (Bryce, 2026-11-13): "BOSS KG Narrator A", designed on Bryce's Starter
+# workspace to match his first pick ("KG Essayist" take 3, stuck in another workspace; voice-print
+# match 0.945), read on Multilingual v2. Speed 0.95 is the speed Bryce heard take 3 at when he chose
+# it (0.9 read 13 to 16% slower than take 3).
+NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
+            "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_multilingual_v2",
+            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95}
 
 
 def main() -> int:

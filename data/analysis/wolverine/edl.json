@@ -2,13 +2,13 @@
  "game": "wolverine",
  "narrator": {
   "provider": "elevenlabs",
-  "name": "BOSS KG Essayist take 3",
-  "voice_id": "ms9Irzl0730aqqKYFuVm",
+  "name": "BOSS KG Narrator A",
+  "voice_id": "Jn6g1Ws0FHFBiECPird2",
   "model_id": "eleven_multilingual_v2",
   "stability": 0.5,
   "similarity_boost": 0.75,
   "style": 0.0,
-  "speed": 0.9
+  "speed": 0.95
  },
  "under_narration_db": -24,
  "source": "wolverine-script-v2.md",

@@ -8,7 +8,9 @@ name: Analysis long-form (manual)
 #           source folders for analysis videos (rule, Bryce 2026-11-12).
 #   transcribe: timestamped dialogue of the same clips (faster-whisper on CPU, free).
 #   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
-#   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Essayist take 3"
+#   voice-setup: ElevenLabs credits and narrator check; deletes the voices named in "voices".
+#   voice-design: voices designed and scored to match a reference voice (tools/el_voice_design.py).
+#   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Narrator A"
 #           from 2026-11-13; older EDLs keep Chirp 3 HD Orus).
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
 #           renders/analysis/<game>/ (kept) with a 7-day review link. Optional "only" renders a few beats
@@ -37,7 +39,7 @@ on:
         required: false
         default: "v1"
       voices:
-        description: "audition: space-separated Chirp 3 HD voice names (blank = Orus Enceladus Algenib)"
+        description: "audition: space-separated Chirp 3 HD voice names (blank = Orus Enceladus Algenib); voice-setup: comma list of ElevenLabs voice names to delete"
         required: false
         default: ""
 
@@ -99,7 +101,7 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
-          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+          EL_DELETE: ${{ github.event.inputs.voices }}
         run: python tools/el_voice_setup.py
       - name: ElevenLabs voices designed to match take 3 (voice-design)
         if: ${{ github.event.inputs.step == 'voice-design' }}

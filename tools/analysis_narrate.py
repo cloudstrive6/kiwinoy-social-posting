@@ -1,7 +1,7 @@
 """Narration for a KG analysis long-form, one take per paragraph (2026-11-12, ElevenLabs 2026-11-13).
 
 Narrator: if edl.json has a "narrator" block, that voice is used (ElevenLabs; from 2026-11-13 the
-BOSS KG voice is "BOSS KG Essayist take 3", designed for the channel and picked by Bryce, on
+BOSS KG voice is "BOSS KG Narrator A", designed for the channel and picked by Bryce, on
 Multilingual v2). Older EDLs carry "voice" and "speaking_rate" and keep their Chirp 3 HD voice
 (Wolverine: Orus at 0.85), so a rerun never changes a published video's voice. A video never mixes
 voices: if ElevenLabs fails (for example the monthly credit cap), the run stops with the reason.
@@ -84,7 +84,7 @@ def main() -> int:
             if not found:
                 raise SystemExit(f"ElevenLabs voice '{voice}' is not on this account; run step voice-setup first.")
             nar = dict(nar, voice_id=found[0])
-        tag = f"el|{voice}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}"
+        tag = f"el|{voice}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}|{nar.get('speed')}"
         key = os.environ.get("ELEVENLABS_API_KEY", "")
         need = "ELEVENLABS_API_KEY"
     else:  # Chirp 3 HD (videos made before 2026-11-13)
