@@ -52,8 +52,10 @@ def main() -> int:
     print(f"plan {sub.get('tier')}: {sub['character_count']} of {sub['character_limit']} credits used, "
           f"voice slots {sub.get('voice_slots_used')} of {sub.get('voice_limit')}, "
           f"instant cloning {'yes' if sub.get('can_use_instant_voice_cloning') else 'no'}")
+    mine = call("GET", "/v2/voices?page_size=100&voice_type=non-default", key).get("voices", [])
+    print("voices on this account:", [(v.get("name"), v.get("category")) for v in mine] or "none")
     voices = call("GET", "/v2/voices?page_size=100&search=" + urllib.request.quote(NAME), key)
-    for v in voices.get("voices", []):
+    for v in voices.get("voices", []) + mine:
         if v.get("name") == NAME:
             print(f"voice already on this account: {NAME} = {v['voice_id']}")
             return 0
