@@ -607,7 +607,10 @@ def main() -> int:
          "-c:v", "copy", "-af",
          f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
          f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:"
-         "linear=true,aresample=48000", "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(final)])
+         # alimiter: Narrator A's sharp consonants came out at -0.1 dBTP after AAC (v5, 2026-11-13);
+         # a -2 dBFS sample-peak ceiling keeps the encoded true peak under the -1 dBTP QC line.
+         "linear=true,aresample=48000,alimiter=limit=0.794:level=false:attack=1:release=50",
+         "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(final)])
     joined.unlink(missing_ok=True)
     mixed.unlink(missing_ok=True)
     report = qc(final)
