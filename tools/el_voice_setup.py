@@ -80,7 +80,7 @@ def main() -> int:
         v = call("POST", "/v1/voices/add", key, data=b"".join(parts),
                  ctype=f"multipart/form-data; boundary={boundary}")
     except urllib.error.HTTPError as e:
-        print(f"instant clone refused ({e.code}): {e.read().decode()[:300]}")
+        print(f"instant clone refused ({e.code}): {e.read().decode()[:1500]}")
         return 1
     print(f"cloned from the take-3 samples: {NAME} = {v['voice_id']}")
     return 0
