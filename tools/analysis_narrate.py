@@ -62,6 +62,44 @@ def synth_el(text: str, nar: dict, key: str, prev: str = "", nxt: str = "") -> b
         raise SystemExit(f"ElevenLabs refused the take ({e.code}): {e.read().decode()[:300]}")
 
 
+def trim_tail(wav: Path) -> bool:
+    """Cut a paragraph 150 ms after its last word, with a 30 ms fade (2026-11-13, v6 review): ElevenLabs
+    takes sometimes end with a 50-100 ms tick or thump 0.2-0.8 s after the last word, loud enough to
+    survive the -50 dB silence trim. The last word is the last run of at least 120 ms within 32 dB of
+    the paragraph's peak level; shorter blips after it are dropped. Returns True if the file changed."""
+    import numpy as np
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", str(wav), "-f", "s16le", "-ac", "1", "-ar", "48000", "-"],
+                         capture_output=True, check=True).stdout
+    x = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
+    hop = 480  # 10 ms
+    n = len(x) // hop
+    if n < 30:
+        return False
+    rms = np.sqrt((x[: n * hop].reshape(n, hop) ** 2).mean(axis=1) + 1e-12)
+    db = 20 * np.log10(rms)
+    loud = db > db.max() - 32
+    end, run = None, 0
+    for i in range(n - 1, -1, -1):
+        run = run + 1 if loud[i] else 0
+        if run >= 12:  # 120 ms of voice
+            j = i
+            while j + 1 < n and loud[j + 1]:
+                j += 1
+            end = (j + 1) * hop
+            break
+    if end is None:
+        return False
+    cut = min(len(x), end + int(0.15 * 48000))
+    if len(x) - cut < int(0.05 * 48000):
+        return False
+    y = x[:cut].copy()
+    f = int(0.03 * 48000)
+    y[-f:] *= np.linspace(1, 0, f, dtype=np.float32)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", "48000", "-ac", "1", "-i", "-", str(wav)],
+                   input=(np.clip(y, -1, 1) * 32767).astype(np.int16).tobytes(), check=True)
+    return True
+
+
 def seconds(path: Path) -> float:
     out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                           "-of", "default=nw=1:nk=1", str(path)], capture_output=True, text=True)
@@ -140,6 +178,12 @@ def main() -> int:
         raw.unlink()
         timings[b["id"]] = {"hash": h, "seconds": round(seconds(wav), 3)}
         print(f"{b['id']}: {timings[b['id']]['seconds']:.1f} s", flush=True)
+    for b in narr:  # also applies to cached takes, so older paragraphs lose their tail ticks too
+        wav = out / f"{b['id']}.wav"
+        if wav.exists() and not timings[b["id"]].get("tail_trimmed"):
+            if trim_tail(wav):
+                print(f"{b['id']}: tail trimmed {timings[b['id']]['seconds']:.2f} -> {seconds(wav):.2f} s", flush=True)
+            timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
     tpath.write_text(json.dumps(timings, indent=1), encoding="utf-8")
     total = sum(timings[b["id"]]["seconds"] for b in narr)
     # One file for the ear check: every paragraph with a short gap.

@@ -254,7 +254,10 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
                          f"format=yuv420p[v{k}]")
             graph.append(f"anullsrc=r=48000:cl=stereo,atrim=duration={p['out']:.4f}[a{k}]")
         else:
-            i = add_input(["-i", str(clips.fetch_clean(p["clip"], p["src"], p["span"], work))])
+            # A game burst plays exactly its cue range: never slide it off a white-out or fade, or
+            # the dialogue changes (v6 moved b040b 2.3 s earlier and lost Jean's "are loved").
+            fetch = clips.fetch if b["type"] == "game" else clips.fetch_clean
+            i = add_input(["-i", str(fetch(p["clip"], p["src"], p["span"], work))])
             graph.append(vchain(f"{i}:v", p, f"v{k}"))
             if b["type"] == "game":
                 graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"

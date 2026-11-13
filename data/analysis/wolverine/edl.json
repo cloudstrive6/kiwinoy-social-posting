@@ -91,7 +91,7 @@
     },
     {
      "clip": 6,
-     "in": 0.0,
+     "in": 5.5,
      "out": 15.0
     },
     {
@@ -136,8 +136,8 @@
   },
   {
    "type": "narr",
-   "text": "The scene never names the wild man, but it suggests he's Logan, and the voice gives its own name: Nathaniel Essex. Then it asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
-   "tts": "The scene never names the wild man, but it suggests he's Logan, and the voice gives its own name: Nathaniel Essex. Then it asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
+   "text": "No one in the scene says the wild man's name, though the subtitles label him Logan. The voice gives its own name, Nathaniel Essex, then asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
+   "tts": "No one in the scene says the wild man's name, though the subtitles label him Logan. The voice gives its own name, Nathaniel Essex, then asks for his. So the game opens on a man who can't speak for himself while someone else tells him where he belongs. The final conversation has the same shape, with Jean doing the telling. Remember the word home. It comes back.",
    "shots": [
     {
      "clip": 0,
@@ -375,7 +375,7 @@
    "shots": [
     {
      "clip": 162,
-     "in": 0.0,
+     "in": 4.0,
      "out": 22.0
     }
    ],
@@ -403,7 +403,7 @@
    "clip": 134,
    "in": 22.0,
    "out": 30.0,
-   "cue": "GAME AUDIO 134, 22-30 s: \"You were nothing until I made you a team.\" / \"I thought we were family.\" (two speakers; no speaker captions; the 35 s line \"It is our family who will hurt us the most\" is left out because its speaker is unclear)",
+   "cue": "GAME AUDIO 134, 22-30 s: \"You were nothing until I made you a team.\" / \"I thought we were family.\" (two speakers; no speaker captions; the 35 s line \"It is our family who will hurt us the most\" is left out because its speaker is unclear) | v7 note: captions name Essex and Logan",
    "id": "b022"
   },
   {
@@ -629,8 +629,8 @@
   },
   {
    "type": "narr",
-   "text": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, and that he is different: Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
-   "tts": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, and that he is different: Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
+   "text": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, but Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
+   "tts": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, but Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
    "shots": [
     {
      "clip": 32,
@@ -688,17 +688,17 @@
   {
    "type": "game",
    "clip": 33,
-   "in": 67.6,
-   "out": 78.6,
-   "cue": "GAME AUDIO 33, 67.6-78.6 s: \"Because I needed you to know that I remember. And that I forgive you.\"",
+   "in": 67.7,
+   "out": 78.3,
+   "cue": "GAME AUDIO 33, 67.7-78.3 s: \"Because I needed you to know that I remember. And that I forgive you.\" (subtitle frames 33@68-78)",
    "id": "b040"
   },
   {
    "type": "game",
    "clip": 33,
-   "in": 81.3,
-   "out": 86.9,
-   "cue": "GAME AUDIO 33, 81.3-86.9 s: \"And that you are loved.\" (v6: second half of the goodbye, 'are loved' subtitle on the white flash at 86 s)",
+   "in": 81.5,
+   "out": 86.0,
+   "cue": "GAME AUDIO 33, 81.5-86.0 s: \"And that you are loved.\" ('are loved' subtitle 33@85.2-86.4 on the white-out; the renderer must not slide this burst, fixed v7)",
    "id": "b040b"
   },
   {
@@ -709,11 +709,11 @@
     {
      "clip": 34,
      "in": 0.0,
-     "out": 11.5
+     "out": 4.0
     },
     {
-     "clip": 34,
-     "in": 18.0,
+     "clip": 35,
+     "in": 16.0,
      "out": 23.0
     }
    ],
@@ -777,9 +777,9 @@
   {
    "type": "game",
    "clip": 35,
-   "in": 46.0,
+   "in": 47.9,
    "out": 54.0,
-   "cue": "GAME AUDIO 35, 46-54 s: \"Even if I wanted to remember it, it just sounds like a... A story.\" (check by ear and who says \"A story\") | v6 note: Jean asks \"A story?\" (subtitle)",
+   "cue": "GAME AUDIO 35, 47.9-54 s: \"Even if I wanted to remember it, it just sounds like a...\" Jean: \"A story?\" (v7 starts on Logan's line, not mid-sentence)",
    "id": "b045"
   },
   {
@@ -817,9 +817,9 @@
   {
    "type": "game",
    "clip": 36,
-   "in": 96.0,
-   "out": 110.0,
-   "cue": "GAME AUDIO 36, 96-110 s: \"And for a while the boy was happy. And so was she.\" | v6 note: \"And so was she.\" is not in this range (subtitle check, v5 review)",
+   "in": 100.2,
+   "out": 107.8,
+   "cue": "GAME AUDIO 36, 100.2-107.8 s: Jean: \"And... for a while, the boy was happy.\" (v7 trimmed to the dialogue; 'And so was she.' is not in this range)",
    "id": "b048"
   },
   {
@@ -918,7 +918,7 @@
    "clip": 37,
    "in": 18.0,
    "out": 22.0,
-   "cue": "GAME AUDIO 37, 18-22 s: \"Because I can't get your goddamn voice out of my head.\" (mild profanity; bleep optional)",
+   "cue": "GAME AUDIO 37, 18-22 s: \"Because I can't get your goddamn voice out of my head.\" (mild profanity; bleep optional) | v7 note: subtitle reads 'Yeah. Cuz I can't get your goddamn voice out of my head.'",
    "id": "b054"
   },
   {
