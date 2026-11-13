@@ -109,8 +109,8 @@
   },
   {
    "type": "narr",
-   "text": "For most of the game he's the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
-   "tts": "For most of the game he's the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
+   "text": "For most of the game Essex is the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
+   "tts": "For most of the game Essex is the father figure, the man Logan and Victor Creed, Sabretooth, set out to save. The game shows you why early on, with a frightened wild man in a jungle and a calm voice offering him somewhere to belong.",
    "shots": [
     {
      "clip": 0,
@@ -119,8 +119,8 @@
     },
     {
      "clip": 0,
-     "in": 60.0,
-     "out": 80.0
+     "in": 23.0,
+     "out": 38.8
     }
    ],
    "gfx": [],
@@ -129,9 +129,9 @@
   {
    "type": "game",
    "clip": 0,
-   "in": 23.0,
-   "out": 25.6,
-   "cue": "GAME AUDIO 0, 23-25.6 s: \"I'd like to help you, if I could.\" (v4: 25-29 s had no dialogue)",
+   "in": 39.2,
+   "out": 44.9,
+   "cue": "GAME AUDIO 0, 39.2-44.9 s: \"I have a home here for people who are special, like you.\" (v6: plays the 'home' line that b006 calls back; subtitle frames 0@41-43)",
    "id": "b005"
   },
   {
@@ -141,8 +141,13 @@
    "shots": [
     {
      "clip": 0,
+     "in": 45.0,
+     "out": 73.5
+    },
+    {
+     "clip": 0,
      "in": 74.0,
-     "out": 94.0
+     "out": 91.5
     }
    ],
    "gfx": [],
@@ -239,8 +244,8 @@
    "type": "game",
    "clip": 109,
    "in": 84.0,
-   "out": 92.0,
-   "cue": "GAME AUDIO 109, 84-92 s: \"I burned all trace of Death... out of your mind. Or so I thought.\" (Whisper heard \"burned trace of death\"; check by ear)",
+   "out": 92.6,
+   "cue": "GAME AUDIO 109, 84-92.6 s: \"I burnt every trace of Death out of your mind. Or so I thought.\" (subtitle wording; v6 adds 0.6 s so 'thought' finishes)",
    "id": "b012"
   },
   {
@@ -250,7 +255,7 @@
    "shots": [
     {
      "clip": 109,
-     "in": 92.0,
+     "in": 92.6,
      "out": 130.0
     },
     {
@@ -409,17 +414,17 @@
     {
      "clip": 154,
      "in": 0.0,
-     "out": 30.0
+     "out": 6.6
     },
     {
      "clip": 159,
      "in": 0.0,
-     "out": 30.0
+     "out": 5.8
     },
     {
      "clip": 160,
-     "in": 20.0,
-     "out": 35.0
+     "in": 36.0,
+     "out": 43.5
     }
    ],
    "gfx": [],
@@ -563,10 +568,10 @@
   {
    "type": "game",
    "clip": 26,
-   "in": 17.0,
-   "out": 21.0,
-   "cue": "GAME AUDIO 26, 17-21 s: \"Forget her! Look at me!\" (picture stays on 26; crop HUD)",
-   "crop": "hud",
+   "in": 17.4,
+   "out": 23.9,
+   "cue": "GAME AUDIO 26, 17.4-23.9 s: \"Forget her. Look at me! You'd be nothing without me! Or have you forgotten?\" (v6: uncropped so the 'Essex:' subtitle shows, full line)",
+   "crop": "none",
    "id": "b032"
   },
   {
@@ -586,8 +591,8 @@
   },
   {
    "type": "narr",
-   "text": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and she tells him the price in one breath.",
-   "tts": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and she tells him the price in one breath.",
+   "text": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and Logan speaks first.",
+   "tts": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and Logan speaks first.",
    "shots": [
     {
      "clip": 27,
@@ -624,8 +629,8 @@
   },
   {
    "type": "narr",
-   "text": "Listen to how she describes him. Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described. And Logan asks her to do it anyway. He would rather give up nearly all of who he is than kill her. That request is part of the game's story, though my footage doesn't catch it clearly.",
-   "tts": "Listen to how she describes him. Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described. And Logan asks her to do it anyway. He would rather give up nearly all of who he is than kill her. That request is part of the game's story, though my footage doesn't catch it clearly.",
+   "text": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, and that he is different: Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
+   "tts": "Listen to that exchange. Logan can barely finish a sentence. He says you have to, he brings up Callisto, and he says please. Jean answers that they were just corrupted, and that he is different: Death is a part of Logan, so burning it out leaves nothing of the man she's talking to. The game states the cost before the burn, so whatever happens next is the price working as described.",
    "shots": [
     {
      "clip": 32,
@@ -683,10 +688,18 @@
   {
    "type": "game",
    "clip": 33,
-   "in": 66.0,
-   "out": 78.0,
-   "cue": "GAME AUDIO 33, 66-78 s: \"Because I needed you to know that I remember, and that I forgive you, and that you are loved.\"",
+   "in": 67.6,
+   "out": 78.6,
+   "cue": "GAME AUDIO 33, 67.6-78.6 s: \"Because I needed you to know that I remember. And that I forgive you.\"",
    "id": "b040"
+  },
+  {
+   "type": "game",
+   "clip": 33,
+   "in": 81.3,
+   "out": 86.9,
+   "cue": "GAME AUDIO 33, 81.3-86.9 s: \"And that you are loved.\" (v6: second half of the goodbye, 'are loved' subtitle on the white flash at 86 s)",
+   "id": "b040b"
   },
   {
    "type": "narr",
@@ -694,9 +707,14 @@
    "tts": "The whole ending runs on that imbalance. She remembers, and he won't. Instead of showing the erasure, the game shows what's being erased, from the side of the person who gets to keep it.",
    "shots": [
     {
-     "clip": 33,
-     "in": 78.0,
-     "out": 87.0
+     "clip": 34,
+     "in": 0.0,
+     "out": 11.5
+    },
+    {
+     "clip": 34,
+     "in": 18.0,
+     "out": 23.0
     }
    ],
    "gfx": [],
@@ -761,7 +779,7 @@
    "clip": 35,
    "in": 46.0,
    "out": 54.0,
-   "cue": "GAME AUDIO 35, 46-54 s: \"Even if I wanted to remember it, it just sounds like a... A story.\" (check by ear and who says \"A story\")",
+   "cue": "GAME AUDIO 35, 46-54 s: \"Even if I wanted to remember it, it just sounds like a... A story.\" (check by ear and who says \"A story\") | v6 note: Jean asks \"A story?\" (subtitle)",
    "id": "b045"
   },
   {
@@ -801,7 +819,7 @@
    "clip": 36,
    "in": 96.0,
    "out": 110.0,
-   "cue": "GAME AUDIO 36, 96-110 s: \"And for a while the boy was happy. And so was she.\"",
+   "cue": "GAME AUDIO 36, 96-110 s: \"And for a while the boy was happy. And so was she.\" | v6 note: \"And so was she.\" is not in this range (subtitle check, v5 review)",
    "id": "b048"
   },
   {

@@ -1,5 +1,5 @@
 {
- "note": "Shot changes after independent reviews. v1 (2026-11-13): b033 bloodied Logan cut from 23 s to 8 s. v2 review (2026-11-13, 4.3/5): b008 off the crash and bloodied Sabretooth onto the firelit Logan; b017 drops the repeated sunflower walk (clip 109); b030 starts after the game's SHINJUKU title; b031 and b033 swap the bloodied Logan in clip 26 for Logan's face and glowing eyes in clip 15 (the burst b032 keeps 4 s of clip 26); b049 breaks the 26 s Jean hold; b052 ends on Sabretooth's glowing eyes instead of Logan's bloodied face on the rocks (clip 167 95-117); b055 opens uncropped on the Apocalypse subtitle so 'the subtitles name them both' is visible.",
+ "note": "Shot changes after independent reviews. v1 (2026-11-13): b033 bloodied Logan cut from 23 s to 8 s. v2 review (2026-11-13, 4.3/5): b008 off the crash and bloodied Sabretooth onto the firelit Logan; b017 drops the repeated sunflower walk (clip 109); b030 starts after the game's SHINJUKU title; b031 and b033 swap the bloodied Logan in clip 26 for Logan's face and glowing eyes in clip 15 (the burst b032 keeps 4 s of clip 26); b049 breaks the 26 s Jean hold; b052 ends on Sabretooth's glowing eyes instead of Logan's bloodied face on the rocks (clip 167 95-117); b055 opens uncropped on the Apocalypse subtitle so 'the subtitles name them both' is visible. v5 review (2026-11-13): b052 Sabretooth close-up cut to 3.5 s (167 80-83.5) to stay under the 4 s blood rule.",
  "shots": {
   "b008": [
    {
@@ -120,8 +120,8 @@
    },
    {
     "clip": 167,
-    "in": 82.0,
-    "out": 89.0
+    "in": 80.0,
+    "out": 83.5
    }
   ],
   "b055": [
