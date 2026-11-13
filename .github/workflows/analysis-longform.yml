@@ -8,7 +8,8 @@ name: Analysis long-form (manual)
 #           source folders for analysis videos (rule, Bryce 2026-11-12).
 #   transcribe: timestamped dialogue of the same clips (faster-whisper on CPU, free).
 #   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
-#   narrate: full narration from data/analysis/<game>/edl.json (voice Orus, picked 2026-11-12).
+#   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Essayist take 3"
+#           from 2026-11-13; older EDLs keep Chirp 3 HD Orus).
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
 #           renders/analysis/<game>/ (kept) with a 7-day review link. Optional "only" renders a few beats
 #           as a small preview instead (test runs).
@@ -100,11 +101,12 @@ jobs:
           path: output/analysis/${{ github.event.inputs.game }}/narration
           key: narration-${{ github.event.inputs.game }}-${{ hashFiles(format('data/analysis/{0}/edl.json', github.event.inputs.game)) }}
           restore-keys: narration-${{ github.event.inputs.game }}-
-      - name: Narration (Chirp 3 HD)
+      - name: Narration (ElevenLabs BOSS KG voice; Chirp 3 HD for older EDLs)
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
         env:
           GAME: ${{ github.event.inputs.game }}
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: python tools/analysis_narrate.py "$GAME"
       - name: Restore rendered beats
         if: ${{ github.event.inputs.step == 'render' && github.event.inputs.only == '' }}

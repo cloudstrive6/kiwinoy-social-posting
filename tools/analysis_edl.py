@@ -134,6 +134,13 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
     return {"beats": beats, "gfx_cues": gfx_cues, "problems": problems}
 
 
+# The BOSS KG narrator (Bryce, 2026-11-13): an ElevenLabs voice designed for the channel ("KG
+# Essayist", take 3), read on Multilingual v2. It reads about 176 wpm; speed barely moves that on v2.
+NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Essayist take 3",
+            "voice_id": "ms9Irzl0730aqqKYFuVm", "model_id": "eleven_multilingual_v2",
+            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.9}
+
+
 def main() -> int:
     script_path, game = Path(sys.argv[1]), sys.argv[2]
     d = ROOT / "data" / "analysis" / game
@@ -141,7 +148,7 @@ def main() -> int:
     banned = {88, 89, 90, 111, 112, 128}
     hud = {20, 21, 24, 26, 27, 166, 167}
     res = parse(script_path.read_text(encoding="utf-8"), banned, hud)
-    edl = {"game": game, "voice": "Orus", "speaking_rate": 0.85, "under_narration_db": -24,
+    edl = {"game": game, "narrator": NARRATOR, "under_narration_db": -24,
            "source": script_path.name, "beats": res["beats"], "gfx_cues": res["gfx_cues"]}
     (d / "edl.json").write_text(json.dumps(edl, indent=1, ensure_ascii=False), encoding="utf-8")
     narr = [b for b in res["beats"] if b["type"] == "narr"]

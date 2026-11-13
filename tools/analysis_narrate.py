@@ -1,11 +1,16 @@
-"""Narration for a KG analysis long-form: Chirp 3 HD, one take per paragraph (2026-11-12).
+"""Narration for a KG analysis long-form, one take per paragraph (2026-11-12, ElevenLabs 2026-11-13).
 
-Voice and pace come from data/analysis/<game>/edl.json (Bryce picked Orus on 2026-11-12; Orus
-reads about 188 wpm at rate 1.0, so 0.85 brings it to the script's 160 wpm plan). Each
+Narrator: if edl.json has a "narrator" block, that voice is used (ElevenLabs; from 2026-11-13 the
+BOSS KG voice is "BOSS KG Essayist take 3", designed for the channel and picked by Bryce, on
+Multilingual v2). Older EDLs carry "voice" and "speaking_rate" and keep their Chirp 3 HD voice
+(Wolverine: Orus at 0.85), so a rerun never changes a published video's voice. A video never mixes
+voices: if ElevenLabs fails (for example the monthly credit cap), the run stops with the reason.
+ElevenLabs takes get the previous and next paragraph as context so the delivery flows. Each
 narration beat is synthesised from its `tts` text (spoken forms for numbers and "KG"),
 normalised to -16 LUFS and cached by a hash of text, voice and rate, so a rerun only re-records
 changed paragraphs. Writes output/analysis/<game>/narration/<beat>.wav, timings.json and one
-narration_full.mp3 for an ear check. Needs GOOGLE_TTS_API_KEY. Never uploads anywhere.
+narration_full.mp3 for an ear check. Needs ELEVENLABS_API_KEY or GOOGLE_TTS_API_KEY. Never
+uploads anywhere.
 
     python tools/analysis_narrate.py wolverine
 """
@@ -17,6 +22,7 @@ import json
 import os
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -35,6 +41,27 @@ def synth(text: str, voice: str, rate: float, key: str) -> bytes:
         return base64.b64decode(json.loads(r.read())["audioContent"])
 
 
+def synth_el(text: str, nar: dict, key: str, prev: str = "", nxt: str = "") -> bytes:
+    """ElevenLabs: MP3 bytes. Stops the run with ElevenLabs' own message (quota, auth) on failure."""
+    body = {"text": text, "model_id": nar.get("model_id", "eleven_multilingual_v2"),
+            "voice_settings": {"stability": nar.get("stability", 0.5),
+                               "similarity_boost": nar.get("similarity_boost", 0.75),
+                               "style": nar.get("style", 0.0), "use_speaker_boost": True,
+                               "speed": nar.get("speed", 1.0)}}
+    if prev:
+        body["previous_text"] = prev
+    if nxt:
+        body["next_text"] = nxt
+    req = urllib.request.Request(
+        f"https://api.elevenlabs.io/v1/text-to-speech/{nar['voice_id']}?output_format=mp3_44100_128",
+        data=json.dumps(body).encode(), headers={"xi-api-key": key, "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            return r.read()
+    except urllib.error.HTTPError as e:
+        raise SystemExit(f"ElevenLabs refused the take ({e.code}): {e.read().decode()[:300]}")
+
+
 def seconds(path: Path) -> float:
     out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                           "-of", "default=nw=1:nk=1", str(path)], capture_output=True, text=True)
@@ -44,10 +71,19 @@ def seconds(path: Path) -> float:
 def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
-    voice, rate = edl["voice"], float(edl["speaking_rate"])
-    key = os.environ.get("GOOGLE_TTS_API_KEY", "")
+    nar = edl.get("narrator")
+    if nar:  # ElevenLabs
+        voice, rate = nar["name"], float(nar.get("speed", 1.0))
+        tag = f"el|{nar['voice_id']}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}"
+        key = os.environ.get("ELEVENLABS_API_KEY", "")
+        need = "ELEVENLABS_API_KEY"
+    else:  # Chirp 3 HD (videos made before 2026-11-13)
+        voice, rate = edl["voice"], float(edl["speaking_rate"])
+        tag = voice
+        key = os.environ.get("GOOGLE_TTS_API_KEY", "")
+        need = "GOOGLE_TTS_API_KEY"
     if not key:
-        print("GOOGLE_TTS_API_KEY is not set")
+        print(f"{need} is not set")
         return 1
     out = ROOT / "output" / "analysis" / game / "narration"
     out.mkdir(parents=True, exist_ok=True)
@@ -55,14 +91,37 @@ def main() -> int:
     timings = json.loads(tpath.read_text(encoding="utf-8")) if tpath.exists() else {}
     narr = [b for b in edl["beats"] if b["type"] == "narr"]
     words = 0
-    for b in narr:
-        h = hashlib.sha1(f"{voice}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
+    if nar:  # never start a video the month's ElevenLabs credits cannot finish (no half-voiced cuts)
+        todo = 0
+        for b in narr:
+            h = hashlib.sha1(f"{tag}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
+            if not ((out / f"{b['id']}.wav").exists() and timings.get(b["id"], {}).get("hash") == h):
+                todo += len(b["tts"])
+        if todo:
+            req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription",
+                                         headers={"xi-api-key": key})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                sub = json.loads(r.read())
+            left = int(sub["character_limit"]) - int(sub["character_count"])
+            print(f"ElevenLabs: {todo} characters to record, {left} credits left this month "
+                  f"({sub.get('tier')})", flush=True)
+            if todo > left:
+                raise SystemExit(f"Not enough ElevenLabs credits: need {todo}, have {left}. "
+                                 "Nothing was recorded. Upgrade the plan or wait for the monthly reset.")
+    for i, b in enumerate(narr):
+        h = hashlib.sha1(f"{tag}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
         wav = out / f"{b['id']}.wav"
         words += len(b["text"].split())
         if wav.exists() and timings.get(b["id"], {}).get("hash") == h:
             continue
-        raw = out / f"{b['id']}.raw.wav"
-        raw.write_bytes(synth(b["tts"], voice, rate, key))
+        if nar:
+            raw = out / f"{b['id']}.raw.mp3"
+            raw.write_bytes(synth_el(b["tts"], nar, key,
+                                     narr[i - 1]["tts"] if i else "",
+                                     narr[i + 1]["tts"] if i + 1 < len(narr) else ""))
+        else:
+            raw = out / f"{b['id']}.raw.wav"
+            raw.write_bytes(synth(b["tts"], voice, rate, key))
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af",
                         "silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
                         "silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
@@ -82,7 +141,7 @@ def main() -> int:
                            for b in narr), encoding="utf-8")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst),
                     "-b:a", "160k", str(out / "narration_full.mp3")], check=True)
-    report = (f"# Narration: {game}, {voice} at rate {rate}\n\n"
+    report = (f"# Narration: {game}, {voice} at {'speed' if nar else 'rate'} {rate}\n\n"
               f"- {len(narr)} paragraphs, {words} words, {total:.0f} s of speech "
               f"({total / 60:.1f} min), {words / (total / 60):.0f} wpm\n")
     (out / "narration.md").write_text(report, encoding="utf-8")
