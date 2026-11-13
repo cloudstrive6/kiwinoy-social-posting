@@ -414,7 +414,7 @@
     {
      "clip": 154,
      "in": 0.0,
-     "out": 6.6
+     "out": 4.8
     },
     {
      "clip": 159,
@@ -594,12 +594,6 @@
    "text": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and Logan speaks first.",
    "tts": "When the fight ends, Essex is beaten and Logan is clutching his head in agony. Jean walks to him. The Phoenix Force wraps around her in wings of orange light, and Logan speaks first.",
    "shots": [
-    {
-     "clip": 27,
-     "in": 0.0,
-     "out": 20.0,
-     "crop": "hud"
-    },
     {
      "clip": 28,
      "in": 0.0,
@@ -818,7 +812,7 @@
    "type": "game",
    "clip": 36,
    "in": 100.2,
-   "out": 107.8,
+   "out": 106.3,
    "cue": "GAME AUDIO 36, 100.2-107.8 s: Jean: \"And... for a while, the boy was happy.\" (v7 trimmed to the dialogue; 'And so was she.' is not in this range)",
    "id": "b048"
   },
