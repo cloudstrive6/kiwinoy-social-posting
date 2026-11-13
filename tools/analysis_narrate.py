@@ -72,9 +72,19 @@ def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
     nar = edl.get("narrator")
-    if nar:  # ElevenLabs
+    if nar:  # ElevenLabs; the voice is found by name, so the same EDL works on any KG account
         voice, rate = nar["name"], float(nar.get("speed", 1.0))
-        tag = f"el|{nar['voice_id']}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}"
+        key0 = os.environ.get("ELEVENLABS_API_KEY", "")
+        if key0:
+            q = urllib.request.Request(
+                "https://api.elevenlabs.io/v2/voices?page_size=100&search=" + urllib.request.quote(voice),
+                headers={"xi-api-key": key0})
+            with urllib.request.urlopen(q, timeout=60) as r:
+                found = [v["voice_id"] for v in json.loads(r.read()).get("voices", []) if v.get("name") == voice]
+            if not found:
+                raise SystemExit(f"ElevenLabs voice '{voice}' is not on this account; run step voice-setup first.")
+            nar = dict(nar, voice_id=found[0])
+        tag = f"el|{voice}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}"
         key = os.environ.get("ELEVENLABS_API_KEY", "")
         need = "ELEVENLABS_API_KEY"
     else:  # Chirp 3 HD (videos made before 2026-11-13)

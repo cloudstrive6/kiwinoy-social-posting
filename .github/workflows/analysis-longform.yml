@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, narrate, render)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, narrate, render)"
         required: true
         default: "inventory"
       game:
@@ -94,6 +94,13 @@ jobs:
           VOICES: ${{ github.event.inputs.voices }}
           AUDITION_RATE: "0.85"
         run: python tools/voice_audition.py "data/analysis/$GAME/audition.txt" ${VOICES:-Orus Enceladus Algenib}
+      - name: ElevenLabs narrator voice on this account (voice-setup)
+        if: ${{ github.event.inputs.step == 'voice-setup' }}
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+        run: python tools/el_voice_setup.py
       - name: Narration cache
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
         uses: actions/cache@v4
