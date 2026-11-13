@@ -25,6 +25,7 @@ lower. Fonts only from assets/fonts.
     py tools/analysis_shorts.py wolverine --resolve       # word times and cut points only
     py tools/analysis_shorts.py wolverine --dry-run       # print the upload slot plan
     py tools/analysis_shorts.py wolverine --upload        # private + publishAt, 2 a day (never run by an agent unasked)
+    py tools/analysis_shorts.py wolverine --upload --facebook   # also schedule each on the Boss KG Facebook page
 
 Uploads only ever go to YouTube as private with a publishAt; nothing is posted publicly by hand.
 """
@@ -935,6 +936,31 @@ def upload_all(p: Paths, cfg: dict, plan: list[tuple[dict, str]]) -> None:
         print(f"{s['id']} uploaded https://youtu.be/{vid} private, publishes {slot} ({nz(slot)})", flush=True)
 
 
+def facebook_all(p: Paths, cfg: dict, only: set[str]) -> None:
+    """Schedule each Short on the Boss KG Facebook page at its YouTube slot (Bryce, 2026-11-14:
+    Facebook posts the analysis Shorts instead of the fill and lore reels). Post for Me with
+    scheduled_at; the post id is written to the pick so a rerun never posts twice."""
+    from agents import publisher
+    for s in sorted(cfg["shorts"], key=lambda x: x["order"]):
+        if only and s["id"] not in only:
+            continue
+        slot = (s.get("youtube") or {}).get("publish_at")
+        if not slot or (s.get("facebook") or {}).get("id"):
+            continue
+        video = p.out / f"{s['id']}.mp4"
+        if not video.exists():
+            print(f"{s['id']}: no render at {video}, skipped", flush=True)
+            continue
+        caption = s["title"] + "\n\n" + s["description"]
+        res = publisher.publish_video(caption, video.read_bytes(), title=s["title"], short=True,
+                                      scheduled_at=slot, targets=["facebook"])
+        pid = (res or {}).get("id")
+        s["facebook"] = {"id": pid, "scheduled_at": slot,
+                         "created_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+        save_picks(p, cfg)
+        print(f"{s['id']} Facebook post {pid} scheduled {slot} ({nz(slot)})", flush=True)
+
+
 # ------------------------------------------------------------------------------- main
 
 def main() -> int:
@@ -947,13 +973,22 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true", help="print the upload slot plan, upload nothing")
     ap.add_argument("--upload", action="store_true", help="upload rendered Shorts as private with publishAt")
     ap.add_argument("--offline", action="store_true", help="dry run without asking YouTube for taken slots")
+    ap.add_argument("--start", default="", help="first allowed slot, ISO UTC (e.g. after the long-form goes public)")
+    ap.add_argument("--facebook", action="store_true",
+                    help="schedule uploaded Shorts on the Boss KG Facebook page at their YouTube slots")
     a = ap.parse_args()
     p = Paths(a.game, a.version)
     cfg = json.loads(p.picks.read_text(encoding="utf-8"))
     only = set(filter(None, a.only.split(",")))
 
+    if a.facebook and not (a.dry_run or a.upload):
+        facebook_all(p, cfg, only)
+        return 0
     if a.dry_run or a.upload:
-        plan = slot_plan(cfg, scheduled_publish_times(a.offline))
+        start = None
+        if a.start:  # slot_plan leaves 2 h from "now", so step back 2 h to allow the given slot itself
+            start = dt.datetime.fromisoformat(a.start.replace("Z", "+00:00")) - dt.timedelta(hours=2)
+        plan = slot_plan(cfg, scheduled_publish_times(a.offline), now=start)
         if only:
             plan = [x for x in plan if x[0]["id"] in only]
         print(f"{'order':>5} {'id':4} {'publishAt (UTC)':21} {'NZ time':24} title")
@@ -961,6 +996,8 @@ def main() -> int:
             print(f"{s['order']:>5} {s['id']:4} {slot:21} {nz(slot):24} {s['title']}")
         if a.upload:
             upload_all(p, cfg, plan)
+            if a.facebook:
+                facebook_all(p, cfg, only)
         return 0
 
     fetch_sources(p)

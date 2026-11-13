@@ -1,5 +1,5 @@
 {
- "note": "YouTube Shorts cut from the Wolverine analysis long-form (render v3, public 2026-11-13 as https://youtu.be/ibU1j1niRQM). Bryce, 2026-11-13: 2 Shorts a day replace the paused lore Shorts. Each pick is one question and its answer from the script's own claims, cut on narration sentence boundaries. parts: a run of beats with an optional first phrase (from) and last phrase (to); several parts join with a hard cut. Ending-spoiler picks come after the first three and carry a SPOILERS tag. start, end, seconds, cuts, description and tags are written by tools/analysis_shorts.py; youtube is written by --upload.",
+ "note": "YouTube Shorts cut from the Wolverine analysis long-form (render v8, approved 2026-11-14; the v3 cut https://youtu.be/ibU1j1niRQM and its 12 Shorts were made private on 2026-11-13 and their YouTube records kept as youtube_v3). Bryce, 2026-11-13: 2 Shorts a day replace the paused lore Shorts. Each pick is one question and its answer from the script's own claims, cut on narration sentence boundaries. parts: a run of beats with an optional first phrase (from) and last phrase (to); several parts join with a hard cut. Ending-spoiler picks come after the first three and carry a SPOILERS tag. start, end, seconds, cuts, description and tags are written by tools/analysis_shorts.py; youtube is written by --upload.",
  "full_video": "https://youtu.be/ibU1j1niRQM",
  "slots_utc": [
   "15:00",
@@ -109,7 +109,7 @@
    "flash_holds": {
     "1": 0.4817
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "YHtynR-aAjE",
     "publish_at": "2026-11-13T15:00:00Z",
     "uploaded_at": "2026-11-12T22:01:55Z",
@@ -178,7 +178,7 @@
     "Wolverine intro"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "JVM6uSwKemI",
     "publish_at": "2026-11-13T23:00:00Z",
     "uploaded_at": "2026-11-12T22:02:17Z",
@@ -258,7 +258,7 @@
     "Wolverine 1800s"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "rX0Z1BeARjQ",
     "publish_at": "2026-11-14T15:00:00Z",
     "uploaded_at": "2026-11-12T22:02:51Z",
@@ -341,7 +341,7 @@
    "flash_holds": {
     "1": 0.0727
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "Pa8evuf9NLo",
     "publish_at": "2026-11-14T23:00:00Z",
     "uploaded_at": "2026-11-12T22:03:10Z",
@@ -452,7 +452,7 @@
    "flash_holds": {
     "1": 0.1407
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "W53N4ybtmoE",
     "publish_at": "2026-11-15T15:00:00Z",
     "uploaded_at": "2026-11-12T22:03:33Z",
@@ -514,7 +514,7 @@
    "flash_holds": {
     "0": 0.0927
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "QboX-Ekr5I8",
     "publish_at": "2026-11-15T23:00:00Z",
     "uploaded_at": "2026-11-12T22:04:10Z",
@@ -571,7 +571,7 @@
     "Wolverine garden scene"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "wy4Pahoie7k",
     "publish_at": "2026-11-16T15:00:00Z",
     "uploaded_at": "2026-11-12T22:04:34Z",
@@ -664,7 +664,7 @@
    "flash_holds": {
     "3": 0.1197
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "5Hkb6ApknZA",
     "publish_at": "2026-11-16T23:00:00Z",
     "uploaded_at": "2026-11-12T22:04:54Z",
@@ -732,7 +732,7 @@
     "Phoenix"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "Q99hKPcvMpE",
     "publish_at": "2026-11-17T15:00:00Z",
     "uploaded_at": "2026-11-12T22:05:17Z",
@@ -789,7 +789,7 @@
     "Wolverine balcony scene"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "E02BaXUnIek",
     "publish_at": "2026-11-17T23:00:00Z",
     "uploaded_at": "2026-11-12T22:05:36Z",
@@ -860,7 +860,7 @@
     "Wolverine sequel"
    ],
    "flash_holds": {},
-   "youtube": {
+   "youtube_v3": {
     "id": "7LNm0bZwUtc",
     "publish_at": "2026-11-18T15:00:00Z",
     "uploaded_at": "2026-11-12T22:05:56Z",
@@ -932,7 +932,7 @@
     "0": 0.1617,
     "1": 0.1677
    },
-   "youtube": {
+   "youtube_v3": {
     "id": "C6BQT9M-xSU",
     "publish_at": "2026-11-18T23:00:00Z",
     "uploaded_at": "2026-11-12T22:06:14Z",
