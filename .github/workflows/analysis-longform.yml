@@ -27,7 +27,7 @@ on:
         required: true
         default: "wolverine"
       only:
-        description: "render only: comma list of beat ids for a test preview (blank = full video)"
+        description: "render: comma list of beat ids for a test preview (blank = full video); frames/transcribe: only clips whose file name contains this text"
         required: false
         default: ""
       pools:
@@ -78,6 +78,7 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
           POOLS: ${{ github.event.inputs.pools }}
+          CLIP_MATCH: ${{ github.event.inputs.only }}
         run: |
           for g in ${GAME//,/ }; do python tools/footage_frames.py "$g"; done
       - name: Dialogue transcripts with faster-whisper (read-only, approved 2026-11-12)
@@ -85,6 +86,7 @@ jobs:
         env:
           GAME: ${{ github.event.inputs.game }}
           POOLS: ${{ github.event.inputs.pools }}
+          CLIP_MATCH: ${{ github.event.inputs.only }}
         run: |
           pip install "faster-whisper==1.1.1"
           for g in ${GAME//,/ }; do python tools/footage_transcribe.py "$g"; done

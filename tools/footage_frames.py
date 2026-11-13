@@ -24,6 +24,9 @@ from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 from core import b2_store  # noqa: E402
 
 POOLS = [p.strip() for p in (os.environ.get("POOLS") or "cutscenes,footage").split(",") if p.strip()]
+# CLIP_MATCH (env): process only clips whose file name contains it, e.g. "2026-11-13" for a new
+# recording session, keeping every clip's index as in the full list (2026-11-14).
+MATCH = os.environ.get("CLIP_MATCH", "").strip()
 
 
 def source_clips(game: str) -> list[dict]:
@@ -70,6 +73,8 @@ def main() -> int:
 
     index = []
     for i, c in enumerate(clips):
+        if MATCH and MATCH not in c["name"]:  # only new recordings; indices stay global
+            continue
         url = b2_store.presigned_url(c["key"], valid_seconds=3600) or ""
         d = duration(url) if url else 0.0
         frames = []
