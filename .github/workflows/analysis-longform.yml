@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, narrate, render)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, narrate, render)"
         required: true
         default: "inventory"
       game:
@@ -101,6 +101,16 @@ jobs:
           B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
           B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
         run: python tools/el_voice_setup.py
+      - name: ElevenLabs voices designed to match take 3 (voice-design)
+        if: ${{ github.event.inputs.step == 'voice-design' }}
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+        run: |
+          pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet resemblyzer
+          python tools/el_voice_design.py
       - name: Narration cache
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
         uses: actions/cache@v4
