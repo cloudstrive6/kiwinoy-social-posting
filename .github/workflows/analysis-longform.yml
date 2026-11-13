@@ -113,9 +113,11 @@ jobs:
           pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
           pip install --quiet resemblyzer
           python tools/el_voice_design.py
-      - name: Narration cache
+      # Restore and save are split so a run whose render fails QC still keeps its paid narration
+      # (2026-11-13: actions/cache only saved on success, so a QC fail re-recorded all of Wolverine v5).
+      - name: Restore narration
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: output/analysis/${{ github.event.inputs.game }}/narration
           key: narration-${{ github.event.inputs.game }}-${{ hashFiles(format('data/analysis/{0}/edl.json', github.event.inputs.game)) }}
@@ -127,6 +129,12 @@ jobs:
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: python tools/analysis_narrate.py "$GAME"
+      - name: Save narration (even if a later step fails)
+        if: ${{ always() && (github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render') }}
+        uses: actions/cache/save@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/narration
+          key: narration-${{ github.event.inputs.game }}-${{ github.run_id }}
       - name: Restore rendered beats
         if: ${{ github.event.inputs.step == 'render' && github.event.inputs.only == '' }}
         uses: actions/cache/restore@v4
