@@ -776,6 +776,9 @@ reels:
   story_max_seconds: 60
   gameplay:
     enabled: true
+    facebook_paused: true   # PAUSED 2026-11-14 (Bryce): no fill or lore reels to Facebook from this
+                            # track; Facebook posts the analysis Shorts (tools/analysis_shorts.py
+                            # --facebook) instead. Instagram is unchanged. Set false to resume.
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
     # look each day — format variety helps avoid platform spam-detection.
     #   classic  = footage crop-filled vertical + hook bar + logos (original).

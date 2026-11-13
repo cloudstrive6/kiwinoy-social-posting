@@ -721,6 +721,8 @@ def run_gameplay_reel(
     else:                                        # feed = FB/IG only (YouTube left the bundle)
         pick_platforms = [t for t in CONFIG.platforms.get("video_post_to", ["facebook", "instagram"])
                           if t in _ghr.LEDGER_PLATFORMS]
+        if gcfg.get("facebook_paused"):   # see the feed targets below
+            pick_platforms = [t for t in pick_platforms if t != "facebook"]
     # LORE-STRICT tracks (user, 2026-11-12: "only post the lore format for YouTube Shorts").
     # On these platforms a lore slot NEVER falls back to classic/triptych/fill: it tries more
     # moments, and if nothing survives the fact-check the slot is skipped (the make-up step
@@ -1236,6 +1238,11 @@ def run_gameplay_reel(
         # FEED = Facebook + Instagram (YouTube is its OWN track now, see youtube_only).
         targets = [t for t in CONFIG.platforms.get(
             "video_post_to", ["facebook", "instagram", "threads"]) if t != "x"]
+        # FACEBOOK PAUSED on this track (Bryce, 2026-11-14: "pause the full bleed vertical posts and
+        # lore format posts" on Facebook; it posts the analysis Shorts instead). Instagram keeps
+        # its reels. reels.gameplay.facebook_paused: false resumes Facebook here.
+        if gcfg.get("facebook_paused"):
+            targets = [t for t in targets if t != "facebook"]
         # On THREADS only, use a single game hashtag (per user). FB/IG/YT keep the
         # full caption + their fuller hashtags. The FILL format follows the Threads
         # LANDSCAPE rule instead: caption body + #GamingThreads only (no game tags).
