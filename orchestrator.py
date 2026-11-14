@@ -723,6 +723,62 @@ def run_gameplay_reel(
                           if t in _ghr.LEDGER_PLATFORMS]
         if gcfg.get("facebook_paused"):   # see the feed targets below
             pick_platforms = [t for t in pick_platforms if t != "facebook"]
+    # ANALYSIS format (Bryce, 2026-11-14: "Add the analysis format to the rotation for TikTok and
+    # Instagram"). The slot posts the next ready analysis Short (cut from a KG analysis long-form,
+    # already rendered on B2 and live on YouTube) that this platform has not had yet. None ready
+    # -> the slot falls through to the next format in the rotation, so it is never empty.
+    if layout == "analysis" and not clip_override:
+        from agents import analysis_feed
+        _ap = "tiktok" if tiktok_only else ("youtube" if youtube_only else "instagram")
+        _item = None
+        try:
+            _item = analysis_feed.next_short(_ap)
+        except Exception as e:
+            log(f"ANALYSIS: could not read the Shorts queue ({e!r})")
+        if _item:
+            log(f"ANALYSIS Short: {_item['clip_id']} ({_item['title']}) -> {', '.join(pick_platforms)}")
+            result = {"slot_id": slot_id, "kind": "gameplay", "layout": "analysis",
+                      "brief": {"game": _item["game"]}, "clip_id": _item["clip_id"]}
+            if dry_run:
+                log("DRY RUN — skipping publish.")
+                result["published"] = False
+                _save(run_dir, result)
+                return result
+            _vb = analysis_feed.fetch(_item)
+            _cap = _item["caption"]
+            if tiktok_only:
+                _via = str((CONFIG.raw().get("tiktok", {}) or {}).get("via", "zernio")).lower()
+                if _via == "postforme":
+                    _res = publisher.run_tiktok_draft(_cap, _vb)
+                else:
+                    from core import zernio
+                    _res = zernio.publish_reel(_vb, _cap)
+                result["tiktok_via"] = _via
+            else:
+                _res = publisher.run_reel(caption=_cap, video_bytes=_vb, scheduled_at=scheduled_at,
+                                          targets=list(pick_platforms))
+            result["published"] = bool(_res)
+            result["api_result"] = _res
+            if _res:
+                try:
+                    import time as _t
+                    from core import gh_release as _g
+                    _rid = (_res.get("id") or _res.get("post_id") or "") if isinstance(_res, dict) else ""
+                    _g.log_post({"ts": _t.time(), "kind": "gameplay", "game": _item["game"],
+                                 "clip_id": _item["clip_id"], "layout": "analysis", "hook": _item["title"],
+                                 "caption": _cap, "platforms": list(pick_platforms), "result_id": _rid})
+                except Exception:
+                    pass
+                if reel_composer.mark_clip_used(_item["clip_id"], pick_platforms):
+                    log(f"Marked analysis Short used: {_item['clip_id']}")
+                else:
+                    log(f"WARNING: analysis Short posted but the ledger write FAILED ({_item['clip_id']})")
+            _save(run_dir, result)
+            return result
+        _alt = [f for f in (_rf or main_layouts) if f != "analysis"] or ["classic"]
+        _nxt = _alt[(_rf.index("analysis") if "analysis" in _rf else 0) % len(_alt)]
+        log(f"ANALYSIS: no analysis Short ready for {_ap} — using {_nxt} for this slot.")
+        layout = _nxt
     # LORE-STRICT tracks (user, 2026-11-12: "only post the lore format for YouTube Shorts").
     # On these platforms a lore slot NEVER falls back to classic/triptych/fill: it tries more
     # moments, and if nothing survives the fact-check the slot is skipped (the make-up step

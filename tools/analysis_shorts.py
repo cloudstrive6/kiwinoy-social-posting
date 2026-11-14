@@ -936,6 +936,29 @@ def upload_all(p: Paths, cfg: dict, plan: list[tuple[dict, str]]) -> None:
         print(f"{s['id']} uploaded https://youtu.be/{vid} private, publishes {slot} ({nz(slot)})", flush=True)
 
 
+def b2_all(p: Paths, cfg: dict, only: set[str]) -> None:
+    """Copy each rendered Short to private B2 (shorts/analysis/<game>/<id>.mp4) and record the key,
+    so the Instagram and TikTok reel tracks can post it as the "analysis" format (2026-11-14)."""
+    from core import b2_store
+    from tools.footage import _b2_env
+    env = _b2_env("kgb2")
+    for s in sorted(cfg["shorts"], key=lambda x: x["order"]):
+        if only and s["id"] not in only:
+            continue
+        video = p.out / f"{s['id']}.mp4"
+        if not video.exists():
+            continue
+        key = f"shorts/analysis/{p.game}/{s['id']}.mp4"
+        rc = subprocess.run(["rclone", "copyto", str(video), f"kgb2:{b2_store._bucket()}/{key}"],
+                            env=env).returncode
+        if rc == 0:
+            s["b2_key"] = key
+            save_picks(p, cfg)
+            print(f"{s['id']} on B2: {key}", flush=True)
+        else:
+            print(f"{s['id']}: B2 copy failed rc={rc}", flush=True)
+
+
 def facebook_all(p: Paths, cfg: dict, only: set[str]) -> None:
     """Schedule each Short on the Boss KG Facebook page at its YouTube slot (Bryce, 2026-11-14:
     Facebook posts the analysis Shorts instead of the fill and lore reels). Post for Me with
@@ -974,6 +997,8 @@ def main() -> int:
     ap.add_argument("--upload", action="store_true", help="upload rendered Shorts as private with publishAt")
     ap.add_argument("--offline", action="store_true", help="dry run without asking YouTube for taken slots")
     ap.add_argument("--start", default="", help="first allowed slot, ISO UTC (e.g. after the long-form goes public)")
+    ap.add_argument("--b2", action="store_true",
+                    help="copy rendered Shorts to B2 for the Instagram/TikTok analysis format")
     ap.add_argument("--facebook", action="store_true",
                     help="schedule uploaded Shorts on the Boss KG Facebook page at their YouTube slots")
     a = ap.parse_args()
@@ -981,8 +1006,11 @@ def main() -> int:
     cfg = json.loads(p.picks.read_text(encoding="utf-8"))
     only = set(filter(None, a.only.split(",")))
 
-    if a.facebook and not (a.dry_run or a.upload):
-        facebook_all(p, cfg, only)
+    if (a.facebook or a.b2) and not (a.dry_run or a.upload):
+        if a.b2:
+            b2_all(p, cfg, only)
+        if a.facebook:
+            facebook_all(p, cfg, only)
         return 0
     if a.dry_run or a.upload:
         start = None
@@ -996,6 +1024,8 @@ def main() -> int:
             print(f"{s['order']:>5} {s['id']:4} {slot:21} {nz(slot):24} {s['title']}")
         if a.upload:
             upload_all(p, cfg, plan)
+            if a.b2:
+                b2_all(p, cfg, only)
             if a.facebook:
                 facebook_all(p, cfg, only)
         return 0
