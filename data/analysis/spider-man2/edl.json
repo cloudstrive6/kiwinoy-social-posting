@@ -781,8 +781,8 @@
   },
   {
    "type": "narr",
-   "text": "So far: the anger was Peter's before the suit. Back in the sandstorm, he asked Miles when Miles had ever seen him angry. Miles found an answer.",
-   "tts": "So far: the anger was Peter's before the suit. Back in the sandstorm, he asked Miles when Miles had ever seen him angry. Miles found an answer.",
+   "text": "So far: the anger was Peter's before the suit. And Peter insists he never gets angry. Miles remembers it differently.",
+   "tts": "So far: the anger was Peter's before the suit. And Peter insists he never gets angry. Miles remembers it differently.",
    "shots": [
     {
      "clip": 280,
@@ -1725,5 +1725,5 @@
   }
  ],
  "v3_note": "Render v3 (2026-11-14, independent review of v1): b051 'That isn't alien.' -> 'None of that is alien.' (Whisper heard 'That is an alien.'), b063 'Harry tells Peter' -> 'Harry tells MJ' (he answers 'MJ: This isn't you.'). The coordinator updates the approved script to match.",
- "v5_note": "Render v5 (story-flow audit, 2026-11-15, scratchpad sm2flow/flow-audit.md E1-E10): b063 names the grave vision and the local spread; b073 adds the meteorite theft and the real city-wide hive; b070 marks the jump back and the mindscape; b026 'with Miles missing'; b079 'Before the credits'. Narrator mastering preset C (coordinator, 2026-11-15)."
+ "v5_note": "Render v5 (story-flow audit, 2026-11-15, scratchpad sm2flow/flow-audit.md E1-E10): b063 names the grave vision and the local spread; b073 adds the meteorite theft and the real city-wide hive; b070 marks the jump back and the mindscape; b026 'with Miles missing'; b079 'Before the credits'. Narrator mastering preset C (coordinator, 2026-11-15). b039 (Bryce, review of v4): the HUMOR 4 setup now reads as a setup, not a fact."
 }
