@@ -1,0 +1,476 @@
+{
+ "game": "spider-man2",
+ "note": "Clip index as used in the script cues. Indices below 1000 are the footage-map numbers the script was cued against (index.json at the time); clips the script names by B2 key get indices from 1000 up. Seconds and fps from ffprobe on B2.",
+ "clips": {
+  "0": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-21-15).mp4",
+   "seconds": 76.54,
+   "fps": "2997/50"
+  },
+  "1": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-22-37).mp4",
+   "seconds": 156.99,
+   "fps": "2997/50"
+  },
+  "3": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-41-28).mp4",
+   "seconds": 121.66,
+   "fps": "2997/50"
+  },
+  "5": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-47-53).mp4",
+   "seconds": 149.21,
+   "fps": "2997/50"
+  },
+  "8": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-39-29).mp4",
+   "seconds": 134.76,
+   "fps": "2997/50"
+  },
+  "10": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-46-30).mp4",
+   "seconds": 133.03,
+   "fps": "2997/50"
+  },
+  "14": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-51-22).mp4",
+   "seconds": 26.03,
+   "fps": "2997/50"
+  },
+  "17": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-54-51).mp4",
+   "seconds": 136.47,
+   "fps": "2997/50"
+  },
+  "19": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-59-40).mp4",
+   "seconds": 852.23,
+   "fps": "2997/50"
+  },
+  "25": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 21-32-44).mp4",
+   "seconds": 459.58,
+   "fps": "2997/50"
+  },
+  "26": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 21-43-04).mp4",
+   "seconds": 133.65,
+   "fps": "2997/50"
+  },
+  "29": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 21-58-27).mp4",
+   "seconds": 171.09,
+   "fps": "2997/50"
+  },
+  "31": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 22-06-57).mp4",
+   "seconds": 70.4,
+   "fps": "2997/50"
+  },
+  "38": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 19-01-03).mp4",
+   "seconds": 405.7,
+   "fps": "2997/50"
+  },
+  "80": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 20-29-13).mp4",
+   "seconds": 316.37,
+   "fps": "2997/50"
+  },
+  "116": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 21-40-52).mp4",
+   "seconds": 137.92,
+   "fps": "2997/50"
+  },
+  "128": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-03-22).mp4",
+   "seconds": 55.38,
+   "fps": "2997/50"
+  },
+  "133": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-15-50).mp4",
+   "seconds": 115.39,
+   "fps": "2997/50"
+  },
+  "137": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-20-20).mp4",
+   "seconds": 136.41,
+   "fps": "2997/50"
+  },
+  "141": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-33-09).mp4",
+   "seconds": 65.19,
+   "fps": "2997/50"
+  },
+  "153": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-42-30).mp4",
+   "seconds": 35.65,
+   "fps": "2997/50"
+  },
+  "155": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-44-18).mp4",
+   "seconds": 23.27,
+   "fps": "2997/50"
+  },
+  "159": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-52-09).mp4",
+   "seconds": 48.62,
+   "fps": "2997/50"
+  },
+  "162": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-06 22-57-00).mp4",
+   "seconds": 36.5,
+   "fps": "2997/50"
+  },
+  "182": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-03-22).mp4",
+   "seconds": 54.98,
+   "fps": "2997/50"
+  },
+  "183": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-04-18).mp4",
+   "seconds": 101.25,
+   "fps": "2997/50"
+  },
+  "184": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-06-01).mp4",
+   "seconds": 78.27,
+   "fps": "2997/50"
+  },
+  "185": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-07-20).mp4",
+   "seconds": 115.48,
+   "fps": "2997/50"
+  },
+  "187": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-10-25).mp4",
+   "seconds": 90.84,
+   "fps": "2997/50"
+  },
+  "188": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-12-01).mp4",
+   "seconds": 63.79,
+   "fps": "2997/50"
+  },
+  "189": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-13-07).mp4",
+   "seconds": 116.76,
+   "fps": "2997/50"
+  },
+  "190": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-15-06).mp4",
+   "seconds": 86.42,
+   "fps": "2997/50"
+  },
+  "191": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-16-35).mp4",
+   "seconds": 169.02,
+   "fps": "2997/50"
+  },
+  "192": {
+   "key": "footage/spider-man2/Spider-Man 2 (2026-07-19 23-24-38).mp4",
+   "seconds": 89.54,
+   "fps": "2997/50"
+  },
+  "266": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-05.17-45-06.mp4",
+   "seconds": 97.02,
+   "fps": "2997/50"
+  },
+  "278": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-11.20-32-19.mp4",
+   "seconds": 78.21,
+   "fps": "2997/50"
+  },
+  "280": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-11.20-35-52.mp4",
+   "seconds": 75.56,
+   "fps": "2997/50"
+  },
+  "281": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-11.20-37-08.mp4",
+   "seconds": 143.94,
+   "fps": "2997/50"
+  },
+  "300": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-11.21-12-03.mp4",
+   "seconds": 177.51,
+   "fps": "2997/50"
+  },
+  "313": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-11.21-52-12.mp4",
+   "seconds": 61.7,
+   "fps": "2997/50"
+  },
+  "368": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.13-05-25.mp4",
+   "seconds": 121.64,
+   "fps": "2997/50"
+  },
+  "373": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.13-14-34.mp4",
+   "seconds": 170.92,
+   "fps": "2997/50"
+  },
+  "419": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.15-45-53.mp4",
+   "seconds": 71.85,
+   "fps": "2997/50"
+  },
+  "431": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.16-11-44.mp4",
+   "seconds": 106.73,
+   "fps": "2997/50"
+  },
+  "445": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.16-39-45.mp4",
+   "seconds": 128.55,
+   "fps": "2997/50"
+  },
+  "464": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.17-42-15.mp4",
+   "seconds": 92.82,
+   "fps": "2997/50"
+  },
+  "473": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.17-57-40.mp4",
+   "seconds": 101.85,
+   "fps": "2997/50"
+  },
+  "476": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-08-55.mp4",
+   "seconds": 113.45,
+   "fps": "2997/50"
+  },
+  "477": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-10-51.mp4",
+   "seconds": 34.2,
+   "fps": "2997/50"
+  },
+  "483": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-18-55.mp4",
+   "seconds": 85.46,
+   "fps": "2997/50"
+  },
+  "488": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-24-56.mp4",
+   "seconds": 176.77,
+   "fps": "2997/50"
+  },
+  "492": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-37-52.mp4",
+   "seconds": 85.48,
+   "fps": "2997/50"
+  },
+  "505": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.18-59-59.mp4",
+   "seconds": 102.08,
+   "fps": "2997/50"
+  },
+  "507": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-05-04.mp4",
+   "seconds": 118.91,
+   "fps": "2997/50"
+  },
+  "508": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-07-05.mp4",
+   "seconds": 106.37,
+   "fps": "2997/50"
+  },
+  "512": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-15-15.mp4",
+   "seconds": 186.88,
+   "fps": "2997/50"
+  },
+  "517": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-23-32.mp4",
+   "seconds": 117.27,
+   "fps": "2997/50"
+  },
+  "520": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-28-55.mp4",
+   "seconds": 104.83,
+   "fps": "2997/50"
+  },
+  "525": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-36-10.mp4",
+   "seconds": 76.99,
+   "fps": "2997/50"
+  },
+  "526": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-37-30.mp4",
+   "seconds": 124.22,
+   "fps": "2997/50"
+  },
+  "528": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-42-22.mp4",
+   "seconds": 98.22,
+   "fps": "2997/50"
+  },
+  "529": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-44-02.mp4",
+   "seconds": 130.07,
+   "fps": "2997/50"
+  },
+  "531": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-48-49.mp4",
+   "seconds": 52.1,
+   "fps": "2997/50"
+  },
+  "532": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-49-43.mp4",
+   "seconds": 94.61,
+   "fps": "2997/50"
+  },
+  "533": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-51-19.mp4",
+   "seconds": 102.12,
+   "fps": "2997/50"
+  },
+  "534": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-53-02.mp4",
+   "seconds": 72.94,
+   "fps": "2997/50"
+  },
+  "535": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.19-54-16.mp4",
+   "seconds": 80.9,
+   "fps": "2997/50"
+  },
+  "542": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-15-26.mp4",
+   "seconds": 104.09,
+   "fps": "2997/50"
+  },
+  "544": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-18-09.mp4",
+   "seconds": 115.84,
+   "fps": "2997/50"
+  },
+  "548": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-25-59.mp4",
+   "seconds": 85.27,
+   "fps": "2997/50"
+  },
+  "550": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-28-15.mp4",
+   "seconds": 35.61,
+   "fps": "2997/50"
+  },
+  "552": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-30-59.mp4",
+   "seconds": 88.32,
+   "fps": "2997/50"
+  },
+  "553": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-32-28.mp4",
+   "seconds": 73.9,
+   "fps": "2997/50"
+  },
+  "560": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-47-10.mp4",
+   "seconds": 133.63,
+   "fps": "2997/50"
+  },
+  "563": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.20-51-39.mp4",
+   "seconds": 85.21,
+   "fps": "2997/50"
+  },
+  "581": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.21-26-39.mp4",
+   "seconds": 78.34,
+   "fps": "2997/50"
+  },
+  "585": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.21-33-08.mp4",
+   "seconds": 118.89,
+   "fps": "2997/50"
+  },
+  "592": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.21-52-53.mp4",
+   "seconds": 71.0,
+   "fps": "2997/50"
+  },
+  "593": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.21-54-06.mp4",
+   "seconds": 110.44,
+   "fps": "2997/50"
+  },
+  "596": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.21-58-55.mp4",
+   "seconds": 51.37,
+   "fps": "2997/50"
+  },
+  "597": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.22-00-05.mp4",
+   "seconds": 183.13,
+   "fps": "2997/50"
+  },
+  "599": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.22-10-54.mp4",
+   "seconds": 69.48,
+   "fps": "2997/50"
+  },
+  "600": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.22-12-05.mp4",
+   "seconds": 31.85,
+   "fps": "2997/50"
+  },
+  "609": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.22-31-35.mp4",
+   "seconds": 80.34,
+   "fps": "2997/50"
+  },
+  "611": {
+   "key": "footage/spider-man2/Spider-Man.2.2026-07-19.22-34-33.mp4",
+   "seconds": 136.23,
+   "fps": "2997/50"
+  },
+  "1000": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-49-11).mp4",
+   "seconds": 13.29,
+   "fps": "2997/50"
+  },
+  "1001": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-21-27).mp4",
+   "seconds": 74.79,
+   "fps": "2997/50"
+  },
+  "1002": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-27-39).mp4",
+   "seconds": 623.55,
+   "fps": "2997/50"
+  },
+  "1003": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-38-48).mp4",
+   "seconds": 495.3,
+   "fps": "2997/50"
+  },
+  "1004": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-51-03).mp4",
+   "seconds": 1076.98,
+   "fps": "2997/50"
+  },
+  "1005": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 14-09-02).mp4",
+   "seconds": 230.14,
+   "fps": "2997/50"
+  },
+  "1006": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 15-01-52).mp4",
+   "seconds": 888.04,
+   "fps": "2997/50"
+  },
+  "1007": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 15-21-27).mp4",
+   "seconds": 1268.43,
+   "fps": "2997/50"
+  },
+  "1008": {
+   "key": "cutscenes/spider-man2/Spider-Man 2 (2026-11-14 15-46-02).mp4",
+   "seconds": 787.8,
+   "fps": "2997/50"
+  }
+ }
+}

@@ -7,9 +7,13 @@ an ordered list of beats the renderer plays one after another.
   narr beat: one narration paragraph (TTS text plus the shots that cover it and its graphics)
   game beat: one game-audio burst (narration paused, the clip plays with its own sound)
 
-Graphics specs come from data/analysis/<game>/gfx.json, keyed by the GFX cue id this tool prints
-(G01, G02, ...), so the prose cue in the script and the drawn graphic stay linked. Plain code,
-no AI, no network.
+Clip references come in two forms (2026-11-14, Spider-Man 2): a clip index from the footage map
+(`488@150-159.4`) or a B2 key (`cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-21-27).mp4 @
+18.5-20.75`). Seconds may be decimal. B2 keys are resolved to their index in
+data/analysis/<game>/clips.json (tools/analysis_clips.py gives key-only clips indices from 1000
+up). Graphics specs come from data/analysis/<game>/gfx.json, keyed by the GFX cue id this tool
+prints (G01, G02, ...), so the prose cue in the script and the drawn graphic stay linked. Plain
+code, no AI, no network.
 
     python tools/analysis_edl.py <script.md> wolverine
 """
@@ -22,8 +26,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-SEG = re.compile(r"(\d+)@(\d+)-(\d+)\s*(?:\(([^()]*)\))?")
-BURST = re.compile(r"GAME AUDIO (\d+),\s*(\d+)-(\d+)\s*s")
+NUM = r"\d+(?:\.\d+)?"
+KEY = r"(?:cutscenes|footage|art-footage|4k60fps|4k-hdr|4k-vertical)/[^@\[\]]+?\.(?:mp4|mkv|mov)"
+# One clip reference: a B2 key or a footage-map index, then "@ start-end".
+REF = re.compile(rf"(?P<key>{KEY})\s*@\s*(?P<a>{NUM})-(?P<b>{NUM})"
+                 rf"|(?<![\w./@-])(?P<idx>\d+)@(?P<ia>{NUM})-(?P<ib>{NUM})")
+BURST = re.compile(rf"GAME AUDIO (?:(?P<idx>\d+),\s*|(?P<key>{KEY})\s*@\s*)(?P<a>{NUM})-(?P<b>{NUM})\s*s")
 
 # Spoken forms for the TTS input only (captions and the EDL text keep the written form).
 TTS_SUBS = [
@@ -33,21 +41,38 @@ TTS_SUBS = [
     (r"\bKG's\b", "K G's"),
     (r"\bKG\b", "K G"),
 ]
+# Per-game spoken forms (the script's pronunciation notes), applied after TTS_SUBS. Kept per game so
+# regenerating an older game's EDL never changes its recorded narration.
+TTS_GAME = {
+    "spider-man2": [
+        (r"\bF\.E\.A\.S\.T\.", "FEAST"),
+        (r"\bDr\. ", "Doctor "),
+        (r"\bLi\b", "Lee"),            # Martin Li: LEE
+        (r"\bEmily-May\b", "Emily May"),
+        (r"\bG-Serum\b", "G serum"),
+    ],
+}
 
 
-def tts_text(text: str) -> str:
-    for pat, rep in TTS_SUBS:
+def tts_text(text: str, game: str = "") -> str:
+    for pat, rep in TTS_SUBS + TTS_GAME.get(game, []):
         text = re.sub(pat, rep, text)
     return text
 
 
-def shot_flags(note: str) -> dict:
+def shot_flags(note: str, game_beat: bool = False) -> dict:
     n = (note or "").lower()
     f = {}
     if "crop the subtitle" in n or "crop subtitle" in n:
         f["crop"] = "sub"
     if "crop hud" in n or "crop the hud" in n or "health bars" in n:
         f["crop"] = "hud"
+    if '"crop": "none"' in n:
+        f["crop"] = "none"  # the narration points at on-screen text: show the whole frame
+    elif game_beat and "crop" not in f and re.search(r"crop (?:the )?sides|crop top 10%", n):
+        f["crop"] = "band"  # bursts keep the subtitle band, lose the HUD at the top and sides
+    elif not game_beat and "crop" not in f and "hud" in n and re.search(r"\bcrop (?:it|hud)\b", n):
+        f["crop"] = "hud"  # "free-roam HUD, crop it", "crop HUD and minimap"
     if "push in" in n:
         f["push"] = True
     if "desaturated" in n:
@@ -57,14 +82,80 @@ def shot_flags(note: str) -> dict:
     return f
 
 
-def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> dict:
-    body = script.split("## Script", 1)[1].split("## Claims ledger", 1)[0]
+def refs(text: str) -> list[tuple[dict, str]]:
+    """Every clip reference in a cue line, each with its note (balanced brackets, so notes may hold
+    their own parentheses, and B2 keys may too)."""
+    out, i = [], 0
+    while True:
+        m = REF.search(text, i)
+        if not m:
+            return out
+        j, note = m.end(), ""
+        k = j
+        while k < len(text) and text[k] == " ":
+            k += 1
+        if k < len(text) and text[k] == "(":
+            depth, s = 0, k
+            while k < len(text):
+                depth += {"(": 1, ")": -1}.get(text[k], 0)
+                if depth == 0:
+                    break
+                k += 1
+            note, j = text[s + 1:k], k + 1
+        if m.group("key"):
+            r = {"key": m.group("key").strip(), "in": float(m.group("a")), "out": float(m.group("b"))}
+        else:
+            r = {"clip": int(m.group("idx")), "in": float(m.group("ia")), "out": float(m.group("ib"))}
+        out.append((r, note))
+        i = j
+
+
+def script_body(script: str) -> str:
+    """The cue sheet: from "## Script" to the next level-2 heading (Humor beats, Claims ledger...)."""
+    return re.split(r"\n## ", script.split("## Script", 1)[1], maxsplit=1)[0]
+
+
+def script_refs(script: str) -> tuple[set[int], set[str]]:
+    """Clip indices and B2 keys the script's cues use (for tools/analysis_clips.py)."""
+    idx, keys = set(), set()
+    for raw in script_body(script).splitlines():
+        line = raw.strip()
+        if line.startswith("[CLIPS"):
+            for r, _ in refs(line):
+                (keys.add(r["key"]) if "key" in r else idx.add(r["clip"]))
+        elif line.startswith("[GAME AUDIO"):
+            m = BURST.search(line)
+            if m:
+                (keys.add(m.group("key").strip()) if m.group("key") else idx.add(int(m.group("idx"))))
+    return idx, keys
+
+
+def opening_chapter(script: str, default: str = "Rescue or erasure?") -> str:
+    """The 0:00 chapter title from the script's YouTube chapters block (Wolverine kept its own)."""
+    m = re.search(r"### YouTube chapters.*?```\s*\n0:00 ([^\n]+)", script, re.S)
+    return m.group(1).strip() if m else default
+
+
+def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game: str = "",
+          key_index: dict[str, int] | None = None) -> dict:
+    body = script_body(script)
+    key_index = key_index or {}
     beats: list[dict] = []
-    chapters: list[dict] = []
     gfx_cues: list[dict] = []
     shots: list[dict] = []
     gfx: list[str] = []
+    problems: list[str] = []
     pending_chapter = None
+    opening = opening_chapter(script)
+
+    def clip_of(r: dict) -> int:
+        if "key" not in r:
+            return r["clip"]
+        if r["key"] not in key_index:
+            problems.append(f"B2 key not in clips.json: {r['key']}")
+            return -1
+        return key_index[r["key"]]
+
     for raw in body.splitlines():
         line = raw.strip()
         if not line or line.startswith("Cue key."):
@@ -76,14 +167,15 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
             if title.lower().startswith("chapter"):
                 pending_chapter = title.split(":", 1)[1].strip()
             elif m and m.group(1) == "0:00":
-                pending_chapter = "Rescue or erasure?"
+                pending_chapter = opening
             continue
         if line.startswith("[CLIPS"):
-            split = "split screen" in line.lower()
+            low = line.lower()
+            split = "split screen" in low or low.startswith("[clips split:")
             segs = []
-            for idx, a, b, note in SEG.findall(line):
-                s = {"clip": int(idx), "in": float(a), "out": float(b), **shot_flags(note)}
-                if int(idx) in hud_clips and "crop" not in s:
+            for r, note in refs(line):
+                s = {"clip": clip_of(r), "in": r["in"], "out": r["out"], **shot_flags(note)}
+                if s["clip"] in hud_clips and "crop" not in s:
                     s["crop"] = "hud"  # editor notes: these clips carry HUD or boss bars
                 segs.append(s)
             if split and len(segs) == 2:
@@ -100,8 +192,12 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
             m = BURST.search(line)
             if not m:
                 raise SystemExit(f"bad burst cue: {line}")
-            beat = {"type": "game", "clip": int(m.group(1)), "in": float(m.group(2)),
-                    "out": float(m.group(3)), "cue": line[1:-1], **shot_flags(line)}
+            if m.group("key"):
+                clip = clip_of({"key": m.group("key").strip()})
+            else:
+                clip = int(m.group("idx"))
+            beat = {"type": "game", "clip": clip, "in": float(m.group("a")),
+                    "out": float(m.group("b")), "cue": line[1:-1], **shot_flags(line, game_beat=True)}
             if gfx:
                 beat["gfx"], gfx = gfx, []
             if pending_chapter:
@@ -111,14 +207,13 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
         if line.startswith("["):
             continue  # [ANALYSIS n: ...] notes for the editor, not rendered
         # Plain paragraph: narration.
-        beat = {"type": "narr", "text": line, "tts": tts_text(line), "shots": shots, "gfx": gfx}
+        beat = {"type": "narr", "text": line, "tts": tts_text(line, game), "shots": shots, "gfx": gfx}
         shots, gfx = [], []
         if pending_chapter:
             beat["chapter"], pending_chapter = pending_chapter, None
         beats.append(beat)
     for i, b in enumerate(beats):
         b["id"] = f"b{i:03d}"
-    problems = []
     for b in beats:
         used = [s["clip"] for s in b.get("shots", []) if "clip" in s]
         used += [x["clip"] for s in b.get("shots", []) for x in s.get("split", [])]
@@ -131,6 +226,8 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset()) -> d
             problems.append(f"{b['id']} has no shots (renderer carries the previous ones on)")
         if b["type"] == "game" and b["out"] - b["in"] > 15:
             problems.append(f"{b['id']} burst over 15 s")
+        if b["type"] == "narr" and re.search(r"\bKG\b|Kiwinoy", b["text"]):
+            problems.append(f"{b['id']} names KG in the narration (the narrator is KG: first person)")
     return {"beats": beats, "gfx_cues": gfx_cues, "problems": problems}
 
 
@@ -142,21 +239,33 @@ NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
             "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_multilingual_v2",
             "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95}
 
+# From each script's editor notes: music-risk or banned clips, and clips with HUD or boss bars.
+GAME_NOTES = {
+    "wolverine": {"banned": {88, 89, 90, 111, 112, 128}, "hud": {20, 21, 24, 26, 27, 166, 167}},
+    # Spider-Man 2 script v1.2 "Notes for the editor": HUD and boss bars (old 619-clip index).
+    "spider-man2": {"banned": set(), "hud": {478, 483, 517, 520, 529, 532, 533, 534, 552, 611, 300, 526}},
+}
+
 
 def main() -> int:
     script_path, game = Path(sys.argv[1]), sys.argv[2]
     d = ROOT / "data" / "analysis" / game
-    # From the script's editor notes (Wolverine): music-risk clips, and clips with HUD or boss bars.
-    banned = {88, 89, 90, 111, 112, 128}
-    hud = {20, 21, 24, 26, 27, 166, 167}
-    res = parse(script_path.read_text(encoding="utf-8"), banned, hud)
+    notes = GAME_NOTES.get(game, {"banned": set(), "hud": set()})
+    key_index = {}
+    if (d / "clips.json").exists():
+        cm = json.loads((d / "clips.json").read_text(encoding="utf-8"))["clips"]
+        for k, v in sorted(cm.items(), key=lambda kv: -int(kv[0])):  # lowest index wins
+            key_index[v["key"]] = int(k)
+    script = script_path.read_text(encoding="utf-8")
+    res = parse(script, notes["banned"], notes["hud"], game, key_index)
     edl = {"game": game, "narrator": NARRATOR, "under_narration_db": -24,
            "source": script_path.name, "beats": res["beats"], "gfx_cues": res["gfx_cues"]}
     (d / "edl.json").write_text(json.dumps(edl, indent=1, ensure_ascii=False), encoding="utf-8")
     narr = [b for b in res["beats"] if b["type"] == "narr"]
     words = sum(len(b["text"].split()) for b in narr)
     bursts = [b for b in res["beats"] if b["type"] == "game"]
-    print(f"{len(res['beats'])} beats: {len(narr)} narration ({words} words), {len(bursts)} bursts "
+    print(f"{len(res['beats'])} beats: {len(narr)} narration ({words} words, "
+          f"{sum(len(b['tts']) for b in narr)} TTS characters), {len(bursts)} bursts "
           f"({sum(b['out'] - b['in'] for b in bursts):.0f} s), {len(res['gfx_cues'])} GFX cues")
     for p in res["problems"]:
         print("CHECK:", p)

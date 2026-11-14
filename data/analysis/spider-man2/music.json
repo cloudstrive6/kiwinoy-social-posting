@@ -1,0 +1,34 @@
+{
+ "note": "Music bed for the Spider-Man 2 analysis (2026-11-14). Epic cinematic orchestra chosen per chapter by the agent (Bryce, 2026-11-12), from the three tracks already on private B2: Last Dawn is the main theme (cold open, the suit's best case, the re-hook, after the bell, Go be Peter Parker, the answer); Epic and Dramatic Trailer Music is the fight and pressure bed (Connors's warning chapter, the bell fight, Venom and Kraven); Red is the home and family theme (Peter's pressures and May's house, Miles and his family, Harry's prologue and his wish, the close at May's house). The bed drops out for 'This time, you have to save yourself!' (b053), the video's key line. Never the game's own soundtrack. Levels as Wolverine v6+: under_narration_db -23, under_game_db -30. Sections start at a beat; offset is seconds into the track; gain_db overrides the level.",
+ "tracks_note": "B2 keys in the private bucket (licensed tracks stay out of the public repo).",
+ "tracks": {
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "home": "music/analysis/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -23,
+ "under_game_db": -30,
+ "xfade": 2.5,
+ "sections": [
+  {"from": "b000", "track": "theme", "offset": 0, "gain_db": -22},
+  {"from": "b003", "track": "home", "offset": 0},
+  {"from": "b012", "track": "theme", "offset": 40},
+  {"from": "b020", "track": "tension", "offset": 0, "gain_db": -25},
+  {"from": "b030", "track": "home", "offset": 30},
+  {"from": "b039", "track": "theme", "offset": 78, "gain_db": -22},
+  {"from": "b042", "track": "tension", "offset": 45, "gain_db": -25},
+  {"from": "b053", "track": null},
+  {"from": "b054", "track": "theme", "offset": 120},
+  {"from": "b055", "track": "home", "offset": 60},
+  {"from": "b059", "track": "tension", "offset": 90, "gain_db": -25},
+  {"from": "b067", "track": "theme", "offset": 20},
+  {"from": "b069", "track": "home", "offset": 0},
+  {"from": "b070", "track": "theme", "offset": 30},
+  {"from": "b082", "track": "theme", "offset": 78, "gain_db": -22},
+  {"from": "b083", "track": "home", "offset": 90}
+ ]
+}

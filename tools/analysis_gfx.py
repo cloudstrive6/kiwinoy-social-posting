@@ -579,6 +579,15 @@ def _edge_sprite(e: dict, frac: float, col: tuple, dot: bool = True) -> M.Sprite
 
 
 def g_map(spec: dict, n: int, grab=None) -> M.Graphic:
+    """Relationship map. The layout comes from the game's gfx.json "map" key, which the renderer
+    copies into each map spec as "layout" (load_specs); without one it is the Wolverine map."""
+    lay = spec.get("layout")
+    if isinstance(lay, dict):
+        return _g_map_data(spec, n, lay)
+    return _g_map_wolverine(spec, n, grab)
+
+
+def _g_map_wolverine(spec: dict, n: int, grab=None) -> M.Graphic:
     stage = int(spec["stage"])
     els = _map_layout()
     steps_all = WOLVERINE_MAP["steps"]
@@ -729,6 +738,230 @@ def g_map(spec: dict, n: int, grab=None) -> M.Graphic:
     groups = [els["teamx"]["box"]] if "teamx" in visible else []
     return _g("map", n, c, draw, shapes=shapes, labels=labels, groups=groups, pads=pads,
               step_t=step_t)
+
+
+# A map described as data (gfx.json "map", 2026-11-14, Spider-Man 2). Each stage is a snapshot:
+#   "nodes": {id: [cx, top] | {"at": [cx, top], "from": [cx, top], "sub": s, "sub_from": s}}
+#   "edges": {id: {"from": node, "to": node, "label": s, "label_from": s, "tone": plain|name|threat,
+#             "arrow": bool, "dashed": bool, "pts": [[x, y], ...], "label_side": above|below|left|right}}
+#   "steps": [[id | "move:id", ...], ...]  ids not in any step are context and arrive first;
+#             "move:id" slides a node from "from" to "at" and swaps sub_from / label_from for the new text.
+#   "caption": text under the map (red), "lit": {step: [ids]} overrides which ids light up in a step.
+# Shared "nodes" give each node its label, optional sub and tone (name, threat, ghost).
+
+def _data_box(label: str, sub: str | None, cx: float, top: float) -> tuple:
+    pad = 28
+    w = max(M.adv(label, M.LABEL), M.adv(sub, M.MIN_LABEL, "label") if sub else 0) + 2 * pad
+    h = cap(M.LABEL) + 2 * pad + (14 + cap(M.MIN_LABEL, "label") if sub else 0)
+    return (cx - w / 2, top, cx + w / 2, top + h)
+
+
+def _data_edge_pts(e: dict, boxes: dict) -> list[tuple]:
+    if e.get("pts"):
+        return [tuple(p) for p in e["pts"]]
+    a, b = boxes[e["from"]], boxes[e["to"]]
+    acx, acy, bcx, bcy = (a[0] + a[2]) / 2, (a[1] + a[3]) / 2, (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+    if a[2] <= b[0] or b[2] <= a[0]:  # side by side: right edge to left edge at the shared middle
+        y = (max(a[1], b[1]) + min(a[3], b[3])) / 2 if min(a[3], b[3]) > max(a[1], b[1]) else acy
+        return [(a[2], y), (b[0], y)] if acx < bcx else [(a[0], y), (b[2], y)]
+    x = (max(a[0], b[0]) + min(a[2], b[2])) / 2
+    return [(x, a[3]), (x, b[1])] if acy < bcy else [(x, a[1]), (x, b[3])]
+
+
+def _data_label_at(pts: list[tuple], text: str, side: str | None) -> tuple:
+    """Baseline-left position of an edge label beside its longest segment."""
+    segs = list(zip(pts, pts[1:]))
+    (ax, ay), (bx, by) = max(segs, key=lambda s: math.hypot(s[1][0] - s[0][0], s[1][1] - s[0][1]))
+    bb = M.ink(text, M.MIN_LABEL, "label")
+    mx, my = (ax + bx) / 2, (ay + by) / 2
+    horiz = abs(bx - ax) >= abs(by - ay)
+    side = side or ("above" if horiz else "right")
+    if side == "above":
+        return (mx - (bb[2] - bb[0]) / 2 - bb[0], my - 16 - bb[3])
+    if side == "below":
+        return (mx - (bb[2] - bb[0]) / 2 - bb[0], my + 16 - bb[1])
+    if side == "left":
+        return (mx - 22 - bb[2], my + (bb[3] - bb[1]) / 2 - bb[3])
+    return (mx + 22 - bb[0], my + (bb[3] - bb[1]) / 2 - bb[3])
+
+
+def _g_map_data(spec: dict, n: int, lay: dict) -> M.Graphic:
+    stage = str(spec["stage"])
+    st = lay["stages"][stage]
+    defs = lay.get("nodes", {})
+    nodes: dict = {}
+    for i, v in st.get("nodes", {}).items():
+        v = {"at": v} if isinstance(v, list) else dict(v)
+        d = defs.get(i, {})
+        lab, tone = d.get("label", i.upper()), v.get("tone", d.get("tone", "name"))
+        sub = v.get("sub", d.get("sub"))
+        box = _data_box(lab, sub, *v["at"])
+        e = {"type": "node", "label": lab, "sub": sub, "tone": tone, "box": box}
+        if "sub_from" in v:
+            e["old"] = {"type": "node", "label": lab, "sub": v["sub_from"], "tone": tone,
+                        "box": _data_box(lab, v["sub_from"], *v["at"])}
+        if "from" in v:
+            fb = _data_box(lab, v.get("sub_from", sub), *v["from"])
+            e["shift"] = (fb[0] - box[0] + (fb[2] - fb[0] - (box[2] - box[0])) / 2, fb[1] - box[1])
+        nodes[i] = e
+    boxes = {i: e["box"] for i, e in nodes.items()}
+    edges: dict = {}
+    for i, v in st.get("edges", {}).items():
+        pts = _data_edge_pts(v, boxes)
+        tone = v.get("tone", "plain")
+        e = {"type": "edge", "pts": pts, "label": v.get("label"), "arrow": bool(v.get("arrow")),
+             "dashed": bool(v.get("dashed")), "tone": tone}
+        if e["label"]:
+            e["label_at"] = _data_label_at(pts, e["label"], v.get("label_side"))
+        if v.get("label_from"):
+            e["label_from"] = v["label_from"]
+            e["label_from_at"] = _data_label_at(pts, v["label_from"], v.get("label_side"))
+        edges[i] = e
+    els = {**nodes, **edges}
+    steps = [[str(x) for x in step] for step in st["steps"]]
+    stepped = {x.split(":", 1)[-1] for step in steps for x in step if not x.startswith("move:")}
+    context = [x for x in els if x not in stepped]
+    show: dict = {}
+    t = 0
+    for x in context:  # context first, quickly, as in the Wolverine map
+        show[x] = t
+        t += 6 if els[x]["type"] == "edge" else 2
+    base_end = t + 18 if context else 0
+    c = Clock(n, max(30, base_end))
+    t1 = base_end + 12 if context else 0
+    gap_steps = M.clamp(((c.x0 - 90 - 60) - t1) / max(1, len(steps) - 1), 90, 360)
+    step_t = [int(t1 + k * gap_steps) for k in range(len(steps))]
+    moves: dict = {}
+    lit_win: dict = {}
+    lit_over = {int(k): v for k, v in lay.get("lit", {}).get(stage, {}).items()} if lay.get("lit") else {}
+    for k, step in enumerate(steps):
+        t = step_t[k]
+        for x in step:
+            if x.startswith("move:"):
+                moves[x[5:]] = t
+                continue
+            show[x] = t
+            t += 24 if els[x]["type"] == "edge" else 8
+        end = step_t[k + 1] if k + 1 < len(steps) else 10 ** 9
+        for x in lit_over.get(k, [s.split(":", 1)[-1] for s in step]):
+            lit_win[x] = (step_t[k], end)
+    panel = M.side_panel(int(lay.get("panel", 1000)))
+
+    def act(x: str, i: int) -> float:
+        if x not in lit_win:
+            return 0.0
+        a0, a1 = lit_win[x]
+        return M.ease_in_out_cubic(seg(i, a0, 18)) * (1 - M.ease_in_out_cubic(seg(i, a1, 20)))
+
+    def mv(x: str, i: int) -> float:  # 0 before the move, 1 after
+        return M.ease_in_out_cubic(seg(i, moves[x], 24)) if x in moves else 1.0
+
+    faces = {x: (_node_face(e, "ctx"), _node_face(e, "act"), M.plate(*e["box"], r=10)) for x, e in nodes.items()}
+    old_faces = {x: (_node_face(e["old"], "ctx"), _node_face(e["old"], "act"), M.plate(*e["old"]["box"], r=10))
+                 for x, e in nodes.items() if "old" in e}
+
+    def edge_cols(e: dict) -> tuple:
+        if e["tone"] == "threat":
+            return M.RED, M.RED
+        return M.GREY, (M.ORANGE if e["tone"] == "name" else M.OFF)
+
+    def edge_spr(e: dict, f: float, col: tuple, a: float = 1.0) -> M.Sprite:
+        spr = _edge_sprite(e, f, col)
+        if a < 1:
+            spr.img.putalpha(spr.img.getchannel("A").point(lambda v: int(v * a)))
+        return spr
+
+    edge_full = {x: (edge_spr(e, 1, edge_cols(e)[0], 0.55 if e["tone"] == "threat" else 1.0),
+                     edge_spr(e, 1, edge_cols(e)[1])) for x, e in edges.items()}
+    edge_lab = {x: (M.text(e["label"], M.MIN_LABEL, "label", M.GREY), M.text(e["label"], M.MIN_LABEL, "label", M.OFF))
+                for x, e in edges.items() if e["label"]}
+    edge_lab_old = {x: (M.text(e["label_from"], M.MIN_LABEL, "label", M.GREY),
+                        M.text(e["label_from"], M.MIN_LABEL, "label", M.OFF))
+                    for x, e in edges.items() if e.get("label_from")}
+    capt = st.get("caption")
+    capt_s = M.text(capt, M.LABEL, "heavy", M.RED) if capt else None
+    pl = int(lay.get("panel", 1000))
+    capt_at = (pl + 180 + (W - M.SAFE - pl - 180) / 2, float(st.get("caption_y", 1000))) if capt else None
+    capt_t = (step_t[0] + 12) if capt else 0
+
+    def draw(i):
+        o = c.out(i)
+        ox = o * 80
+        fade = 1 - o
+        p = tin(i, 0, 24)
+        out = put(panel, 0, 0, dx=(1 - p) * 120 + ox, a=min(1, p * 2) * fade)
+        for x in [x for x in show if els[x]["type"] == "edge"] + [x for x in show if els[x]["type"] == "node"]:
+            t0 = show[x]
+            if i < t0:
+                continue
+            e, w = els[x], act(x, i)
+            if e["type"] == "node":
+                q = tin(i, t0, 18)
+                sc = 0.92 + 0.08 * q
+                ghost = e["tone"] == "ghost"  # someone gone: always grey, never lit
+                a = min(1, q * 2) * fade * (0.5 if ghost else 1.0)
+                w = 0.0 if ghost else w
+                m = mv(x, i)
+                sx, sy = e.get("shift", (0.0, 0.0))
+                dx, dy = ox + sx * (1 - m), sy * (1 - m)
+                layers = [(faces[x], m if x in old_faces else 1.0)]
+                if x in old_faces:
+                    layers.append((old_faces[x], 1 - m))
+                for (ctx, on, fill), k in layers:
+                    if k <= 0.004:
+                        continue
+                    out += put(fill, 0, 0, a=a * k, s=sc, dx=dx, dy=dy)
+                    out += put(ctx, 0, 0, a=a * k * (1 - w), s=sc, dx=dx, dy=dy)
+                    out += put(on, 0, 0, a=a * k * w, s=sc, dx=dx, dy=dy)
+            else:
+                L = 12 if x in context else 24
+                f = M.ease_in_out_cubic(seg(i, t0, L))
+                ctx_col, on_col = edge_cols(e)
+                if f < 1:
+                    out += put(_edge_sprite(e, f, on_col), 0, 0, a=fade, dx=ox)
+                else:
+                    ctx, on = edge_full[x]
+                    out += put(ctx, 0, 0, a=fade * (1 - w), dx=ox) + put(on, 0, 0, a=fade * w, dx=ox)
+                q = tin(i, t0 + L, 14)
+                m = mv(x, i)
+                labs = [(edge_lab.get(x), e.get("label_at"), m if x in edge_lab_old else 1.0)]
+                if x in edge_lab_old:
+                    labs.append((edge_lab_old[x], e["label_from_at"], 1 - m))
+                for pair, at, k in labs:
+                    if not pair or k <= 0.004:
+                        continue
+                    lx, ly = at
+                    for j, sp in enumerate(pair):
+                        out += put(sp, lx, ly, a=min(1, q * 2) * fade * k * (w if j else 1 - w), dx=ox - (1 - q) * 12)
+        if capt_s is not None and i >= capt_t:
+            out += put(capt_s, _centre_x(capt_s, capt_at[0]), capt_at[1], a=fade, dx=ox,
+                       mask=("rise", tin(i, capt_t, 18)))
+        return out
+
+    # Layout facts for the checks (analysis_motion_check): boxes in every state, every label box.
+    shapes, labels, pads = [], [], []
+    for x, e in nodes.items():
+        for tag, ee in (("", e), (":old", e.get("old"))):
+            if not ee:
+                continue
+            if not tag:  # the old face shares the node's place, so only its padding is checked
+                shapes.append((x, ee["box"]))
+            iw = max(M.adv(ee["label"], M.LABEL), M.adv(ee["sub"], M.MIN_LABEL, "label") if ee["sub"] else 0)
+            pads.append((ee["box"][2] - ee["box"][0] - iw) / 2)
+        if "shift" in e:
+            b, (sx, sy) = e["box"], e["shift"]
+            shapes.append((x + ":from", (b[0] + sx, b[1] + sy, b[2] + sx, b[3] + sy)))
+    for x, e in edges.items():
+        for tag, key, at in (("", "label", "label_at"),):  # an old label crossfades in the same place
+            if e.get(key):
+                lx, ly = e[at]
+                bb = M.ink(e[key], M.MIN_LABEL, "label")
+                labels.append((x + tag, (lx + bb[0], ly + bb[1], lx + bb[2], ly + bb[3])))
+    if capt_s is not None:
+        bb = M.ink(capt, M.LABEL, "heavy")
+        w = bb[2] - bb[0]
+        labels.append(("caption", (capt_at[0] - w / 2, capt_at[1] + bb[1], capt_at[0] + w / 2, capt_at[1] + bb[3])))
+    return _g("map", n, c, draw, shapes=shapes, labels=labels, groups=[], pads=pads, step_t=step_t)
 
 
 # ---------------------------------------------------------------- memory ring and loop
@@ -1112,6 +1345,20 @@ BUILDERS = {"lower": g_lower, "chapter": g_chapter, "question": g_question, "cap
 
 _SRC = [Path(__file__), Path(M.__file__)] + sorted(set(M.FONT_FILES.values()))
 CODE_HASH = hashlib.sha1(b"".join(p.read_bytes() for p in _SRC)).hexdigest()[:10]
+
+
+def load_specs(path: Path) -> dict:
+    """A game's gfx.json with its map layout (the "map" key, when it is a dict) copied into every
+    map spec, so a spec carries everything that draws it (and the beat cache sees layout changes)."""
+    specs = json.loads(Path(path).read_text(encoding="utf-8"))
+    lay = specs.get("map")
+    if isinstance(lay, dict):
+        for v in specs.values():
+            if isinstance(v, list):
+                for s in v:
+                    if isinstance(s, dict) and s.get("kind") == "map":
+                        s.setdefault("layout", lay)
+    return specs
 
 
 def _t(spec: dict, key: str, frac_key: str, dur: float, default: float) -> float:

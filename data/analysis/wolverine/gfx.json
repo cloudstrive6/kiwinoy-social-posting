@@ -1,6 +1,9 @@
 {
  "note": "Graphics for the Wolverine analysis sample (script v2, approved 2026-11-12). Keys are the GFX cue ids from tools/analysis_edl.py. at/dur are seconds from the beat start (negative at counts back from the beat end); at_frac is a fraction of the beat. v1 draws every graphic as Pillow layers; the memory ring uses real frames.",
  "beat_tail": {"b058": 9.0},
+ "thumbnails": [{"clip": 33, "at": 60.0, "words": "HE FORGOT HER"},
+                {"clip": 32, "at": 44.0, "words": "HE CHOSE THIS", "crop": "sub", "bright": 0.82, "contrast": 1.25, "accent": "white"},
+                {"clip": 33, "at": 14.0, "words": "NOTHING LEFT"}],
  "G01": [{"kind": "lower", "text": "MARVEL'S WOLVERINE: THE ENDING", "at": 3.0}],
  "G02": [{"kind": "question", "words": ["RESCUE", "or", "ERASURE?"], "accent": 2, "at": 0.4, "dur": 5.5},
          {"kind": "caption", "text": "SPOILERS: FULL GAME AND POST-CREDITS", "pos": "top", "at_frac": 0.7}],

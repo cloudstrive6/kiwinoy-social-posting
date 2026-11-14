@@ -180,7 +180,12 @@ def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
 def vchain(label_in: str, p: dict, out_label: str) -> str:
     f = []
     crop = p.get("crop")
-    if crop == "sub":
+    if crop == "band":  # bursts: keep the subtitle band (to 92%), lose the top bars and the side HUD
+        crop = [0.08, 0.08, 0.92, 0.92]
+    if isinstance(crop, list):  # [x0, y0, x1, y1] as fractions of the frame (keep it 16:9)
+        x0, y0, x1, y1 = (float(v) for v in crop)
+        f.append(f"crop=iw*{x1 - x0:.4f}:ih*{y1 - y0:.4f}:iw*{x0:.4f}:ih*{y0:.4f}")
+    elif crop == "sub":
         f.append("crop=iw*0.78:ih*0.78:(iw-ow)/2:ih*0.012")  # game subtitles sit at 82-84% height
     elif crop == "hud":
         f.append("crop=iw*0.70:ih*0.70:(iw-ow)/2:ih*0.10")  # boss bars (to ~10%) plus subtitles (82%+)
@@ -263,7 +268,8 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
                 graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
                              f"atrim=duration={p['out']:.4f},loudnorm=I=-18:TP=-2:LRA=11,"
                              f"aformat=sample_rates=48000:channel_layouts=stereo,"
-                             f"afade=t=in:d=0.08,afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
+                             f"afade=t=in:d={float(b.get('fade_in', 0.08)):.3f},"
+                             f"afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
                              f"apad,atrim=duration={p['out']:.4f}[a{k}]")
             else:
                 graph.append(achain(f"{i}:a", p, f"a{k}", under_db))
@@ -498,6 +504,24 @@ def b2_env() -> dict:
     return env
 
 
+THUMB_CROPS = {"sub": [0.11, 0.01, 0.89, 0.79], "hud": [0.15, 0.10, 0.85, 0.80]}
+ACCENTS = {"orange": gfx.ORANGE, "red": gfx.RED, "white": gfx.WHITE}
+
+
+def thumbnails(gfx_specs: dict, clips: Clips, out: Path) -> None:
+    """Three thumbnails from the game's gfx.json "thumbnails" list (script packaging, 3 words or
+    fewer, raw game frame): {clip, at, words, crop (sub | hud | [x0, y0, x1, y1]), bright, contrast,
+    accent (orange | red | white)}. Wolverine's frames moved here from code on 2026-11-14."""
+    for i, t in enumerate(gfx_specs.get("thumbnails", []), 1):
+        im = clips.grab(int(t["clip"]), float(t["at"]))
+        crop = THUMB_CROPS.get(t.get("crop"), t.get("crop"))
+        if isinstance(crop, list):
+            w, h = im.size
+            im = im.crop((int(w * crop[0]), int(h * crop[1]), int(w * crop[2]), int(h * crop[3])))
+        gfx.thumbnail(im, t["words"], out / f"thumb-{i}.jpg", float(t.get("bright", 1.0)),
+                      float(t.get("contrast", 1.08)), ACCENTS[t.get("accent", "orange")])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("game", nargs="?", default="wolverine")
@@ -508,7 +532,7 @@ def main() -> int:
     game = a.game
     d = ROOT / "data/analysis" / game
     edl = json.loads((d / "edl.json").read_text(encoding="utf-8"))
-    gfx_specs = json.loads((d / "gfx.json").read_text(encoding="utf-8"))
+    gfx_specs = gfx.load_specs(d / "gfx.json")
     tails = gfx_specs.get("beat_tail", {})
     out = ROOT / "output/analysis" / game
     narr_dir = out / "narration"
@@ -523,10 +547,12 @@ def main() -> int:
     beats = edl["beats"]
     edits_path = d / "edits.json"  # post-review edit changes that are not in the script cues
     if edits_path.exists():
-        over = json.loads(edits_path.read_text(encoding="utf-8")).get("shots", {})
+        ed = json.loads(edits_path.read_text(encoding="utf-8"))
+        over, bover = ed.get("shots", {}), ed.get("beats", {})
         for b in beats:
             if b["id"] in over:
                 b["shots"] = over[b["id"]]
+            b.update(bover.get(b["id"], {}))  # e.g. a burst's crop box or fade_in, or moved graphics
     def beat_dur(b: dict) -> float:
         if b["type"] == "narr":
             return LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
@@ -592,6 +618,7 @@ def main() -> int:
         mixed = mix_music(joined, bed, work / "preview_mix.wav", pieces=pieces)
         run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-i", str(mixed), "-map", "0:v", "-map", "1:a",
              "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "preview.mp4")])
+        thumbnails(gfx_specs, clips, out)  # cheap, so test renders show them too
         return 0
 
     # Concat, then two-pass loudness to -14 LUFS.
@@ -621,17 +648,7 @@ def main() -> int:
     (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps(report, indent=1), flush=True)
 
-    # Thumbnails: script packaging, frames picked by eye after review v1 (3 words or fewer).
-    thumbs = [(33, 60.0, "HE FORGOT HER", None, 1.0, 1.08),
-              (32, 44.0, "HE CHOSE THIS", "sub", 0.82, 1.25),
-              (33, 14.0, "NOTHING LEFT", None, 1.0, 1.08)]
-    for i, (c, sec, words, crop, br, ct) in enumerate(thumbs, 1):
-        im = clips.grab(c, sec)
-        if crop == "sub":
-            w, h = im.size
-            im = im.crop((int(w * 0.11), int(h * 0.01), int(w * 0.89), int(h * 0.79)))
-        # orange accent vanishes on the orange Phoenix frame, so thumb 2 is all white
-        gfx.thumbnail(im, words, out / f"thumb-{i}.jpg", br, ct, gfx.WHITE if c == 32 else gfx.ORANGE)
+    thumbnails(gfx_specs, clips, out)
 
     if a.no_upload:
         return 0 if report["pass"] else 2

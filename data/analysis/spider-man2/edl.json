@@ -1,0 +1,1711 @@
+{
+ "game": "spider-man2",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Narrator A",
+  "voice_id": "Jn6g1Ws0FHFBiECPird2",
+  "model_id": "eleven_multilingual_v2",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.0,
+  "speed": 0.95
+ },
+ "under_narration_db": -24,
+ "source": "spider-man2-script-v1.2.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "You saw the symbiote take over Peter Parker. But Spider-Man 2 shows you why I think it never did, and what Miles tells him at the bell.",
+   "tts": "You saw the symbiote take over Peter Parker. But Spider-Man 2 shows you why I think it never did, and what Miles tells him at the bell.",
+   "shots": [
+    {
+     "clip": 488,
+     "in": 150.0,
+     "out": 159.4,
+     "push": true
+    }
+   ],
+   "gfx": [
+    "G01"
+   ],
+   "chapter": "Was it the suit, or was it Peter?",
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "Everyone who finished this game has an opinion on the black suit. Was that still Peter in there, or was the alien doing the talking? So, was it the suit, or was it Peter? I'm going to argue it was Peter. Fair warning: full spoilers for the whole game, including both credits scenes.",
+   "tts": "Everyone who finished this game has an opinion on the black suit. Was that still Peter in there, or was the alien doing the talking? So, was it the suit, or was it Peter? I'm going to argue it was Peter. Fair warning: full spoilers for the whole game, including both credits scenes.",
+   "shots": [
+    {
+     "clip": 300,
+     "in": 120.0,
+     "out": 132.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 280,
+     "in": 10.0,
+     "out": 14.0
+    },
+    {
+     "clip": 533,
+     "in": 46.0,
+     "out": 50.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G02"
+   ],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "It comes down to three moments: a warning Peter hangs up on, a bell in Kraven's mansion, and what Miles tells him when he hands over the city. By the end, I think you'll hear that line differently. Start with the Peter who existed before the suit.",
+   "tts": "It comes down to three moments: a warning Peter hangs up on, a bell in Kraven's mansion, and what Miles tells him when he hands over the city. By the end, I think you'll hear that line differently. Start with the Peter who existed before the suit.",
+   "shots": [
+    {
+     "clip": 526,
+     "in": 32.0,
+     "out": 38.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 535,
+     "in": 0.0,
+     "out": 4.0
+    },
+    {
+     "clip": 191,
+     "in": 60.0,
+     "out": 67.0
+    }
+   ],
+   "gfx": [
+    "G03"
+   ],
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "Spider-Man 2 is set about ten months after Miles Morales, and New York has two Spider-Men. Peter Parker has gone back to school as a physics teacher at Brooklyn Visions Academy, and one of the students there is Miles Morales. Then Sandman tears through the city, both Spider-Men go, and Peter leaves his class with clear instructions.",
+   "tts": "Spider-Man 2 is set about ten months after Miles Morales, and New York has two Spider-Men. Peter Parker has gone back to school as a physics teacher at Brooklyn Visions Academy, and one of the students there is Miles Morales. Then Sandman tears through the city, both Spider-Men go, and Peter leaves his class with clear instructions.",
+   "shots": [
+    {
+     "clip": 1,
+     "in": 9.0,
+     "out": 21.0
+    },
+    {
+     "clip": 281,
+     "in": 30.0,
+     "out": 36.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 8,
+     "in": 70.0,
+     "out": 75.0
+    }
+   ],
+   "gfx": [
+    "G04",
+    "G05"
+   ],
+   "chapter": "Two Spider-Men, one city",
+   "id": "b003"
+  },
+  {
+   "type": "game",
+   "clip": 1,
+   "in": 114.9,
+   "out": 118.3,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-22-37).mp4 @ 114.9-118.3 s: \"Peter: Okay, class. Uh, read chapter four. Or five. Or whatever--\" (HUMOR 1; subtitle on screen 113.4-118.0; the audible part in this range is \"Uh, read chapter four. Or five. Or whatever\" (\"Uh\" 114.96, \"whatever\" ends 118.06); the full line from 113.25 would be 5.05 s, over the 4 s cutaway limit, so it starts on the hesitation; clean cutscene, no HUD; picture is desks and Peter's legs, keep \"crop\": \"none\" so the subtitle carries the joke; cut on \"whatever\" before the 118.3 cut to the corridor)",
+   "crop": "none",
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "His class is left on its own, and he gets fired for it.",
+   "tts": "His class is left on its own, and he gets fired for it.",
+   "shots": [
+    {
+     "clip": 1,
+     "in": 126.0,
+     "out": 130.5,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "The principal's reason is short: his job was to protect those students, not abandon them. Look at the pressure Peter is under before any suit shows up. Aunt May is gone. He's living in her house in Queens, and she'd mortgaged it to keep F.E.A.S.T. going. Peter says it himself: he's sinking.",
+   "tts": "The principal's reason is short: his job was to protect those students, not abandon them. Look at the pressure Peter is under before any suit shows up. Aunt May is gone. He's living in her house in Queens, and she'd mortgaged it to keep FEAST going. Peter says it himself: he's sinking.",
+   "shots": [
+    {
+     "clip": 8,
+     "in": 86.0,
+     "out": 93.0
+    },
+    {
+     "clip": 10,
+     "in": 35.0,
+     "out": 43.0
+    },
+    {
+     "clip": 14,
+     "in": 0.0,
+     "out": 5.0
+    }
+   ],
+   "gfx": [],
+   "id": "b006"
+  },
+  {
+   "type": "narr",
+   "text": "He's lost his job. MJ could lose hers too, because Jonah has told the Bugle that whoever doesn't land a front-page story soon is out. And Peter is still swinging out every time the city calls. That's a lot of weight on one man, and none of it is alien.",
+   "tts": "He's lost his job. MJ could lose hers too, because Jonah has told the Bugle that whoever doesn't land a front-page story soon is out. And Peter is still swinging out every time the city calls. That's a lot of weight on one man, and none of it is alien.",
+   "shots": [
+    {
+     "clip": 10,
+     "in": 60.0,
+     "out": 68.0
+    },
+    {
+     "clip": 10,
+     "in": 92.0,
+     "out": 103.0
+    }
+   ],
+   "gfx": [],
+   "id": "b007"
+  },
+  {
+   "type": "narr",
+   "text": "The anger is there too. In the middle of the sandstorm fight, Peter tells Miles he isn't angry, just focused. Miles says that's what his mom says when she's angry. It's played as a joke. Hold on to it, because a lot of people will tell you the anger came from the suit.",
+   "tts": "The anger is there too. In the middle of the sandstorm fight, Peter tells Miles he isn't angry, just focused. Miles says that's what his mom says when she's angry. It's played as a joke. Hold on to it, because a lot of people will tell you the anger came from the suit.",
+   "shots": [
+    {
+     "clip": 5,
+     "in": 104.0,
+     "out": 117.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 280,
+     "in": 0.0,
+     "out": 7.0
+    }
+   ],
+   "gfx": [],
+   "id": "b008"
+  },
+  {
+   "type": "narr",
+   "text": "Then Harry Osborn comes home. He's been gone, secretly treated in isolation here in the city, for the same illness his mother had, and he says it's in remission. He brings Peter into his new Emily-May Foundation, named, I think, for Harry's mother Emily and for May. He tells Peter he got a second chance, and he's going to use it. Then he says the thing he'll keep saying for the rest of the game.",
+   "tts": "Then Harry Osborn comes home. He's been gone, secretly treated in isolation here in the city, for the same illness his mother had, and he says it's in remission. He brings Peter into his new Emily May Foundation, named, I think, for Harry's mother Emily and for May. He tells Peter he got a second chance, and he's going to use it. Then he says the thing he'll keep saying for the rest of the game.",
+   "shots": [
+    {
+     "clip": 17,
+     "in": 28.0,
+     "out": 38.0
+    },
+    {
+     "clip": 29,
+     "in": 0.0,
+     "out": 6.0,
+     "crop": "none"
+    },
+    {
+     "clip": 38,
+     "in": 300.0,
+     "out": 310.0
+    }
+   ],
+   "gfx": [
+    "G06"
+   ],
+   "id": "b009"
+  },
+  {
+   "type": "game",
+   "clip": 19,
+   "in": 844.6,
+   "out": 848.9,
+   "cue": "GAME AUDIO 19, 844.6-848.9 s: \"Pete, we're gonna heal the world.\" (subtitle confirmed, Harry)",
+   "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "Remember that line. Meanwhile, Kraven the Hunter arrives in New York with his Hunters, looking for prey worth his time. In his first scene, over a hunter he has just killed, he says he asked for an equal. His people break prisoners out of the Raft, and one of them is Martin Li, Mister Negative, the man behind the death of Miles's father. So both Spider-Men start this game stretched thin, and one of them already has someone he can't let go.",
+   "tts": "Remember that line. Meanwhile, Kraven the Hunter arrives in New York with his Hunters, looking for prey worth his time. In his first scene, over a hunter he has just killed, he says he asked for an equal. His people break prisoners out of the Raft, and one of them is Martin Lee, Mister Negative, the man behind the death of Miles's father. So both Spider-Men start this game stretched thin, and one of them already has someone he can't let go.",
+   "shots": [
+    {
+     "clip": 3,
+     "in": 60.0,
+     "out": 72.0
+    },
+    {
+     "clip": 313,
+     "in": 0.0,
+     "out": 8.0
+    },
+    {
+     "clip": 26,
+     "in": 42.0,
+     "out": 53.0
+    }
+   ],
+   "gfx": [
+    "G07",
+    "G08"
+   ],
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "Here's the best case for the suit, and it's a good one. At Coney Island, Peter tells MJ on the Ferris wheel that Harry's getting a second chance, and he feels like he's getting one too. That same night, Harry shows Peter what his treatment really is. Dr. Connors called it a self-learning exosuit, and it gives Harry powers. Harry's first idea is the one he always has: think of everything they could do to heal the world.",
+   "tts": "Here's the best case for the suit, and it's a good one. At Coney Island, Peter tells MJ on the Ferris wheel that Harry's getting a second chance, and he feels like he's getting one too. That same night, Harry shows Peter what his treatment really is. Doctor Connors called it a self-learning exosuit, and it gives Harry powers. Harry's first idea is the one he always has: think of everything they could do to heal the world.",
+   "shots": [
+    {
+     "clip": 368,
+     "in": 90.0,
+     "out": 102.0
+    },
+    {
+     "clip": 80,
+     "in": 249.0,
+     "out": 260.0
+    },
+    {
+     "clip": 373,
+     "in": 60.0,
+     "out": 66.0
+    }
+   ],
+   "gfx": [
+    "G09"
+   ],
+   "chapter": "The suit that saved his life",
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "There's a warning sign even before that. When Connors checks on him, the side effects on his list include anxiety and impulsive thoughts, and Harry says he's never been better. Connors says that's what worries him.",
+   "tts": "There's a warning sign even before that. When Connors checks on him, the side effects on his list include anxiety and impulsive thoughts, and Harry says he's never been better. Connors says that's what worries him.",
+   "shots": [
+    {
+     "clip": 31,
+     "in": 30.0,
+     "out": 38.0
+    },
+    {
+     "clip": 31,
+     "in": 42.0,
+     "out": 48.0
+    }
+   ],
+   "gfx": [
+    "G10"
+   ],
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "Then the abandoned zoo. Kraven forces Connors into the Lizard and leaves Peter badly wounded. Peter isn't even sure he's breathing. Harry goes for Kraven. Then the suit leaves Harry and moves onto Peter, and it keeps him alive.",
+   "tts": "Then the abandoned zoo. Kraven forces Connors into the Lizard and leaves Peter badly wounded. Peter isn't even sure he's breathing. Harry goes for Kraven. Then the suit leaves Harry and moves onto Peter, and it keeps him alive.",
+   "shots": [
+    {
+     "clip": 128,
+     "in": 0.0,
+     "out": 5.0
+    },
+    {
+     "clip": 419,
+     "in": 0.0,
+     "out": 3.0
+    },
+    {
+     "clip": 133,
+     "in": 0.0,
+     "out": 7.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "narr",
+   "text": "Peter didn't choose any of this. Back at the lab, MJ works it out: the suit is what cured Harry, which means without it, he's sick again. So Peter's first idea is to give it back to Harry. They try. It doesn't work.",
+   "tts": "Peter didn't choose any of this. Back at the lab, MJ works it out: the suit is what cured Harry, which means without it, he's sick again. So Peter's first idea is to give it back to Harry. They try. It doesn't work.",
+   "shots": [
+    {
+     "clip": 137,
+     "in": 15.0,
+     "out": 24.0
+    },
+    {
+     "clip": 137,
+     "in": 40.0,
+     "out": 47.0
+    }
+   ],
+   "gfx": [],
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "It's fun at first. In Kraven's club, the suit even turns itself into a tuxedo. And then Peter finds out what it feels like.",
+   "tts": "It's fun at first. In Kraven's club, the suit even turns itself into a tuxedo. And then Peter finds out what it feels like.",
+   "shots": [
+    {
+     "clip": 141,
+     "in": 28.0,
+     "out": 33.0
+    },
+    {
+     "clip": 141,
+     "in": 48.0,
+     "out": 52.0
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "game",
+   "clip": 155,
+   "in": 5.9,
+   "out": 9.0,
+   "cue": "GAME AUDIO 155, 5.9-9.0 s: \"Harry did NOT tell me it felt like this.\" (subtitle confirmed, Spider-Man, Peter; gameplay HUD icons left and right of the subtitle: crop the sides, keep the band)",
+   "crop": "band",
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "So the suit side has real evidence. Peter was dying when it bonded to him. He tried to give it back. It's alien, it lives on his body, and it makes everything louder: stronger, faster, angrier. Later, even the game's own scientist says it's taking hold of his mind. If you finished this game thinking the suit did it, you're not imagining things. The game wants you to feel that pull.",
+   "tts": "So the suit side has real evidence. Peter was dying when it bonded to him. He tried to give it back. It's alien, it lives on his body, and it makes everything louder: stronger, faster, angrier. Later, even the game's own scientist says it's taking hold of his mind. If you finished this game thinking the suit did it, you're not imagining things. The game wants you to feel that pull.",
+   "shots": [
+    {
+     "clip": 445,
+     "in": 5.0,
+     "out": 15.0
+    },
+    {
+     "clip": 464,
+     "in": 0.0,
+     "out": 10.0
+    },
+    {
+     "clip": 473,
+     "in": 0.0,
+     "out": 6.5
+    }
+   ],
+   "gfx": [],
+   "id": "b018"
+  },
+  {
+   "type": "narr",
+   "text": "But even here there's a choice in it. After a run-in with Kraven, Peter calls Harry and MJ with the serum, and tells them it went really well. Then, asked how it really went, he admits Kraven has found a weakness: the suit malfunctions near certain frequencies. And he says he didn't want to worry Harry. Peter is already keeping the suit's secrets for it.",
+   "tts": "But even here there's a choice in it. After a run-in with Kraven, Peter calls Harry and MJ with the serum, and tells them it went really well. Then, asked how it really went, he admits Kraven has found a weakness: the suit malfunctions near certain frequencies. And he says he didn't want to worry Harry. Peter is already keeping the suit's secrets for it.",
+   "shots": [
+    {
+     "clip": 159,
+     "in": 0.0,
+     "out": 9.0
+    },
+    {
+     "clip": 159,
+     "in": 24.0,
+     "out": 32.0
+    },
+    {
+     "clip": 162,
+     "in": 6.0,
+     "out": 10.0
+    }
+   ],
+   "gfx": [
+    "G11"
+   ],
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "Peter beats the Lizard in the black suit, and Connors comes back to himself. Now Peter is standing in front of the one person who can tell him exactly what he's wearing.",
+   "tts": "Peter beats the Lizard in the black suit, and Connors comes back to himself. Now Peter is standing in front of the one person who can tell him exactly what he's wearing.",
+   "shots": [
+    {
+     "clip": 477,
+     "in": 0.0,
+     "out": 6.0
+    },
+    {
+     "clip": 483,
+     "in": 10.0,
+     "out": 16.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G12"
+   ],
+   "chapter": "It makes me a better Spider-Man",
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "Connors tells him it's from a fragment of a meteorite. They call it a symbiote, and it bonds with its host at the subcellular level. So from here on, Peter knows what it is. Connors wants it off him. Peter reminds him that Connors himself said it chose him. Then he finishes the sentence.",
+   "tts": "Connors tells him it's from a fragment of a meteorite. They call it a symbiote, and it bonds with its host at the subcellular level. So from here on, Peter knows what it is. Connors wants it off him. Peter reminds him that Connors himself said it chose him. Then he finishes the sentence.",
+   "shots": [
+    {
+     "clip": 488,
+     "in": 95.0,
+     "out": 108.0,
+     "crop": "none"
+    },
+    {
+     "clip": 488,
+     "in": 125.0,
+     "out": 132.0
+    }
+   ],
+   "gfx": [
+    "G13"
+   ],
+   "id": "b021"
+  },
+  {
+   "type": "game",
+   "clip": 488,
+   "in": 163.3,
+   "out": 165.7,
+   "cue": "GAME AUDIO 488, 163.3-165.7 s: \"...it makes me a better Spider-Man.\" (subtitle confirmed, Spider-Man, Peter)",
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "That isn't the suit talking through him in a fight. That's Peter, in a lab, calm, with the facts in front of him, making the case for keeping it. I think this is the first time the game answers our question. He knows what it is, and he says yes. Later, he gives MJ the full briefing.",
+   "tts": "That isn't the suit talking through him in a fight. That's Peter, in a lab, calm, with the facts in front of him, making the case for keeping it. I think this is the first time the game answers our question. He knows what it is, and he says yes. Later, he gives MJ the full briefing.",
+   "shots": [
+    {
+     "clip": 488,
+     "in": 135.0,
+     "out": 146.0
+    },
+    {
+     "clip": 476,
+     "in": 20.0,
+     "out": 28.0
+    },
+    {
+     "clip": 1001,
+     "in": 2.0,
+     "out": 5.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G14"
+   ],
+   "id": "b023"
+  },
+  {
+   "type": "game",
+   "clip": 1001,
+   "in": 18.5,
+   "out": 20.75,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-21-27).mp4 @ 18.5-20.75 s: \"Spider-Man: Oh and uh, it's an alien.\" (HUMOR 2; subtitle 19.0-21.0, Peter by context, the only Spider-Man on the call; audio \"Oh\" 18.30-19.10 to \"alien\" 20.70; in at 18.5, where the previous subtitle has faded, with a 40 ms audio fade-in on the tail of \"Oh\"; out at 20.75, before \"Which is pretty nuts, right?\"; free-roam swinging at night with minimap, compass and MJ phone portrait on the right: crop the right 20% and the top 10%, keep the band)",
+   "id": "b024"
+  },
+  {
+   "type": "narr",
+   "text": "From there it gets worse. He grows more aggressive with the people closest to him, Miles and MJ included. And Insomniac's own team has said they wanted players to feel Harry being rejected by Peter. The suit is changing how he treats everyone around him.",
+   "tts": "From there it gets worse. He grows more aggressive with the people closest to him, Miles and MJ included. And Insomniac's own team has said they wanted players to feel Harry being rejected by Peter. The suit is changing how he treats everyone around him.",
+   "shots": [
+    {
+     "clip": 505,
+     "in": 0.0,
+     "out": 6.0
+    },
+    {
+     "clip": 507,
+     "in": 20.0,
+     "out": 26.0
+    },
+    {
+     "clip": 508,
+     "in": 0.0,
+     "out": 5.0
+    }
+   ],
+   "gfx": [],
+   "id": "b025"
+  },
+  {
+   "type": "narr",
+   "text": "Then Connors calls him.",
+   "tts": "Then Connors calls him.",
+   "shots": [
+    {
+     "clip": 526,
+     "in": 38.0,
+     "out": 41.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b026"
+  },
+  {
+   "type": "game",
+   "clip": 526,
+   "in": 44.4,
+   "out": 58.0,
+   "cue": "GAME AUDIO 526, 44.4-58.0 s: \"Please.\" / \"Come back to the lab. We need to remove the symbiote.\" / \"The hold that it's already taking on your mind, it's only going to get worse.\" / \"I'm busy.\" / \"No one listens.\" (subtitle confirmed: Dr. Connors, then Spider-Man, Peter, at 54.5 and 57.0; free-roam HUD: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b027"
+  },
+  {
+   "type": "narr",
+   "text": "Think about that. The one man who can explain what's happening to him is begging him to come in, and Peter's complaint is that nobody listens to him. The suit didn't invent that feeling. A man who has lost his job and his aunt, and is carrying the city alone, already had it. The suit just turned it up.",
+   "tts": "Think about that. The one man who can explain what's happening to him is begging him to come in, and Peter's complaint is that nobody listens to him. The suit didn't invent that feeling. A man who has lost his job and his aunt, and is carrying the city alone, already had it. The suit just turned it up.",
+   "shots": [
+    {
+     "clip": 526,
+     "in": 58.0,
+     "out": 61.5,
+     "crop": "hud"
+    },
+    {
+     "clip": 492,
+     "in": 0.0,
+     "out": 12.0
+    },
+    {
+     "clip": 153,
+     "in": 0.0,
+     "out": 6.5
+    }
+   ],
+   "gfx": [
+    "G15"
+   ],
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "There's one more thing Peter already knows. In Kraven's club, he found drugs for late-stage chemotherapy. Kraven is dying, and he wants one last hunt worth dying in. He's about to get two Spider-Men.",
+   "tts": "There's one more thing Peter already knows. In Kraven's club, he found drugs for late-stage chemotherapy. Kraven is dying, and he wants one last hunt worth dying in. He's about to get two Spider-Men.",
+   "shots": [
+    {
+     "clip": 153,
+     "in": 12.0,
+     "out": 21.0
+    },
+    {
+     "clip": 431,
+     "in": 0.0,
+     "out": 4.0
+    }
+   ],
+   "gfx": [],
+   "id": "b029"
+  },
+  {
+   "type": "narr",
+   "text": "Now look at Miles. His anger has a name. Martin Li is the man behind his father's death, and Li is out of prison. When the Hunters broke him out, Peter promised Miles they'd put him back where he belongs. His mom tells him she has to let go of things that don't serve her. His uncle Aaron tells him sometimes you have to push the past away to make room for the future. Then Aaron gives him the short version.",
+   "tts": "Now look at Miles. His anger has a name. Martin Lee is the man behind his father's death, and Lee is out of prison. When the Hunters broke him out, Peter promised Miles they'd put him back where he belongs. His mom tells him she has to let go of things that don't serve her. His uncle Aaron tells him sometimes you have to push the past away to make room for the future. Then Aaron gives him the short version.",
+   "shots": [
+    {
+     "clip": 116,
+     "in": 55.0,
+     "out": 70.0
+    },
+    {
+     "clip": 25,
+     "in": 424.0,
+     "out": 432.0
+    },
+    {
+     "clip": 26,
+     "in": 60.0,
+     "out": 68.0
+    }
+   ],
+   "gfx": [
+    "G16"
+   ],
+   "chapter": "Same anger, no suit",
+   "id": "b030"
+  },
+  {
+   "type": "game",
+   "clip": 26,
+   "in": 116.9,
+   "out": 120.3,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-10-08 21-43-04).mp4 @ 116.9-120.3 s: \"Aaron Davis: that Li business...\" / \"Aaron Davis: don't be stupid.\" (HUMOR 3; subtitles 117.2-118.5 and 119.5-120.0; audio \"That Li business?\" 117.12-117.76, \"Don't be stupid.\" 119.22-120.10; clean cutscene, no HUD; picture: close-up of Aaron's face (116 to 119), then Miles's face reacting (120 on); Aaron's earlier \"And Miles--\" ends 116.5 and Miles's \"Yeah yeah...\" is at 123, both outside)",
+   "id": "b031"
+  },
+  {
+   "type": "narr",
+   "text": "Miles can't let it go.",
+   "tts": "Miles can't let it go.",
+   "shots": [],
+   "gfx": [],
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "Kraven gives him the chance. Miles ends up trapped in an old mansion east of the city, with Li in front of him. Same place Peter is about to go, same kind of rage. Miles fights Li through an overgrown garden arena and into Li's own negative world. And then, with Li beaten, Miles says this.",
+   "tts": "Kraven gives him the chance. Miles ends up trapped in an old mansion east of the city, with Lee in front of him. Same place Peter is about to go, same kind of rage. Miles fights Lee through an overgrown garden arena and into Lee's own negative world. And then, with Lee beaten, Miles says this.",
+   "shots": [
+    {
+     "clip": 512,
+     "in": 20.0,
+     "out": 30.0
+    },
+    {
+     "clip": 517,
+     "in": 10.0,
+     "out": 16.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 520,
+     "in": 20.0,
+     "out": 25.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G17"
+   ],
+   "id": "b033"
+  },
+  {
+   "type": "game",
+   "clip": 525,
+   "in": 16.0,
+   "out": 30.3,
+   "cue": "GAME AUDIO 525, 16.0-30.3 s: \"Losing my dad...\" / \"It's not what's holding me back.\" / \"I was the one doing that.\" / \"But not anymore.\" (subtitle confirmed, Spider-Man, Miles, the only one present)",
+   "id": "b034"
+  },
+  {
+   "type": "narr",
+   "text": "He spares him. Li walks out of there alive, in his orange Raft jumpsuit, and on Miles's word, he goes to find Peter.",
+   "tts": "He spares him. Lee walks out of there alive, in his orange Raft jumpsuit, and on Miles's word, he goes to find Peter.",
+   "shots": [
+    {
+     "clip": 525,
+     "in": 36.0,
+     "out": 42.0
+    },
+    {
+     "clip": 525,
+     "in": 48.0,
+     "out": 51.5
+    }
+   ],
+   "gfx": [],
+   "id": "b035"
+  },
+  {
+   "type": "game",
+   "clip": 526,
+   "in": 77.8,
+   "out": 83.4,
+   "cue": "GAME AUDIO 526, 77.8-83.4 s: \"Kraven has the other Spider-Man trapped in an old mansion east of the city.\" (subtitle confirmed, Martin Li)",
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "Li tells Peter that Miles saved him, that he owes Miles his life. Peter tells him he's done enough, and goes.",
+   "tts": "Lee tells Peter that Miles saved him, that he owes Miles his life. Peter tells him he's done enough, and goes.",
+   "shots": [
+    {
+     "clip": 526,
+     "in": 84.0,
+     "out": 90.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 526,
+     "in": 100.0,
+     "out": 102.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
+  },
+  {
+   "type": "narr",
+   "text": "Hold those two side by side. Miles had every reason to hurt Li. Nothing alien was in his head telling him he was right. He chose not to, and he said out loud that he was the one who'd been holding himself back. That's the game giving you a control test: same anger, no suit, a different choice.",
+   "tts": "Hold those two side by side. Miles had every reason to hurt Lee. Nothing alien was in his head telling him he was right. He chose not to, and he said out loud that he was the one who'd been holding himself back. That's the game giving you a control test: same anger, no suit, a different choice.",
+   "shots": [
+    {
+     "split": [
+      {
+       "clip": 525,
+       "in": 35.0,
+       "out": 57.0
+      },
+      {
+       "clip": 488,
+       "in": 135.0,
+       "out": 157.0
+      }
+     ]
+    }
+   ],
+   "gfx": [
+    "G18"
+   ],
+   "id": "b038"
+  },
+  {
+   "type": "narr",
+   "text": "So far: the anger was Peter's before the suit. Back in the sandstorm, he asked Miles when Miles had ever seen him angry. Miles found an answer.",
+   "tts": "So far: the anger was Peter's before the suit. Back in the sandstorm, he asked Miles when Miles had ever seen him angry. Miles found an answer.",
+   "shots": [
+    {
+     "clip": 280,
+     "in": 0.0,
+     "out": 7.0
+    },
+    {
+     "clip": 5,
+     "in": 106.0,
+     "out": 109.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b039"
+  },
+  {
+   "type": "game",
+   "clip": 5,
+   "in": 121.35,
+   "out": 125.85,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-10-07 00-47-53).mp4 @ 121.35-125.85 s: \"Spider-Man: I got it!\" / \"Spider-Man: That one time we were playing a board game at your place and you kept losing--\" (HUMOR 4, callback to chapter 1's \"Hold on to it\"; subtitles \"I got it!\" from about 121.4 (fading in) to 122.4 and the board-game line 122.3-125.5, both labelled Spider-Man, Miles by context: they answer Peter's \"Come on, you've known me for a long time, when have you ever seen me angry?\" at 114-117.5; \"It was a rhetorical question.\" is gone by 121.3; audio \"question\" ends 121.36, then \"I got it!\" about 121.36-122.12 (Whisper hears it as \"Got it!\" from any in-point between 121.25 and 121.4, so the \"I\" is soft), \"That\" 122.12 to \"losing\" 125.64; Peter's reply starts 126.1, outside; 4.5 s, over the 4 s cutaway limit by 0.5 s because the triumphant \"I got it!\" is part of the joke; sandstorm gameplay with gadget wheels at both sides of the band and minimap right: \"crop\": \"none\"; no blood)",
+   "crop": "none",
+   "id": "b040"
+  },
+  {
+   "type": "narr",
+   "text": "And Peter kept the suit after he knew what it was. Miles had the same anger, no suit, and chose differently. That's one Spider-Man in Kraven's mansion. Now the other one walks in, angry, in the suit. If the suit was in charge, this is where it shows. Watch what happens to Peter, and watch who gets him out.",
+   "tts": "And Peter kept the suit after he knew what it was. Miles had the same anger, no suit, and chose differently. That's one Spider-Man in Kraven's mansion. Now the other one walks in, angry, in the suit. If the suit was in charge, this is where it shows. Watch what happens to Peter, and watch who gets him out.",
+   "shots": [
+    {
+     "clip": 512,
+     "in": 60.0,
+     "out": 70.0
+    },
+    {
+     "clip": 529,
+     "in": 5.0,
+     "out": 15.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [
+    "G19"
+   ],
+   "id": "b041"
+  },
+  {
+   "type": "narr",
+   "text": "Peter goes through Kraven's men, then Kraven himself. Kraven taunts him for still holding back: kill or be killed. By the end, Peter has symbiote tendrils wrapped round Kraven's throat. Miles gets there and stops him.",
+   "tts": "Peter goes through Kraven's men, then Kraven himself. Kraven taunts him for still holding back: kill or be killed. By the end, Peter has symbiote tendrils wrapped round Kraven's throat. Miles gets there and stops him.",
+   "shots": [
+    {
+     "clip": 528,
+     "in": 0.0,
+     "out": 6.0
+    },
+    {
+     "clip": 529,
+     "in": 20.0,
+     "out": 25.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 531,
+     "in": 0.0,
+     "out": 3.0
+    }
+   ],
+   "gfx": [
+    "G20"
+   ],
+   "chapter": "This time, save yourself",
+   "id": "b042"
+  },
+  {
+   "type": "narr",
+   "text": "And then Peter turns on Miles. He shouts that Miles is in the way, that he could have fixed everything. Miles fights back, but he keeps talking to him.",
+   "tts": "And then Peter turns on Miles. He shouts that Miles is in the way, that he could have fixed everything. Miles fights back, but he keeps talking to him.",
+   "shots": [
+    {
+     "clip": 531,
+     "in": 20.0,
+     "out": 26.0
+    },
+    {
+     "clip": 532,
+     "in": 15.0,
+     "out": 21.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b043"
+  },
+  {
+   "type": "game",
+   "clip": 532,
+   "in": 45.6,
+   "out": 49.1,
+   "cue": "GAME AUDIO 532, 45.6-49.1 s: \"You're stronger than some suit, Pete! Don't listen to it!\" (subtitle confirmed; label reads Spider-Man, Miles by context; gameplay HUD: crop sides)",
+   "crop": "band",
+   "id": "b044"
+  },
+  {
+   "type": "narr",
+   "text": "That's the best line for the other side. Miles talks to the suit like it's a separate voice. But listen to Peter's answer. It's the same sentence he said in Connors's lab, when there was no fight going on at all.",
+   "tts": "That's the best line for the other side. Miles talks to the suit like it's a separate voice. But listen to Peter's answer. It's the same sentence he said in Connors's lab, when there was no fight going on at all.",
+   "shots": [
+    {
+     "clip": 532,
+     "in": 52.0,
+     "out": 60.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 532,
+     "in": 63.0,
+     "out": 70.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b045"
+  },
+  {
+   "type": "game",
+   "clip": 532,
+   "in": 72.0,
+   "out": 76.7,
+   "cue": "GAME AUDIO 532, 72.0-76.7 s: \"I need this suit!\" / \"It makes me a better Spider-Man!\" (subtitle confirmed, Spider-Man, Peter; out-point before \"You just want it for yourself!\"; gameplay HUD: crop sides)",
+   "crop": "band",
+   "id": "b046"
+  },
+  {
+   "type": "narr",
+   "text": "Miles tells him all he wants is to save him. Peter shouts back that he's the hero. Then he turns it on Miles.",
+   "tts": "Miles tells him all he wants is to save him. Peter shouts back that he's the hero. Then he turns it on Miles.",
+   "shots": [
+    {
+     "clip": 532,
+     "in": 78.0,
+     "out": 84.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 531,
+     "in": 36.0,
+     "out": 41.0
+    }
+   ],
+   "gfx": [],
+   "id": "b047"
+  },
+  {
+   "type": "game",
+   "clip": 533,
+   "in": 3.3,
+   "out": 5.8,
+   "cue": "GAME AUDIO 533, 3.3-5.8 s: \"I MADE you. You owe me!\" (subtitle confirmed, Peter by context; gameplay HUD: crop sides)",
+   "crop": "band",
+   "id": "b048"
+  },
+  {
+   "type": "narr",
+   "text": "And then the thing he's wanted since the start of the game.",
+   "tts": "And then the thing he's wanted since the start of the game.",
+   "shots": [
+    {
+     "clip": 532,
+     "in": 88.0,
+     "out": 92.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b049"
+  },
+  {
+   "type": "game",
+   "clip": 533,
+   "in": 8.4,
+   "out": 11.3,
+   "cue": "GAME AUDIO 533, 8.4-11.3 s: \"All I wanted was to save everyone!\" (subtitle confirmed, Spider-Man, Peter by context; gameplay HUD: crop sides)",
+   "crop": "band",
+   "id": "b050"
+  },
+  {
+   "type": "narr",
+   "text": "That isn't alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
+   "tts": "That isn't alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
+   "shots": [
+    {
+     "clip": 533,
+     "in": 14.0,
+     "out": 36.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 534,
+     "in": 15.0,
+     "out": 27.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 533,
+     "in": 46.0,
+     "out": 50.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b051"
+  },
+  {
+   "type": "narr",
+   "text": "The bell weakens it. It doesn't free him. Miles is the one ringing it, and the game even puts the objective on his screen: remove the symbiote from Peter. So Miles says the line I think answers this whole video.",
+   "tts": "The bell weakens it. It doesn't free him. Miles is the one ringing it, and the game even puts the objective on his screen: remove the symbiote from Peter. So Miles says the line I think answers this whole video.",
+   "shots": [
+    {
+     "clip": 533,
+     "in": 86.0,
+     "out": 93.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 533,
+     "in": 94.0,
+     "out": 100.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 533,
+     "in": 55.5,
+     "out": 57.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b052"
+  },
+  {
+   "type": "game",
+   "clip": 534,
+   "in": 50.3,
+   "out": 64.9,
+   "cue": "GAME AUDIO 534, 50.3-64.9 s: \"We've gotta be stronger than that!\" / \"This time, you have to save yourself!\" / \"I... can't...!\" / \"You will!\" / \"I'm not losing you, Pete!\" (subtitle confirmed; \"I... can't...!\" is Peter by context, the rest Miles; boss HUD: crop top 10% and sides)",
+   "crop": "band",
+   "id": "b053"
+  },
+  {
+   "type": "narr",
+   "text": "In the middle of that, Peter says he can't, and Miles tells him he will. This time, you have to save yourself. Not the bell, not Miles. Him. Miles rings the bell one more time, and then the game shows Peter's own hands tearing the symbiote off his body, with the button prompts on him. When it's over, Peter is on his knees in his own suit, and Miles is standing next to him. The suit made Peter worse. It didn't make him helpless, and the game hands the last move to him.",
+   "tts": "In the middle of that, Peter says he can't, and Miles tells him he will. This time, you have to save yourself. Not the bell, not Miles. Him. Miles rings the bell one more time, and then the game shows Peter's own hands tearing the symbiote off his body, with the button prompts on him. When it's over, Peter is on his knees in his own suit, and Miles is standing next to him. The suit made Peter worse. It didn't make him helpless, and the game hands the last move to him.",
+   "shots": [
+    {
+     "clip": 535,
+     "in": 0.0,
+     "out": 4.0
+    },
+    {
+     "clip": 535,
+     "in": 32.0,
+     "out": 56.0
+    },
+    {
+     "clip": 535,
+     "in": 59.0,
+     "out": 66.0
+    }
+   ],
+   "gfx": [
+    "G21"
+   ],
+   "id": "b054"
+  },
+  {
+   "type": "narr",
+   "text": "If the suit decides who you become, it should make the same monster out of anyone. So go back to the very first scene of the game. Two years earlier, Harry is about to go into a treatment tank, and his father Norman is beside him.",
+   "tts": "If the suit decides who you become, it should make the same monster out of anyone. So go back to the very first scene of the game. Two years earlier, Harry is about to go into a treatment tank, and his father Norman is beside him.",
+   "shots": [
+    {
+     "clip": 278,
+     "in": 15.0,
+     "out": 24.0
+    },
+    {
+     "clip": 0,
+     "in": 5.0,
+     "out": 12.0
+    }
+   ],
+   "gfx": [
+    "G22",
+    "G23"
+   ],
+   "chapter": "Same suit, different man",
+   "id": "b055"
+  },
+  {
+   "type": "game",
+   "clip": 0,
+   "in": 20.0,
+   "out": 33.2,
+   "cue": "GAME AUDIO 0, 20.0-33.2 s: \"Promise me something?\" / \"Anything.\" / \"If this doesn't work,\" / \"take me out.\" (subtitle confirmed, Harry and Norman Osborn)",
+   "id": "b056"
+  },
+  {
+   "type": "narr",
+   "text": "Harry wants a way out, and a chance to say goodbye. Norman tells him he's not going to lose him. Then he says this.",
+   "tts": "Harry wants a way out, and a chance to say goodbye. Norman tells him he's not going to lose him. Then he says this.",
+   "shots": [
+    {
+     "clip": 0,
+     "in": 40.0,
+     "out": 45.0
+    },
+    {
+     "clip": 278,
+     "in": 50.0,
+     "out": 54.0
+    }
+   ],
+   "gfx": [],
+   "id": "b057"
+  },
+  {
+   "type": "game",
+   "clip": 0,
+   "in": 58.4,
+   "out": 62.3,
+   "cue": "GAME AUDIO 0, 58.4-62.3 s: \"I will never let you go.\" (subtitle confirmed, Norman Osborn)",
+   "id": "b058"
+  },
+  {
+   "type": "narr",
+   "text": "Norman never does let him go. And after the bell, the same suit that was on Peter gets loose and bonds with Harry. Harry becomes Venom and tears through Oscorp.",
+   "tts": "Norman never does let him go. And after the bell, the same suit that was on Peter gets loose and bonds with Harry. Harry becomes Venom and tears through Oscorp.",
+   "shots": [
+    {
+     "clip": 542,
+     "in": 88.0,
+     "out": 93.0
+    },
+    {
+     "clip": 544,
+     "in": 10.0,
+     "out": 16.0
+    }
+   ],
+   "gfx": [
+    "G24"
+   ],
+   "id": "b059"
+  },
+  {
+   "type": "narr",
+   "text": "Then he goes after Kraven, in Times Square, in the rain. And Kraven is thrilled.",
+   "tts": "Then he goes after Kraven, in Times Square, in the rain. And Kraven is thrilled.",
+   "shots": [
+    {
+     "clip": 548,
+     "in": 0.0,
+     "out": 3.0
+    },
+    {
+     "clip": 550,
+     "in": 0.0,
+     "out": 3.0
+    }
+   ],
+   "gfx": [],
+   "id": "b060"
+  },
+  {
+   "type": "game",
+   "clip": 552,
+   "in": 15.3,
+   "out": 22.3,
+   "cue": "GAME AUDIO 552, 15.3-22.3 s: \"Yes! YES! You WILL be my final hunt! And I shall be your first.\" (subtitle confirmed, Kraven; the ability icons sit beside the subtitle at the same height, so crop the sides no further in than about 30% of width)",
+   "crop": "band",
+   "id": "b061"
+  },
+  {
+   "type": "narr",
+   "text": "Kraven asks Venom if he knows what it's like to have your body betray you, and says weakness will not claim him. Think about who he's asking. Harry spent the last two years in treatment because his body betrayed him too. Kraven came to New York for a hunt worth dying in, and he gets one: Venom kills him on a billboard over Times Square. Harry, the man who wanted to heal the world, is the one who does it.",
+   "tts": "Kraven asks Venom if he knows what it's like to have your body betray you, and says weakness will not claim him. Think about who he's asking. Harry spent the last two years in treatment because his body betrayed him too. Kraven came to New York for a hunt worth dying in, and he gets one: Venom kills him on a billboard over Times Square. Harry, the man who wanted to heal the world, is the one who does it.",
+   "shots": [
+    {
+     "clip": 552,
+     "in": 38.0,
+     "out": 50.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 553,
+     "in": 0.0,
+     "out": 14.0
+    },
+    {
+     "clip": 553,
+     "in": 67.0,
+     "out": 71.0
+    }
+   ],
+   "gfx": [],
+   "id": "b062"
+  },
+  {
+   "type": "narr",
+   "text": "Then the symbiote spreads across New York, tying people into one hive. Harry tells Peter this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "tts": "Then the symbiote spreads across New York, tying people into one hive. Harry tells Peter this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "shots": [
+    {
+     "clip": 600,
+     "in": 0.0,
+     "out": 6.0
+    },
+    {
+     "clip": 563,
+     "in": 10.0,
+     "out": 16.0
+    },
+    {
+     "clip": 581,
+     "in": 0.0,
+     "out": 5.0
+    }
+   ],
+   "gfx": [],
+   "id": "b063"
+  },
+  {
+   "type": "narr",
+   "text": "When Peter frees her, he tells her he thought he'd lost her. She says she thinks she's been lost for a while now.",
+   "tts": "When Peter frees her, he tells her he thought he'd lost her. She says she thinks she's been lost for a while now.",
+   "shots": [
+    {
+     "clip": 585,
+     "in": 95.0,
+     "out": 100.0
+    },
+    {
+     "clip": 585,
+     "in": 103.0,
+     "out": 107.0
+    }
+   ],
+   "gfx": [],
+   "id": "b064"
+  },
+  {
+   "type": "narr",
+   "text": "And at the planning table before the last fight, Peter says it out loud.",
+   "tts": "And at the planning table before the last fight, Peter says it out loud.",
+   "shots": [
+    {
+     "clip": 611,
+     "in": 40.0,
+     "out": 43.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 611,
+     "in": 46.0,
+     "out": 49.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b065"
+  },
+  {
+   "type": "game",
+   "clip": 611,
+   "in": 79.8,
+   "out": 83.3,
+   "cue": "GAME AUDIO 611, 79.8-83.3 s: \"Harry's still Harry.\" / \"He thinks he's healing the world.\" (subtitle confirmed, Peter)",
+   "id": "b066"
+  },
+  {
+   "type": "narr",
+   "text": "Three hosts, three different monsters, and each one is built out of what that person already wanted. Peter wanted to save everyone and be listened to. Harry wanted to heal the world, the same words he used when he came home. MJ wanted to be heard, at a paper where she could be fired for not landing the front page. The suit is the same every time. What it turns up is the person.",
+   "tts": "Three hosts, three different monsters, and each one is built out of what that person already wanted. Peter wanted to save everyone and be listened to. Harry wanted to heal the world, the same words he used when he came home. MJ wanted to be heard, at a paper where she could be fired for not landing the front page. The suit is the same every time. What it turns up is the person.",
+   "shots": [
+    {
+     "clip": 609,
+     "in": 0.0,
+     "out": 10.0
+    },
+    {
+     "clip": 560,
+     "in": 0.0,
+     "out": 12.0
+    },
+    {
+     "clip": 597,
+     "in": 30.0,
+     "out": 36.0
+    }
+   ],
+   "gfx": [
+    "G25"
+   ],
+   "id": "b067"
+  },
+  {
+   "type": "narr",
+   "text": "Now the hardest evidence against me. In Connors's lab, they're told host and symbiote are perfectly fused, and the only way to stop it is to kill the host. And in the final fight, when Peter tells Harry to fight it, Harry says he can't. He's done. Then Harry and Venom say it together: you have to kill us. Us. If anyone in this game was taken over, it's Harry.",
+   "tts": "Now the hardest evidence against me. In Connors's lab, they're told host and symbiote are perfectly fused, and the only way to stop it is to kill the host. And in the final fight, when Peter tells Harry to fight it, Harry says he can't. He's done. Then Harry and Venom say it together: you have to kill us. Us. If anyone in this game was taken over, it's Harry.",
+   "shots": [
+    {
+     "clip": 599,
+     "in": 7.0,
+     "out": 24.0
+    },
+    {
+     "clip": 184,
+     "in": 0.0,
+     "out": 7.0
+    }
+   ],
+   "gfx": [],
+   "id": "b068"
+  },
+  {
+   "type": "narr",
+   "text": "But listen to what Harry is saying. I can't. I'm done. Peter said \"I can't\" at the bell too, and Miles told him he would. Harry means something else. That's the wish he had in the very first scene, when he asked his father to take him out and give him a chance to say goodbye. I don't think the suit erased Harry. I think it found a dying man who'd been told he wasn't allowed to stop, and gave him the power to heal the world his way.",
+   "tts": "But listen to what Harry is saying. I can't. I'm done. Peter said \"I can't\" at the bell too, and Miles told him he would. Harry means something else. That's the wish he had in the very first scene, when he asked his father to take him out and give him a chance to say goodbye. I don't think the suit erased Harry. I think it found a dying man who'd been told he wasn't allowed to stop, and gave him the power to heal the world his way.",
+   "shots": [
+    {
+     "clip": 184,
+     "in": 14.0,
+     "out": 34.0
+    },
+    {
+     "clip": 278,
+     "in": 58.0,
+     "out": 71.5,
+     "gray": true
+    }
+   ],
+   "gfx": [],
+   "id": "b069"
+  },
+  {
+   "type": "narr",
+   "text": "The way out runs through Martin Li again. Li offers to use his power on the traces of symbiote still inside Peter, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
+   "tts": "The way out runs through Martin Lee again. Lee offers to use his power on the traces of symbiote still inside Peter, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
+   "shots": [
+    {
+     "clip": 592,
+     "in": 20.0,
+     "out": 28.0
+    },
+    {
+     "clip": 593,
+     "in": 20.0,
+     "out": 28.0
+    }
+   ],
+   "gfx": [
+    "G26"
+   ],
+   "chapter": "Go be Peter Parker",
+   "id": "b070"
+  },
+  {
+   "type": "game",
+   "clip": 593,
+   "in": 69.4,
+   "out": 73.0,
+   "cue": "GAME AUDIO 593, 69.4-73.0 s: \"But I can't carry this hate for you anymore, man.\" (subtitle confirmed, Miles)",
+   "id": "b071"
+  },
+  {
+   "type": "narr",
+   "text": "Miles lets go of the hate he carried the whole game, and Peter wakes up in a new suit, Anti-Venom: the same alien material, turned the other way. Before he goes, Peter thanks Li, and Li says he spent years of his life consumed with vengeance, and lost everything for it. The two of them reminded him that's not who he is. That's this whole game in one sentence.",
+   "tts": "Miles lets go of the hate he carried the whole game, and Peter wakes up in a new suit, Anti-Venom: the same alien material, turned the other way. Before he goes, Peter thanks Lee, and Lee says he spent years of his life consumed with vengeance, and lost everything for it. The two of them reminded him that's not who he is. That's this whole game in one sentence.",
+   "shots": [
+    {
+     "clip": 596,
+     "in": 32.0,
+     "out": 40.0
+    },
+    {
+     "clip": 597,
+     "in": 28.0,
+     "out": 46.0
+    }
+   ],
+   "gfx": [],
+   "id": "b072"
+  },
+  {
+   "type": "narr",
+   "text": "MJ uses the Foundation's particle accelerator to destroy the meteorite the symbiote came from, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
+   "tts": "MJ uses the Foundation's particle accelerator to destroy the meteorite the symbiote came from, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
+   "shots": [
+    {
+     "clip": 611,
+     "in": 90.0,
+     "out": 96.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 182,
+     "in": 0.0,
+     "out": 7.0
+    },
+    {
+     "clip": 183,
+     "in": 20.0,
+     "out": 26.5
+    }
+   ],
+   "gfx": [],
+   "id": "b073"
+  },
+  {
+   "type": "narr",
+   "text": "Harry's heart stops, and Miles restarts it with his electricity. Harry survives, in a coma. Norman arrives. At Harry's bedside he tells the doctors to keep him alive, and then he makes a phone call.",
+   "tts": "Harry's heart stops, and Miles restarts it with his electricity. Harry survives, in a coma. Norman arrives. At Harry's bedside he tells the doctors to keep him alive, and then he makes a phone call.",
+   "shots": [
+    {
+     "clip": 185,
+     "in": 20.0,
+     "out": 25.0
+    },
+    {
+     "clip": 187,
+     "in": 63.0,
+     "out": 67.0
+    },
+    {
+     "clip": 188,
+     "in": 30.0,
+     "out": 34.0
+    }
+   ],
+   "gfx": [],
+   "id": "b074"
+  },
+  {
+   "type": "game",
+   "clip": 189,
+   "in": 72.5,
+   "out": 79.0,
+   "cue": "GAME AUDIO 189, 72.5-79.0 s: \"Get the G-SERUM ready. ASAP.\" (subtitle confirmed, Norman Osborn)",
+   "id": "b075"
+  },
+  {
+   "type": "narr",
+   "text": "Norman still won't let Harry go, and fans read the G-Serum as a Green Goblin setup, though Insomniac hasn't confirmed that. After the credits start, Norman visits Otto Octavius at the Raft. He wants to know who the Spider-Men are, and he says they ruined his son. Otto answers him.",
+   "tts": "Norman still won't let Harry go, and fans read the G serum as a Green Goblin setup, though Insomniac hasn't confirmed that. After the credits start, Norman visits Otto Octavius at the Raft. He wants to know who the Spider-Men are, and he says they ruined his son. Otto answers him.",
+   "shots": [
+    {
+     "clip": 189,
+     "in": 80.0,
+     "out": 90.0
+    },
+    {
+     "clip": 192,
+     "in": 36.0,
+     "out": 45.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b076"
+  },
+  {
+   "type": "game",
+   "clip": 192,
+   "in": 59.8,
+   "out": 70.5,
+   "cue": "GAME AUDIO 192, 59.8-70.5 s: \"We all have to experience loss.\" / \"Even you, Norman.\" (subtitle confirmed, Otto Octavius)",
+   "id": "b077"
+  },
+  {
+   "type": "narr",
+   "text": "Norman is the other way to answer this video's question. He looks at what happened to Harry and puts it on someone else: the Spider-Men. That's the same move as blaming the suit. The game gives that move to the man who's about to make things worse, and it gives the opposite move to Peter.",
+   "tts": "Norman is the other way to answer this video's question. He looks at what happened to Harry and puts it on someone else: the Spider-Men. That's the same move as blaming the suit. The game gives that move to the man who's about to make things worse, and it gives the opposite move to Peter.",
+   "shots": [
+    {
+     "clip": 192,
+     "in": 72.0,
+     "out": 84.0
+    },
+    {
+     "clip": 189,
+     "in": 60.0,
+     "out": 69.0
+    }
+   ],
+   "gfx": [],
+   "id": "b078"
+  },
+  {
+   "type": "narr",
+   "text": "Back in the city, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
+   "tts": "Back in the city, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
+   "shots": [
+    {
+     "clip": 190,
+     "in": 0.0,
+     "out": 8.0
+    },
+    {
+     "clip": 191,
+     "in": 40.0,
+     "out": 48.5
+    }
+   ],
+   "gfx": [],
+   "id": "b079"
+  },
+  {
+   "type": "game",
+   "clip": 191,
+   "in": 93.6,
+   "out": 104.8,
+   "cue": "GAME AUDIO 191, 93.6-104.8 s: \"I got this.\" / \"All of it.\" / \"Go be Peter Parker for a while.\" (subtitle confirmed, all \"Miles:\")",
+   "id": "b080"
+  },
+  {
+   "type": "narr",
+   "text": "Peter asks if he's sure, it's a big city. Miles says he can handle it, as long as he can still call him for advice, and Peter says he's there for him, always. Then Peter steps back, and he and MJ walk to May's house together. Insomniac's writers have said Miles is the main Spider-Man going forward.",
+   "tts": "Peter asks if he's sure, it's a big city. Miles says he can handle it, as long as he can still call him for advice, and Peter says he's there for him, always. Then Peter steps back, and he and MJ walk to May's house together. Insomniac's writers have said Miles is the main Spider-Man going forward.",
+   "shots": [
+    {
+     "clip": 191,
+     "in": 106.0,
+     "out": 119.5
+    },
+    {
+     "clip": 191,
+     "in": 140.0,
+     "out": 146.5
+    }
+   ],
+   "gfx": [
+    "G27"
+   ],
+   "id": "b081"
+  },
+  {
+   "type": "narr",
+   "text": "So, was it the suit, or was it Peter? It was Peter. The suit is real, it's alien, and it made everything louder. Without it, I don't think Peter ends up with tendrils round Kraven's throat. That's the part the other side gets right. Yuri Lowenthal, who plays Peter, has said Peter doesn't just flip a switch, and that's how the game plays it. The anger was there before the suit. He kept it after he knew what it was. Miles had the same rage without it and chose differently. Harry wore the same suit and became a different monster. And when it mattered, Peter was the one who had to save himself. What Miles tells him at the end isn't about the suit at all. Go be Peter Parker.",
+   "tts": "So, was it the suit, or was it Peter? It was Peter. The suit is real, it's alien, and it made everything louder. Without it, I don't think Peter ends up with tendrils round Kraven's throat. That's the part the other side gets right. Yuri Lowenthal, who plays Peter, has said Peter doesn't just flip a switch, and that's how the game plays it. The anger was there before the suit. He kept it after he knew what it was. Miles had the same rage without it and chose differently. Harry wore the same suit and became a different monster. And when it mattered, Peter was the one who had to save himself. What Miles tells him at the end isn't about the suit at all. Go be Peter Parker.",
+   "shots": [
+    {
+     "clip": 488,
+     "in": 150.0,
+     "out": 159.4,
+     "push": true
+    },
+    {
+     "clip": 535,
+     "in": 62.0,
+     "out": 76.0
+    },
+    {
+     "clip": 597,
+     "in": 40.0,
+     "out": 65.0
+    }
+   ],
+   "gfx": [
+    "G28"
+   ],
+   "id": "b082"
+  },
+  {
+   "type": "narr",
+   "text": "One question for the comments: suit or Peter? Tell me which scene decided it for you. If you liked this, my Marvel's Wolverine ending video asks the same kind of question, about what Jean took out of Logan's head. Next, I'm putting every Insomniac Marvel game into one story, from Spider-Man to Wolverine. I need to record more footage first, so no date yet. It's on the list.",
+   "tts": "One question for the comments: suit or Peter? Tell me which scene decided it for you. If you liked this, my Marvel's Wolverine ending video asks the same kind of question, about what Jean took out of Logan's head. Next, I'm putting every Insomniac Marvel game into one story, from Spider-Man to Wolverine. I need to record more footage first, so no date yet. It's on the list.",
+   "shots": [
+    {
+     "clip": 191,
+     "in": 150.0,
+     "out": 164.0
+    },
+    {
+     "clip": 266,
+     "in": 0.0,
+     "out": 10.0
+    }
+   ],
+   "gfx": [
+    "G29"
+   ],
+   "id": "b083"
+  },
+  {
+   "type": "game",
+   "clip": 1000,
+   "in": 4.5,
+   "out": 5.9,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-49-11).mp4 @ 4.5-5.9 s: \"Peter: I just need to find the time...\" (HUMOR 5; subtitle 4.5-6.0, the previous one \"Oh man, I've been wanting to play this,\" is still up at 4.4; audio 4.52-5.72; Peter at May's dining table holding a video game case, \"Speed Nonagon\"; on screen: the item label \"Speed Nonagon\" top left and the \"LOOK / SHOW/HIDE TEXT / EXIT\" prompt row under the subtitle: keep \"crop\": \"none\" for the band, or punch in to the band and the case and lose the prompts; quiet in-game music under it; the clip is 13.3 s, the range ends 7.4 s before its end. End screen: this burst falls inside the final 20 s, so in Studio place the WATCH NEXT box and Subscribe clear of the subtitle band)",
+   "crop": "none",
+   "id": "b084"
+  },
+  {
+   "type": "narr",
+   "text": "Subscribe if you want that one. Thanks for watching.",
+   "tts": "Subscribe if you want that one. Thanks for watching.",
+   "shots": [
+    {
+     "clip": 266,
+     "in": 10.0,
+     "out": 14.0
+    }
+   ],
+   "gfx": [],
+   "id": "b085"
+  }
+ ],
+ "gfx_cues": [
+  {
+   "id": "G01",
+   "cue": "lower: \"MARVEL'S SPIDER-MAN 2: THE ENDING\" fades in at 0:03; no channel logo, no greeting"
+  },
+  {
+   "id": "G02",
+   "cue": "question: words \"THE SUIT or PETER?\", accent on PETER in KG red; then caption \"SPOILERS: FULL GAME AND BOTH CREDITS SCENES\" (pos bottom)"
+  },
+  {
+   "id": "G03",
+   "cue": "tag x3, one per clip: \"THE WARNING\", \"THE BELL\", \"THE HANDOVER\""
+  },
+  {
+   "id": "G04",
+   "cue": "chapter: num 1, title \"TWO SPIDER-MEN, ONE CITY\", rides under the first line"
+  },
+  {
+   "id": "G05",
+   "cue": "map stage 1 (new Spider-Man 2 layout, see Notes): PETER and MILES in the centre joined by a line \"two Spider-Men\"; MJ beside Peter; MAY greyed out with \"gone\""
+  },
+  {
+   "id": "G06",
+   "cue": "map stage 2: HARRY joins beside Peter with the tag \"second chance\"; NORMAN above Harry with an arrow \"father\""
+  },
+  {
+   "id": "G07",
+   "cue": "quote: text \"I asked for an equal.\", by \"KRAVEN\", key \"equal\""
+  },
+  {
+   "id": "G08",
+   "cue": "map stage 3: KRAVEN arrives in red at the edge; MARTIN LI next to him with the tag \"freed from the Raft\"; a red line from LI to MILES labelled \"his father's death\""
+  },
+  {
+   "id": "G09",
+   "cue": "chapter: num 2, title \"THE SUIT THAT SAVED HIS LIFE\""
+  },
+  {
+   "id": "G10",
+   "cue": "quote: text \"That's what worries me.\", by \"DR. CONNORS\", key \"worries\""
+  },
+  {
+   "id": "G11",
+   "cue": "caption: \"WEAKNESS: CERTAIN FREQUENCIES\" (pos top)"
+  },
+  {
+   "id": "G12",
+   "cue": "chapter: num 3, title \"IT MAKES ME A BETTER SPIDER-MAN\""
+  },
+  {
+   "id": "G13",
+   "cue": "caption: \"SYMBIOTE: BONDS WITH ITS HOST AT THE SUBCELLULAR LEVEL\""
+  },
+  {
+   "id": "G14",
+   "cue": "slam: \"HE KNOWS.\""
+  },
+  {
+   "id": "G15",
+   "cue": "quote: text \"No one listens.\", by \"PETER\", key \"listens\" (subtitle confirmed, 526@57)"
+  },
+  {
+   "id": "G16",
+   "cue": "chapter: num 4, title \"SAME ANGER, NO SUIT\""
+  },
+  {
+   "id": "G17",
+   "cue": "lower: \"MARTIN LI / MISTER NEGATIVE\""
+  },
+  {
+   "id": "G18",
+   "cue": "split: left \"MILES: NO SUIT\", right \"PETER: THE SUIT\", drop \"SAME ANGER\" at 0.6"
+  },
+  {
+   "id": "G19",
+   "cue": "card: \"MILES CHOSE. NOW IT'S PETER'S TURN.\""
+  },
+  {
+   "id": "G20",
+   "cue": "chapter: num 5, title \"THIS TIME, SAVE YOURSELF\""
+  },
+  {
+   "id": "G21",
+   "cue": "quote: text \"This time, you have to save yourself!\", by \"MILES\", key \"yourself\""
+  },
+  {
+   "id": "G22",
+   "cue": "chapter: num 6, title \"SAME SUIT, DIFFERENT MAN\""
+  },
+  {
+   "id": "G23",
+   "cue": "caption: \"TWO YEARS AGO\" (pos top)"
+  },
+  {
+   "id": "G24",
+   "cue": "map stage 4: the SYMBIOTE node moves from PETER to HARRY; HARRY's tag changes to \"VENOM\"; NORMAN's arrow relabels \"never let go\""
+  },
+  {
+   "id": "G25",
+   "cue": "map stage 5: SYMBIOTE in the centre with three red lines out: PETER \"save everyone\", HARRY \"heal the world\", MJ \"be heard\"; caption under the map \"MY READING\""
+  },
+  {
+   "id": "G26",
+   "cue": "chapter: num 7, title \"GO BE PETER PARKER\""
+  },
+  {
+   "id": "G27",
+   "cue": "quote: text \"Go be Peter Parker for a while.\", by \"MILES\", key \"Peter Parker\""
+  },
+  {
+   "id": "G28",
+   "cue": "question callback: words \"THE SUIT or PETER?\", strike \"THE SUIT\""
+  },
+  {
+   "id": "G29",
+   "cue": "endscreen: next \"THE INSOMNIAC MARVEL UNIVERSE SO FAR: SPIDER-MAN TO WOLVERINE\", sub \"COMING LATER\", plus a subscribe button, both only in the final 20 s"
+  }
+ ]
+}

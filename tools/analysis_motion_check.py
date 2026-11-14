@@ -1,6 +1,6 @@
 """Acceptance checks for the KG analysis motion graphics (2026-11-13).
 
-Renders every graphic kind in data/analysis/wolverine/gfx.json plus timeline samples to a
+Renders every graphic kind in data/analysis/<game>/gfx.json (--game, default wolverine) plus timeline samples to a
 transparent .mov, saves stills at enter, hold and exit over a test background, and prints a table:
 
   motion     mean absolute frame difference shows motion within the first 36 frames
@@ -237,11 +237,12 @@ def main() -> int:
     ap.add_argument("--only", default="")
     ap.add_argument("--no-mov", action="store_true")
     ap.add_argument("--render-test", action="store_true")
+    ap.add_argument("--game", default="wolverine", help="whose gfx.json to check (map layouts are per game)")
     a = ap.parse_args()
     if a.render_test:
         return 0 if render_test() else 1
     OUT.mkdir(parents=True, exist_ok=True)
-    specs = json.loads((ROOT / "data/analysis/wolverine/gfx.json").read_text(encoding="utf-8"))
+    specs = G.load_specs(ROOT / "data/analysis" / a.game / "gfx.json")
     items = [(f"{gid}_{k}" if len(v) > 1 else gid, s) for gid, v in specs.items() if isinstance(v, list)
              for k, s in enumerate(v)] + list(EXTRA.items())
     only = set(filter(None, a.only.split(",")))

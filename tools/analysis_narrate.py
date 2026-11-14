@@ -139,6 +139,7 @@ def main() -> int:
     timings = json.loads(tpath.read_text(encoding="utf-8")) if tpath.exists() else {}
     narr = [b for b in edl["beats"] if b["type"] == "narr"]
     words = 0
+    todo = 0
     if nar:  # never start a video the month's ElevenLabs credits cannot finish (no half-voiced cuts)
         todo = 0
         for b in narr:
@@ -156,6 +157,7 @@ def main() -> int:
             if todo > left:
                 raise SystemExit(f"Not enough ElevenLabs credits: need {todo}, have {left}. "
                                  "Nothing was recorded. Upgrade the plan or wait for the monthly reset.")
+            left_before = left
     for i, b in enumerate(narr):
         h = hashlib.sha1(f"{tag}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
         wav = out / f"{b['id']}.wav"
@@ -185,6 +187,12 @@ def main() -> int:
                 print(f"{b['id']}: tail trimmed {timings[b['id']]['seconds']:.2f} -> {seconds(wav):.2f} s", flush=True)
             timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
     tpath.write_text(json.dumps(timings, indent=1), encoding="utf-8")
+    if nar and todo:  # what this run really cost (about 0.4 credit per character on Starter)
+        req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": key})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            sub = json.loads(r.read())
+        left = int(sub["character_limit"]) - int(sub["character_count"])
+        print(f"ElevenLabs: this run used {left_before - left} credits for {todo} characters; {left} left", flush=True)
     total = sum(timings[b["id"]]["seconds"] for b in narr)
     # One file for the ear check: every paragraph with a short gap.
     lst = out / "concat.txt"
