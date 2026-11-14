@@ -1,5 +1,5 @@
 {
- "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5. Frame sheets of every shot (2026-11-14): b000 and b082 end on the black-suit chest close-up (488@161.5-166, hero frame 7) instead of Connors at 157-159; b082 swaps the Anti-Venom gameplay (597, HUD) for the clean rooftop of both Spider-Men (15-46-02 @ 646-668); free-roam and fight clips 159, 419, 492, 512, 560 and 597 crop their HUD (analysis_edl GAME_NOTES). Test render 1 (run 43560337594): boss-fight clips 529, 532, 533 and 534 under narration use the tighter boss crop (the objective box top right survived the hud crop), and 492 a box clear of its traversal gauge. b041 starts 529 at 9.5, after the L1+R1 prompt at 8. Test render 2 (run 43562428255): 488@150-156 still cut to Connors, so the cold open and the answer hold only the chest close-up 488@162-167.3; b028's night traversal is the same night's clean swing 1001@24-34 (492 kept world waypoint markers). v1 QC (2026-11-14): in-points moved past black frames inside the source clips (280@~2.3, 507@20.0, 153@~14.1, 532@~63.5) in b008, b025, b029, b039, b045. Render v3 (independent review of v1, 2026-11-14): b019 the night swing 159 (HUNTER BLINDS, objective, scanner ring, waypoints) replaced by the clean Foundation cutscene 162 (Peter in pain from the suit, Harry checking him); b029 153 ends at 10.7 before the inspect reticle and journal text (bottles 6.5-10.7) plus Kraven in his airship 313@28-34; b074 185@44.5-47.8 (Miles glowing) clear of the L1+square QTE; b067 the hive tendrils 1005@84-89.5 instead of 560 (prompts, reticles); b051 the clean bell-fight cutscene 1003@154-168 instead of 534 (Bonus Gadget Shot!); b002 the warning shot is the same night's clean swing 1001@25-31 (526 kept a 637 m waypoint under the tag); b011 313 starts at 8.5 on the airships, not the empty sea; bursts b017 and b027 blur and dim the gadget wheels (and 526's minimap and portrait) that sit beside the subtitle band (new 'mask' field in analysis_render); b034 in at 16.15 and b050 in at 8.6 clear of the previous subtitle. Test render 4 (run 43573291190): 187 shows an L1 + circle prompt at 66, so b074 plays 187@59.8-65.5 (Miles's electric hand close-up at 60, then the heart restart).",
+ "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5. Frame sheets of every shot (2026-11-14): b000 and b082 end on the black-suit chest close-up (488@161.5-166, hero frame 7) instead of Connors at 157-159; b082 swaps the Anti-Venom gameplay (597, HUD) for the clean rooftop of both Spider-Men (15-46-02 @ 646-668); free-roam and fight clips 159, 419, 492, 512, 560 and 597 crop their HUD (analysis_edl GAME_NOTES). Test render 1 (run 43560337594): boss-fight clips 529, 532, 533 and 534 under narration use the tighter boss crop (the objective box top right survived the hud crop), and 492 a box clear of its traversal gauge. b041 starts 529 at 9.5, after the L1+R1 prompt at 8. Test render 2 (run 43562428255): 488@150-156 still cut to Connors, so the cold open and the answer hold only the chest close-up 488@162-167.3; b028's night traversal is the same night's clean swing 1001@24-34 (492 kept world waypoint markers). v1 QC (2026-11-14): in-points moved past black frames inside the source clips (280@~2.3, 507@20.0, 153@~14.1, 532@~63.5) in b008, b025, b029, b039, b045. Render v3 (independent review of v1, 2026-11-14): b019 the night swing 159 (HUNTER BLINDS, objective, scanner ring, waypoints) replaced by the clean Foundation cutscene 162 (Peter in pain from the suit, Harry checking him); b029 153 ends at 10.7 before the inspect reticle and journal text (bottles 6.5-10.7) plus Kraven in his airship 313@28-34; b074 185@44.5-47.8 (Miles glowing) clear of the L1+square QTE; b067 the hive tendrils 1005@84-89.5 instead of 560 (prompts, reticles); b051 the clean bell-fight cutscene 1003@154-168 instead of 534 (Bonus Gadget Shot!); b002 the warning shot is the same night's clean swing 1001@25-31 (526 kept a 637 m waypoint under the tag); b011 313 starts at 8.5 on the airships, not the empty sea; bursts b017 and b027 blur and dim the gadget wheels (and 526's minimap and portrait) that sit beside the subtitle band (new 'mask' field in analysis_render); b034 in at 16.15 and b050 in at 8.6 clear of the previous subtitle. Test render 4 (run 43573291190): 187 shows an L1 + circle prompt at 66, so b074 plays 187@59.8-65.5 (Miles's electric hand close-up at 60, then the heart restart). v3 re-check (2026-11-14): b051 533 skips the triangle+circle prompt (19.0-20.4); b041 Miles defeats Li, clean cutscene 1009 (2026-11-13 23-12-54) @810-822 replaces 512's objective box/waypoint/L1+square; b033 negative world 1009@780-786 replaces 520's waypoint; b028 153 starts at 2.0 past the inspect reticle; b018 473 at 0.6 past a triangle prompt; b070 592 at 20.5 past stick prompts.",
  "shots": {
   "b000": [
    {
@@ -175,7 +175,7 @@
    },
    {
     "clip": 153,
-    "in": 0.0,
+    "in": 2.0,
     "out": 6.5
    }
   ],
@@ -218,10 +218,9 @@
   ],
   "b041": [
    {
-    "clip": 512,
-    "in": 60.0,
-    "out": 70.0,
-    "crop": "hud"
+    "clip": 1009,
+    "in": 810.0,
+    "out": 822.0
    },
    {
     "clip": 529,
@@ -296,6 +295,12 @@
    {
     "clip": 533,
     "in": 14.0,
+    "out": 19.0,
+    "crop": "boss"
+   },
+   {
+    "clip": 533,
+    "in": 20.4,
     "out": 36.0,
     "crop": "boss"
    },
@@ -439,7 +444,7 @@
   "b070": [
    {
     "clip": 592,
-    "in": 20.0,
+    "in": 20.5,
     "out": 28.0
    },
    {
@@ -523,6 +528,42 @@
     "clip": 266,
     "in": 10.0,
     "out": 21.0
+   }
+  ],
+  "b033": [
+   {
+    "clip": 512,
+    "in": 20.0,
+    "out": 30.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 517,
+    "in": 10.0,
+    "out": 16.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 1009,
+    "in": 780.0,
+    "out": 786.0
+   }
+  ],
+  "b018": [
+   {
+    "clip": 445,
+    "in": 5.0,
+    "out": 15.0
+   },
+   {
+    "clip": 464,
+    "in": 0.0,
+    "out": 10.0
+   },
+   {
+    "clip": 473,
+    "in": 0.6,
+    "out": 6.5
    }
   ]
  },
