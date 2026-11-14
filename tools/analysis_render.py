@@ -206,7 +206,15 @@ def vchain(label_in: str, p: dict, out_label: str) -> str:
         f.append(f"zoompan=z='1+0.07*on/{frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
                  f":d=1:s=1920x1080:fps={FPS}")
     f.append("setsar=1,format=yuv420p")
-    return f"[{label_in}]{','.join(f)}[{out_label}]"
+    pre, cur = [], label_in
+    for j, (x0, y0, x1, y1) in enumerate(p.get("mask", [])):
+        # HUD that sits beside the subtitle band (gadget wheels, minimap) and cannot be cropped away
+        # without losing the subtitle: blur and dim it in place, before the crop (review of v1, 2026-11-14).
+        s0, s1, s2, s3 = (f"{out_label}m{j}{c}" for c in "abco")
+        pre.append(f"[{cur}]split[{s0}][{s1}];[{s1}]crop=iw*{x1 - x0:.4f}:ih*{y1 - y0:.4f}:iw*{x0:.4f}:ih*{y0:.4f},"
+                   f"gblur=sigma=34,eq=brightness=-0.04[{s2}];[{s0}][{s2}]overlay=x=main_w*{x0:.4f}:y=main_h*{y0:.4f}[{s3}]")
+        cur = s3
+    return ";".join(pre + [f"[{cur}]{','.join(f)}[{out_label}]"])
 
 
 def achain(label_in: str, p: dict, out_label: str, gain_db: float) -> str:

@@ -972,8 +972,8 @@
   },
   {
    "type": "narr",
-   "text": "That isn't alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
-   "tts": "That isn't alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
+   "text": "None of that is alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
+   "tts": "None of that is alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against his best friend. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
    "shots": [
     {
      "clip": 533,
@@ -1193,8 +1193,8 @@
   },
   {
    "type": "narr",
-   "text": "Then the symbiote spreads across New York, tying people into one hive. Harry tells Peter this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
-   "tts": "Then the symbiote spreads across New York, tying people into one hive. Harry tells Peter this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "text": "Then the symbiote spreads across New York, tying people into one hive. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "tts": "Then the symbiote spreads across New York, tying people into one hive. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
    "shots": [
     {
      "clip": 600,
@@ -1722,5 +1722,6 @@
    "id": "G29",
    "cue": "endscreen: next \"THE INSOMNIAC MARVEL UNIVERSE SO FAR: SPIDER-MAN TO WOLVERINE\", sub \"COMING LATER\", plus a subscribe button, both only in the final 20 s"
   }
- ]
+ ],
+ "v3_note": "Render v3 (2026-11-14, independent review of v1): b051 'That isn't alien.' -> 'None of that is alien.' (Whisper heard 'That is an alien.'), b063 'Harry tells Peter' -> 'Harry tells MJ' (he answers 'MJ: This isn't you.'). The coordinator updates the approved script to match."
 }
