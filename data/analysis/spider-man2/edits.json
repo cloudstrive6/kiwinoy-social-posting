@@ -1,39 +1,346 @@
 {
- "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5.",
+ "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5. Frame sheets of every shot (2026-11-14): b000 and b082 end on the black-suit chest close-up (488@161.5-166, hero frame 7) instead of Connors at 157-159; b082 swaps the Anti-Venom gameplay (597, HUD) for the clean rooftop of both Spider-Men (15-46-02 @ 646-668); free-roam and fight clips 159, 419, 492, 512, 560 and 597 crop their HUD (analysis_edl GAME_NOTES).",
  "shots": {
-  "b001": [{"clip": 300, "in": 120.0, "out": 132.0, "crop": "hud"}, {"clip": 280, "in": 10.0, "out": 14.0},
-           {"clip": 1002, "in": 385.0, "out": 388.5}],
-  "b009": [{"clip": 17, "in": 28.0, "out": 38.0}, {"clip": 29, "in": 0.0, "out": 3.8, "crop": "none"},
-           {"clip": 38, "in": 300.0, "out": 310.0}],
-  "b021": [{"clip": 488, "in": 104.0, "out": 107.0}, {"clip": 488, "in": 115.5, "out": 118.5, "crop": "none"},
-           {"clip": 488, "in": 110.0, "out": 114.0}, {"clip": 488, "in": 125.0, "out": 132.0}],
-  "b032": [{"clip": 26, "in": 120.3, "out": 123.0}],
-  "b042": [{"clip": 1002, "in": 40.0, "out": 43.0}, {"clip": 1002, "in": 120.0, "out": 126.0},
-           {"clip": 529, "in": 20.0, "out": 25.0, "crop": "hud"}, {"clip": 1002, "in": 570.0, "out": 576.0}],
-  "b043": [{"clip": 1002, "in": 589.0, "out": 595.0}, {"clip": 532, "in": 15.0, "out": 21.0, "crop": "hud"}],
-  "b047": [{"clip": 1003, "in": 78.0, "out": 84.0}, {"clip": 531, "in": 36.0, "out": 41.0}],
-  "b052": [{"clip": 1003, "in": 270.0, "out": 276.0}, {"clip": 533, "in": 94.0, "out": 99.0, "crop": "hud"},
-           {"clip": 533, "in": 55.5, "out": 57.5, "crop": [0.6, 0.11, 1.0, 0.51]}, {"clip": 1003, "in": 276.0, "out": 279.0}],
-  "b059": [{"clip": 1004, "in": 140.0, "out": 153.0}, {"clip": 1004, "in": 178.0, "out": 184.0}],
-  "b060": [{"clip": 1004, "in": 750.0, "out": 753.0}, {"clip": 1004, "in": 789.0, "out": 793.0}],
-  "b062": [{"clip": 552, "in": 38.0, "out": 50.0, "crop": "hud"}, {"clip": 1004, "in": 1005.0, "out": 1013.0},
-           {"clip": 1004, "in": 1068.0, "out": 1073.0}],
-  "b063": [{"clip": 1005, "in": 100.0, "out": 106.0}, {"clip": 1006, "in": 76.0, "out": 84.0},
-           {"clip": 1006, "in": 202.5, "out": 205.5}],
-  "b064": [{"clip": 1006, "in": 716.0, "out": 726.0}],
-  "b068": [{"clip": 1008, "in": 292.0, "out": 309.0}, {"clip": 184, "in": 0.0, "out": 7.0}],
-  "b070": [{"clip": 592, "in": 20.0, "out": 28.0}, {"clip": 1007, "in": 800.0, "out": 810.0}],
-  "b072": [{"clip": 1007, "in": 1038.0, "out": 1046.0}, {"clip": 1007, "in": 1048.0, "out": 1053.0},
-           {"clip": 1007, "in": 1189.0, "out": 1205.0}],
-  "b076": [{"clip": 189, "in": 80.0, "out": 90.0}, {"clip": 192, "in": 36.0, "out": 43.0},
-           {"clip": 192, "in": 44.5, "out": 47.0, "crop": "none"}],
-  "b085": [{"clip": 266, "in": 10.0, "out": 21.0}]
+  "b000": [
+   {
+    "clip": 488,
+    "in": 150.0,
+    "out": 156.0,
+    "push": true
+   },
+   {
+    "clip": 488,
+    "in": 161.5,
+    "out": 166.0,
+    "push": true
+   }
+  ],
+  "b001": [
+   {
+    "clip": 300,
+    "in": 120.0,
+    "out": 132.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 280,
+    "in": 10.0,
+    "out": 14.0
+   },
+   {
+    "clip": 1002,
+    "in": 385.0,
+    "out": 388.5
+   }
+  ],
+  "b009": [
+   {
+    "clip": 17,
+    "in": 28.0,
+    "out": 38.0
+   },
+   {
+    "clip": 29,
+    "in": 0.0,
+    "out": 3.8,
+    "crop": "none"
+   },
+   {
+    "clip": 38,
+    "in": 300.0,
+    "out": 310.0
+   }
+  ],
+  "b021": [
+   {
+    "clip": 488,
+    "in": 104.0,
+    "out": 107.0
+   },
+   {
+    "clip": 488,
+    "in": 115.5,
+    "out": 118.5,
+    "crop": "none"
+   },
+   {
+    "clip": 488,
+    "in": 110.0,
+    "out": 114.0
+   },
+   {
+    "clip": 488,
+    "in": 125.0,
+    "out": 132.0
+   }
+  ],
+  "b032": [
+   {
+    "clip": 26,
+    "in": 120.3,
+    "out": 123.0
+   }
+  ],
+  "b042": [
+   {
+    "clip": 1002,
+    "in": 40.0,
+    "out": 43.0
+   },
+   {
+    "clip": 1002,
+    "in": 120.0,
+    "out": 126.0
+   },
+   {
+    "clip": 529,
+    "in": 20.0,
+    "out": 25.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 1002,
+    "in": 570.0,
+    "out": 576.0
+   }
+  ],
+  "b043": [
+   {
+    "clip": 1002,
+    "in": 589.0,
+    "out": 595.0
+   },
+   {
+    "clip": 532,
+    "in": 15.0,
+    "out": 21.0,
+    "crop": "hud"
+   }
+  ],
+  "b047": [
+   {
+    "clip": 1003,
+    "in": 78.0,
+    "out": 84.0
+   },
+   {
+    "clip": 531,
+    "in": 36.0,
+    "out": 41.0
+   }
+  ],
+  "b052": [
+   {
+    "clip": 1003,
+    "in": 270.0,
+    "out": 276.0
+   },
+   {
+    "clip": 533,
+    "in": 94.0,
+    "out": 99.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 533,
+    "in": 55.5,
+    "out": 57.5,
+    "crop": [
+     0.6,
+     0.11,
+     1.0,
+     0.51
+    ]
+   },
+   {
+    "clip": 1003,
+    "in": 276.0,
+    "out": 279.0
+   }
+  ],
+  "b059": [
+   {
+    "clip": 1004,
+    "in": 140.0,
+    "out": 153.0
+   },
+   {
+    "clip": 1004,
+    "in": 178.0,
+    "out": 184.0
+   }
+  ],
+  "b060": [
+   {
+    "clip": 1004,
+    "in": 750.0,
+    "out": 753.0
+   },
+   {
+    "clip": 1004,
+    "in": 789.0,
+    "out": 793.0
+   }
+  ],
+  "b062": [
+   {
+    "clip": 552,
+    "in": 38.0,
+    "out": 50.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 1004,
+    "in": 1005.0,
+    "out": 1013.0
+   },
+   {
+    "clip": 1004,
+    "in": 1068.0,
+    "out": 1073.0
+   }
+  ],
+  "b063": [
+   {
+    "clip": 1005,
+    "in": 100.0,
+    "out": 106.0
+   },
+   {
+    "clip": 1006,
+    "in": 76.0,
+    "out": 84.0
+   },
+   {
+    "clip": 1006,
+    "in": 202.5,
+    "out": 205.5
+   }
+  ],
+  "b064": [
+   {
+    "clip": 1006,
+    "in": 716.0,
+    "out": 726.0
+   }
+  ],
+  "b068": [
+   {
+    "clip": 1008,
+    "in": 292.0,
+    "out": 309.0
+   },
+   {
+    "clip": 184,
+    "in": 0.0,
+    "out": 7.0
+   }
+  ],
+  "b070": [
+   {
+    "clip": 592,
+    "in": 20.0,
+    "out": 28.0
+   },
+   {
+    "clip": 1007,
+    "in": 800.0,
+    "out": 810.0
+   }
+  ],
+  "b072": [
+   {
+    "clip": 1007,
+    "in": 1038.0,
+    "out": 1046.0
+   },
+   {
+    "clip": 1007,
+    "in": 1048.0,
+    "out": 1053.0
+   },
+   {
+    "clip": 1007,
+    "in": 1189.0,
+    "out": 1205.0
+   }
+  ],
+  "b076": [
+   {
+    "clip": 189,
+    "in": 80.0,
+    "out": 90.0
+   },
+   {
+    "clip": 192,
+    "in": 36.0,
+    "out": 43.0
+   },
+   {
+    "clip": 192,
+    "in": 44.5,
+    "out": 47.0,
+    "crop": "none"
+   }
+  ],
+  "b082": [
+   {
+    "clip": 488,
+    "in": 150.0,
+    "out": 156.0,
+    "push": true
+   },
+   {
+    "clip": 488,
+    "in": 161.5,
+    "out": 166.0,
+    "push": true
+   },
+   {
+    "clip": 535,
+    "in": 62.0,
+    "out": 76.0
+   },
+   {
+    "clip": 1008,
+    "in": 646.0,
+    "out": 668.0
+   }
+  ],
+  "b085": [
+   {
+    "clip": 266,
+    "in": 10.0,
+    "out": 21.0
+   }
+  ]
  },
  "beats": {
-  "b024": {"crop": [0.04, 0.1, 0.84, 0.9], "fade_in": 0.04},
-  "b040": {"fade_in": 0.02},
-  "b046": {"clip": 1003, "in": 67.9, "out": 73.3, "crop": "none"},
-  "b083": {"gfx": []},
-  "b085": {"gfx": ["G29"]}
+  "b024": {
+   "crop": [
+    0.04,
+    0.1,
+    0.84,
+    0.9
+   ],
+   "fade_in": 0.04
+  },
+  "b040": {
+   "fade_in": 0.02
+  },
+  "b046": {
+   "clip": 1003,
+   "in": 67.9,
+   "out": 73.3,
+   "crop": "none"
+  },
+  "b083": {
+   "gfx": []
+  },
+  "b085": {
+   "gfx": [
+    "G29"
+   ]
+  }
  }
 }

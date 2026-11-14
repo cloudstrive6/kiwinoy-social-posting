@@ -243,7 +243,9 @@ NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
 GAME_NOTES = {
     "wolverine": {"banned": {88, 89, 90, 111, 112, 128}, "hud": {20, 21, 24, 26, 27, 166, 167}},
     # Spider-Man 2 script v1.2 "Notes for the editor": HUD and boss bars (old 619-clip index).
-    "spider-man2": {"banned": set(), "hud": {478, 483, 517, 520, 529, 532, 533, 534, 552, 611, 300, 526}},
+    # 2026-11-14 build: frame sheets of every shot added free-roam and fight clips whose cues do not say so.
+    "spider-man2": {"banned": set(), "hud": {478, 483, 517, 520, 529, 532, 533, 534, 552, 611, 300, 526,
+                                             159, 419, 492, 512, 560, 597}},
 }
 
 
