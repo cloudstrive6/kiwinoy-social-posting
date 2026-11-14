@@ -182,6 +182,8 @@ def vchain(label_in: str, p: dict, out_label: str) -> str:
     crop = p.get("crop")
     if crop == "band":  # bursts: keep the subtitle band (to 92%), lose the top bars and the side HUD
         crop = [0.08, 0.08, 0.92, 0.92]
+    elif crop == "boss":  # boss fights under narration: no bars, objective box, subtitles or gadget wheels
+        crop = [0.14, 0.2, 0.72, 0.78]
     if isinstance(crop, list):  # [x0, y0, x1, y1] as fractions of the frame (keep it 16:9)
         x0, y0, x1, y1 = (float(v) for v in crop)
         f.append(f"crop=iw*{x1 - x0:.4f}:ih*{y1 - y0:.4f}:iw*{x0:.4f}:ih*{y0:.4f}")

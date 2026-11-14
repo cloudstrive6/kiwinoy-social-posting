@@ -1,5 +1,5 @@
 {
- "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5. Frame sheets of every shot (2026-11-14): b000 and b082 end on the black-suit chest close-up (488@161.5-166, hero frame 7) instead of Connors at 157-159; b082 swaps the Anti-Venom gameplay (597, HUD) for the clean rooftop of both Spider-Men (15-46-02 @ 646-668); free-roam and fight clips 159, 419, 492, 512, 560 and 597 crop their HUD (analysis_edl GAME_NOTES).",
+ "note": "Spider-Man 2 build changes on top of the script cues (2026-11-14). Picture only, plus one burst source swap the coordinator approved; no narration, burst wording or humor beat changes. Clip indices from 1000 are B2 keys (clips.json): 1002 to 1008 are the clean cutscene takes recorded 2026-11-14 (footage addendum 2). Shots: b001 bell from the clean take (no HUD or prompt); b009 Foundation sign stops before the subtitle at 4 s; b021 the uncropped shot is only the 'We call it a Symbiote.' subtitle (116), the rest crops it; b032 had no picture (Miles reacting, the HUMOR 3 clip at 120.3); b042, b043, b047, b052 the bell chapter from clean takes where the content is the same (old ranges kept for the boss-HUD gameplay); b052 punches in on the 'Remove the Symbiote from Peter' objective; b059 to b064 Harry bonding, Venom, Kraven's death (1004 avoids the 1039-1066 gore), the hive, 'This is the REAL me.', Scream and MJ freed from clean takes; b068 the 'perfectly fused' exchange in Connors's lab (v1.2.1 narration); b070 and b072 Li's plan, Peter waking as Anti-Venom and Li's farewell; b076 'They ruined my son.' uncropped only for its last 2.5 s; b085 a longer run of the closing swing under the end screen. Beats: b046 plays the clean cutscene take of 'I need this suit! / It makes me a better Spider-Man!' (13-38-48 @ 67.9-73.3, sub 69-72.5, out before 'You just want it' at 73.82; addendum 2 and coordinator 2026-11-14); bursts on gameplay keep the subtitle band and lose the top bars and side HUD (crop band); HUMOR 2 crops the minimap and MJ portrait on the right with a 40 ms fade-in; HUMOR 4 keeps the soft 'I' with a 20 ms fade-in; the end screen moves from b083 to b085 so it starts after HUMOR 5. Frame sheets of every shot (2026-11-14): b000 and b082 end on the black-suit chest close-up (488@161.5-166, hero frame 7) instead of Connors at 157-159; b082 swaps the Anti-Venom gameplay (597, HUD) for the clean rooftop of both Spider-Men (15-46-02 @ 646-668); free-roam and fight clips 159, 419, 492, 512, 560 and 597 crop their HUD (analysis_edl GAME_NOTES). Test render 1 (run 43560337594): boss-fight clips 529, 532, 533 and 534 under narration use the tighter boss crop (the objective box top right survived the hud crop), and 492 a box clear of its traversal gauge. b041 starts 529 at 9.5, after the L1+R1 prompt at 8.",
  "shots": {
   "b000": [
    {
@@ -81,6 +81,20 @@
     "out": 123.0
    }
   ],
+  "b041": [
+   {
+    "clip": 512,
+    "in": 60.0,
+    "out": 70.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 529,
+    "in": 9.5,
+    "out": 15.5,
+    "crop": "boss"
+   }
+  ],
   "b042": [
    {
     "clip": 1002,
@@ -96,7 +110,7 @@
     "clip": 529,
     "in": 20.0,
     "out": 25.0,
-    "crop": "hud"
+    "crop": "boss"
    },
    {
     "clip": 1002,
@@ -114,7 +128,7 @@
     "clip": 532,
     "in": 15.0,
     "out": 21.0,
-    "crop": "hud"
+    "crop": "boss"
    }
   ],
   "b047": [
@@ -139,7 +153,7 @@
     "clip": 533,
     "in": 94.0,
     "out": 99.0,
-    "crop": "hud"
+    "crop": "boss"
    },
    {
     "clip": 533,

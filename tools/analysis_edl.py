@@ -137,7 +137,7 @@ def opening_chapter(script: str, default: str = "Rescue or erasure?") -> str:
 
 
 def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game: str = "",
-          key_index: dict[str, int] | None = None) -> dict:
+          key_index: dict[str, int] | None = None, clip_crops: dict | None = None) -> dict:
     body = script_body(script)
     key_index = key_index or {}
     beats: list[dict] = []
@@ -177,6 +177,8 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game
                 s = {"clip": clip_of(r), "in": r["in"], "out": r["out"], **shot_flags(note)}
                 if s["clip"] in hud_clips and "crop" not in s:
                     s["crop"] = "hud"  # editor notes: these clips carry HUD or boss bars
+                if s["clip"] in (clip_crops or {}) and s.get("crop") in (None, "hud"):
+                    s["crop"] = clip_crops[s["clip"]]  # a tighter crop where the HUD reaches further in
                 segs.append(s)
             if split and len(segs) == 2:
                 shots.append({"split": segs})
@@ -245,7 +247,10 @@ GAME_NOTES = {
     # Spider-Man 2 script v1.2 "Notes for the editor": HUD and boss bars (old 619-clip index).
     # 2026-11-14 build: frame sheets of every shot added free-roam and fight clips whose cues do not say so.
     "spider-man2": {"banned": set(), "hud": {478, 483, 517, 520, 529, 532, 533, 534, 552, 611, 300, 526,
-                                             159, 419, 492, 512, 560, 597}},
+                                             159, 419, 492, 512, 560, 597},
+                    # test render 1: the boss fights keep an objective box top right (inside the hud crop)
+                    # and 492's traversal gauge sits at 15-19% of the width.
+                    "crops": {529: "boss", 532: "boss", 533: "boss", 534: "boss", 492: [0.2, 0.12, 0.8, 0.72]}},
 }
 
 
@@ -259,7 +264,7 @@ def main() -> int:
         for k, v in sorted(cm.items(), key=lambda kv: -int(kv[0])):  # lowest index wins
             key_index[v["key"]] = int(k)
     script = script_path.read_text(encoding="utf-8")
-    res = parse(script, notes["banned"], notes["hud"], game, key_index)
+    res = parse(script, notes["banned"], notes["hud"], game, key_index, notes.get("crops"))
     edl = {"game": game, "narrator": NARRATOR, "under_narration_db": -24,
            "source": script_path.name, "beats": res["beats"], "gfx_cues": res["gfx_cues"]}
     (d / "edl.json").write_text(json.dumps(edl, indent=1, ensure_ascii=False), encoding="utf-8")
