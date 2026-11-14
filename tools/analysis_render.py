@@ -481,7 +481,7 @@ def fmt_ts(t: float) -> str:
 
 def qc(path: Path) -> dict:
     pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-                                    "stream=codec_type,width,height,r_frame_rate:format=duration",
+                                    "stream=codec_type,width,height,r_frame_rate,duration:format=duration",
                                     "-of", "json", str(path)], capture_output=True, text=True).stdout)
     v = next(s for s in pr["streams"] if s["codec_type"] == "video")
     log = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path),
@@ -499,7 +499,10 @@ def qc(path: Path) -> dict:
            "lufs": float(i_m.group(1)) if i_m else None,
            "true_peak": float(p_m.group(1)) if p_m else None,
            "black": [[float(a), float(b)] for a, b in blacks], "freezes": [float(x) for x in freezes]}
-    res["pass"] = (res["width"] == 1920 and res["height"] == 1080 and abs(res["fps"] - 60) < 0.1
+    # A/V length check (2026-11-15): the joined picture and sound must end together, or lips drift.
+    au = next((s for s in pr["streams"] if s["codec_type"] == "audio"), None)
+    res["av_gap"] = round(float(v.get("duration", 0)) - float(au.get("duration", 0)), 3) if au else None
+    res["pass"] = (res["av_gap"] is not None and abs(res["av_gap"]) <= 0.1 and res["width"] == 1920 and res["height"] == 1080 and abs(res["fps"] - 60) < 0.1
                    and res["lufs"] is not None and abs(res["lufs"] + 14) <= 1
                    and res["true_peak"] is not None and res["true_peak"] <= -1.0
                    and not res["black"] and not res["freezes"])
@@ -564,9 +567,15 @@ def main() -> int:
                 b["shots"] = over[b["id"]]
             b.update(bover.get(b["id"], {}))  # e.g. a burst's crop box or fade_in, or moved graphics
     def beat_dur(b: dict) -> float:
+        # Whole frames (2026-11-15): a beat's video is written in 1/60 s frames but its audio to the
+        # exact decimal length, so each segment's picture ran up to a frame longer than its sound and
+        # the joined render drifted (voice 0.2 s ahead of the lips by 18 min in Spider-Man 2 v5).
+        # One frame is exactly 800 samples at 48 kHz, so a whole-frame length keeps both streams equal.
         if b["type"] == "narr":
-            return LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
-        return b["out"] - b["in"]
+            d = LEAD + timings[b["id"]]["seconds"] + TAIL + float(tails.get(b["id"], 0))
+        else:
+            d = b["out"] - b["in"]
+        return round(d * FPS) / FPS
 
     beats_t, acc = [], 0.0
     for b in beats:
