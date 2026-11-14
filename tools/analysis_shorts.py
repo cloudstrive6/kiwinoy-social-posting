@@ -96,7 +96,7 @@ class Paths:
         for p in (self.src, self.words, self.work, self.sheets):
             p.mkdir(parents=True, exist_ok=True)
         self.video = self.src / f"{game}-analysis-{version}.mp4"
-        self.timeline = self.src / "timeline.json"
+        self.timeline = self.src / f"timeline-{version}.json"  # per version: a stale v3 timeline broke the v8 re-cut
         self.picks = self.data / "shorts.json"
         self.b2_video = f"renders/analysis/{game}/{game}-analysis-{version}.mp4"
         self.b2_timeline = f"renders/analysis/{game}/{version}/timeline.json"

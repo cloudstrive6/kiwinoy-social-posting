@@ -1,6 +1,6 @@
 {
  "note": "YouTube Shorts cut from the Wolverine analysis long-form (render v8, approved 2026-11-14; the v3 cut https://youtu.be/ibU1j1niRQM and its 12 Shorts were made private on 2026-11-13 and their YouTube records kept as youtube_v3). Bryce, 2026-11-13: 2 Shorts a day replace the paused lore Shorts. Each pick is one question and its answer from the script's own claims, cut on narration sentence boundaries. parts: a run of beats with an optional first phrase (from) and last phrase (to); several parts join with a hard cut. Ending-spoiler picks come after the first three and carry a SPOILERS tag. start, end, seconds, cuts, description and tags are written by tools/analysis_shorts.py; youtube is written by --upload.",
- "full_video": "https://youtu.be/ibU1j1niRQM",
+ "full_video": "https://youtu.be/KRlVdjSeIy0",
  "slots_utc": [
   "15:00",
   "23:00"
