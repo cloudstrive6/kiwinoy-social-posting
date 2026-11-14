@@ -311,7 +311,10 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
     script = work / f"{b['id']}.filter"
     script.write_text(";\n".join(graph), encoding="utf-8")
     run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex_script", str(script),
-         "-map", "[vout]", "-map", "[aout]", "-t", f"{dur:.4f}", "-r", str(FPS),
+         # Exact frame count (2026-11-15): "-t" alone let an extra frame through whenever the length
+         # fell on a frame boundary, so the joined picture still ran about 10 frames long over 18 min.
+         "-map", "[vout]", "-map", "[aout]", "-frames:v", str(round(dur * FPS)),
+         "-t", f"{(round(dur * FPS) + 0.5) / FPS:.5f}", "-r", str(FPS),
          "-c:v", "libx264", "-preset", "faster", "-crf", "18", "-pix_fmt", "yuv420p", "-g", "120",
          "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(seg)])
 
@@ -413,7 +416,7 @@ def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, piec
     return out
 
 
-RENDER_VER = "2026-11-13b"  # bump when a change to this file should re-render every beat
+RENDER_VER = "2026-11-13b+frames"  # +frames 2026-11-15: exact frame count per segment  # bump when a change to this file should re-render every beat
 GFX_SRC = gfx.CODE_HASH  # analysis_gfx.py, analysis_motion.py and the font files: beats re-render when they change
 BRAND_SRC = hashlib.sha1((ROOT / "tools/analysis_brand.py").read_bytes() + (ROOT / "assets/brand/kg-avatar.png").read_bytes()
                          + GFX_SRC.encode()).hexdigest()[:10]
