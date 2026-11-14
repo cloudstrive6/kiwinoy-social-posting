@@ -100,6 +100,50 @@ def trim_tail(wav: Path) -> bool:
     return True
 
 
+# Narrator mastering (Bryce, 2026-11-15: "try mastering the audio of the narrator so that it is still
+# pleasant to the ears"). Measured on Narrator A: heavy sibilance (about 12% of speech frames led by
+# 5-9 kHz), some 200-500 Hz boxiness, rumble under 80 Hz, dynamics already tight. Presets chosen by ear
+# from level-matched A/B samples (inbox/narrator-master-ab/ in the vault): C medium (Bryce's first pick),
+# D hard, E harder. Each ends at -16 LUFS like the unmastered take; the mix then goes to -14 LUFS.
+_LN = "loudnorm=I=-16:TP=-2:LRA=11"
+MASTERS = {
+    "C": ("highpass=f=80:poles=2,equalizer=f=280:width_type=q:w=1.0:g=-3,equalizer=f=3200:width_type=q:w=1.0:g=2,"
+          "deesser=i=0.45:m=0.5:f=0.7:s=o,acompressor=threshold=-22dB:ratio=2:attack=10:release=150:makeup=1," + _LN),
+    "D": ("highpass=f=85:poles=2,equalizer=f=120:width_type=q:w=0.9:g=1.5,equalizer=f=300:width_type=q:w=1.0:g=-4,"
+          "acompressor=threshold=-30dB:ratio=3.5:attack=5:release=90:knee=4:makeup=6,"
+          "acompressor=threshold=-18dB:ratio=2:attack=25:release=250:makeup=2,"
+          "deesser=i=0.45:m=0.5:f=0.85:s=o,equalizer=f=3300:width_type=q:w=0.9:g=3,"
+          "alimiter=limit=0.89:attack=2:release=40:level=false," + _LN),
+    "E": ("highpass=f=90:poles=2,equalizer=f=120:width_type=q:w=0.9:g=2,equalizer=f=320:width_type=q:w=1.0:g=-5,"
+          "acompressor=threshold=-34dB:ratio=5:attack=4:release=80:knee=4:makeup=9,"
+          "acompressor=threshold=-18dB:ratio=2.5:attack=25:release=250:makeup=2,"
+          "asoftclip=type=tanh:threshold=0.85:output=0.9,deesser=i=0.5:m=0.5:f=0.85:s=o,"
+          "equalizer=f=3300:width_type=q:w=0.9:g=3.5,alimiter=limit=0.85:attack=2:release=40:level=false," + _LN),
+}
+
+
+def master_takes(narr: list, out: Path, timings: dict, preset: str) -> None:
+    """Master every paragraph from its kept dry take (<id>.dry.wav), so a preset can change later
+    without re-recording or stacking processing. A re-recorded paragraph refreshes its dry take."""
+    import shutil
+    chain = MASTERS.get(preset, preset)
+    for b in narr:
+        wav, dry, t = out / f"{b['id']}.wav", out / f"{b['id']}.dry.wav", timings.get(b["id"], {})
+        if not wav.exists():
+            continue
+        if t.get("master") == preset and t.get("master_hash") == t.get("hash") and dry.exists():
+            continue
+        if not dry.exists() or t.get("master_hash") != t.get("hash"):
+            shutil.copyfile(wav, dry)  # the current take is unmastered (new, or never mastered)
+        tmp = out / f"{b['id']}.mtmp.wav"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(dry), "-af", chain, "-ar", "48000", "-ac", "1",
+                        str(tmp)], check=True)
+        tmp.replace(wav)
+        t.update(master=preset, master_hash=t.get("hash"), seconds=round(seconds(wav), 3))
+        timings[b["id"]] = t
+    print(f"narration mastered with preset {preset}", flush=True)
+
+
 def seconds(path: Path) -> float:
     out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                           "-of", "default=nw=1:nk=1", str(path)], capture_output=True, text=True)
@@ -186,6 +230,8 @@ def main() -> int:
             if trim_tail(wav):
                 print(f"{b['id']}: tail trimmed {timings[b['id']]['seconds']:.2f} -> {seconds(wav):.2f} s", flush=True)
             timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
+    if nar and nar.get("master"):
+        master_takes(narr, out, timings, str(nar["master"]))
     tpath.write_text(json.dumps(timings, indent=1), encoding="utf-8")
     if nar and todo:  # what this run really cost (about 0.4 credit per character on Starter)
         req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": key})

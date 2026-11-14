@@ -239,7 +239,8 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game
 # it (0.9 read 13 to 16% slower than take 3).
 NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
             "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_multilingual_v2",
-            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95}
+            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95,
+            "master": "C"}  # narrator mastering preset (tools/analysis_narrate.py MASTERS), Bryce 2026-11-15
 
 # From each script's editor notes: music-risk or banned clips, and clips with HUD or boss bars.
 GAME_NOTES = {
