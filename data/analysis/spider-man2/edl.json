@@ -8,7 +8,8 @@
   "stability": 0.5,
   "similarity_boost": 0.75,
   "style": 0.0,
-  "speed": 0.95
+  "speed": 0.95,
+  "master": "C"
  },
  "under_narration_db": -24,
  "source": "spider-man2-script-v1.2.md",
@@ -551,8 +552,8 @@
   },
   {
    "type": "narr",
-   "text": "Then Connors calls him.",
-   "tts": "Then Connors calls him.",
+   "text": "Then, with Miles missing, Connors calls him.",
+   "tts": "Then, with Miles missing, Connors calls him.",
    "shots": [
     {
      "clip": 526,
@@ -1193,8 +1194,8 @@
   },
   {
    "type": "narr",
-   "text": "Then the symbiote spreads across New York, tying people into one hive. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
-   "tts": "Then the symbiote spreads across New York, tying people into one hive. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "text": "Then, at his mother Emily's grave, the symbiote speaks to Harry in her voice and shows him a vision of the whole city covered in it. He starts making it real, turning people into symbiotes. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
+   "tts": "Then, at his mother Emily's grave, the symbiote speaks to Harry in her voice and shows him a vision of the whole city covered in it. He starts making it real, turning people into symbiotes. Harry tells MJ this is the real him. He takes MJ and turns her into Scream, and as Scream she shouts that she's done begging for validation, that she's in complete control.",
    "shots": [
     {
      "clip": 600,
@@ -1332,8 +1333,8 @@
   },
   {
    "type": "narr",
-   "text": "The way out runs through Martin Li again. Li offers to use his power on the traces of symbiote still inside Peter, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
-   "tts": "The way out runs through Martin Lee again. Lee offers to use his power on the traces of symbiote still inside Peter, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
+   "text": "Go back to before that lab and the last fight. The way out runs through Martin Li again. Li and Miles go inside Peter's head, and Li offers to use his power on the traces of symbiote still in there, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
+   "tts": "Go back to before that lab and the last fight. The way out runs through Martin Lee again. Lee and Miles go inside Peter's head, and Lee offers to use his power on the traces of symbiote still in there, even though it will cost him his powers. Miles tells him he won't forgive him. And then he says this.",
    "shots": [
     {
      "clip": 592,
@@ -1382,8 +1383,8 @@
   },
   {
    "type": "narr",
-   "text": "MJ uses the Foundation's particle accelerator to destroy the meteorite the symbiote came from, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
-   "tts": "MJ uses the Foundation's particle accelerator to destroy the meteorite the symbiote came from, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
+   "text": "Then Harry takes the meteorite the symbiote came from, out of Connors's lab, and now the symbiote really does spread across New York, tying people into one hive. MJ uses the Foundation's particle accelerator to destroy that meteorite, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
+   "tts": "Then Harry takes the meteorite the symbiote came from, out of Connors's lab, and now the symbiote really does spread across New York, tying people into one hive. MJ uses the Foundation's particle accelerator to destroy that meteorite, and that wipes out the hive. Then Peter goes after Harry himself, and pulls the symbiote off his best friend. The man who had to save himself at the bell now does it for the friend who couldn't.",
    "shots": [
     {
      "clip": 611,
@@ -1486,8 +1487,8 @@
   },
   {
    "type": "narr",
-   "text": "Back in the city, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
-   "tts": "Back in the city, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
+   "text": "Before the credits, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
+   "tts": "Before the credits, MJ starts her own podcast, The New Normal. Her first words are about a tired city that has never lost hope. Peter goes to find Miles, and admits he hasn't been talking to him about the things he should have.",
    "shots": [
     {
      "clip": 190,
@@ -1723,5 +1724,6 @@
    "cue": "endscreen: next \"THE INSOMNIAC MARVEL UNIVERSE SO FAR: SPIDER-MAN TO WOLVERINE\", sub \"COMING LATER\", plus a subscribe button, both only in the final 20 s"
   }
  ],
- "v3_note": "Render v3 (2026-11-14, independent review of v1): b051 'That isn't alien.' -> 'None of that is alien.' (Whisper heard 'That is an alien.'), b063 'Harry tells Peter' -> 'Harry tells MJ' (he answers 'MJ: This isn't you.'). The coordinator updates the approved script to match."
+ "v3_note": "Render v3 (2026-11-14, independent review of v1): b051 'That isn't alien.' -> 'None of that is alien.' (Whisper heard 'That is an alien.'), b063 'Harry tells Peter' -> 'Harry tells MJ' (he answers 'MJ: This isn't you.'). The coordinator updates the approved script to match.",
+ "v5_note": "Render v5 (story-flow audit, 2026-11-15, scratchpad sm2flow/flow-audit.md E1-E10): b063 names the grave vision and the local spread; b073 adds the meteorite theft and the real city-wide hive; b070 marks the jump back and the mindscape; b026 'with Miles missing'; b079 'Before the credits'. Narrator mastering preset C (coordinator, 2026-11-15)."
 }
