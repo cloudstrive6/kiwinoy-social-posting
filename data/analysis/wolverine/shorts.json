@@ -29,8 +29,8 @@
   "b005": "",
   "b012": "I burnt every trace of Death out of your mind. Or so I thought.",
   "b026": "She participated willingly.",
-  "b032": "Forget her. Look at me! You'd be nothing...",
-  "b040": "Why is this happening... Because I needed you to know that I remember. And that I forgive you.",
+  "b032": "Forget her. Look at me! You'd be nothing without me! Or have you forgotten?",
+  "b040": "Because I needed you to know that I remember. And that I forgive you.",
   "b045": "Even if I wanted to remember, it just sounds like a... A story?",
   "b048": "And for a while, the boy was happy.",
   "b050": "And so was she.",
@@ -76,20 +76,20 @@
      "from": "By the midpoint Trask is gone"
     }
    ],
-   "start": 57.89,
-   "end": 181.61,
-   "seconds": 40.6,
+   "start": 49.72,
+   "end": 156.77,
+   "seconds": 32.72,
    "cuts": [
     [
-     57.89,
-     65.75
+     49.72,
+     57.29
     ],
     [
-     150.37,
-     181.61
+     133.12,
+     156.77
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nWalter tells Logan he is lucky he doesn't remember his past. I think that line tells you early which idea wins at the end of Marvel's Wolverine.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nWalter tells Logan he is lucky he doesn't remember his past. I think that line tells you early which idea wins at the end of Marvel's Wolverine.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -106,14 +106,24 @@
     "Team X",
     "Wolverine memory"
    ],
-   "flash_holds": {
-    "1": 0.4817
-   },
+   "flash_holds": {},
    "youtube_v3": {
     "id": "YHtynR-aAjE",
     "publish_at": "2026-11-13T15:00:00Z",
     "uploaded_at": "2026-11-12T22:01:55Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "CVlhpCq5t14",
+    "publish_at": "2026-11-14T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:48:37Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s01.mp4",
+   "facebook": {
+    "id": "sp_qFZp7VuLfZKWt7BEs3vR",
+    "scheduled_at": "2026-11-14T23:00:00Z",
+    "created_at": "2026-11-14T00:55:40Z"
    }
   },
   {
@@ -146,20 +156,20 @@
      "to": "with Jean doing the telling."
     }
    ],
-   "start": 92.76,
-   "end": 132.67,
-   "seconds": 37.2,
+   "start": 79.0,
+   "end": 118.11,
+   "seconds": 34.73,
    "cuts": [
     [
-     92.76,
-     107.51
+     79.0,
+     93.83
     ],
     [
-     111.72,
-     132.67
+     99.71,
+     118.11
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nA frightened wild man in a jungle and a calm voice offering him a home. The scene never names him, but it suggests who he is, and the voice gives its own name.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #NathanielEssex",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nA frightened wild man in a jungle and a calm voice offering him a home. The scene never names him, but it suggests who he is, and the voice gives its own name.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #NathanielEssex",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -183,6 +193,18 @@
     "publish_at": "2026-11-13T23:00:00Z",
     "uploaded_at": "2026-11-12T22:02:17Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "qVzZdiewj_0",
+    "publish_at": "2026-11-15T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:48:58Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s02.mp4",
+   "facebook": {
+    "id": "sp_6V8eRzfvpTdQfUd67Ab8v",
+    "scheduled_at": "2026-11-15T15:00:00Z",
+    "created_at": "2026-11-14T00:55:49Z"
    }
   },
   {
@@ -227,20 +249,20 @@
      "to": "kiss her or kill her, and neither did he."
     }
    ],
-   "start": 181.66,
-   "end": 240.15,
-   "seconds": 58.29,
+   "start": 156.91,
+   "end": 210.22,
+   "seconds": 53.55,
    "cuts": [
     [
-     181.66,
-     215.55
+     156.91,
+     189.78
     ],
     [
-     217.25,
-     240.15
+     191.04,
+     210.22
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean tells Logan how they first met, in the Rockies in the late 1800s, and what she burned out of his mind back then.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nJean tells Logan how they first met, in the Rockies in the late 1800s, and what she burned out of his mind back then.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -263,6 +285,18 @@
     "publish_at": "2026-11-14T15:00:00Z",
     "uploaded_at": "2026-11-12T22:02:51Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "Fl63vUIaqqs",
+    "publish_at": "2026-11-15T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:49:27Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s03.mp4",
+   "facebook": {
+    "id": "sp_Lxuq62Gh12HoE126u58",
+    "scheduled_at": "2026-11-15T23:00:00Z",
+    "created_at": "2026-11-14T00:55:56Z"
    }
   },
   {
@@ -304,24 +338,24 @@
      "from": "Each of them also has a story"
     }
    ],
-   "start": 413.43,
-   "end": 469.68,
-   "seconds": 45.53,
+   "start": 360.04,
+   "end": 406.53,
+   "seconds": 38.82,
    "cuts": [
     [
-     413.43,
-     429.07
+     360.04,
+     374.7
     ],
     [
-     433.21,
-     441.86
+     377.56,
+     384.28
     ],
     [
-     449.94,
-     469.68
+     390.59,
+     406.53
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nEssex says his wife participated willingly. Put him next to Jean and the design of the ending gets clearer. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #MisterSinister",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nEssex says his wife participated willingly. Put him next to Jean and the design of the ending gets clearer. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #MisterSinister",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -339,13 +373,25 @@
     "Wolverine villain"
    ],
    "flash_holds": {
-    "1": 0.0727
+    "1": 0.0877
    },
    "youtube_v3": {
     "id": "Pa8evuf9NLo",
     "publish_at": "2026-11-14T23:00:00Z",
     "uploaded_at": "2026-11-12T22:03:10Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "-a1RbsSdMDQ",
+    "publish_at": "2026-11-16T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:49:45Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s04.mp4",
+   "facebook": {
+    "id": "sp_qfxJ9T3eqPMfVUZRC7vF",
+    "scheduled_at": "2026-11-16T15:00:00Z",
+    "created_at": "2026-11-14T00:56:03Z"
    }
   },
   {
@@ -410,28 +456,28 @@
      "to": "by the one person fighting it"
     }
    ],
-   "start": 485.52,
-   "end": 646.43,
-   "seconds": 29.9,
+   "start": 419.75,
+   "end": 564.78,
+   "seconds": 28.89,
    "cuts": [
     [
-     485.52,
-     500.19
+     419.75,
+     431.74
     ],
     [
-     504.91,
-     508.91
+     436.03,
+     442.53
     ],
     [
-     517.91,
-     520.25
+     449.01,
+     452.54
     ],
     [
-     639.04,
-     646.43
+     559.41,
+     564.78
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nIn Tokyo, Essex gives Logan a simple order: forget her. By the final scene Logan has, and the order is carried out by the one person fighting it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nIn Tokyo, Essex gives Logan a simple order: forget her. By the final scene Logan has, and the order is carried out by the one person fighting it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -450,13 +496,27 @@
     "Forget her"
    ],
    "flash_holds": {
-    "1": 0.1407
+    "1": 0.1447,
+    "2": 0.1477,
+    "3": 0.1687
    },
    "youtube_v3": {
     "id": "W53N4ybtmoE",
     "publish_at": "2026-11-15T15:00:00Z",
     "uploaded_at": "2026-11-12T22:03:33Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "xqTZi4WLYOk",
+    "publish_at": "2026-11-16T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:50:07Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s05.mp4",
+   "facebook": {
+    "id": "sp_aXmKYPbCrWH3uod4JHl3",
+    "scheduled_at": "2026-11-16T23:00:00Z",
+    "created_at": "2026-11-14T00:56:09Z"
    }
   },
   {
@@ -485,16 +545,16 @@
      "why": "runs to the end of b036 to keep 'That request is part of the game's story, though my footage doesn't catch it clearly.'"
     }
    ],
-   "start": 524.83,
-   "end": 579.93,
-   "seconds": 56.6,
+   "start": 456.26,
+   "end": 503.62,
+   "seconds": 48.86,
    "cuts": [
     [
-     524.83,
-     579.93
+     456.26,
+     503.62
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nBefore the Phoenix Force burns the Death out of Logan, Jean tells him the price in one breath. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nBefore the Phoenix Force burns the Death out of Logan, Jean tells him the price in one breath. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -512,13 +572,25 @@
     "Nothing of you left"
    ],
    "flash_holds": {
-    "0": 0.0927
+    "0": 0.0997
    },
    "youtube_v3": {
     "id": "QboX-Ekr5I8",
     "publish_at": "2026-11-15T23:00:00Z",
     "uploaded_at": "2026-11-12T22:04:10Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "Jmzz-leKtK4",
+    "publish_at": "2026-11-17T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:50:36Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s06.mp4",
+   "facebook": {
+    "id": "sp_qHn3BBE40xBD3UGqMwm",
+    "scheduled_at": "2026-11-17T15:00:00Z",
+    "created_at": "2026-11-14T00:56:19Z"
    }
   },
   {
@@ -546,16 +618,16 @@
      "from": "In my playthrough"
     }
    ],
-   "start": 582.65,
-   "end": 633.82,
-   "seconds": 52.67,
+   "start": 505.52,
+   "end": 556.01,
+   "seconds": 51.99,
    "cuts": [
     [
-     582.65,
-     633.82
+     505.52,
+     556.01
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThere is no shot of Logan's memories burning away. The game shows you something else instead, from the side of the person who gets to keep it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nThere is no shot of Logan's memories burning away. The game shows you something else instead, from the side of the person who gets to keep it. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -576,6 +648,18 @@
     "publish_at": "2026-11-16T15:00:00Z",
     "uploaded_at": "2026-11-12T22:04:34Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "lxcdrcBne5c",
+    "publish_at": "2026-11-17T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:51:00Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s07.mp4",
+   "facebook": {
+    "id": "sp_gO0qkyCuZmAIjQMcwIP1q",
+    "scheduled_at": "2026-11-17T23:00:00Z",
+    "created_at": "2026-11-14T00:56:26Z"
    }
   },
   {
@@ -614,7 +698,7 @@
      "in": 116.2,
      "out": 120.5,
      "crop": "sub",
-     "text": "It's... it's a nice story.",
+     "text": "It's a... it's a nice story.",
      "why": "the four words from the source clip (the v3 render's b050 burst ends before them); subtitle cropped so it does not show before he says it"
     },
     {
@@ -623,17 +707,17 @@
      ]
     }
    ],
-   "start": 708.6,
-   "end": 786.94,
-   "seconds": 45.03,
+   "start": 621.6,
+   "end": 680.76,
+   "seconds": 42.17,
    "cuts": [
     [
-     708.6,
-     730.04
+     621.6,
+     638.86
     ],
     [
-     737.33,
-     740.43
+     639.12,
+     644.98
     ],
     {
      "clip": 36,
@@ -641,11 +725,11 @@
      "out": 120.5
     },
     [
-     772.25,
-     786.94
+     667.51,
+     680.76
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean's bedtime story about a girl named Red, and the four words Logan says back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nJean's bedtime story about a girl named Red, and the four words Logan says back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -662,13 +746,26 @@
     "Red"
    ],
    "flash_holds": {
-    "3": 0.1197
+    "1": 0.1757,
+    "3": 0.1697
    },
    "youtube_v3": {
     "id": "5Hkb6ApknZA",
     "publish_at": "2026-11-16T23:00:00Z",
     "uploaded_at": "2026-11-12T22:04:54Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "1YWWXQZomCI",
+    "publish_at": "2026-11-18T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:51:19Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s08.mp4",
+   "facebook": {
+    "id": "sp_7HqVsmZThUFp6rr4RB4BL",
+    "scheduled_at": "2026-11-18T15:00:00Z",
+    "created_at": "2026-11-14T00:56:32Z"
    }
   },
   {
@@ -699,23 +796,33 @@
      "beats": [
       "b017"
      ],
-     "from": "A darkness settles on Logan"
+     "from": "A darkness settles on Logan",
+     "picture": [
+      {
+       "at": 0,
+       "until": 9.9,
+       "clip": 35,
+       "in": 16.0,
+       "crop": "sub",
+       "why": "the long-form loop graphic is labelled KG'S READING (third person); Jean and Logan on the balcony instead (review 2026-11-14)"
+      }
+     ]
     }
    ],
-   "start": 250.87,
-   "end": 320.15,
-   "seconds": 50.1,
+   "start": 219.69,
+   "end": 279.22,
+   "seconds": 43.84,
    "cuts": [
     [
-     250.87,
-     282.81
+     219.69,
+     248.51
     ],
     [
-     303.49,
-     320.15
+     265.7,
+     279.22
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nMy reading: this may not be the first time Jean has gone through this with Logan. Here is what it rests on. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nMy reading: this may not be the first time Jean has gone through this with Logan. Here is what it rests on. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #JeanGrey",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -737,6 +844,18 @@
     "publish_at": "2026-11-17T15:00:00Z",
     "uploaded_at": "2026-11-12T22:05:17Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "AksFbLB_8Ng",
+    "publish_at": "2026-11-18T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:51:40Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s09.mp4",
+   "facebook": {
+    "id": "sp_S5cH75lcq2xdN5dzQ2P3",
+    "scheduled_at": "2026-11-18T23:00:00Z",
+    "created_at": "2026-11-14T00:56:39Z"
    }
   },
   {
@@ -764,16 +883,16 @@
      "from": "Logan comes to see Jean"
     }
    ],
-   "start": 665.39,
-   "end": 704.74,
-   "seconds": 40.85,
+   "start": 582.49,
+   "end": 618.21,
+   "seconds": 37.22,
    "cuts": [
     [
-     665.39,
-     704.74
+     582.49,
+     618.21
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nJean asks him to stay and help the new mutants. He won't. The game opened with a man who wanted his past back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nJean asks him to stay and help the new mutants. He won't. The game opened with a man who wanted his past back. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -794,6 +913,18 @@
     "publish_at": "2026-11-17T23:00:00Z",
     "uploaded_at": "2026-11-12T22:05:36Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "RtJIKVsUfaw",
+    "publish_at": "2026-11-19T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:51:57Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s10.mp4",
+   "facebook": {
+    "id": "sp_jfBfwJLwYTDbcj4gOPkZQ",
+    "scheduled_at": "2026-11-19T15:00:00Z",
+    "created_at": "2026-11-14T00:56:45Z"
    }
   },
   {
@@ -827,21 +958,28 @@
        "in": 4.3,
        "crop": "sub",
        "why": "the long-form chapter card covers the opening and the flash at 0.1 s; same clip 165 frames without it"
+      },
+      {
+       "at": 18.4,
+       "clip": 166,
+       "in": 1.4,
+       "crop": "none",
+       "why": "show Sabretooth saying 'You destroyed our family.' with its subtitle under the quote (review 2026-11-14)"
       }
      ],
      "why": "ends on a complete statement before 'KG's notes add' and before the bloodied clip 167 close-up"
     }
    ],
-   "start": 787.13,
-   "end": 810.34,
-   "seconds": 24.71,
+   "start": 680.88,
+   "end": 701.63,
+   "seconds": 22.25,
    "cuts": [
     [
-     787.13,
-     810.34
+     680.88,
+     701.63
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nThe Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan over one word: family. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #Sabretooth",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nThe Phoenix forces Apocalypse out of Logan's mind, and that's all. Then Victor Creed turns on Logan over one word: family. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #Sabretooth",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -865,6 +1003,18 @@
     "publish_at": "2026-11-18T15:00:00Z",
     "uploaded_at": "2026-11-12T22:05:56Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "VbG2DXI8uHk",
+    "publish_at": "2026-11-19T23:00:00Z",
+    "uploaded_at": "2026-11-14T00:52:17Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s11.mp4",
+   "facebook": {
+    "id": "sp_73qsfOUfATC5bBAW1P5tT",
+    "scheduled_at": "2026-11-19T23:00:00Z",
+    "created_at": "2026-11-14T00:56:51Z"
    }
   },
   {
@@ -896,23 +1046,30 @@
      "beats": [
       "b058"
      ],
-     "to": "yes or no?"
+     "to": "yes or no?",
+     "picture": [
+      {
+       "at": 3.4,
+       "lf": 764.6,
+       "why": "the long-form WATCH NEXT/SUBSCRIBE end card starts here; hold the Logan shot instead (review 2026-11-14)"
+      }
+     ]
     }
    ],
-   "start": 842.76,
-   "end": 882.93,
-   "seconds": 31.58,
+   "start": 731.12,
+   "end": 766.52,
+   "seconds": 27.29,
    "cuts": [
     [
-     842.76,
-     868.17
+     731.12,
+     752.56
     ],
     [
-     878.26,
-     882.93
+     762.17,
+     766.52
     ]
    ],
-   "description": "Full video: https://youtu.be/ibU1j1niRQM\n\nWhere the ending leaves Jean, Logan and the voice, and my answer to the big question. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
+   "description": "Full video: https://youtu.be/KRlVdjSeIy0\n\nWhere the ending leaves Jean, Logan and the voice, and my answer to the big question. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsWolverine #Wolverine #PS5 #KiwinoyGaming #WolverineEnding",
    "tags": [
     "Marvel's Wolverine",
     "Wolverine",
@@ -929,14 +1086,26 @@
     "Apocalypse"
    ],
    "flash_holds": {
-    "0": 0.1617,
-    "1": 0.1677
+    "0": 0.1857,
+    "1": 0.1837
    },
    "youtube_v3": {
     "id": "C6BQT9M-xSU",
     "publish_at": "2026-11-18T23:00:00Z",
     "uploaded_at": "2026-11-12T22:06:14Z",
     "playlist": true
+   },
+   "youtube": {
+    "id": "ePopWqe_-NM",
+    "publish_at": "2026-11-20T15:00:00Z",
+    "uploaded_at": "2026-11-14T00:52:33Z",
+    "playlist": true
+   },
+   "b2_key": "shorts/analysis/wolverine/s12.mp4",
+   "facebook": {
+    "id": "sp_YuGHWbIuwjwCxaK8joGy",
+    "scheduled_at": "2026-11-20T15:00:00Z",
+    "created_at": "2026-11-14T00:56:57Z"
    }
   }
  ]
