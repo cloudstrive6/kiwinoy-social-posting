@@ -482,6 +482,24 @@ def fmt_ts(t: float) -> str:
     return f"{t // 60}:{t % 60:02d}" if t < 3600 else f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}"
 
 
+def sync_drift(path: Path, timeline: list) -> float | None:
+    """Median lag (s) of the picture cut behind its timeline time over the last 5 game bursts
+    (2026-11-15: cumulative drift put the voice 0.2 s ahead of the lips late in the video)."""
+    import numpy as np
+    lags = []
+    for b in [x for x in timeline if x["type"] == "game"][-5:]:
+        a = b["start"] - 0.3
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{a:.3f}", "-i", str(path), "-t", "0.8", "-vf",
+                              "scale=64:36,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+        fr = np.frombuffer(raw, np.uint8)
+        if fr.size < 64 * 36 * 3:
+            continue
+        fr = fr[: fr.size // (64 * 36) * 64 * 36].reshape(-1, 36, 64).astype(float)
+        d = np.abs(np.diff(fr, axis=0)).mean((1, 2))
+        lags.append(a + (int(d.argmax()) + 1) / FPS - b["start"])
+    return round(float(np.median(lags)), 3) if lags else None
+
+
 def qc(path: Path) -> dict:
     pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_entries",
                                     "stream=codec_type,width,height,r_frame_rate,duration:format=duration",
@@ -502,10 +520,11 @@ def qc(path: Path) -> dict:
            "lufs": float(i_m.group(1)) if i_m else None,
            "true_peak": float(p_m.group(1)) if p_m else None,
            "black": [[float(a), float(b)] for a, b in blacks], "freezes": [float(x) for x in freezes]}
-    # A/V length check (2026-11-15): the joined picture and sound must end together, or lips drift.
+    # A/V length (2026-11-15): the final AAC/mix ends up to about 0.3 s before the picture (end-card tail);
+    # more than that means a stream is missing time. Drift itself is checked by sync_drift() below.
     au = next((s for s in pr["streams"] if s["codec_type"] == "audio"), None)
     res["av_gap"] = round(float(v.get("duration", 0)) - float(au.get("duration", 0)), 3) if au else None
-    res["pass"] = (res["av_gap"] is not None and abs(res["av_gap"]) <= 0.1 and res["width"] == 1920 and res["height"] == 1080 and abs(res["fps"] - 60) < 0.1
+    res["pass"] = (res["av_gap"] is not None and abs(res["av_gap"]) <= 0.35 and res["width"] == 1920 and res["height"] == 1080 and abs(res["fps"] - 60) < 0.1
                    and res["lufs"] is not None and abs(res["lufs"] + 14) <= 1
                    and res["true_peak"] is not None and res["true_peak"] <= -1.0
                    and not res["black"] and not res["freezes"])
@@ -666,6 +685,9 @@ def main() -> int:
     joined.unlink(missing_ok=True)
     mixed.unlink(missing_ok=True)
     report = qc(final)
+    report["sync_drift"] = sync_drift(final, timeline)
+    if report["sync_drift"] is None or abs(report["sync_drift"]) > 0.05:
+        report["pass"] = False
     report["chapters"] = chap_txt
     (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps(report, indent=1), flush=True)
