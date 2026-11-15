@@ -111,7 +111,81 @@
    }
   ]
  },
- "word_times": {},
+ "word_times": {
+  "_note": "Seconds from the beat start, measured by QA on the speech envelope (2026-11-16).",
+  "b002": {
+   "0": [
+    0.37,
+    0.55
+   ],
+   "1": [
+    0.57,
+    0.85
+   ]
+  },
+  "b007": {
+   "5": [
+    1.94,
+    2.06
+   ],
+   "6": [
+    2.06,
+    2.26
+   ]
+  },
+  "b009": {
+   "0": [
+    0.2,
+    0.5
+   ]
+  },
+  "b020": {
+   "0": [
+    0.69,
+    0.97
+   ],
+   "1": [
+    1.12,
+    1.45
+   ]
+  },
+  "b022": {
+   "6": [
+    2.17,
+    2.33
+   ],
+   "7": [
+    2.45,
+    2.62
+   ],
+   "8": [
+    3.27,
+    3.9
+   ]
+  },
+  "b024": {
+   "0": [
+    0.19,
+    0.33
+   ],
+   "1": [
+    0.35,
+    0.62
+   ]
+  },
+  "b028": {
+   "0": [
+    0.21,
+    0.34
+   ]
+  },
+  "b030": {
+   "0": [
+    0.19,
+    0.3
+   ]
+  }
+ },
  "shorts": [
   {
    "id": "r01",
@@ -248,7 +322,7 @@
     },
     {
      "at": 10.292,
-     "cx": 0.36
+     "cx": 0.28
     },
     {
      "at": 14.459,
@@ -288,11 +362,11 @@
    "id": "r03",
    "order": 3,
    "frame": "square",
-   "spoilers": false,
+   "spoilers": true,
    "hook": "Did Jeff describe Miles before we met him?",
    "accent": "Miles",
    "title": "Jefferson Davis described Miles before we met him",
-   "caption": "On a shipyard search with Spider-Man, Jeff talks about his son: a big fan who takes things apart. That kid is Miles.",
+   "caption": "On a shipyard search with Spider-Man, Jeff talks about his son: a big fan who takes things apart. That kid is Miles. Spoilers.",
    "hashtags_extra": [
     "#MilesMorales",
     "#JeffersonDavis"
@@ -406,11 +480,11 @@
        "at": 14.48,
        "until": 17.33,
        "clip": 1000,
-       "in": 364.35,
+       "in": 364.37,
        "why": "Fisk glaring, mouth closed"
       },
       {
-       "at": 25.14,
+       "at": 25.13,
        "until": 30.85,
        "clip": 1003,
        "in": 436.99,
@@ -454,7 +528,7 @@
     },
     {
      "at": 17.332,
-     "cx": 0.6
+     "cx": 0.76
     },
     {
      "at": 20.575,
@@ -466,11 +540,11 @@
     },
     {
      "at": 22.492,
-     "cx": 0.6
+     "cx": 0.24
     },
     {
-     "at": 25.14,
-     "cx": 0.5
+     "at": 25.13,
+     "cx": 0.7
     },
     {
      "at": 30.852,
