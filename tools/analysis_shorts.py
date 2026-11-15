@@ -11,7 +11,7 @@ run of beats with an optional first phrase ("from") and last phrase ("to"); a pi
 (a hard cut). Word times come from faster-whisper (word_timestamps) on each beat's own audio,
 snapped to the known narration text so the spelling is the script's.
 
-Layout (1080x1920, 60 fps): blurred, darkened fill of the same frames; the 16:9 picture full
+Layout (1080x1920, 60 fps; "square" is the TikTok/IG/FB reel, see FRAME_LAYOUT): blurred, darkened fill of the same frames; the 16:9 picture full
 width in the middle band (or "zoom": a 4:3 centre crop, larger); the hook at the top (Anton,
 off-white #F2EEE8, one KG red #FF3D46 word); word-by-word captions in the lower-middle safe area
 (above the bottom 20%), centred on the frame but never past x=918 where the Shorts buttons sit,
@@ -61,8 +61,183 @@ AVATAR = ROOT / "assets" / "brand" / "kg-avatar.png"
 HOOK_TOP, HOOK_BOT = 230, 560          # hook text block
 ROW_Y = 600                            # watermark and SPOILERS row (centre)
 BAND = {"band": (650, 1080, 608),      # top, width, height of the picture
-        "zoom": (600, 1080, 810)}
-CAP_Y = {"band": 1395, "zoom": 1468}   # caption line centre
+        "zoom": (600, 1080, 810),
+        "square": (590, 1080, 1080)}
+CAP_Y = {"band": 1395, "zoom": 1468, "square": 1462}   # caption line centre
+# "square" = the dedicated TikTok / Instagram / Facebook analysis reel (Bryce, 2026-11-15): the
+# picture is a 1:1 crop filling 56% of the height, the hook sits in the space above it, centred on
+# the frame with equal margins left and right (those apps have no buttons up there, so it may use
+# the full width less 60 px a side), smaller captions low in the square, and an end line that does
+# not point at a YouTube video. band and zoom keep their YouTube Shorts values.
+FRAME_LAYOUT = {
+    "band":   {"hook": (230, 560), "hook_max_w": None, "cap_size": 68, "end": ("FULL VIDEO", "ON THE CHANNEL"),
+               "logo": (70, 140)},
+    "zoom":   {"hook": (230, 560), "hook_max_w": None, "cap_size": 68, "end": ("FULL VIDEO", "ON THE CHANNEL"),
+               "logo": (70, 140)},
+    "square": {"hook": (250, 488), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
+               "logo": (112, 128)},
+}
+# The game's logo, centred in the space above the hook on every analysis Short and reel (Bryce,
+# 2026-11-15: "fitting in the respective game logo ... on all the analysis shorts/reels, meaning
+# including YouTube shorts"). "logo" is (top, max height); width is capped at LOGO_MAX_W. The
+# square reel starts it at y=112, below TikTok's "Following | For You" tabs. Logos come from
+# reels/assets/game-logo through the same lookup the gameplay reels use.
+LOGO_MAX_W = 520
+GAME = ""   # set by render_short: the game slug (a reel pack's base game)
+# The square crop: 908 x 908 from the 1920 x 1080 picture, centred, from y=8, so its bottom edge
+# (y=916, 85% of the height) stays above the game's own subtitles (the lowest 10 to 14%).
+SQUARE_CROP = "crop=908:908:506:8,"
+SQ = 908
+
+
+def square_crop(pan: list | None) -> str:
+    """The square crop, following the subject shot by shot. `pan` is the pick's list of
+    {"at": reel seconds, "cx": 0..1}: from `at` on, the crop is centred on cx of the frame's
+    width (clamped so it stays inside the picture). No pan = centred. A centre crop keeps under
+    half the width of a 16:9 frame, so a subject standing to one side is lost without it (layout
+    preview, 2026-11-15)."""
+    if not pan:
+        return SQUARE_CROP
+    steps = sorted(pan, key=lambda x: float(x["at"]))
+
+    def x_of(cx: float) -> int:
+        return int(max(0, min(1920 - SQ, round(float(cx) * 1920 - SQ / 2))))
+    expr = str(x_of(0.5) if float(steps[0]["at"]) > 0 else x_of(steps[0]["cx"]))
+    for st in steps:
+        expr = f"if(gte(t\\,{float(st['at']):.3f})\\,{x_of(st['cx'])}\\,{expr})"
+    return f"crop={SQ}:{SQ}:'{expr}':8,"
+
+
+def use_frame(frame: str) -> None:
+    """Point the module's layout values at one frame's layout (hook box, caption size)."""
+    global HOOK_TOP, HOOK_BOT, HOOK_MAX_W, CAP_SIZE
+    lay = FRAME_LAYOUT.get(frame, FRAME_LAYOUT["band"])
+    HOOK_TOP, HOOK_BOT = lay["hook"]
+    HOOK_MAX_W = lay["hook_max_w"] or (2 * HALF - 20)
+    CAP_SIZE = lay["cap_size"]
+
+
+def game_logo(game: str) -> "Image.Image | None":
+    """The game's logo PNG with its transparent padding trimmed, or None."""
+    base = game[: -len("-reels")] if game.endswith("-reels") else game
+    if not base:
+        return None
+    try:
+        from orchestrator import _game_logo
+        path = _game_logo(base)
+    except Exception as e:  # never fail a render over the logo
+        print(f"game logo lookup failed for {base}: {e!r}", flush=True)
+        return None
+    if not path:
+        return None
+    im = Image.open(path).convert("RGBA")
+    box = im.getchannel("A").getbbox()
+    return im.crop(box) if box else im
+
+
+def draw_logo(im: "Image.Image", frame: str) -> None:
+    logo = game_logo(GAME)
+    if logo is None:
+        return
+    top, max_h = FRAME_LAYOUT.get(frame, FRAME_LAYOUT["band"])["logo"]
+    k = min(max_h / logo.height, LOGO_MAX_W / logo.width)
+    lg = logo.resize((max(1, round(logo.width * k)), max(1, round(logo.height * k))), Image.LANCZOS)
+    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    x = CX - lg.width // 2
+    shadow = Image.new("RGBA", lg.size, (0, 0, 0, 0))
+    shadow.putalpha(lg.getchannel("A").point(lambda a: a * 0.6))
+    sh.alpha_composite(shadow, (x, top + 4))
+    im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(8)))
+    im.alpha_composite(lg, (x, top))
+
+
+# Square reels borrow two things from the classic gameplay reel (Bryce, 2026-11-15: "add my KG
+# logo below the footage, center-aligned, similar to how it is for the classic format" and "for
+# the edges of the footage, make it feathered as well"): the circular KG logo (config
+# reels.brand_logo, brand_logo_size, brand_logo_opacity) centred in the band under the picture,
+# and the footage's top and bottom edges faded over reels.gameplay.classic_feather px.
+def kg_logo_circle() -> "Image.Image | None":
+    try:
+        from core.config import CONFIG
+        src = ROOT / CONFIG.reels.get("brand_logo", "reels/assets/logo/KG Logo 2.PNG")
+        size = int(CONFIG.reels.get("brand_logo_size", 140))
+        opacity = max(0.0, min(1.0, float(CONFIG.reels.get("brand_logo_opacity", 0.6))))
+    except Exception as e:
+        print(f"KG logo settings unavailable: {e!r}", flush=True)
+        return None
+    if not src.exists():
+        return None
+    from PIL import ImageChops
+    im = Image.open(src).convert("RGBA")
+    w, h = im.size
+    m = min(w, h)
+    im = im.crop(((w - m) // 2, (h - m) // 2, (w - m) // 2 + m, (h - m) // 2 + m)).resize((size, size), Image.LANCZOS)
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, size - 1, size - 1), fill=255)
+    im.putalpha(ImageChops.multiply(im.getchannel("A"), mask).point(lambda v: int(v * opacity)))
+    return im
+
+
+def feather_px() -> int:
+    try:
+        from core.config import CONFIG
+        return int(float((CONFIG.reels.get("gameplay", {}) or {}).get("classic_feather", 40)))
+    except Exception:
+        return 40
+
+
+def feather_mask(path: Path, w: int, h: int, fe: int) -> Path:
+    """Vertical alpha gradient: 0 at the top and bottom edges, 255 from fe px in (as classic)."""
+    col = Image.new("L", (1, h))
+    ld = col.load()
+    for y in range(h):
+        ld[0, y] = int(round(255 * max(0.0, min(1.0, min(y, h - 1 - y) / max(1, fe)))))
+    col.resize((w, h)).save(path)
+    return path
+
+
+# YouTube Shorts (band, zoom) carry the long-form's "SUBSCRIBE TO BOSS KG" lower third (Bryce,
+# 2026-11-15: "put the lower-thirds 'Subscribe to Boss KG' below the captions area, in the area
+# of App buttons and caption area"): tools/analysis_brand.py drawn frame by frame, cropped to its
+# own box, scaled to SUB_W wide and centred on x=540 (so it ends left of the Shorts buttons),
+# its centre at SUB_CY, from SUB_AT seconds.
+SUB_W, SUB_CY, SUB_AT = 700, 1690, 4.0
+
+
+def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
+    """(mov, x, y, seconds) of the scaled lower third; built once and cached in work/."""
+    try:
+        import analysis_brand as brand
+    except Exception as e:
+        print(f"subscribe lower third unavailable: {e!r}", flush=True)
+        return None
+    cfg = dict(brand.DEFAULTS)
+    shared = ROOT / "data/analysis/brand.json"
+    if shared.exists():
+        cfg.update(json.loads(shared.read_text(encoding="utf-8")).get("subscribe", {}))
+    cfg["side"] = "left"
+    secs = brand.total_seconds(cfg)
+    full = brand.frame(brand.ENTER + 0.5, cfg)
+    box = full.getchannel("A").getbbox()
+    if not box:
+        return None
+    pad = 24
+    box = (max(0, box[0] - pad), max(0, box[1] - pad), min(full.width, box[2] + pad), min(full.height, box[3] + pad))
+    k = SUB_W / (box[2] - box[0])
+    ow, oh = SUB_W, int(round((box[3] - box[1]) * k)) // 2 * 2
+    out = work / f"subscribe-{ow}x{oh}.mov"
+    if not out.exists():
+        n = int(round(secs * FPS))
+        pr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba",
+                               "-s", f"{ow}x{oh}", "-r", str(FPS), "-i", "-", "-c:v", "qtrle",
+                               "-pix_fmt", "argb", str(out)], stdin=subprocess.PIPE)
+        for i in range(n):
+            fr = brand.frame(i / FPS, cfg).crop(box).resize((ow, oh), Image.LANCZOS)
+            pr.stdin.write(fr.tobytes())
+        pr.stdin.close()
+        if pr.wait() != 0:
+            return None
+    return out, CX - ow // 2, SUB_CY - oh // 2, secs
 # Hook, captions and end card are centred on the frame (Bryce, 2026-11-13: "align-center").
 # To stay clear of the right 15% where the Shorts buttons are, every line is kept narrow enough
 # to end before x=918 while centred on 540 (so it spans at most 162..918).
@@ -510,6 +685,12 @@ def draw_shadowed(im: Image.Image, xy, text, f, fill, stroke=6, shadow=10):
 def hook_layer(s: dict, frame: str) -> Image.Image:
     """Static layer: hook (top), watermark and SPOILERS row above the picture."""
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw_logo(im, frame)
+    if frame == "square":
+        kg = kg_logo_circle()
+        if kg is not None:
+            band_top = BAND[frame][0] + BAND[frame][2]
+            im.alpha_composite(kg, (CX - kg.width // 2, band_top + (H - band_top - kg.height) // 2))
     words = [w if any(c.isdigit() for c in w) else w.upper() for w in s["hook"].split()]
     accent = {norm(x) for x in s.get("accent", "").upper().split()}
     lines: list[list[str]] = []
@@ -575,8 +756,9 @@ def end_layer(frame: str) -> Image.Image:
     ImageDraw.Draw(im).rectangle((0, top, W, top + bh), fill=(0, 0, 0, 110))
     f = font(ANTON, 84)
     y = CAP_Y[frame] - 50
-    # one line: "FULL VIDEO" in red, the rest off-white
-    a, b = "FULL VIDEO", " ON THE CHANNEL"
+    # one line: the first words in red ("FULL VIDEO" / "FOLLOW"), the rest off-white
+    a, b = FRAME_LAYOUT.get(frame, FRAME_LAYOUT["band"])["end"]
+    b = " " + b
     tw = text_w(f, a + b)
     if tw > 2 * HALF - 40:
         f = font(ANTON, int(84 * (2 * HALF - 40) / tw))
@@ -585,6 +767,8 @@ def end_layer(frame: str) -> Image.Image:
     draw_shadowed(im, (x, y), a, f, (*RED, 255), stroke=5, shadow=12)
     draw_shadowed(im, (x + text_w(f, a) + text_w(f, " "), y), b.strip(), f, (*OFFWHITE, 255),
                   stroke=5, shadow=12)
+    if frame == "square":
+        return im
     # a small play triangle under it, pointing at nothing in particular: the channel
     cx, cy = CX, y + 150
     ImageDraw.Draw(im).polygon([(cx - 18, cy - 22), (cx - 18, cy + 22), (cx + 22, cy)], fill=(*OFFWHITE, 235))
@@ -755,7 +939,10 @@ def audio_graph(parts: list[dict]) -> tuple[str, str]:
 
 def render_short(s: dict, p: Paths, src: Path) -> Path:
     parts = s["_parts"]
+    global GAME
     frame = s.get("frame", "band")
+    use_frame(frame)
+    GAME = p.game
     work = p.work
     hook = work / f"{s['id']}-hook.png"
     hook_layer(s, frame).save(hook)
@@ -772,6 +959,16 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
     inputs += ["-f", "concat", "-safe", "0", "-i", str(cap)]
     inputs += ["-loop", "1", "-framerate", str(FPS), "-i", str(endp)]
     ih, ic, ie = n, n + 1, n + 2
+    nxt = n + 3
+    im_ = isub = None
+    if frame == "square" and feather_px() >= 2:
+        fm = feather_mask(work / f"feather-{BAND[frame][1]}x{BAND[frame][2]}.png", BAND[frame][1], BAND[frame][2], feather_px())
+        inputs += ["-loop", "1", "-framerate", str(FPS), "-i", str(fm)]
+        im_, nxt = nxt, nxt + 1
+    sub = subscribe_overlay(work) if frame in ("band", "zoom") and body > SUB_AT + 6 else None
+    if sub:
+        inputs += ["-i", str(sub[0])]
+        isub, nxt = nxt, nxt + 1
     top, bw, bh = BAND[frame]
     norm_v = "".join(
         f"[{i}:v]" + (f"trim=start={pt['vskip']:.4f},setpts=PTS-STARTPTS,tpad=start_mode=clone:"
@@ -779,7 +976,12 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
         + f"scale=1920:1080,fps={FPS},setsar=1,format=yuv420p[n{i}];" for i, pt in enumerate(parts))
     vparts = norm_v + "".join(f"[n{i}]" for i in range(n))
     afil, alab = audio_graph(parts)
-    if frame == "zoom":
+    if frame == "square" and im_ is not None:
+        fg = (f"[fgsrc]{square_crop(s.get('pan'))}scale={bw}:{bh}:flags=lanczos,setsar=1,format=yuva420p[fgc];"
+              f"[{im_}:v]format=gray,trim=duration={total:.4f}[fmask];[fgc][fmask]alphamerge[fg]")
+    elif frame == "square":
+        fg = f"[fgsrc]{square_crop(s.get('pan'))}scale={bw}:{bh}:flags=lanczos,setsar=1[fg]"
+    elif frame == "zoom":
         fg = f"[fgsrc]crop=1440:1080:240:0,scale={bw}:{bh}:flags=lanczos,setsar=1[fg]"
     else:
         fg = f"[fgsrc]scale={bw}:{bh}:flags=lanczos,setsar=1[fg]"
@@ -793,7 +995,9 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
           f"[{ih}:v]format=rgba,trim=duration={total:.4f}[hk];"
           f"[v1][hk]overlay=0:0:shortest=0[v2];"
           f"[{ic}:v]fps={FPS},format=rgba,trim=duration={total:.4f},setpts=PTS-STARTPTS[cp];"
-          f"[v2][cp]overlay=0:{cap_y}:eof_action=pass[v3];"
+          f"[v2][cp]overlay=0:{cap_y}:eof_action=pass[v3a];"
+          + (f"[{isub}:v]format=rgba,setpts=PTS+{SUB_AT}/TB[sub];[v3a][sub]overlay={sub[1]}:{sub[2]}:eof_action=pass[v3];"
+             if sub else "[v3a]null[v3];") +
           f"[{ie}:v]format=rgba,trim=duration={total:.4f},fade=t=in:st={body:.3f}:d=0.25:alpha=1[en];"
           f"[v3][en]overlay=0:0:enable='gte(t,{body:.3f})',format=yuv420p[vout]")
     # pass 1: loudness of the joined audio

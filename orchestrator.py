@@ -731,10 +731,19 @@ def run_gameplay_reel(
         from agents import analysis_feed
         _ap = "tiktok" if tiktok_only else ("youtube" if youtube_only else "instagram")
         _item = None
+        # Dedicated reels (Bryce, 2026-11-15) go to Facebook too: Facebook's only live format on
+        # the feed is analysis (facebook_paused), so the feed slot posts the reel to Instagram AND
+        # Facebook. reels.analysis_reels.facebook: false keeps Facebook out.
+        _arc = CONFIG.reels.get("analysis_reels", {}) or {}
+        _with_fb = (not tiktok_only and not youtube_only and gcfg.get("facebook_paused")
+                    and bool(_arc.get("games")) and _arc.get("facebook", True)
+                    and "facebook" in CONFIG.platforms.get("video_post_to", ["facebook", "instagram"]))
         try:
-            _item = analysis_feed.next_short(_ap)
+            _item = analysis_feed.next_short(_ap, platforms=(["facebook"] if _with_fb else None))
         except Exception as e:
             log(f"ANALYSIS: could not read the Shorts queue ({e!r})")
+        if _item and _item.get("dedicated") and _with_fb and "facebook" not in pick_platforms:
+            pick_platforms = list(pick_platforms) + ["facebook"]
         if _item:
             log(f"ANALYSIS Short: {_item['clip_id']} ({_item['title']}) -> {', '.join(pick_platforms)}")
             result = {"slot_id": slot_id, "kind": "gameplay", "layout": "analysis",

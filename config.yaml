@@ -774,6 +774,14 @@ reels:
   # than the maximum allowed duration of 60 seconds", page-stories-api). The main reel is
   # reposted to FB/IG Stories, so it's trimmed to this before the Story post (0 = no cap).
   story_max_seconds: 60
+  # DEDICATED ANALYSIS REELS for TikTok, Instagram and Facebook (Bryce, 2026-11-15): square layout,
+  # written and narrated for these apps, payoff inside the reel (tools/analysis_shorts.py frame
+  # "square", packs in data/analysis/<game>-reels/). When `games` is set, analysis slots post ONLY
+  # these packs (no YouTube Shorts crossposts), games taking turns; Instagram slots also post to
+  # Facebook (facebook: false stops that). "Do only Spider-Man 2 and Spider-Man 1 games for now".
+  analysis_reels:
+    games: [spider-man2, spider-man1]
+    facebook: true
   gameplay:
     enabled: true
     facebook_paused: true   # PAUSED 2026-11-14 (Bryce): no fill or lore reels to Facebook from this
@@ -821,7 +829,8 @@ reels:
       tiktok:
         games:   [spider-man2, wolverine]
         formats: [fill, analysis, classic, triptych]   # analysis added 2026-11-14 (Bryce)
-      # analysis = the next ready analysis Short (agents/analysis_feed.py): cut from a KG analysis
+      # analysis = the next ready DEDICATED analysis reel (reels.analysis_reels below) when that is set,
+      # else the next ready analysis Short (agents/analysis_feed.py): cut from a KG analysis
       # long-form, on B2 and already live on YouTube. None ready -> the slot uses the next format.
       youtube:
         games:   [spider-man2]                   # lore only, SM2 only for now

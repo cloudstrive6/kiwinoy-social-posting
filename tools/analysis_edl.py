@@ -54,8 +54,17 @@ TTS_GAME = {
 }
 
 
+# Spider-Man 1 shares Spider-Man 2's names (F.E.A.S.T., Dr. Octavius, Martin Li).
+TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in x[0]]
+
+
+def base_game(game: str) -> str:
+    """A reel pack ("spider-man2-reels", 2026-11-15) uses its game's spoken forms."""
+    return game[: -len("-reels")] if game.endswith("-reels") else game
+
+
 def tts_text(text: str, game: str = "") -> str:
-    for pat, rep in TTS_SUBS + TTS_GAME.get(game, []):
+    for pat, rep in TTS_SUBS + TTS_GAME.get(base_game(game), []):
         text = re.sub(pat, rep, text)
     return text
 
