@@ -738,7 +738,8 @@ def gear_cta() -> str:
 
 def build_description(cfg: dict, s: dict, p: Paths) -> str:
     tags = cfg["hashtags_base"] + s.get("hashtags_extra", [])
-    parts = [f"Full video: {cfg['full_video']}", s["blurb"]]
+    # dedicated reel packs have no full video to point at
+    parts = ([f"Full video: {cfg['full_video']}"] if cfg.get("full_video") else []) + [s.get("blurb") or s.get("caption", "")]
     if s.get("spoilers"):
         parts[-1] += " Spoilers for the ending."
     parts.append(credits_text(p))

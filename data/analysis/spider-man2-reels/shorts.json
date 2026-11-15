@@ -1,0 +1,158 @@
+{
+ "note": "Dedicated TikTok/Instagram/Facebook analysis reels for Marvel's Spider-Man 2 (Bryce, 2026-11-15), cut in the square layout from the reel pack render (renders/analysis/spider-man2-reels/). Script: Bryce-Brain raw-sources/kg-longform-research-2026-11/spider-man2-reels-script-v1.md (v1.1 after independent review). No YouTube upload: agents/analysis_feed.py posts a reel once it has a b2_key (written only after the independent QA review passes). pan: where the subject sits across the frame (0..1) from 'at' seconds of the reel.",
+ "dedicated": true,
+ "hashtags_base": [
+  "#SpiderMan2",
+  "#PS5"
+ ],
+ "tags_base": [],
+ "music_credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden"
+ ],
+ "game_lines": {
+  "b003": "Kraven. Kill Kraven.",
+  "b007": "I'm wearing an ALIEN?!",
+  "b009": "Oh and uh, it's an alien. Which is pretty nuts, right?"
+ },
+ "shorts": [
+  {
+   "id": "r01",
+   "order": 1,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Who really wanted Kraven dead?",
+   "accent": "dead",
+   "title": "Who said \"Kill Kraven\" in Spider-Man 2?",
+   "caption": "I went back to one swing across the city, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.",
+   "hashtags_extra": [
+    "#Symbiote",
+    "#Kraven"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b000",
+      "b001",
+      "b002",
+      "b003",
+      "b004"
+     ]
+    }
+   ],
+   "start": 0.05,
+   "end": 35.29,
+   "flash_holds": {},
+   "seconds": 36.74,
+   "cuts": [
+    [
+     0.05,
+     35.29
+    ]
+   ],
+   "description": "I went back to one swing across the city, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #Kraven",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.42
+    },
+    {
+     "at": 3.13,
+     "cx": 0.3
+    },
+    {
+     "at": 6.3,
+     "cx": 0.5
+    },
+    {
+     "at": 28.8,
+     "cx": 0.55
+    },
+    {
+     "at": 33.88,
+     "cx": 0.72
+    }
+   ]
+  },
+  {
+   "id": "r02",
+   "order": 2,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Did Peter know the suit was alien?",
+   "accent": "know",
+   "title": "Did Peter know the black suit was alien?",
+   "caption": "Connors told him, Peter said it out loud, then he told MJ like it was nothing. He kept the suit anyway.",
+   "hashtags_extra": [
+    "#Symbiote",
+    "#MarvelsSpiderMan2"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b005",
+      "b006",
+      "b007",
+      "b008",
+      "b009",
+      "b010"
+     ]
+    }
+   ],
+   "start": 35.53,
+   "end": 69.55,
+   "flash_holds": {},
+   "seconds": 35.52,
+   "cuts": [
+    [
+     35.53,
+     69.55
+    ]
+   ],
+   "description": "Connors told him, Peter said it out loud, then he told MJ like it was nothing. He kept the suit anyway.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #MarvelsSpiderMan2",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.35
+    },
+    {
+     "at": 3.07,
+     "cx": 0.3
+    },
+    {
+     "at": 6.49,
+     "cx": 0.6
+    },
+    {
+     "at": 9.52,
+     "cx": 0.45
+    },
+    {
+     "at": 10.42,
+     "cx": 0.5
+    },
+    {
+     "at": 13.37,
+     "cx": 0.6
+    },
+    {
+     "at": 15.72,
+     "cx": 0.28
+    },
+    {
+     "at": 17.95,
+     "cx": 0.5
+    },
+    {
+     "at": 28.09,
+     "cx": 0.35
+    },
+    {
+     "at": 30.17,
+     "cx": 0.5
+    }
+   ]
+  }
+ ]
+}
