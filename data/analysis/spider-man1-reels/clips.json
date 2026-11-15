@@ -1,0 +1,61 @@
+{
+ "game": "spider-man1-reels",
+ "note": "Clip index as used in the script cues. Indices below 1000 are the footage-map numbers the script was cued against (index.json at the time); clips the script names by B2 key get indices from 1000 up. Seconds and fps from ffprobe on B2.",
+ "clips": {
+  "1000": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 15-17-32).mp4",
+   "seconds": 464.94,
+   "fps": "2997/50"
+  },
+  "1001": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-15-10).mp4",
+   "seconds": 1071.51,
+   "fps": "2997/50"
+  },
+  "1002": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-33-10).mp4",
+   "seconds": 1889.79,
+   "fps": "2997/50"
+  },
+  "1003": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 17-33-25).mp4",
+   "seconds": 496.71,
+   "fps": "2997/50"
+  },
+  "1004": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 17-46-48).mp4",
+   "seconds": 648.98,
+   "fps": "2997/50"
+  },
+  "1005": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-19-06).mp4",
+   "seconds": 1204.37,
+   "fps": "2997/50"
+  },
+  "1006": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-50-57).mp4",
+   "seconds": 487.04,
+   "fps": "2997/50"
+  },
+  "1007": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-59-11).mp4",
+   "seconds": 353.11,
+   "fps": "2997/50"
+  },
+  "1008": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 19-11-18).mp4",
+   "seconds": 986.09,
+   "fps": "2997/50"
+  },
+  "1009": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 19-37-06).mp4",
+   "seconds": 677.69,
+   "fps": "2997/50"
+  },
+  "1010": {
+   "key": "cutscenes/spider-man1/Spider-Man 1 (2026-11-15 20-01-35).mp4",
+   "seconds": 829.82,
+   "fps": "2997/50"
+  }
+ }
+}

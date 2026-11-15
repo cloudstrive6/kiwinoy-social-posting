@@ -1,0 +1,517 @@
+{
+ "game": "spider-man1-reels",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Narrator A",
+  "voice_id": "Jn6g1Ws0FHFBiECPird2",
+  "model_id": "eleven_multilingual_v2",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.0,
+  "speed": 0.95,
+  "master": "C"
+ },
+ "under_narration_db": -24,
+ "source": "spider-man1-reels-script-v1.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "Did Insomniac's first Spider-Man game tease Venom in a side quest?",
+   "tts": "Did Insomniac's first Spider-Man game tease Venom in a side quest?",
+   "shots": [
+    {
+     "clip": 1005,
+     "in": 1049.9,
+     "out": 1055.7,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "In the side quest Spider-Men, someone is fighting crime in Peter's suit. Peter tracks the copycat to a crime scene and checks a man left on the ground.",
+   "tts": "In the side quest Spider-Men, someone is fighting crime in Peter's suit. Peter tracks the copycat to a crime scene and checks a man left on the ground.",
+   "shots": [
+    {
+     "clip": 1005,
+     "in": 831.75,
+     "out": 843.05,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b001"
+  },
+  {
+   "type": "game",
+   "clip": 1005,
+   "in": 533.65,
+   "out": 539.45,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-19-06).mp4 @ 533.65-539.45 s: \"Spider-Man: Still alive,\" / \"Spider-Man: so whoever did this isn't a lethal protector. That's promising.\" (Peter, masked, kneeling by the downed man; free-roam gameplay, square at cx 0.5 checked clean, no icons inside; subtitle band kept for the caption)",
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "Lethal Protector is Venom's nickname in the comics, the title of his first solo series. So I think yes, it's a wink. Five years later, Spider-Man 2 gave Peter the symbiote.",
+   "tts": "Lethal Protector is Venom's nickname in the comics, the title of his first solo series. So I think yes, it's a wink. Five years later, Spider-Man Two gave Peter the symbiote.",
+   "shots": [
+    {
+     "clip": 1005,
+     "in": 1043.75,
+     "out": 1049.8,
+     "crop": "sub"
+    },
+    {
+     "clip": 1005,
+     "in": 1055.8,
+     "out": 1060.5,
+     "crop": "sub"
+    },
+    {
+     "clip": 1005,
+     "in": 1060.6,
+     "out": 1062.3
+    }
+   ],
+   "gfx": [],
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "And the copycat? A martial arts teacher who just wanted to help. He hangs up the suit.",
+   "tts": "And the copycat? A martial arts teacher who just wanted to help. He hangs up the suit.",
+   "shots": [
+    {
+     "clip": 1005,
+     "in": 844.65,
+     "out": 851.65,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "Why did Otto Octavius hate Norman Osborn so much?",
+   "tts": "Why did Otto Octavius hate Norman Osborn so much?",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 143.5,
+     "out": 147.65
+    }
+   ],
+   "gfx": [],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "In Day to Remember, Norman shuts Otto's lab over safety rules.",
+   "tts": "In Day to Remember, Norman shuts Otto's lab over safety rules.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 43.7,
+     "out": 46.2,
+     "crop": "sub"
+    },
+    {
+     "clip": 1006,
+     "in": 46.35,
+     "out": 47.85
+    },
+    {
+     "clip": 1006,
+     "in": 118.65,
+     "out": 119.5
+    }
+   ],
+   "gfx": [],
+   "id": "b006"
+  },
+  {
+   "type": "game",
+   "clip": 1006,
+   "in": 104.75,
+   "out": 107.1,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-50-57).mp4 @ 104.75-107.1 s: \"Otto: This isn't about safety infractions, is it?\" (Otto close, over Norman's shoulder, speaking in sync; clean cutscene)",
+   "id": "b007"
+  },
+  {
+   "type": "narr",
+   "text": "Later, in Otto's lab, Peter finds one of Otto's private recordings.",
+   "tts": "Later, in Otto's lab, Peter finds one of Otto's private recordings.",
+   "shots": [
+    {
+     "clip": 1010,
+     "in": 553.0,
+     "out": 557.7
+    }
+   ],
+   "gfx": [],
+   "id": "b008"
+  },
+  {
+   "type": "game",
+   "clip": 1010,
+   "in": 567.3,
+   "out": 569.6,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 20-01-35).mp4 @ 567.3-569.6 s: \"Otto: Norman Osborn cannot be trusted!\" (Otto's recording playing; picture is Peter standing at the table from behind, square at cx 0.42 checked clean; pan cx 0.42)",
+   "id": "b009"
+  },
+  {
+   "type": "narr",
+   "text": "Otto asks why he keeps repeating the same mistake, and says Norman profits off other men's losses. I think the lab was the latest loss.",
+   "tts": "Otto asks why he keeps repeating the same mistake, and says Norman profits off other men's losses. I think the lab was the latest loss.",
+   "shots": [
+    {
+     "clip": 1010,
+     "in": 557.7,
+     "out": 560.5
+    },
+    {
+     "clip": 1006,
+     "in": 125.1,
+     "out": 126.0
+    },
+    {
+     "clip": 1006,
+     "in": 171.95,
+     "out": 178.4
+    }
+   ],
+   "gfx": [],
+   "id": "b010"
+  },
+  {
+   "type": "game",
+   "clip": 1010,
+   "in": 577.3,
+   "out": 582.85,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 20-01-35).mp4 @ 577.3-582.85 s: \"Otto: Someday I'll turn the tables. I'll teach Norman what it is to feel helpless and small.\" (Otto's recording; picture is Peter at the table from behind, square at cx 0.42 checked clean; pan cx 0.42)",
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "In Spider-Man 2's mid-credits scene, Norman tells Otto the Spider-Men ruined his son. Otto's answer: good.",
+   "tts": "In Spider-Man Two's mid-credits scene, Norman tells Otto the Spider-Men ruined his son. Otto's answer: good.",
+   "shots": [
+    {
+     "clip": 1010,
+     "in": 583.0,
+     "out": 584.2
+    },
+    {
+     "clip": 1006,
+     "in": 147.75,
+     "out": 152.5
+    },
+    {
+     "clip": 1006,
+     "in": 167.7,
+     "out": 169.0
+    }
+   ],
+   "gfx": [],
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "Did Jefferson Davis describe Miles before we ever meet him?",
+   "tts": "Did Jefferson Davis describe Miles before we ever meet him?",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 225.1,
+     "out": 227.45
+    },
+    {
+     "clip": 1008,
+     "in": 306.3,
+     "out": 308.3
+    }
+   ],
+   "gfx": [],
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "In Wheels within Wheels, Jefferson Davis teams up with Spider-Man to search a Fisk shipyard.",
+   "tts": "In Wheels within Wheels, Jefferson Davis teams up with Spider-Man to search a Fisk shipyard.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 308.3,
+     "out": 311.75
+    },
+    {
+     "clip": 1008,
+     "in": 584.65,
+     "out": 587.5
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "game",
+   "clip": 1008,
+   "in": 232.3,
+   "out": 236.3,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 19-11-18).mp4 @ 232.3-236.3 s: \"Jefferson Davis: Just messing with you.\" / \"Jefferson Davis: My son's a big fan.\" (Jeff speaking in sync, then a close drift across Spider-Man's suit and Jeff's NYPD patch; clean cutscene)",
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "That son is Miles Morales. Listen to how Jeff describes him.",
+   "tts": "That son is Miles Morales. Listen to how Jeff describes him.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 587.5,
+     "out": 592.2
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "game",
+   "clip": 1008,
+   "in": 296.4,
+   "out": 304.45,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 19-11-18).mp4 @ 296.4-304.45 s: \"Jefferson Davis: Gadget man, huh?\" / \"Jefferson Davis: You remind me of my son.\" / \"Jefferson Davis: Started taking apart the TV when he was five.\" / \"Jefferson Davis: Now he's unlocking his friends' phones.\" (Jeff in a flashlight beam speaking in sync, then from behind beside Spider-Man; clean cutscene, source cut at 300.12 inside the burst)",
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "A tinkerer and a Spider-Man fan. Jeff never says his name in this scene, but that kid gets powers of his own and stars in his own game, Spider-Man Miles Morales.",
+   "tts": "A tinkerer and a Spider-Man fan. Jeff never says his name in this scene, but that kid gets powers of his own and stars in his own game, Spider-Man Miles Morales.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 592.2,
+     "out": 596.7
+    },
+    {
+     "clip": 1008,
+     "in": 327.8,
+     "out": 331.8
+    },
+    {
+     "clip": 1008,
+     "in": 214.5,
+     "out": 218.8
+    }
+   ],
+   "gfx": [],
+   "id": "b018"
+  },
+  {
+   "type": "narr",
+   "text": "Did Wilson Fisk's threat on his way to prison actually come true?",
+   "tts": "Did Wilson Fisk's threat on his way to prison actually come true?",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 354.0,
+     "out": 359.1
+    }
+   ],
+   "gfx": [],
+   "id": "b019"
+  },
+  {
+   "type": "game",
+   "clip": 1000,
+   "in": 383.6,
+   "out": 388.35,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 15-17-32).mp4 @ 383.6-388.35 s: \"Wilson Fisk: One month! In one month you'll wish you had me back!\" (Fisk close, bloodied, shouting in sync at the prison van; clean cutscene; ends before the van door slam at 388.45)",
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "Surely nobody in New York misses the Kingpin. Not one bit.",
+   "tts": "Surely nobody in New York misses the Kingpin. Not one bit.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 346.65,
+     "out": 351.35
+    }
+   ],
+   "gfx": [],
+   "id": "b021"
+  },
+  {
+   "type": "game",
+   "clip": 1002,
+   "in": 270.25,
+   "out": 274.3,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-33-10).mp4 @ 270.25-274.3 s: \"Spider-Man: Wait a minute, what's that feeling? Do I...\" / \"Spider-Man: miss him...?\" / \"Spider-Man: Nooo.\" (Peter swinging over the park; the one joke in this reel; picture swap, free-roam waypoint and XP bar inside the square: cutscenes/spider-man1/Spider-Man 1 (2026-11-15 15-17-32).mp4 @ 363.05-364.25 then cutscenes/spider-man1/Spider-Man 1 (2026-11-15 15-17-32).mp4 @ 364.35-367.2 (cx 0.6), Fisk in cuffs glaring, mouth closed)",
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "In a way, yes. MJ calls about the Demons: they've moved into the space Fisk left. Peter says it himself.",
+   "tts": "In a way, yes. MJ calls about the Demons: they've moved into the space Fisk left. Peter says it himself.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 359.62,
+     "out": 363.0
+    },
+    {
+     "clip": 1000,
+     "in": 368.58,
+     "out": 370.04
+    },
+    {
+     "clip": 1000,
+     "in": 374.78,
+     "out": 375.33,
+     "crop": "sub"
+    },
+    {
+     "clip": 1000,
+     "in": 375.4,
+     "out": 378.2,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b023"
+  },
+  {
+   "type": "game",
+   "clip": 1007,
+   "in": 26.6,
+   "out": 32.3,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 18-59-11).mp4 @ 26.6-32.3 s: \"Spider-Man: A vacuum I created by putting Fisk away.\" / \"Spider-Man: Jameson was right, the Demons are my fault.\" (Peter on MJ's call while swinging; picture swap, free-roam waypoints and a bar at the top inside the square: cutscenes/spider-man1/Spider-Man 1 (2026-11-15 17-33-25).mp4 @ 437.0-442.7, Martin Li from behind holding the Demon mask, so \"Demons\" lands on the mask)",
+   "id": "b024"
+  },
+  {
+   "type": "narr",
+   "text": "Peter even admits Fisk kept the wannabe pushers in check. With the Kingpin gone, the Demons moved in.",
+   "tts": "Peter even admits Fisk kept the wannabe pushers in check. With the Kingpin gone, the Demons moved in.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 114.75,
+     "out": 122.25
+    }
+   ],
+   "gfx": [],
+   "id": "b025"
+  },
+  {
+   "type": "narr",
+   "text": "Why does Martin Li care so much about Peter Parker?",
+   "tts": "Why does Martin Lee care so much about Peter Parker?",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 992.8,
+     "out": 997.15
+    }
+   ],
+   "gfx": [],
+   "id": "b026"
+  },
+  {
+   "type": "narr",
+   "text": "Li runs the F.E.A.S.T. shelter where Aunt May works. At her party, he tells her this.",
+   "tts": "Lee runs the FEAST shelter where Aunt May works. At her party, he tells her this.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 899.65,
+     "out": 901.85
+    },
+    {
+     "clip": 1001,
+     "in": 964.42,
+     "out": 967.9,
+     "crop": "sub"
+    },
+    {
+     "clip": 1001,
+     "in": 997.15,
+     "out": 998.3
+    }
+   ],
+   "gfx": [],
+   "id": "b027"
+  },
+  {
+   "type": "game",
+   "clip": 1001,
+   "in": 976.15,
+   "out": 978.6,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-15-10).mp4 @ 976.15-978.6 s: \"Martin Li: Now it's *you* who inspires *me*.\" (Li close, speaking in sync; clean cutscene)",
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "Then May calls Peter. She says Li admires how dedicated Peter is to helping others.",
+   "tts": "Then May calls Peter. She says Lee admires how dedicated Peter is to helping others.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 465.6,
+     "out": 469.75,
+     "crop": "sub"
+    },
+    {
+     "clip": 1001,
+     "in": 990.6,
+     "out": 992.8
+    }
+   ],
+   "gfx": [],
+   "id": "b029"
+  },
+  {
+   "type": "game",
+   "clip": 1004,
+   "in": 134.55,
+   "out": 140.9,
+   "cue": "GAME AUDIO cutscenes/spider-man1/Spider-Man 1 (2026-11-15 17-46-48).mp4 @ 134.55-140.9 s: \"Aunt May: I think you remind him of himself when he was younger.\" / \"Aunt May: Both orphans, both so smart...\" (May's phone call while Peter walks the street in the suit; picture swap, waypoint icons inside the square: cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-15-10).mp4 @ 984.15-989.6 (cx 0.5) then cutscenes/spider-man1/Spider-Man 1 (2026-11-15 16-15-10).mp4 @ 989.7-990.6 (cx 0.5), the party wide with Li by the cake and the crowd clapping, then the cake)",
+   "id": "b030"
+  },
+  {
+   "type": "narr",
+   "text": "So Li sees his younger self in Peter, at least by May's reading. Then the twist: Li is Mister Negative.",
+   "tts": "So Lee sees his younger self in Peter, at least by May's reading. Then the twist: Lee is Mister Negative.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 500.45,
+     "out": 502.35
+    },
+    {
+     "clip": 1001,
+     "in": 1006.9,
+     "out": 1009.55,
+     "crop": "sub"
+    },
+    {
+     "clip": 1003,
+     "in": 399.85,
+     "out": 402.1
+    },
+    {
+     "clip": 1003,
+     "in": 402.13,
+     "out": 403.55
+    }
+   ],
+   "gfx": [],
+   "id": "b031"
+  }
+ ],
+ "gfx_cues": []
+}

@@ -1,0 +1,45 @@
+{
+ "note": "Music bed for the Spider-Man 1 reel pack (2026-11-16): one section per reel on its first beat. R01 (the Venom tease) and R04 (Fisk's threat) on the tension bed, R02 (Otto's grudge) on the main theme, R03 (Jeff and Miles) and R05 (Li and Peter) on the home theme Red. Never the game's own soundtrack.",
+ "tracks": {
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "home": "music/analysis/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -23,
+ "under_game_db": -30,
+ "xfade": 0.4,
+ "sections": [
+  {
+   "from": "b000",
+   "track": "tension",
+   "offset": 0,
+   "gain_db": -25
+  },
+  {
+   "from": "b005",
+   "track": "theme",
+   "offset": 20,
+   "gain_db": -22
+  },
+  {
+   "from": "b013",
+   "track": "home",
+   "offset": 0
+  },
+  {
+   "from": "b019",
+   "track": "tension",
+   "offset": 45,
+   "gain_db": -25
+  },
+  {
+   "from": "b026",
+   "track": "home",
+   "offset": 40
+  }
+ ]
+}

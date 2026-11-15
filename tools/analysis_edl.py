@@ -55,7 +55,12 @@ TTS_GAME = {
 
 
 # Spider-Man 1 shares Spider-Man 2's names (F.E.A.S.T., Dr. Octavius, Martin Li).
-TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in x[0]]
+TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in x[0]] + [
+    (r"\bSpider-Man 2's\b", "Spider-Man Two's"),
+    (r"\bSpider-Man 2\b", "Spider-Man Two"),
+    (r"\bSpider-Man: Miles Morales\b", "Spider-Man Miles Morales"),
+    (r"\b2018\b", "twenty eighteen"),
+]
 
 
 def base_game(game: str) -> str:
