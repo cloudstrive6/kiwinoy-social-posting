@@ -62,39 +62,32 @@
      "picture": [
       {
        "at": 20.38,
-       "until": 22.18,
+       "until": 22.36,
        "clip": 1002,
-       "in": 98.8,
-       "why": "burst picture: Peter's masked face on the F.E.A.S.T. roof under 'Kraven.' (the gameplay shows HUD in any square)"
+       "in": 98.65,
+       "why": "burst picture: Peter's mask close-up (98.633-100.65 shot) under 'Kraven.'; the gameplay shows HUD in any square"
       },
       {
-       "at": 22.18,
-       "until": 22.98,
+       "at": 22.36,
+       "until": 24.85,
        "clip": 1002,
-       "in": 112.3,
-       "why": "Peter leans over Li"
-      },
-      {
-       "at": 22.98,
-       "until": 25.08,
-       "clip": 1002,
-       "in": 73.8,
-       "why": "tendrils burst from Peter's back under 'Kill Kraven.'"
+       "in": 73.54,
+       "why": "tendrils burst from Peter's back (73.517-76.05 shot) under 'Kill Kraven.'"
       }
      ]
     }
    ],
    "start": 0.05,
-   "end": 34.71,
+   "end": 34.42,
    "flash_holds": {},
-   "seconds": 36.16,
+   "seconds": 35.87,
    "cuts": [
     [
      0.05,
-     34.71
+     34.42
     ]
    ],
-   "description": "I went back to one swing across the city, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #Kraven",
+   "description": "I went back to the evening Li sends Peter after Kraven, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #Kraven",
    "tags": [],
    "pan": [
     {
@@ -103,34 +96,30 @@
     },
     {
      "at": 3.125,
-     "cx": 0.62
+     "cx": 0.36
     },
     {
-     "at": 4.675,
+     "at": 4.875,
      "cx": 0.6
     },
     {
-     "at": 6.815,
+     "at": 8.025,
      "cx": 0.5
-    },
-    {
-     "at": 9.115,
-     "cx": 0.62
     },
     {
      "at": 10.365,
-     "cx": 0.33
+     "cx": 0.3
     },
     {
-     "at": 13.125,
+     "at": 13.315,
      "cx": 0.42
     },
     {
-     "at": 15.645,
+     "at": 15.965,
      "cx": 0.5
     },
     {
-     "at": 18.335,
+     "at": 18.835,
      "cx": 0.42
     },
     {
@@ -138,40 +127,36 @@
      "cx": 0.64
     },
     {
-     "at": 22.18,
-     "cx": 0.5
-    },
-    {
-     "at": 22.98,
+     "at": 22.36,
      "cx": 0.57
     },
     {
-     "at": 25.085,
-     "cx": 0.45
-    },
-    {
-     "at": 26.415,
-     "cx": 0.45
-    },
-    {
-     "at": 29.545,
+     "at": 24.845,
      "cx": 0.47
     },
     {
-     "at": 30.145,
+     "at": 26.465,
      "cx": 0.5
     },
     {
-     "at": 31.745,
+     "at": 29.635,
+     "cx": 0.47
+    },
+    {
+     "at": 29.915,
+     "cx": 0.45
+    },
+    {
+     "at": 31.245,
      "cx": 0.4
     },
     {
-     "at": 32.585,
+     "at": 32.065,
      "cx": 0.6
     },
     {
-     "at": 33.515,
-     "cx": 0.42
+     "at": 33.185,
+     "cx": 0.38
     }
    ],
    "music_credits": [
@@ -203,14 +188,14 @@
      ]
     }
    ],
-   "start": 34.93,
-   "end": 68.97,
+   "start": 34.7,
+   "end": 68.72,
    "flash_holds": {},
-   "seconds": 35.54,
+   "seconds": 35.52,
    "cuts": [
     [
-     34.93,
-     68.97
+     34.7,
+     68.72
     ]
    ],
    "description": "Connors told him, Peter said it out loud, then he told MJ like it was nothing. He kept the suit anyway.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #MarvelsSpiderMan2",
@@ -222,19 +207,19 @@
     },
     {
      "at": 3.065,
-     "cx": 0.55
-    },
-    {
-     "at": 6.855,
-     "cx": 0.5
-    },
-    {
-     "at": 8.795,
      "cx": 0.45
     },
     {
-     "at": 10.415,
-     "cx": 0.58
+     "at": 4.315,
+     "cx": 0.6
+    },
+    {
+     "at": 7.365,
+     "cx": 0.5
+    },
+    {
+     "at": 8.945,
+     "cx": 0.6
     },
     {
      "at": 13.365,
@@ -249,7 +234,7 @@
      "cx": 0.5
     },
     {
-     "at": 28.085,
+     "at": 28.06,
      "cx": 0.35
     },
     {
