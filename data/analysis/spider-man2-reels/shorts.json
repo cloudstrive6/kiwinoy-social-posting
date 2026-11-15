@@ -78,13 +78,13 @@
     }
    ],
    "start": 0.05,
-   "end": 34.42,
+   "end": 34.4,
    "flash_holds": {},
-   "seconds": 35.87,
+   "seconds": 35.85,
    "cuts": [
     [
      0.05,
-     34.42
+     34.4
     ]
    ],
    "description": "I went back to the evening Li sends Peter after Kraven, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #Kraven",
@@ -99,27 +99,31 @@
      "cx": 0.36
     },
     {
-     "at": 4.875,
+     "at": 4.69,
      "cx": 0.6
     },
     {
-     "at": 7.79,
-     "cx": 0.5
-    },
-    {
-     "at": 10.365,
+     "at": 7.26,
      "cx": 0.3
     },
     {
-     "at": 13.315,
-     "cx": 0.42
-    },
-    {
-     "at": 15.965,
+     "at": 8.125,
      "cx": 0.5
     },
     {
-     "at": 18.825,
+     "at": 10.36,
+     "cx": 0.3
+    },
+    {
+     "at": 12.66,
+     "cx": 0.42
+    },
+    {
+     "at": 15.56,
+     "cx": 0.5
+    },
+    {
+     "at": 18.675,
      "cx": 0.42
     },
     {
