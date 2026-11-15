@@ -45,7 +45,7 @@
    "hook": "Who really wanted Kraven dead?",
    "accent": "dead",
    "title": "Who said \"Kill Kraven\" in Spider-Man 2?",
-   "caption": "I went back to one swing across the city, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.",
+   "caption": "I went back to the evening Li sends Peter after Kraven, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.",
    "hashtags_extra": [
     "#Symbiote",
     "#Kraven"
@@ -310,16 +310,16 @@
   },
   "b003": {
    "0": [
-    0.38,
-    0.88
+    0.15,
+    0.65
    ],
    "1": [
-    2.72,
-    3.32
+    2.49,
+    3.09
    ],
    "2": [
-    3.84,
-    4.42
+    3.61,
+    4.19
    ]
   }
  }
