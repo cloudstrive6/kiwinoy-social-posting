@@ -74,7 +74,7 @@ FRAME_LAYOUT = {
                "logo": (70, 140)},
     "zoom":   {"hook": (230, 560), "hook_max_w": None, "cap_size": 68, "end": ("FULL VIDEO", "ON THE CHANNEL"),
                "logo": (70, 140)},
-    "square": {"hook": (250, 525), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
+    "square": {"hook": (250, 512), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
                "logo": (112, 128)},
 }
 # The game's logo, centred in the space above the hook on every analysis Short and reel (Bryce,
