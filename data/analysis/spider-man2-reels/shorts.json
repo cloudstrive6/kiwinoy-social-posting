@@ -58,17 +58,40 @@
       "b002",
       "b003",
       "b004"
+     ],
+     "picture": [
+      {
+       "at": 20.38,
+       "until": 22.18,
+       "clip": 1002,
+       "in": 98.8,
+       "why": "burst picture: Peter's masked face on the F.E.A.S.T. roof under 'Kraven.' (the gameplay shows HUD in any square)"
+      },
+      {
+       "at": 22.18,
+       "until": 22.98,
+       "clip": 1002,
+       "in": 112.3,
+       "why": "Peter leans over Li"
+      },
+      {
+       "at": 22.98,
+       "until": 25.08,
+       "clip": 1002,
+       "in": 73.8,
+       "why": "tendrils burst from Peter's back under 'Kill Kraven.'"
+      }
      ]
     }
    ],
    "start": 0.05,
-   "end": 35.29,
+   "end": 34.71,
    "flash_holds": {},
-   "seconds": 36.74,
+   "seconds": 36.16,
    "cuts": [
     [
      0.05,
-     35.29
+     34.71
     ]
    ],
    "description": "I went back to one swing across the city, and the subtitles show who wanted Kraven dead. Peter says the name, and the suit says the rest.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #Kraven",
@@ -76,23 +99,79 @@
    "pan": [
     {
      "at": 0,
-     "cx": 0.42
+     "cx": 0.33
     },
     {
-     "at": 3.13,
-     "cx": 0.3
+     "at": 3.125,
+     "cx": 0.62
     },
     {
-     "at": 6.3,
+     "at": 4.675,
+     "cx": 0.6
+    },
+    {
+     "at": 6.815,
      "cx": 0.5
     },
     {
-     "at": 28.8,
-     "cx": 0.55
+     "at": 9.115,
+     "cx": 0.62
     },
     {
-     "at": 33.88,
-     "cx": 0.72
+     "at": 10.365,
+     "cx": 0.33
+    },
+    {
+     "at": 13.125,
+     "cx": 0.42
+    },
+    {
+     "at": 15.645,
+     "cx": 0.5
+    },
+    {
+     "at": 18.335,
+     "cx": 0.42
+    },
+    {
+     "at": 20.38,
+     "cx": 0.64
+    },
+    {
+     "at": 22.18,
+     "cx": 0.5
+    },
+    {
+     "at": 22.98,
+     "cx": 0.57
+    },
+    {
+     "at": 25.085,
+     "cx": 0.45
+    },
+    {
+     "at": 26.415,
+     "cx": 0.45
+    },
+    {
+     "at": 29.545,
+     "cx": 0.47
+    },
+    {
+     "at": 30.145,
+     "cx": 0.5
+    },
+    {
+     "at": 31.745,
+     "cx": 0.4
+    },
+    {
+     "at": 32.585,
+     "cx": 0.6
+    },
+    {
+     "at": 33.515,
+     "cx": 0.42
     }
    ],
    "music_credits": [
@@ -124,14 +203,14 @@
      ]
     }
    ],
-   "start": 35.53,
-   "end": 69.55,
+   "start": 34.93,
+   "end": 68.97,
    "flash_holds": {},
-   "seconds": 35.52,
+   "seconds": 35.54,
    "cuts": [
     [
-     35.53,
-     69.55
+     34.93,
+     68.97
     ]
    ],
    "description": "Connors told him, Peter said it out loud, then he told MJ like it was nothing. He kept the suit anyway.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Symbiote #MarvelsSpiderMan2",
@@ -142,39 +221,39 @@
      "cx": 0.35
     },
     {
-     "at": 3.06,
-     "cx": 0.3
+     "at": 3.065,
+     "cx": 0.55
     },
     {
-     "at": 6.475,
-     "cx": 0.6
-    },
-    {
-     "at": 9.51,
-     "cx": 0.45
-    },
-    {
-     "at": 10.41,
-     "cx": 0.62
-    },
-    {
-     "at": 13.36,
-     "cx": 0.57
-    },
-    {
-     "at": 15.71,
-     "cx": 0.28
-    },
-    {
-     "at": 17.95,
+     "at": 6.855,
      "cx": 0.5
     },
     {
-     "at": 28.06,
+     "at": 8.795,
+     "cx": 0.45
+    },
+    {
+     "at": 10.415,
+     "cx": 0.58
+    },
+    {
+     "at": 13.365,
+     "cx": 0.57
+    },
+    {
+     "at": 15.715,
+     "cx": 0.28
+    },
+    {
+     "at": 17.945,
+     "cx": 0.5
+    },
+    {
+     "at": 28.085,
      "cx": 0.35
     },
     {
-     "at": 30.16,
+     "at": 30.165,
      "cx": 0.5
     }
    ],
@@ -227,6 +306,20 @@
    "5": [
     1.8,
     2.13
+   ]
+  },
+  "b003": {
+   "0": [
+    0.38,
+    0.88
+   ],
+   "1": [
+    2.72,
+    3.32
+   ],
+   "2": [
+    3.84,
+    4.42
    ]
   }
  }
