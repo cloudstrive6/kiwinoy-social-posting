@@ -1,0 +1,593 @@
+{
+ "note": "Dedicated TikTok/Instagram/Facebook analysis reels for Marvel's Spider-Man (2018) (Bryce, 2026-11-15/16), square layout, cut from the reel pack render (renders/analysis/spider-man1-reels/). Script: Bryce-Brain raw-sources/kg-longform-research-2026-11/spider-man1-reels-script-v1.md (v1.1 after independent review). A reel gets a b2_key only after independent QA passes.",
+ "dedicated": true,
+ "hashtags_base": [
+  "#SpiderMan",
+  "#PS5"
+ ],
+ "tags_base": [],
+ "game_lines": {
+  "_note": "Lines per subtitle line with the speaker label as shown; b022 follows the audio (the subtitle adds 'a minute').",
+  "b002": [
+   {
+    "speaker": "Spider-Man",
+    "text": "Still alive,"
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "so whoever did this isn't a lethal protector. That's promising."
+   }
+  ],
+  "b007": [
+   {
+    "speaker": "Otto",
+    "text": "This isn't about safety infractions, is it?"
+   }
+  ],
+  "b009": [
+   {
+    "speaker": "Otto",
+    "text": "Norman Osborn cannot be trusted!"
+   }
+  ],
+  "b011": [
+   {
+    "speaker": "Otto",
+    "text": "Someday I'll turn the tables. I'll teach Norman what it is to feel helpless and small."
+   }
+  ],
+  "b015": [
+   {
+    "speaker": "Jefferson Davis",
+    "text": "Just messing with you."
+   },
+   {
+    "speaker": "Jefferson Davis",
+    "text": "My son's a big fan."
+   }
+  ],
+  "b017": [
+   {
+    "speaker": "Jefferson Davis",
+    "text": "Gadget man, huh?"
+   },
+   {
+    "speaker": "Jefferson Davis",
+    "text": "You remind me of my son."
+   },
+   {
+    "speaker": "Jefferson Davis",
+    "text": "Started taking apart the TV when he was five."
+   },
+   {
+    "speaker": "Jefferson Davis",
+    "text": "Now he's unlocking his friends' phones."
+   }
+  ],
+  "b020": [
+   {
+    "speaker": "Wilson Fisk",
+    "text": "One month! In one month you'll wish you had me back!"
+   }
+  ],
+  "b022": [
+   {
+    "speaker": "Spider-Man",
+    "text": "Wait, what's that feeling? Do I..."
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "miss him...?"
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "Nooo."
+   }
+  ],
+  "b024": [
+   {
+    "speaker": "Spider-Man",
+    "text": "A vacuum I created by putting Fisk away."
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "Jameson was right, the Demons are my fault."
+   }
+  ],
+  "b028": [
+   {
+    "speaker": "Martin Li",
+    "text": "Now it's you who inspires me."
+   }
+  ],
+  "b030": [
+   {
+    "speaker": "Aunt May",
+    "text": "I think you remind him of himself when he was younger."
+   },
+   {
+    "speaker": "Aunt May",
+    "text": "Both orphans, both so smart..."
+   }
+  ]
+ },
+ "word_times": {},
+ "shorts": [
+  {
+   "id": "r01",
+   "order": 1,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Spider-Man 2018 hid a Venom line",
+   "accent": "Venom",
+   "title": "Spider-Man (2018) hid a Venom line in a side quest",
+   "caption": "In the \"Spider-Men\" side quest, Peter checks a crime scene and says the copycat \"isn't a lethal protector.\" Five years later, the symbiote arrived.",
+   "hashtags_extra": [
+    "#Venom",
+    "#MarvelsSpiderMan"
+   ],
+   "music_credits": [
+    "\"Epic and Dramatic Trailer Music\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b000",
+      "b001",
+      "b002",
+      "b003",
+      "b004"
+     ]
+    }
+   ],
+   "start": 0.05,
+   "end": 34.21,
+   "flash_holds": {},
+   "seconds": 35.66,
+   "cuts": [
+    [
+     0.05,
+     34.21
+    ]
+   ],
+   "description": "In the \"Spider-Men\" side quest, Peter checks a crime scene and says the copycat \"isn't a lethal protector.\" Five years later, the symbiote arrived.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan #PS5 #Venom #MarvelsSpiderMan",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.68
+    },
+    {
+     "at": 4.112,
+     "cx": 0.55
+    },
+    {
+     "at": 8.362,
+     "cx": 0.55
+    },
+    {
+     "at": 12.592,
+     "cx": 0.5
+    },
+    {
+     "at": 18.392,
+     "cx": 0.35
+    },
+    {
+     "at": 27.112,
+     "cx": 0.76
+    },
+    {
+     "at": 28.492,
+     "cx": 0.42
+    }
+   ]
+  },
+  {
+   "id": "r02",
+   "order": 2,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "Why did Otto hate Norman Osborn?",
+   "accent": "hate",
+   "title": "Why did Otto Octavius hate Norman Osborn?",
+   "caption": "Norman shut Otto's lab, and Otto's private recording says the rest. Spider-Man 2 turns the tables. Spoilers.",
+   "hashtags_extra": [
+    "#DoctorOctopus",
+    "#NormanOsborn"
+   ],
+   "music_credits": [
+    "\"Last Dawn\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b005",
+      "b006",
+      "b007",
+      "b008",
+      "b009",
+      "b010",
+      "b011",
+      "b012"
+     ]
+    }
+   ],
+   "start": 34.37,
+   "end": 73.33,
+   "flash_holds": {},
+   "seconds": 40.46,
+   "cuts": [
+    [
+     34.37,
+     73.33
+    ]
+   ],
+   "description": "Norman shut Otto's lab, and Otto's private recording says the rest. Spider-Man 2 turns the tables. Spoilers. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan #PS5 #DoctorOctopus #NormanOsborn",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.62
+    },
+    {
+     "at": 3.592,
+     "cx": 0.76
+    },
+    {
+     "at": 5.825,
+     "cx": 0.6
+    },
+    {
+     "at": 7.175,
+     "cx": 0.65
+    },
+    {
+     "at": 7.942,
+     "cx": 0.6
+    },
+    {
+     "at": 10.292,
+     "cx": 0.36
+    },
+    {
+     "at": 14.459,
+     "cx": 0.42
+    },
+    {
+     "at": 16.792,
+     "cx": 0.42
+    },
+    {
+     "at": 19.259,
+     "cx": 0.74
+    },
+    {
+     "at": 20.092,
+     "cx": 0.6
+    },
+    {
+     "at": 25.909,
+     "cx": 0.42
+    },
+    {
+     "at": 31.472,
+     "cx": 0.42
+    },
+    {
+     "at": 32.725,
+     "cx": 0.55
+    },
+    {
+     "at": 37.759,
+     "cx": 0.5
+    }
+   ]
+  },
+  {
+   "id": "r03",
+   "order": 3,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Did Jeff describe Miles before we met him?",
+   "accent": "Miles",
+   "title": "Jefferson Davis described Miles before we met him",
+   "caption": "On a shipyard search with Spider-Man, Jeff talks about his son: a big fan who takes things apart. That kid is Miles.",
+   "hashtags_extra": [
+    "#MilesMorales",
+    "#JeffersonDavis"
+   ],
+   "music_credits": [
+    "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b013",
+      "b014",
+      "b015",
+      "b016",
+      "b017",
+      "b018"
+     ]
+    }
+   ],
+   "start": 73.58,
+   "end": 107.87,
+   "flash_holds": {},
+   "seconds": 35.79,
+   "cuts": [
+    [
+     73.58,
+     107.87
+    ]
+   ],
+   "description": "On a shipyard search with Spider-Man, Jeff talks about his son: a big fan who takes things apart. That kid is Miles.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan #PS5 #MilesMorales #JeffersonDavis",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.55
+    },
+    {
+     "at": 1.932,
+     "cx": 0.55
+    },
+    {
+     "at": 6.462,
+     "cx": 0.55
+    },
+    {
+     "at": 8.782,
+     "cx": 0.74
+    },
+    {
+     "at": 12.775,
+     "cx": 0.4
+    },
+    {
+     "at": 16.592,
+     "cx": 0.65
+    },
+    {
+     "at": 20.332,
+     "cx": 0.45
+    },
+    {
+     "at": 24.702,
+     "cx": 0.4
+    },
+    {
+     "at": 28.112,
+     "cx": 0.6
+    },
+    {
+     "at": 31.162,
+     "cx": 0.72
+    }
+   ]
+  },
+  {
+   "id": "r04",
+   "order": 4,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Did Fisk's prison threat come true?",
+   "accent": "true",
+   "title": "Did Fisk's prison threat come true?",
+   "caption": "\"One month!\" Fisk promised the city would want him back. Then the Demons moved in, and Peter said it himself.",
+   "hashtags_extra": [
+    "#Kingpin",
+    "#MarvelsSpiderMan"
+   ],
+   "music_credits": [
+    "\"Epic and Dramatic Trailer Music\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b019",
+      "b020",
+      "b021",
+      "b022",
+      "b023",
+      "b024",
+      "b025"
+     ],
+     "picture": [
+      {
+       "at": 13.27,
+       "until": 14.48,
+       "clip": 1000,
+       "in": 363.04,
+       "why": "Peter's 'miss him' line over free-roam HUD: Fisk in the prison van (clean cutscene)"
+      },
+      {
+       "at": 14.48,
+       "until": 17.33,
+       "clip": 1000,
+       "in": 364.35,
+       "why": "Fisk glaring, mouth closed"
+      },
+      {
+       "at": 25.14,
+       "until": 30.85,
+       "clip": 1003,
+       "in": 436.99,
+       "why": "MJ's call over free-roam HUD: Li from behind holding the Demon mask"
+      }
+     ]
+    }
+   ],
+   "start": 108.1,
+   "end": 145.15,
+   "flash_holds": {},
+   "seconds": 38.55,
+   "cuts": [
+    [
+     108.1,
+     145.15
+    ]
+   ],
+   "description": "\"One month!\" Fisk promised the city would want him back. Then the Demons moved in, and Peter said it himself.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan #PS5 #Kingpin #MarvelsSpiderMan",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.5
+    },
+    {
+     "at": 4.162,
+     "cx": 0.55
+    },
+    {
+     "at": 8.912,
+     "cx": 0.5
+    },
+    {
+     "at": 13.27,
+     "cx": 0.5
+    },
+    {
+     "at": 14.48,
+     "cx": 0.6
+    },
+    {
+     "at": 17.332,
+     "cx": 0.6
+    },
+    {
+     "at": 20.575,
+     "cx": 0.3
+    },
+    {
+     "at": 21.975,
+     "cx": 0.35
+    },
+    {
+     "at": 22.492,
+     "cx": 0.6
+    },
+    {
+     "at": 25.14,
+     "cx": 0.5
+    },
+    {
+     "at": 30.852,
+     "cx": 0.5
+    }
+   ]
+  },
+  {
+   "id": "r05",
+   "order": 5,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "Why does Martin Li care about Peter?",
+   "accent": "care",
+   "title": "Why does Martin Li care about Peter?",
+   "caption": "Aunt May explains it on a phone call, and it makes the twist hurt more. Spoilers for Mister Negative.",
+   "hashtags_extra": [
+    "#MisterNegative",
+    "#AuntMay"
+   ],
+   "music_credits": [
+    "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b026",
+      "b027",
+      "b028",
+      "b029",
+      "b030",
+      "b031"
+     ],
+     "picture": [
+      {
+       "at": 16.24,
+       "until": 21.7,
+       "clip": 1001,
+       "in": 984.14,
+       "why": "May's call over free-roam HUD: the party wide, nobody speaking"
+      },
+      {
+       "at": 21.7,
+       "until": 22.6,
+       "clip": 1001,
+       "in": 989.7,
+       "why": "the party cake"
+      }
+     ]
+    }
+   ],
+   "start": 145.3,
+   "end": 175.18,
+   "flash_holds": {},
+   "seconds": 31.38,
+   "cuts": [
+    [
+     145.3,
+     175.18
+    ]
+   ],
+   "description": "Aunt May explains it on a phone call, and it makes the twist hurt more. Spoilers for Mister Negative. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan #PS5 #MisterNegative #AuntMay",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.3
+    },
+    {
+     "at": 3.262,
+     "cx": 0.45
+    },
+    {
+     "at": 4.882,
+     "cx": 0.74
+    },
+    {
+     "at": 7.432,
+     "cx": 0.4
+    },
+    {
+     "at": 8.282,
+     "cx": 0.42
+    },
+    {
+     "at": 10.732,
+     "cx": 0.74
+    },
+    {
+     "at": 14.332,
+     "cx": 0.45
+    },
+    {
+     "at": 16.24,
+     "cx": 0.5
+    },
+    {
+     "at": 21.7,
+     "cx": 0.5
+    },
+    {
+     "at": 22.602,
+     "cx": 0.5
+    },
+    {
+     "at": 24.362,
+     "cx": 0.5
+    },
+    {
+     "at": 26.842,
+     "cx": 0.35
+    },
+    {
+     "at": 28.952,
+     "cx": 0.6
+    }
+   ]
+  }
+ ]
+}
