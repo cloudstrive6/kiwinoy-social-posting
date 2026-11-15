@@ -1,0 +1,213 @@
+{
+ "game": "spider-man2-reels",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Narrator A",
+  "voice_id": "Jn6g1Ws0FHFBiECPird2",
+  "model_id": "eleven_multilingual_v2",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.0,
+  "speed": 0.95,
+  "master": "C"
+ },
+ "under_narration_db": -24,
+ "source": "spider-man2-reels-script-v1.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "Did Peter want Kraven dead, or was that the suit?",
+   "tts": "Did Peter want Kraven dead, or was that the suit?",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 579.4,
+     "out": 583.5
+    }
+   ],
+   "gfx": [],
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "Rewind to earlier that evening. Martin Li has just told Peter that Kraven is holding Miles, and Peter talks to himself.",
+   "tts": "Rewind to earlier that evening. Martin Lee has just told Peter that Kraven is holding Miles, and Peter talks to himself.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 125.0,
+     "out": 128.5
+    },
+    {
+     "clip": 1002,
+     "in": 130.0,
+     "out": 132.5
+    },
+    {
+     "clip": 1002,
+     "in": 140.0,
+     "out": 142.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "He sneers that Li helps once and is suddenly a good guy. He says Miles can't stop some Hunters. And Peter's losing May's house. Then the name.",
+   "tts": "He sneers that Lee helps once and is suddenly a good guy. He says Miles can't stop some Hunters. And Peter's losing May's house. Then the name.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 142.5,
+     "out": 146.2,
+     "crop": "hud"
+    },
+    {
+     "clip": 1002,
+     "in": 150.5,
+     "out": 157.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b002"
+  },
+  {
+   "type": "game",
+   "clip": 1002,
+   "in": 168.7,
+   "out": 174.0,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 23-27-14).mp4 @ 168.7-174.0 s: \"Spider-Man: Kraven.\" / \"Symbiote: Kill Kraven.\" (Spider-Man: Peter by context, see Verification; free-roam HUD: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "So it's both. Peter brings the anger and the name. The kill order comes from the suit. The subtitle labels that voice Symbiote. The suit just finished his sentence.",
+   "tts": "So it's both. Peter brings the anger and the name. The kill order comes from the suit. The subtitle labels that voice Symbiote. The suit just finished his sentence.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 174.5,
+     "out": 178.5,
+     "crop": "hud"
+    },
+    {
+     "clip": 1002,
+     "in": 158.0,
+     "out": 164.5,
+     "crop": "hud"
+    },
+    {
+     "clip": 1003,
+     "in": 586.8,
+     "out": 588.8
+    }
+   ],
+   "gfx": [],
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "Did Peter know his suit was alien when he kept it?",
+   "tts": "Did Peter know his suit was alien when he kept it?",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 256.6,
+     "out": 260.8
+    }
+   ],
+   "gfx": [],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "Right after the Lizard fight, Connors tells him it's a fragment of a meteorite that landed years ago. Peter works out the rest.",
+   "tts": "Right after the Lizard fight, Connors tells him it's a fragment of a meteorite that landed years ago. Peter works out the rest.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 320.6,
+     "out": 324.6,
+     "crop": "sub"
+    },
+    {
+     "clip": 1000,
+     "in": 268.0,
+     "out": 272.6
+    }
+   ],
+   "gfx": [],
+   "id": "b006"
+  },
+  {
+   "type": "game",
+   "clip": 1000,
+   "in": 332.4,
+   "out": 335.35,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-14-25).mp4 @ 332.4-335.35 s: \"Spider-Man: I'm wearing\" / \"Spider-Man: an ALIEN?!\" (Peter, the only Spider-Man in the lab; clean cutscene, close-up of the suit's chest)",
+   "id": "b007"
+  },
+  {
+   "type": "narr",
+   "text": "Connors wants to destroy it. Peter asks, destroy us? Then MJ calls. He breaks the news gently.",
+   "tts": "Connors wants to destroy it. Peter asks, destroy us? Then MJ calls. He breaks the news gently.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 366.4,
+     "out": 370.4,
+     "crop": "sub"
+    },
+    {
+     "clip": 1001,
+     "in": 3.5,
+     "out": 6.0,
+     "crop": "hud"
+    }
+   ],
+   "gfx": [],
+   "id": "b008"
+  },
+  {
+   "type": "game",
+   "clip": 1001,
+   "in": 18.5,
+   "out": 22.8,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-21-27).mp4 @ 18.5-22.8 s: \"Spider-Man: Oh and uh, it's an alien.\" / \"Spider-Man: Which is pretty nuts, right?\" (Peter, the only Spider-Man on the call; the one joke in this reel; 40 ms audio fade-in on the tail of \"Oh\" as in v1.2 HUMOR 2; free-roam HUD with MJ's portrait right: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b009"
+  },
+  {
+   "type": "narr",
+   "text": "So yes, he knew. MJ says he sounds way too calm. He's a little worried, but he needed it to stop Connors. He kept it because it works.",
+   "tts": "So yes, he knew. MJ says he sounds way too calm. He's a little worried, but he needed it to stop Connors. He kept it because it works.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 26.5,
+     "out": 30.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 1001,
+     "in": 31.0,
+     "out": 33.5,
+     "crop": "hud"
+    },
+    {
+     "clip": 1000,
+     "in": 381.8,
+     "out": 386.6,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b010"
+  }
+ ],
+ "gfx_cues": []
+}
