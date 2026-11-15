@@ -638,7 +638,9 @@ def swap_picture(p: Paths, pt: dict, pics) -> None:
         t = u
     if t < dur - 1e-3:
         segs.append({"lf": pt["start"] + t, "at": t, "until": dur})
-    tag = hashlib.sha1(json.dumps([pt["start"], pt["end"], segs], sort_keys=True).encode()).hexdigest()[:10]
+    # keyed on the source render too (2026-11-15: a re-cut from render v7 reused the v6 swap file)
+    src_id = [p.version, p.video.stat().st_size if p.video.exists() else 0]
+    tag = hashlib.sha1(json.dumps([pt["start"], pt["end"], segs, src_id], sort_keys=True).encode()).hexdigest()[:10]
     out = p.out / "clips" / f"swap_{tag}.mkv"
     if not out.exists():
         inputs, chains = ["-ss", f"{pt['start']:.3f}", "-t", f"{dur:.3f}", "-i", str(p.video)], []

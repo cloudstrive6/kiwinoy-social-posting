@@ -1,17 +1,23 @@
 {
- "note": "Spider-Man 2 reel pack picture fixes after the first QA run (2026-11-15). R01: the swing gameplay of clip 1002 cannot be shown in a square (waypoint, reticle and ability icons inside any 908 crop from 133 s), so b001/b002/b004 use story-correct cutscenes (picture editor, checked on frames): Li's warning and Peter listening (1002 85-90, 114-116), the clean swing 130.4-132.0, Li alone, Miles taken by the Hunters the night before (1005), May's house (1004), Kraven (1005), the mansion (1003 566-589). The burst b003 keeps its audio and starts at 169.3 (drops a transient at 169.1); its picture is swapped in the reel pick. R02 b006: Connors was talking on screen under the narration (lip-sync), now the crash memory flash and the suit close-up. crop none everywhere: the reel's square crop already removes the subtitles and corners. QA round 2 (2026-11-15): no talking faces under narration (Li close-ups, 'Peter over Li' and Kraven's 'Kill-- or be killed' removed; Kraven starts after 'For now.'), the black flash inside 576.2-578.9 dropped, R02 b006 reordered so the crash reads as a memory (suit close-up, crash flash, suit close-up). Every in and out point sits on a measured cut (frame difference at 60 fps). The burst starts at 169.53 so its swapped picture (mask 98.65-100.63 and tendrils 73.54-76.03, 4.47 s) covers it exactly. v4: every narration beat gets at least as much clean footage as its paragraph (v3 failed QC with audio 2.8 s short: slowed shots do not stretch their game audio). v6: pictures follow the words: b001 Li from behind (no mouth), Peter listening, the swing; b002 Li alone under Li's line, Miles under the Hunters line, May's house, Kraven under 'the name'. v7: the swing plays at full speed (1002 @ 130.2-132.54, no HUD until 133.0) instead of 2.0 s slowed to 2.34 s (judder).",
+ "note": "Spider-Man 2 reel pack picture fixes after the first QA run (2026-11-15). R01: the swing gameplay of clip 1002 cannot be shown in a square (waypoint, reticle and ability icons inside any 908 crop from 133 s), so b001/b002/b004 use story-correct cutscenes (picture editor, checked on frames): Li's warning and Peter listening (1002 85-90, 114-116), the clean swing 130.4-132.0, Li alone, Miles taken by the Hunters the night before (1005), May's house (1004), Kraven (1005), the mansion (1003 566-589). The burst b003 keeps its audio and starts at 169.3 (drops a transient at 169.1); its picture is swapped in the reel pick. R02 b006: Connors was talking on screen under the narration (lip-sync), now the crash memory flash and the suit close-up. crop none everywhere: the reel's square crop already removes the subtitles and corners. QA round 2 (2026-11-15): no talking faces under narration (Li close-ups, 'Peter over Li' and Kraven's 'Kill-- or be killed' removed; Kraven starts after 'For now.'), the black flash inside 576.2-578.9 dropped, R02 b006 reordered so the crash reads as a memory (suit close-up, crash flash, suit close-up). Every in and out point sits on a measured cut (frame difference at 60 fps). The burst starts at 169.53 so its swapped picture (mask 98.65-100.63 and tendrils 73.54-76.03, 4.47 s) covers it exactly. v4: every narration beat gets at least as much clean footage as its paragraph (v3 failed QC with audio 2.8 s short: slowed shots do not stretch their game audio). v6: pictures follow the words: b001 Li from behind (no mouth), Peter listening, the swing; b002 Li alone under Li's line, Miles under the Hunters line, May's house, Kraven under 'the name'. v7: the swing plays at full speed (1002 @ 130.2-132.54, no HUD until 133.0) instead of 2.0 s slowed to 2.34 s (judder). v8: b001 gets 7.69 s of footage for its 7.23 s (no slow motion anywhere in it): Li from behind to 82.15, Peter listening, the first 0.9 s of Li alone, the swing; b002 keeps the rest of Li alone.",
  "shots": {
   "b001": [
    {
     "clip": 1002,
     "in": 80.5,
-    "out": 82.0,
+    "out": 82.15,
     "crop": "none"
    },
    {
     "clip": 1002,
     "in": 87.1,
     "out": 89.8,
+    "crop": "none"
+   },
+   {
+    "clip": 1002,
+    "in": 125.0,
+    "out": 125.9,
     "crop": "none"
    },
    {
@@ -24,7 +30,7 @@
   "b002": [
    {
     "clip": 1002,
-    "in": 125.0,
+    "in": 126.0,
     "out": 128.5,
     "crop": "none"
    },
