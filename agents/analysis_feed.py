@@ -100,7 +100,8 @@ def caption(cfg: dict, pick: dict, platform: str) -> str:
     if cfg.get("dedicated"):   # the reel carries its own payoff: no pointer to YouTube
         body = (pick.get("caption") or pick.get("title") or "").strip()
         # the music bed's licences ask for a credit (CC BY for "Red"; Ross Bugden asks for one too)
-        music = ("Music: " + "; ".join(cfg["music_credits"])) if cfg.get("music_credits") else ""
+        credits = pick.get("music_credits") or cfg.get("music_credits") or []   # per reel: only its own track
+        music = ("Music: " + "; ".join(credits)) if credits else ""
         return "\n\n".join([x for x in (body, music) if x] + ([" ".join(tags[:5])] if tags else [])).strip()
     lines = [pick.get("title", "").strip()]
     if pick.get("spoilers"):

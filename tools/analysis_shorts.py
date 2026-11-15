@@ -687,14 +687,44 @@ def resolve_part(part: dict, beats: dict, p: Paths) -> dict:
     return pt
 
 
+def apply_game_lines(cfg: dict, beats: dict) -> None:
+    """Game lines as heard and subtitled (cfg game_lines). A value is a string, or a list of
+    {"speaker", "text"} lines (2026-11-15 reel QA): each line is then quoted on its own caption
+    page with its speaker label above it, as the game's subtitles show it (the R01 reel's point
+    rests on the line labelled "Symbiote"). cfg word_times {beat: {token index: [s, e]}} replaces
+    measured word times (seconds from the beat's start) where Whisper's timing was off (bursts under effects)."""
+    for bid, line in cfg.get("game_lines", {}).items():
+        if bid not in beats or bid.startswith("_"):
+            continue
+        if isinstance(line, list):
+            beats[bid]["text"] = " ".join(x["text"] for x in line)
+            beats[bid]["lines"] = line
+        else:
+            beats[bid]["text"] = line
+    for bid, fix in (cfg.get("word_times") or {}).items():
+        if bid in beats and not bid.startswith("_"):
+            beats[bid]["word_times"] = fix
+
+
 def resolve_part_lf(part: dict, beats: dict, p: Paths) -> dict:
     order = beats["_order"]
     ids = order[order.index(part["beats"][0]): order.index(part["beats"][-1]) + 1]
     seq = []
     for bid in ids:
         b = beats[bid]
-        for w in beat_words(p, b):
-            seq.append(dict(w, beat=bid, kind=b["type"]))
+        line_of, speaker_of = [], []
+        for li, ln in enumerate(b.get("lines") or [{"text": b.get("text", "")}]):
+            for _ in ln["text"].split():
+                line_of.append(li)
+                speaker_of.append(ln.get("speaker", ""))
+        fix = b.get("word_times") or {}
+        for ti, w in enumerate(beat_words(p, b)):
+            w = dict(w, beat=bid, kind=b["type"])
+            if str(ti) in fix:   # seconds from the beat's start, so a re-render that moves the beat keeps them
+                w["s"], w["e"] = round(b["start"] + float(fix[str(ti)][0]), 3), round(b["start"] + float(fix[str(ti)][1]), 3)
+            if ti < len(line_of):
+                w["line"], w["speaker"] = line_of[ti], speaker_of[ti]
+            seq.append(w)
     first, last = beats[ids[0]], beats[ids[-1]]
     # start
     gs = 0
@@ -918,6 +948,7 @@ def caption_pages(words: list[dict]) -> list[list[dict]]:
             prev = cur[-1]
             text = " ".join(x["disp"] for x in cur + [w])
             if (len(cur) >= 3 or w["s"] - prev["e"] > 0.35 or prev["kind"] != w["kind"]
+                    or prev.get("line", 0) != w.get("line", 0) or prev.get("beat") != w.get("beat")
                     or prev.get("part") != w.get("part") or re.search(r"[.?!,:;]$", prev["w"].rstrip('"”'))
                     or text_w(f, text) > CAP_MAX_W - 40):
                 pages.append(cur)
@@ -951,6 +982,12 @@ def draw_caption(page: list[dict], active: int, pop: float) -> Image.Image:
     x = CX - total // 2
     cy = CAP_STRIP_H // 2
     asc, desc = f.getmetrics()
+    spk = (page[0].get("speaker") or "").strip() if game else ""
+    if spk:   # the speaker as the game's subtitle names it, small, KG red, above the line
+        fl = font(ANTON, max(26, int(CAP_SIZE * 0.62)))
+        ly = cy - int(asc * 0.5) - 26
+        draw_shadowed(im, (CX - text_w(fl, spk.upper()) // 2, ly - fl.getmetrics()[0] // 2 - 4), spk.upper(),
+                      fl, (*RED, 255), stroke=4, shadow=8)
     for i, (t, wd) in enumerate(zip(toks, widths)):
         if i == active:
             # the live word sits on a red box (dialogue: off-white box) that pops in
@@ -988,12 +1025,14 @@ def caption_track(s: dict, work: Path) -> tuple[Path, float]:
             if not disp:
                 continue
             words.append({"w": w["w"], "disp": disp, "kind": w["kind"], "part": k, "beat": w["beat"],
+                          "line": w.get("line", 0), "speaker": w.get("speaker", ""),
                           "s": max(0.0, w["s"] - pt["start"] + off), "e": w["e"] - pt["start"] + off})
         off += pt["end"] - pt["start"]
     for i, w in enumerate(words):  # where each quoted game line opens and closes
         if w["kind"] == "game":
-            w["q_open"] = i == 0 or words[i - 1]["beat"] != w["beat"]
-            w["q_close"] = i == len(words) - 1 or words[i + 1]["beat"] != w["beat"]
+            key = (w["beat"], w["line"])
+            w["q_open"] = i == 0 or (words[i - 1]["beat"], words[i - 1]["line"]) != key
+            w["q_close"] = i == len(words) - 1 or (words[i + 1]["beat"], words[i + 1]["line"]) != key
     total = off + TAIL
     n_frames = int(round(total * FPS))
     pages = caption_pages(words)
@@ -1371,9 +1410,7 @@ def main() -> int:
 
     fetch_sources(p)
     beats = load_beats(p)
-    for bid, line in cfg.get("game_lines", {}).items():  # game lines checked against the game's subtitles
-        if bid in beats and not bid.startswith("_"):
-            beats[bid]["text"] = line
+    apply_game_lines(cfg, beats)
     resolve(p, cfg, beats, only)
     save_picks(p, cfg)
     if a.resolve:
