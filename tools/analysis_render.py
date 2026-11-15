@@ -275,12 +275,21 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
             i = add_input(["-i", str(fetch(p["clip"], p["src"], p["span"], work))])
             graph.append(vchain(f"{i}:v", p, f"v{k}"))
             if b["type"] == "game":
-                graph.append(f"[{i}:a]asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
-                             f"atrim=duration={p['out']:.4f},loudnorm=I=-18:TP=-2:LRA=11,"
-                             f"aformat=sample_rates=48000:channel_layouts=stereo,"
-                             f"afade=t=in:d={float(b.get('fade_in', 0.08)):.3f},"
-                             f"afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
-                             f"apad,atrim=duration={p['out']:.4f}[a{k}]")
+                # The burst's audio is normalised in its own pass to a WAV of the exact length
+                # (2026-11-15): one-pass loudnorm holds about 3 s of look-ahead, and inside the
+                # segment's exact-frame-count encode the file could close before it flushed (the
+                # Spider-Man 2 reel burst @169.53 kept 1.57 of 4.47 s of audio; QC av_gap 2.8 s).
+                piece = Path(inputs[-1])
+                bwav = work / f"{b['id']}_{k}_burst.wav"
+                run(["ffmpeg", "-v", "error", "-y", "-i", str(piece), "-vn", "-af",
+                     f"asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo,"
+                     f"atrim=duration={p['out']:.4f},apad=pad_dur=3.5,loudnorm=I=-18:TP=-2:LRA=11,"
+                     f"aformat=sample_rates=48000:channel_layouts=stereo,atrim=duration={p['out']:.4f},"
+                     f"afade=t=in:d={float(b.get('fade_in', 0.08)):.3f},"
+                     f"afade=t=out:st={max(0, p['out'] - 0.12):.3f}:d=0.12,"
+                     f"apad,atrim=duration={p['out']:.4f}", "-c:a", "pcm_s16le", "-ar", "48000", str(bwav)])
+                ia = add_input(["-i", str(bwav)])
+                graph.append(f"[{ia}:a]asetpts=PTS-STARTPTS,apad,atrim=duration={p['out']:.4f}[a{k}]")
             else:
                 graph.append(achain(f"{i}:a", p, f"a{k}", under_db))
         vlabels.append(f"[v{k}]")
@@ -416,7 +425,7 @@ def mix_music(video: Path, bed: Path | None, out: Path, start: float = 0.0, piec
     return out
 
 
-RENDER_VER = "2026-11-13b+frames"  # +frames 2026-11-15: exact frame count per segment  # bump when a change to this file should re-render every beat
+RENDER_VER = "2026-11-15+burstwav"  # +frames 2026-11-15: exact frame count per segment; +burstwav: burst audio normalised in its own pass  # bump when a change to this file should re-render every beat
 GFX_SRC = gfx.CODE_HASH  # analysis_gfx.py, analysis_motion.py and the font files: beats re-render when they change
 BRAND_SRC = hashlib.sha1((ROOT / "tools/analysis_brand.py").read_bytes() + (ROOT / "assets/brand/kg-avatar.png").read_bytes()
                          + GFX_SRC.encode()).hexdigest()[:10]
