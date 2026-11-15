@@ -195,7 +195,7 @@ def kg_logo_circle(opacity: "float | None" = None) -> "Image.Image | None":
 # photo glides to the centre, shrinks to the classic KG logo's size and cross-fades into it. The
 # last frame (the logo) is held to the end by the overlay.
 KG_OP = 0.6
-FOLLOW = {"at": 0.6, "hold": 4.0, "morph": 0.9, "line1": "FOLLOW", "accent": "BOSS KG", "line2": "@Kiwinoy"}
+FOLLOW = {"at": 0.6, "hold": 4.0, "morph": 0.9, "line1": "FOLLOW", "accent": "BOSS KG", "line2": "@KiwinoyGaming"}
 
 
 def follow_frame(t: float, band_h: int, kg: "Image.Image | None") -> "Image.Image":
@@ -285,7 +285,8 @@ def follow_overlay(work: Path, band_h: int) -> "Path | None":
     KG_OP = kg_logo_opacity()
     kg = kg_logo_circle(opacity=1.0)       # full strength; follow_frame eases it to KG_OP
     secs = FOLLOW["at"] + brand.ENTER + FOLLOW["hold"] + FOLLOW["morph"] + 0.1
-    out = work / f"follow-{W}x{band_h}.mov"
+    tag = hashlib.sha1(json.dumps([FOLLOW, KG_OP, kg.size if kg else None], sort_keys=True).encode()).hexdigest()[:8]
+    out = work / f"follow-{W}x{band_h}-{tag}.mov"   # keyed on the text, so a wording change re-renders
     if not out.exists():
         n = int(round(secs * FPS))
         pr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba",
@@ -346,7 +347,8 @@ def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
     box = (max(0, box[0] - pad), max(0, box[1] - pad), min(full.width, box[2] + pad), min(full.height, box[3] + pad))
     k = SUB_W / (box[2] - box[0])
     ow, oh = SUB_W, int(round((box[3] - box[1]) * k)) // 2 * 2
-    out = work / f"subscribe-{ow}x{oh}.mov"
+    tag = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:8]
+    out = work / f"subscribe-{ow}x{oh}-{tag}.mov"
     if not out.exists():
         n = int(round(secs * FPS))
         pr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba",
