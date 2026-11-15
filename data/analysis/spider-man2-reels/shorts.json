@@ -34,6 +34,76 @@
     "speaker": "Spider-Man",
     "text": "Which is pretty nuts, right?"
    }
+  ],
+  "b013": [
+   {
+    "speaker": "The Flame",
+    "text": "and carnage."
+   }
+  ],
+  "b015": [
+   {
+    "speaker": "Wraith",
+    "text": "I'll start checking his old aliases: Archie Abel, Walter Wachtman, Cletus Kasady..."
+   }
+  ],
+  "b019": [
+   {
+    "speaker": "Sasha Kravinoff",
+    "text": "They will draw blood for control of our empire."
+   },
+   {
+    "speaker": "Kraven",
+    "text": "The cubs must earn their place."
+   }
+  ],
+  "b023": [
+   {
+    "speaker": "Norman Osborn",
+    "text": "They ruined my son."
+   }
+  ],
+  "b026": [
+   {
+    "speaker": "Otto Octavius",
+    "text": "The final chapter."
+   }
+  ],
+  "b028": [
+   {
+    "speaker": "Harry",
+    "text": "Pete, we're gonna heal the world."
+   }
+  ],
+  "b030": [
+   {
+    "speaker": "Harry",
+    "text": "Let's heal the world, Pete..."
+   },
+   {
+    "speaker": "Harry",
+    "text": "Together!"
+   }
+  ],
+  "b034": [
+   {
+    "speaker": "Venom",
+    "text": "Then you replaced us with Miles."
+   }
+  ],
+  "b036": [
+   {
+    "speaker": "Spider-Man",
+    "text": "No--"
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "he saved me,"
+   },
+   {
+    "speaker": "Spider-Man",
+    "text": "just like I'll save you."
+   }
   ]
  },
  "shorts": [
@@ -247,6 +317,530 @@
     "\"Last Dawn\" by Ross Bugden"
    ],
    "b2_key": "shorts/analysis/spider-man2-reels/r02.mp4"
+  },
+  {
+   "id": "r03",
+   "order": 3,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "Who was the Flame all along?",
+   "accent": "along",
+   "title": "The Flame's real name in Spider-Man 2",
+   "caption": "The Flame's last side mission ends with a symbiote in his hands and one name on Wraith's list. Side-story spoilers.",
+   "hashtags_extra": [
+    "#Carnage",
+    "#Wraith"
+   ],
+   "music_credits": [
+    "\"Epic and Dramatic Trailer Music\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b011",
+      "b012",
+      "b013",
+      "b014",
+      "b015",
+      "b016"
+     ],
+     "picture": [
+      {
+       "at": 17.56,
+       "until": 22.96,
+       "clip": 1009,
+       "in": 742.8,
+       "why": "Wraith's call plays over gameplay HUD: derailment aftermath cutscene, faces small, nobody speaks"
+      }
+     ]
+    }
+   ],
+   "start": 68.97,
+   "end": 100.27,
+   "flash_holds": {},
+   "seconds": 32.8,
+   "cuts": [
+    [
+     68.97,
+     100.27
+    ]
+   ],
+   "description": "The Flame's last side mission ends with a symbiote in his hands and one name on Wraith's list. Side-story spoilers. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Carnage #Wraith",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.5
+    },
+    {
+     "at": 1.625,
+     "cx": 0.55
+    },
+    {
+     "at": 3.375,
+     "cx": 0.55
+    },
+    {
+     "at": 4.592,
+     "cx": 0.5
+    },
+    {
+     "at": 6.592,
+     "cx": 0.55
+    },
+    {
+     "at": 8.842,
+     "cx": 0.4
+    },
+    {
+     "at": 11.292,
+     "cx": 0.45
+    },
+    {
+     "at": 12.865,
+     "cx": 0.5
+    },
+    {
+     "at": 14.642,
+     "cx": 0.35
+    },
+    {
+     "at": 16.425,
+     "cx": 0.3
+    },
+    {
+     "at": 17.542,
+     "cx": 0.5
+    },
+    {
+     "at": 22.965,
+     "cx": 0.55
+    },
+    {
+     "at": 24.909,
+     "cx": 0.4
+    },
+    {
+     "at": 26.765,
+     "cx": 0.5
+    },
+    {
+     "at": 28.045,
+     "cx": 0.55
+    },
+    {
+     "at": 29.345,
+     "cx": 0.45
+    }
+   ]
+  },
+  {
+   "id": "r04",
+   "order": 4,
+   "frame": "square",
+   "spoilers": false,
+   "hook": "Kraven had a family?",
+   "accent": "family",
+   "title": "Kraven had a family in Spider-Man 2",
+   "caption": "A file hidden in a Hunter base after the credits has Kraven talking to Sasha Kravinoff about his children.",
+   "hashtags_extra": [
+    "#Kraven",
+    "#EasterEgg"
+   ],
+   "music_credits": [
+    "\"Epic and Dramatic Trailer Music\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b017",
+      "b018",
+      "b019",
+      "b020"
+     ],
+     "picture": [
+      {
+       "at": 20.41,
+       "until": 23.64,
+       "clip": 1003,
+       "in": 222.13,
+       "why": "burst gameplay shows Miles's cape, reticle and a reward banner: Kraven from behind, Miles caged (clean cutscene)"
+      },
+      {
+       "at": 23.64,
+       "until": 24.45,
+       "clip": 1003,
+       "in": 225.4,
+       "why": "the cage crate close-up"
+      }
+     ]
+    }
+   ],
+   "start": 100.43,
+   "end": 134.34,
+   "flash_holds": {},
+   "seconds": 35.41,
+   "cuts": [
+    [
+     100.43,
+     134.34
+    ]
+   ],
+   "description": "A file hidden in a Hunter base after the credits has Kraven talking to Sasha Kravinoff about his children.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Kraven #EasterEgg",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.4
+    },
+    {
+     "at": 1.815,
+     "cx": 0.4
+    },
+    {
+     "at": 4.392,
+     "cx": 0.62
+    },
+    {
+     "at": 6.065,
+     "cx": 0.48
+    },
+    {
+     "at": 8.625,
+     "cx": 0.5
+    },
+    {
+     "at": 12.475,
+     "cx": 0.6
+    },
+    {
+     "at": 16.415,
+     "cx": 0.45
+    },
+    {
+     "at": 18.642,
+     "cx": 0.5
+    },
+    {
+     "at": 20.392,
+     "cx": 0.62
+    },
+    {
+     "at": 23.64,
+     "cx": 0.5
+    },
+    {
+     "at": 24.442,
+     "cx": 0.45
+    },
+    {
+     "at": 27.805,
+     "cx": 0.45
+    },
+    {
+     "at": 31.615,
+     "cx": 0.55
+    }
+   ]
+  },
+  {
+   "id": "r05",
+   "order": 5,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "Why does Norman visit Otto?",
+   "accent": "Otto",
+   "title": "Why Norman visits Otto in Spider-Man 2",
+   "caption": "The mid-credits scene at the Raft, and what Norman wants from Otto. Spoilers for the ending.",
+   "hashtags_extra": [
+    "#NormanOsborn",
+    "#DocOck"
+   ],
+   "music_credits": [
+    "\"Last Dawn\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b021",
+      "b022",
+      "b023",
+      "b024",
+      "b025",
+      "b026"
+     ]
+    }
+   ],
+   "start": 134.62,
+   "end": 164.65,
+   "flash_holds": {},
+   "seconds": 31.53,
+   "cuts": [
+    [
+     134.62,
+     164.65
+    ]
+   ],
+   "description": "The mid-credits scene at the Raft, and what Norman wants from Otto. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #NormanOsborn #DocOck",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.28
+    },
+    {
+     "at": 3.875,
+     "cx": 0.6
+    },
+    {
+     "at": 7.395,
+     "cx": 0.62
+    },
+    {
+     "at": 12.325,
+     "cx": 0.4
+    },
+    {
+     "at": 14.125,
+     "cx": 0.6
+    },
+    {
+     "at": 17.225,
+     "cx": 0.62
+    },
+    {
+     "at": 21.495,
+     "cx": 0.4
+    },
+    {
+     "at": 25.775,
+     "cx": 0.62
+    },
+    {
+     "at": 28.425,
+     "cx": 0.55
+    }
+   ]
+  },
+  {
+   "id": "r06",
+   "order": 6,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "How did \"heal the world\" end?",
+   "accent": "end",
+   "title": "How Harry's \"heal the world\" ends",
+   "caption": "Harry says it on the Midtown High bleachers and again in the last fight. Spoilers for the ending.",
+   "hashtags_extra": [
+    "#HarryOsborn",
+    "#Venom"
+   ],
+   "music_credits": [
+    "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b027",
+      "b028",
+      "b029",
+      "b030",
+      "b031"
+     ]
+    }
+   ],
+   "start": 164.7,
+   "end": 197.56,
+   "flash_holds": {},
+   "seconds": 34.36,
+   "cuts": [
+    [
+     164.7,
+     197.56
+    ]
+   ],
+   "description": "Harry says it on the Midtown High bleachers and again in the last fight. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #HarryOsborn #Venom",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.55
+    },
+    {
+     "at": 2.825,
+     "cx": 0.5
+    },
+    {
+     "at": 5.475,
+     "cx": 0.6
+    },
+    {
+     "at": 9.375,
+     "cx": 0.4
+    },
+    {
+     "at": 11.265,
+     "cx": 0.45
+    },
+    {
+     "at": 13.025,
+     "cx": 0.55
+    },
+    {
+     "at": 16.015,
+     "cx": 0.45
+    },
+    {
+     "at": 17.615,
+     "cx": 0.55
+    },
+    {
+     "at": 20.065,
+     "cx": 0.6
+    },
+    {
+     "at": 21.565,
+     "cx": 0.55
+    },
+    {
+     "at": 23.515,
+     "cx": 0.55
+    },
+    {
+     "at": 25.992,
+     "cx": 0.6
+    },
+    {
+     "at": 26.765,
+     "cx": 0.4
+    }
+   ]
+  },
+  {
+   "id": "r07",
+   "order": 7,
+   "frame": "square",
+   "spoilers": true,
+   "hook": "What is Harry really mad about?",
+   "accent": "really",
+   "title": "What Harry is really mad about in Spider-Man 2",
+   "caption": "Venom says it out loud in the final fight, and Peter answers him. Spoilers for the ending.",
+   "hashtags_extra": [
+    "#Venom",
+    "#MilesMorales"
+   ],
+   "music_credits": [
+    "\"Epic and Dramatic Trailer Music\" by Ross Bugden"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b032",
+      "b033",
+      "b034",
+      "b035",
+      "b036",
+      "b037"
+     ],
+     "picture": [
+      {
+       "at": 10.38,
+       "until": 11.48,
+       "clip": 1007,
+       "in": 893.6,
+       "why": "boss-fight HUD: high wide of Venom holding Peter"
+      },
+      {
+       "at": 11.48,
+       "until": 14.13,
+       "clip": 1007,
+       "in": 907.85,
+       "why": "Venom holding Peter aloft in the rain, silent"
+      },
+      {
+       "at": 19.1,
+       "until": 23.6,
+       "clip": 1007,
+       "in": 897.35,
+       "why": "Peter's masked face in Venom's grip, the burst's own speaker"
+      }
+     ]
+    }
+   ],
+   "start": 197.77,
+   "end": 229.77,
+   "flash_holds": {},
+   "seconds": 33.5,
+   "cuts": [
+    [
+     197.77,
+     229.77
+    ]
+   ],
+   "description": "Venom says it out loud in the final fight, and Peter answers him. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Venom #MilesMorales",
+   "tags": [],
+   "pan": [
+    {
+     "at": 0,
+     "cx": 0.5
+    },
+    {
+     "at": 1.575,
+     "cx": 0.65
+    },
+    {
+     "at": 3.725,
+     "cx": 0.6
+    },
+    {
+     "at": 5.192,
+     "cx": 0.45
+    },
+    {
+     "at": 7.015,
+     "cx": 0.5
+    },
+    {
+     "at": 8.985,
+     "cx": 0.5
+    },
+    {
+     "at": 10.38,
+     "cx": 0.5
+    },
+    {
+     "at": 11.48,
+     "cx": 0.5
+    },
+    {
+     "at": 14.135,
+     "cx": 0.55
+    },
+    {
+     "at": 15.525,
+     "cx": 0.5
+    },
+    {
+     "at": 17.235,
+     "cx": 0.45
+    },
+    {
+     "at": 19.1,
+     "cx": 0.3
+    },
+    {
+     "at": 23.605,
+     "cx": 0.5
+    },
+    {
+     "at": 26.565,
+     "cx": 0.5
+    },
+    {
+     "at": 29.975,
+     "cx": 0.4
+    }
+   ]
   }
  ],
  "word_times": {
