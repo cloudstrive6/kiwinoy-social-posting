@@ -1387,6 +1387,11 @@ def main() -> int:
     cfg = json.loads(p.picks.read_text(encoding="utf-8"))
     only = set(filter(None, a.only.split(",")))
 
+    if a.upload:   # Bryce, 2026-11-16: never upload a series ahead with publish times
+        print("--upload is retired: Shorts now go up one per slot, games taking turns, from "
+              "tools/analysis_release.py (workflow analysis-shorts-release.yml). Put renders on B2 "
+              "with --b2 and add the game to config reels.youtube_analysis_shorts.games.", flush=True)
+        return 2
     if (a.facebook or a.b2) and not (a.dry_run or a.upload):
         if a.b2:
             b2_all(p, cfg, only)

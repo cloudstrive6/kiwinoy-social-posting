@@ -1,0 +1,79 @@
+name: KG Analysis Shorts Release (YouTube, at slot)
+
+# Releases ONE YouTube analysis Short per slot (15:00 and 23:00 UTC), games taking turns
+# (Bryce, 2026-11-16: upload at the slot, never schedule ahead). tools/analysis_release.py
+# picks the Short, uploads it public (or flips a held one to public) and records it in
+# data/analysis/<game>/shorts.json, committed back here. Several runs per slot: GitHub drops
+# or delays native cron runs, and the tool does nothing once the slot is filled or more than
+# window_hours old, so the extra runs only catch up a missed one.
+on:
+  schedule:
+    - cron: "4 15,16,17 * * *"
+    - cron: "4 23,0,1 * * *"
+    - cron: "34 15,23 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (show the pick, change nothing)? true/false"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kiwinoy-analysis-shorts-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+    steps:
+      # Always the NEWEST main, never the trigger's commit: a queued run or a re-run must see the
+      # record the run before it pushed, or it could post a second Short.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Sync to the latest main
+        run: git fetch origin main && git reset --hard origin/main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Release the slot's Short
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          python tools/analysis_release.py $DRY
+
+      - name: Commit the release record
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain data/analysis)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/analysis/*/shorts.json
+            git commit -m "release-bot: YouTube analysis Short released at its slot"
+            ok=""
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then ok=1; break; fi
+              git rebase --abort 2>/dev/null || true
+              sleep 5
+            done
+            # a lost record would leave the next slot blind, so a failed push must show red
+            if [ -z "$ok" ]; then echo "::error::release record NOT pushed"; exit 1; fi
+          else
+            echo "no release this run"
+          fi

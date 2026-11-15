@@ -782,6 +782,18 @@ reels:
   analysis_reels:
     games: [spider-man2, spider-man1]
     facebook: true
+  # YOUTUBE ANALYSIS SHORTS AT THEIR SLOT (Bryce, 2026-11-16: "only upload them as they hit their
+  # timeslot and not upload > schedule them", so other games fit in without waiting for a whole
+  # series). tools/analysis_release.py, fired by .github/workflows/analysis-shorts-release.yml after
+  # each slot: ONE Short per slot, games taking turns in this order, a game with nothing ready
+  # skipped. Shorts are cut and put on B2 by tools/analysis_shorts.py --b2 (no --upload any more).
+  # A new game joins by adding its name here once data/analysis/<game>/shorts.json has B2 renders
+  # and its long-form is public. enabled: false stops releases.
+  youtube_analysis_shorts:
+    enabled: true
+    slots_utc: ["15:00", "23:00"]   # 04:00 and 12:00 NZDT
+    games: [wolverine, spider-man2]
+    window_hours: 3                 # a run later than this after a slot does nothing
   gameplay:
     enabled: true
     facebook_paused: true   # PAUSED 2026-11-14 (Bryce): no fill or lore reels to Facebook from this
