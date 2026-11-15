@@ -147,15 +147,43 @@ def bad_interval(path: Path) -> tuple[float, float] | None:
     return min(hits) if hits else None
 
 
-def plan_shots(shots: list[dict], dur: float, clips: Clips) -> list[dict]:
+def shot_slots(shots: list[dict], dur: float, anchors: dict[int, float] | None = None) -> list[float]:
+    """Screen seconds per shot. Without anchors the beat is shared by source length. A shot with an
+    "at" phrase (2026-11-16, Spider-Man 2 v7 review: b-roll started seconds before or after the
+    words it shows) starts when the narration says that phrase; the unanchored shots between two
+    anchors share that stretch by source length."""
+    lens = [max((x["out"] - x["in"]) for x in s["split"]) if "split" in s else s["out"] - s["in"]
+            for s in shots]
+    for i, t in (anchors or {}).items():
+        if not (0 < i < len(shots)) or not (0.3 <= t <= dur - 0.3):
+            raise SystemExit(f"anchor of shot {i} at {t:.2f} s is outside the beat (0.3 to {dur - 0.3:.2f} s)")
+    anchors = dict(anchors or {})
+    if not anchors:
+        total = sum(lens)
+        return [dur * L / total for L in lens]
+    marks = [0] + sorted(anchors) + [len(shots)]
+    times = [0.0] + [round(anchors[i] * FPS) / FPS for i in sorted(anchors)] + [dur]
+    for k in range(1, len(times)):          # anchors out of order or too close: stop, do not move them
+        if times[k] < times[k - 1] + 0.5 * (marks[k] - marks[k - 1]):
+            raise SystemExit(f"anchors leave under 0.5 s per shot between shots {marks[k - 1]} and {marks[k]} "
+                             f"({times[k - 1]:.2f} to {times[k]:.2f} s)")
+    slots = []
+    for k in range(len(marks) - 1):
+        grp = lens[marks[k]:marks[k + 1]]
+        span = max(0.1, times[k + 1] - times[k])
+        slots += [span * L / sum(grp) for L in grp]
+    return slots
+
+
+def plan_shots(shots: list[dict], dur: float, clips: Clips,
+               anchors: dict[int, float] | None = None) -> list[dict]:
     """Fit the cue's shots to `dur` seconds. Returns pieces: {clip, src, span, out, flags} where
     span is source seconds and out is screen seconds (out/span is the slow-motion factor)."""
     lens = [max((x["out"] - x["in"]) for x in s["split"]) if "split" in s else s["out"] - s["in"]
             for s in shots]
-    total = sum(lens)
+    slots = shot_slots(shots, dur, anchors)
     pieces = []
-    for s, L in zip(shots, lens):
-        a = dur * L / total
+    for s, L, a in zip(shots, lens, slots):
         if "split" in s:
             pieces.append({"split": s["split"], "out": a})
             continue
@@ -239,7 +267,8 @@ def overlay_gfx(graph: list[str], add_input, cur: str, items: list[tuple], tag: 
 
 
 def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, under_db: float,
-                narr_wav: Path | None, seg: Path, brand: tuple | None = None) -> None:
+                narr_wav: Path | None, seg: Path, brand: tuple | None = None,
+                anchors: dict[int, float] | None = None) -> None:
     inputs: list[str] = []
     graph: list[str] = []
     vlabels, alabels = [], []
@@ -252,7 +281,7 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
         p = {**b, "src": b["in"], "span": b["out"] - b["in"], "out": b["out"] - b["in"]}
         pieces = [p]
     else:
-        pieces = plan_shots(b["shots"], dur, clips)
+        pieces = plan_shots(b["shots"], dur, clips, anchors)
         for p in pieces:  # game subtitles under the voice show lines nobody hears
             if "split" not in p and not p.get("crop"):
                 p["crop"] = "sub"
@@ -486,6 +515,154 @@ def beat_signature(b: dict, gfx_specs: dict, timings: dict, dur: float, brand: t
     return hashlib.sha1("|".join(parts).encode()).hexdigest()
 
 
+WORDS_MODEL = "small.en"
+
+
+def narr_words(b: dict, wav: Path, cache_dir: Path, seconds: float) -> dict:
+    """{"words": the known text with times (s from the start of the narration WAV), "heard": what
+    Whisper actually heard} for one narration beat. Cached (under segs/, which CI keeps) by WAV
+    content, model and the text."""
+    text = b.get("tts") or b.get("text") or ""
+    sig = hashlib.sha1(wav.read_bytes() + f"|{WORDS_MODEL}|{text}|v2".encode()).hexdigest()[:16]
+    f = cache_dir / f"{b['id']}.{sig}.json"
+    if f.exists():
+        return json.loads(f.read_text(encoding="utf-8"))
+    from analysis_shorts import snap, whisper_words
+    heard = whisper_words(wav, "", model=WORDS_MODEL)
+    words = snap(text, heard, 0.0, seconds) if heard else []
+    res = {"words": words, "heard": heard}
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(res), encoding="utf-8")
+    return res
+
+
+def find_phrase(words: list[dict], phrase: str) -> float | None:
+    """Start time of the first place `phrase` is said (normalised tokens), or None."""
+    from analysis_shorts import norm
+    want = [norm(x) for x in phrase.split() if norm(x)]
+    idx = [i for i, w in enumerate(words) if norm(w["w"])]
+    have = [norm(words[i]["w"]) for i in idx]
+    if not want:
+        return None
+    for k in range(len(have) - len(want) + 1):
+        if have[k:k + len(want)] == want:
+            return float(words[idx[k]]["s"])
+    return None
+
+
+def beat_anchors(b: dict, wd: dict | None) -> dict[int, float]:
+    """{shot index: seconds into the beat} for shots with an "at" phrase. A phrase that is not in
+    the script, or whose first word Whisper did not really hear near that time, stops the render:
+    a silent fallback is how b-roll ends up off its words."""
+    from analysis_shorts import norm
+    words = (wd or {}).get("words") or []
+    heard = (wd or {}).get("heard") or []
+    out = {}
+    for i, sh in enumerate(b.get("shots") or []):
+        if not sh.get("at"):
+            continue
+        t = find_phrase(words, sh["at"])
+        if t is None:
+            raise SystemExit(f"{b['id']} shot {i}: anchor phrase not in the narration: {sh['at']!r}")
+        first = next(norm(x) for x in sh["at"].split() if norm(x))
+        if not any(norm(h["w"]) == first and abs(h["s"] - t) < 0.4 for h in heard):
+            raise SystemExit(f"{b['id']} shot {i}: anchor word {first!r} not clearly heard by Whisper "
+                             f"(guessed at {t:.2f} s); pick another phrase")
+        out[i] = round((LEAD + t) * FPS) / FPS
+    return out
+
+
+def exact_audio(beats_t: list[tuple], segs: Path, out: Path, ids: set | None = None) -> Path:
+    """The joined soundtrack built sample-exact from the segments: each beat's audio padded or cut
+    to exactly its frame count x 800 samples (48 kHz / 60 fps) and laid end to end, so the sound
+    can never slip against the picture. Joining by container timestamps lost a few ms per beat:
+    Spider-Man 2 v7 played Miles's line 246 ms ahead of his lips at 14:44 (review 2026-11-16)."""
+    spf = SR // FPS
+    with open(out.with_suffix(".f32"), "wb") as fh:
+        for b, _, dur in beats_t:
+            if ids and b["id"] not in ids:
+                continue
+            n = round(dur * FPS) * spf
+            raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(segs / f"{b['id']}.mkv"), "-vn", "-af",
+                                  f"aresample=48000:async=1:first_pts=0,aformat=channel_layouts=stereo,"
+                                  f"apad,atrim=end_sample={n}", "-ac", "2", "-f", "f32le", "-"],
+                                 capture_output=True, check=True).stdout
+            if len(raw) != n * 8:
+                raise RuntimeError(f"{b['id']}: audio {len(raw) // 8} samples, want {n}")
+            fh.write(raw)
+    run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", str(out.with_suffix(".f32")),
+         "-c:a", "pcm_f32le", str(out)])
+    out.with_suffix(".f32").unlink(missing_ok=True)
+    return out
+
+
+def burst_sync(final: Path, beats_t: list, clips: Clips) -> list[dict]:
+    """Lip sync of every game burst: where its source audio really sits in the final render,
+    against its exact timeline start (ms, positive = sound late). Normalised cross-correlation;
+    a burst whose best match scores under 0.5 (quiet, ambient, repetitive) is "unmeasured"."""
+    import numpy as np
+    sr = 8000
+
+    def pcm(src: str, t0: float, d: float):
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0:.3f}", "-i", src, "-t", f"{d:.3f}",
+                              "-map", "0:a:0", "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
+                             capture_output=True).stdout
+        return np.frombuffer(raw, np.int16).astype(np.float32)
+
+    out = []
+    for b, start, dur in beats_t:
+        if b["type"] != "game":
+            continue
+        d = min(3.0, dur - 0.4)
+        if d < 0.8:
+            continue
+        pre = min(0.5, start)
+        ref = pcm(clips.url(b["clip"]), b["in"] + 0.2, d)
+        got = pcm(str(final), start + 0.2 - pre - 0.2, d + pre + 0.9)
+        if ref.size < sr // 2 or got.size < ref.size or ref.std() < 300:
+            out.append({"id": b["id"], "at": round(start, 3), "ms": None, "note": "quiet"})
+            continue
+        ref = (ref - ref.mean()) / ref.std()
+        n = ref.size
+        best, bi = -1.0, 0
+        for i in range(0, got.size - n, 4):
+            w = got[i:i + n]
+            sd = w.std()
+            if sd < 1e-6:
+                continue
+            c = float(np.dot(w - w.mean(), ref)) / (n * sd)
+            if c > best:
+                best, bi = float(c), i
+        # got starts at start - pre; the reference (source in + 0.2) belongs at start + 0.2
+        err = (start - pre + bi / sr) - (start + 0.2)
+        rec = {"id": b["id"], "at": round(start, 3), "score": round(float(best), 2)}
+        rec["ms"] = round(1000 * err) if best >= 0.5 else None
+        if best < 0.5:
+            rec["note"] = "unmeasured"
+        out.append(rec)
+    return out
+
+
+def shot_sheet(timeline: list, beats: list, words_of: dict, clips: Clips, dur_of: dict, anchors_of: dict) -> str:
+    """For QA: every narration shot, when it starts, and the words heard in its first 2 s."""
+    by_id = {b["id"]: b for b in beats}
+    lines = []
+    for x in timeline:
+        b = by_id[x["id"]]
+        if b["type"] != "narr" or not b.get("shots"):
+            continue
+        words = (words_of.get(b["id"]) or {}).get("words") or []
+        slots = shot_slots(b["shots"], dur_of[b["id"]], anchors_of.get(b["id"]))
+        t = 0.0
+        for sh, a in zip(b["shots"], slots):
+            said = " ".join(w["w"] for w in words if t - 0.3 <= LEAD + w["s"] < t + 2.0)
+            tag = f"clip {sh.get('clip')}@{sh.get('in')}" if "clip" in sh else "split"
+            lines.append(f"{fmt_ts(x['start'] + t)} ({x['start'] + t:7.2f}) {x['id']} {tag:16} "
+                         f"{'at ' + repr(sh['at']) + ' ' if sh.get('at') else ''}| {said}")
+            t += a
+    return "\n".join(lines) + "\n"
+
+
 def fmt_ts(t: float) -> str:
     t = int(t)
     return f"{t // 60}:{t % 60:02d}" if t < 3600 else f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}"
@@ -628,6 +805,12 @@ def main() -> int:
         if not bmov.exists():
             brand_lt.render_mov(bmov, bcfg)
         print(f"subscribe lower third at {bcfg['at']:.1f}s for {bsecs:.2f}s on the {bcfg['side']}", flush=True)
+    # Word times of every narration beat: anchors ("at") and the QA shot sheet (2026-11-16).
+    words_of: dict = {}
+    for b in beats:
+        if b["type"] == "narr" and (not only or b["id"] in only) and (narr_dir / f"{b['id']}.wav").exists():
+            words_of[b["id"]] = narr_words(b, narr_dir / f"{b['id']}.wav", segs / "words",
+                                           float(timings[b["id"]]["seconds"]))
     t = 0.0
     chapters, timeline = [], []
     t0 = time.time()
@@ -644,11 +827,17 @@ def main() -> int:
             continue
         seg = segs / f"{b['id']}.mkv"
         sig = beat_signature(b, gfx_specs, timings, dur, bt, bcfg if bt else None)
+        if b["type"] == "narr" and any(sh.get("at") for sh in b.get("shots") or []):
+            sig = hashlib.sha1((sig + json.dumps({k: round(v * FPS) for k, v in
+                                                  beat_anchors(b, words_of.get(b["id"])).items()},
+                                                 sort_keys=True)).encode()).hexdigest()
         sigf = segs / f"{b['id']}.sig"
         if seg.exists() and sigf.exists() and sigf.read_text() == sig:
             continue  # unchanged since a cached render (segments are cached between runs)
         wav = narr_dir / f"{b['id']}.wav" if b["type"] == "narr" else None
-        render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg, bt)
+        anchors = beat_anchors(b, words_of.get(b["id"])) if wav else {}
+        render_beat(b, dur, clips, gfx_specs, work, float(edl.get("under_narration_db", -24)), wav, seg, bt,
+                    anchors)
         sigf.write_text(sig)
         for f in (work / "pieces").glob("*.mkv"):
             f.unlink()
@@ -659,13 +848,14 @@ def main() -> int:
     print(f"planned runtime {fmt_ts(t)} ({t:.1f} s)\n{chap_txt}", flush=True)
     if only:  # test render: one small preview of just those beats, in edit order
         lst = work / "preview.txt"
-        lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats
-                               if b["id"] in only), encoding="utf-8")
+        lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\nduration {round(d * FPS) / FPS:.6f}\n"
+                               for b, _, d in beats_t if b["id"] in only), encoding="utf-8")
         joined = work / "preview.mkv"
         run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(joined)])
         bed = build_music(game, timeline, t, work)
         pieces = [(x["start"], x["seconds"]) for x in timeline if x["id"] in only]
-        mixed = mix_music(joined, bed, work / "preview_mix.wav", pieces=pieces)
+        sound = exact_audio(beats_t, segs, work / "preview_sound.wav", only)
+        mixed = mix_music(sound, bed, work / "preview_mix.wav", pieces=pieces)
         run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-i", str(mixed), "-map", "0:v", "-map", "1:a",
              "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "preview.mp4")])
         thumbnails(gfx_specs, clips, out)  # cheap, so test renders show them too
@@ -673,11 +863,19 @@ def main() -> int:
 
     # Concat, then two-pass loudness to -14 LUFS.
     lst = work / "segs.txt"
-    lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\n" for b in beats), encoding="utf-8")
+    # Exact durations (2026-11-16 review): without them each file starts at the previous one's
+    # whole-millisecond MKV duration and the picture creeps up to ~0.7 ms per beat.
+    lst.write_text("".join(f"file '{(segs / (b['id'] + '.mkv')).as_posix()}'\nduration {round(d * FPS) / FPS:.6f}\n"
+                           for b, _, d in beats_t), encoding="utf-8")
+    for b, _, d in beats_t:   # every segment, new or cached, must hold exactly its frame count
+        got = round(probe_seconds(segs / f"{b['id']}.mkv", "v") * FPS)
+        if got != round(d * FPS):
+            raise SystemExit(f"{b['id']}: segment has {got} frames, want {round(d * FPS)}")
     joined = work / "joined.mkv"
     run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(joined)])
     bed = build_music(game, timeline, t, work)
-    mixed = mix_music(joined, bed, work / "mixed.wav")
+    sound = exact_audio(beats_t, segs, work / "sound.wav")
+    mixed = mix_music(sound, bed, work / "mixed.wav")
     meas = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(mixed), "-vn", "-af",
                            "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                           capture_output=True, text=True).stderr
@@ -693,10 +891,21 @@ def main() -> int:
          "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(final)])
     joined.unlink(missing_ok=True)
     mixed.unlink(missing_ok=True)
+    sound.unlink(missing_ok=True)
     report = qc(final)
     report["sync_drift"] = sync_drift(final, timeline)
     if report["sync_drift"] is None or abs(report["sync_drift"]) > 0.05:
         report["pass"] = False
+    # Lip sync of every burst against its source (2026-11-16): fail over 40 ms (2.4 frames).
+    report["burst_sync"] = burst_sync(final, beats_t, clips)
+    measured = [abs(x["ms"]) for x in report["burst_sync"] if x["ms"] is not None]
+    report["burst_sync_worst_ms"] = max(measured, default=None)
+    report["burst_sync_measured"] = f"{len(measured)} of {len(report['burst_sync'])}"
+    if (report["burst_sync_worst_ms"] or 0) > 40 or len(measured) < max(1, len(report["burst_sync"]) // 2):
+        report["pass"] = False
+    dur_of = {b["id"]: beat_dur(b) for b in beats}
+    anchors_of = {b["id"]: beat_anchors(b, words_of.get(b["id"])) for b in beats if b["type"] == "narr"}
+    (out / "shots.txt").write_text(shot_sheet(timeline, beats, words_of, clips, dur_of, anchors_of), encoding="utf-8")
     report["chapters"] = chap_txt
     (out / "qc.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps(report, indent=1), flush=True)
@@ -712,7 +921,7 @@ def main() -> int:
     rc = subprocess.run(["rclone", "copyto", str(final), f"kgb2:{b2_store._bucket()}/{key}",
                          "--b2-chunk-size", "100M"], env=b2_env()).returncode
     for extra in [*sorted(out.glob("thumb-*.jpg")), out / "chapters.txt", out / "music-credits.txt",
-                  out / "qc.json", out / "timeline.json"]:
+                  out / "qc.json", out / "timeline.json", out / "shots.txt"]:
         if extra.exists():
             subprocess.run(["rclone", "copyto", str(extra),
                             f"kgb2:{b2_store._bucket()}/{folder}/{a.version}/{extra.name}"], env=b2_env())

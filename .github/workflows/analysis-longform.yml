@@ -152,6 +152,8 @@ jobs:
           VERSION: ${{ github.event.inputs.version }}
         run: |
           curl -fsSL https://rclone.org/install.sh | sudo bash
+          # narration word times for shot anchors and the QA shot sheet (2026-11-16)
+          pip install --quiet "faster-whisper==1.1.1"
           if [ -n "$ONLY" ]; then
             python tools/analysis_render.py "$GAME" --only "$ONLY" --no-upload
           else
