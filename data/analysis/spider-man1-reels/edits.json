@@ -1,5 +1,5 @@
 {
- "note": "Spider-Man 1 reel pack fixes after QA round 1 (2026-11-16). b019: the script's 354.0-359.1 starts on a fade to black (351-355.9), so the renderer slid it back onto the cocoon shot b021 also uses; now Fisk upside down in the web (340.62-342.9, silent) and Fisk's back to the crowd on the way to the van (356.0-359.55). b006: Peter's shot from 44.1 (his lips move before). b007: the cutscene subtitle sits above the square's crop line, so crop 'sub'. b017: in-point 296.44 drops two stray frames of another view.",
+ "note": "Spider-Man 1 reel pack fixes after QA round 1 (2026-11-16). b019: the script's 354.0-359.1 starts on a fade to black (351-355.9), so the renderer slid it back onto the cocoon shot b021 also uses; now Fisk upside down in the web (340.62-342.9, silent) and Fisk's back to the crowd on the way to the van (356.0-359.55). b006: Peter's shot from 44.1 (his lips move before). b007: the cutscene subtitle sits above the square's crop line, so crop 'sub'. b017: in-point 296.44 drops two stray frames of another view. v3: b017 in-point 296.50 (three stray frames remained at 296.44).",
  "shots": {
   "b019": [
    {
@@ -37,7 +37,7 @@
    "crop": "sub"
   },
   "b017": {
-   "in": 296.44
+   "in": 296.5
   }
  }
 }
