@@ -1,18 +1,58 @@
 {
- "note": "Music bed for the Spider-Man 2 reel pack (2026-11-15): one section per reel, starting on its first beat; short crossfade so each reel opens on its own track. R01 (Kraven, the kill order) on the tension bed, R02 (the alien suit) on the main theme. Never the game's own soundtrack. Levels as the long-forms.",
+ "note": "Music bed for the Spider-Man 2 reel pack (2026-11-15): one section per reel, starting on its first beat; short crossfade so each reel opens on its own track. R01 (Kraven, the kill order) on the tension bed, R02 (the alien suit) on the main theme. Never the game's own soundtrack. Levels as the long-forms. 2026-11-16: R03 (the Flame) and R04 (Kraven's family) and R07 (Venom's grudge) on the tension bed, R05 (Norman and Otto) on the main theme, R06 (heal the world) on the home theme Red.",
  "tracks": {
   "theme": "music/analysis/last-dawn-ross-bugden.mp3",
   "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
   "home": "music/analysis/red-scott-buckley.mp3"
  },
  "credits": [
-  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden"
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
  ],
  "under_narration_db": -23,
  "under_game_db": -30,
  "xfade": 0.4,
  "sections": [
-  {"from": "b000", "track": "tension", "offset": 0, "gain_db": -25},
-  {"from": "b005", "track": "theme", "offset": 0, "gain_db": -22}
+  {
+   "from": "b000",
+   "track": "tension",
+   "offset": 0,
+   "gain_db": -25
+  },
+  {
+   "from": "b005",
+   "track": "theme",
+   "offset": 0,
+   "gain_db": -22
+  },
+  {
+   "from": "b011",
+   "track": "tension",
+   "offset": 30,
+   "gain_db": -25
+  },
+  {
+   "from": "b017",
+   "track": "tension",
+   "offset": 60,
+   "gain_db": -25
+  },
+  {
+   "from": "b021",
+   "track": "theme",
+   "offset": 40,
+   "gain_db": -22
+  },
+  {
+   "from": "b027",
+   "track": "home",
+   "offset": 0
+  },
+  {
+   "from": "b032",
+   "track": "tension",
+   "offset": 90,
+   "gain_db": -25
+  }
  ]
 }

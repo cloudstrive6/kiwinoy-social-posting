@@ -12,7 +12,7 @@
   "master": "C"
  },
  "under_narration_db": -24,
- "source": "spider-man2-reels-script-v1.md",
+ "source": "spider-man2-reels-pack.md",
  "beats": [
   {
    "type": "narr",
@@ -207,6 +207,520 @@
    ],
    "gfx": [],
    "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "Who is the Flame, really? His last side mission answers it, and I played it after the credits.",
+   "tts": "Who is the Flame, really? His last side mission answers it, and I played it after the credits.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 645.1,
+     "out": 647.9,
+     "crop": "sub"
+    },
+    {
+     "clip": 1009,
+     "in": 658.6,
+     "out": 661.45,
+     "crop": "sub"
+    },
+    {
+     "clip": 1009,
+     "in": 668.55,
+     "out": 670.6,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "He wanted the Oscorp train derailed so he could take the symbiote sample it carried. Then he quotes his own prophecy.",
+   "tts": "He wanted the Oscorp train derailed so he could take the symbiote sample it carried. Then he quotes his own prophecy.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 601.2,
+     "out": 603.9
+    },
+    {
+     "clip": 1009,
+     "in": 676.15,
+     "out": 679.2,
+     "crop": "sub"
+    },
+    {
+     "clip": 1009,
+     "in": 686.3,
+     "out": 689.6
+    }
+   ],
+   "gfx": [],
+   "id": "b012"
+  },
+  {
+   "type": "game",
+   "clip": 1009,
+   "in": 689.75,
+   "out": 691.3,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 13-23-50).mp4 @ 689.75-691.3 s: \"The Flame: and carnage.\\\"\" (clean cutscene, same tube close-up; the Flame's own line)",
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "Wraith says he'll go underground. Then, on a call, she lists his old names.",
+   "tts": "Wraith says he'll go underground. Then, on a call, she lists his old names.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 750.4,
+     "out": 753.3,
+     "crop": "sub"
+    },
+    {
+     "clip": 1009,
+     "in": 782.0,
+     "out": 784.85
+    },
+    {
+     "clip": 1009,
+     "in": 786.9,
+     "out": 788.7
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "game",
+   "clip": 1009,
+   "in": 817.95,
+   "out": 823.35,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 13-23-50).mp4 @ 817.95-823.35 s: \"Wraith: I'll start checking his old aliases: Archie Abel, Walter Wachtman, Cletus Kasady...\" (phone call while Peter is on foot at the derailment site; free-roam HUD with Wraith's portrait and minimap: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "In the comics, Cletus Kasady is the man who becomes Carnage. So one of the Flame's old names is Carnage's real name, and he got away with a symbiote.",
+   "tts": "In the comics, Cletus Kasady is the man who becomes Carnage. So one of the Flame's old names is Carnage's real name, and he got away with a symbiote.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 694.15,
+     "out": 697.0
+    },
+    {
+     "clip": 1009,
+     "in": 714.0,
+     "out": 716.7
+    },
+    {
+     "clip": 1009,
+     "in": 722.5,
+     "out": 724.35
+    },
+    {
+     "clip": 1009,
+     "in": 725.0,
+     "out": 726.9
+    },
+    {
+     "clip": 1009,
+     "in": 727.1,
+     "out": 730.1
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "narr",
+   "text": "Did Kraven have a family? After the credits, I found the answer in a Hunter base.",
+   "tts": "Did Kraven have a family? After the credits, I found the answer in a Hunter base.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 179.7,
+     "out": 181.95
+    },
+    {
+     "clip": 1003,
+     "in": 185.4,
+     "out": 188.5
+    },
+    {
+     "clip": 1003,
+     "in": 188.6,
+     "out": 190.6
+    }
+   ],
+   "gfx": [],
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "Miles finds an encrypted file. It's Kraven and a woman labelled Sasha Kravinoff. She wants him home while they still have time. He says their time is over. So she asks about his children.",
+   "tts": "Miles finds an encrypted file. It's Kraven and a woman labelled Sasha Kravinoff. She wants him home while they still have time. He says their time is over. So she asks about his children.",
+   "shots": [
+    {
+     "clip": 1010,
+     "in": 361.5,
+     "out": 364.3,
+     "crop": "sub"
+    },
+    {
+     "clip": 1010,
+     "in": 365.2,
+     "out": 369.4,
+     "crop": "sub"
+    },
+    {
+     "clip": 1010,
+     "in": 369.55,
+     "out": 373.85,
+     "crop": "sub"
+    },
+    {
+     "clip": 1010,
+     "in": 373.95,
+     "out": 376.4,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b018"
+  },
+  {
+   "type": "game",
+   "clip": 1010,
+   "in": 376.55,
+   "out": 382.35,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 14-09-54).mp4 @ 376.55-382.35 s: \"Sasha Kravinoff: They will draw blood for control of our empire.\" / \"Kraven: The cubs must earn their place.\" (recorded audio log; skylight shot to 378.3, then Miles swinging through the base with HUD: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "So yes. A woman he calls my love, and children he expects to fight for his empire. His advice to Sasha: strike first.",
+   "tts": "So yes. A woman he calls my love, and children he expects to fight for his empire. His advice to Sasha: strike first.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 176.3,
+     "out": 179.55
+    },
+    {
+     "clip": 1003,
+     "in": 198.4,
+     "out": 202.1
+    },
+    {
+     "clip": 1003,
+     "in": 211.95,
+     "out": 214.4
+    }
+   ],
+   "gfx": [],
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "Why does Norman Osborn visit Otto Octavius during the credits?",
+   "tts": "Why does Norman Osborn visit Otto Octavius during the credits?",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 1796.2,
+     "out": 1801.45
+    }
+   ],
+   "gfx": [],
+   "id": "b021"
+  },
+  {
+   "type": "narr",
+   "text": "It's the mid-credits scene at the Raft. Otto is writing in a notebook, and Norman gets straight to the Spider-Men, and whether Otto knows who they are.",
+   "tts": "It's the mid-credits scene at the Raft. Otto is writing in a notebook, and Norman gets straight to the Spider-Men, and whether Otto knows who they are.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 1801.65,
+     "out": 1806.2
+    },
+    {
+     "clip": 1008,
+     "in": 1806.4,
+     "out": 1812.8,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b022"
+  },
+  {
+   "type": "game",
+   "clip": 1008,
+   "in": 1829.7,
+   "out": 1831.5,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-32-34).mp4 @ 1829.7-1831.5 s: \"Norman Osborn: They ruined my son.\" (clean cutscene; picture is Norman's face as he says it, his own line)",
+   "id": "b023"
+  },
+  {
+   "type": "narr",
+   "text": "So that's the reason. Harry is in a hospital bed, Norman blames the Spider-Men, and he thinks Otto knows who they are.",
+   "tts": "So that's the reason. Harry is in a hospital bed, Norman blames the Spider-Men, and he thinks Otto knows who they are.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 1834.0,
+     "out": 1838.0
+    },
+    {
+     "clip": 1008,
+     "in": 1820.3,
+     "out": 1825.8,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b024"
+  },
+  {
+   "type": "narr",
+   "text": "Otto's answer is that we all have to experience loss, even Norman. Then Norman asks what he's writing.",
+   "tts": "Otto's answer is that we all have to experience loss, even Norman. Then Norman asks what he's writing.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 1857.8,
+     "out": 1862.5
+    },
+    {
+     "clip": 1008,
+     "in": 1866.0,
+     "out": 1868.9
+    }
+   ],
+   "gfx": [],
+   "id": "b025"
+  },
+  {
+   "type": "game",
+   "clip": 1008,
+   "in": 1870.15,
+   "out": 1871.75,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-32-34).mp4 @ 1870.15-1871.75 s: \"Otto Octavius: The final chapter.\" (clean cutscene, close on Otto's chin, his own line)",
+   "id": "b026"
+  },
+  {
+   "type": "narr",
+   "text": "How does Harry's promise to heal the world end? It starts on the Midtown High bleachers.",
+   "tts": "How does Harry's promise to heal the world end? It starts on the Midtown High bleachers.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 804.95,
+     "out": 808.55
+    },
+    {
+     "clip": 1006,
+     "in": 808.7,
+     "out": 812.0,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b027"
+  },
+  {
+   "type": "game",
+   "clip": 1006,
+   "in": 844.5,
+   "out": 848.4,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-10-08 20-59-40).mp4 @ 844.5-848.4 s: \"Harry: Pete, we're gonna heal the world.\" (clean cutscene; wide of the empty bleachers and the MIDTOWN HIGH SCHOOL wall, the two of them tiny at the top)",
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "He means the work they're starting. By the final mission, I'd say that dream has turned into a symbiote hive, with Harry inside Venom.",
+   "tts": "He means the work they're starting. By the final mission, I'd say that dream has turned into a symbiote hive, with Harry inside Venom.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 663.4,
+     "out": 665.65
+    },
+    {
+     "clip": 1008,
+     "in": 699.0,
+     "out": 701.1,
+     "crop": "sub"
+    },
+    {
+     "clip": 1008,
+     "in": 709.65,
+     "out": 713.2
+    },
+    {
+     "clip": 1008,
+     "in": 744.5,
+     "out": 746.4
+    }
+   ],
+   "gfx": [],
+   "id": "b029"
+  },
+  {
+   "type": "game",
+   "clip": 1008,
+   "in": 746.5,
+   "out": 752.4,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-32-34).mp4 @ 746.5-752.4 s: \"Harry: Let's heal the world, Pete...\" / \"Harry: Together!\" (clean cutscene: tendrils on Harry, Peter's suit, then Harry's mouth on his own line)",
+   "id": "b030"
+  },
+  {
+   "type": "narr",
+   "text": "So the promise survives to the end. Harry still wants to heal the world with Peter, and the word that plea ends on, together, is the final mission's title.",
+   "tts": "So the promise survives to the end. Harry still wants to heal the world with Peter, and the word that plea ends on, together, is the final mission's title.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 887.2,
+     "out": 890.45
+    },
+    {
+     "clip": 1008,
+     "in": 891.8,
+     "out": 892.8
+    },
+    {
+     "clip": 1008,
+     "in": 896.65,
+     "out": 904.85
+    }
+   ],
+   "gfx": [],
+   "id": "b031"
+  },
+  {
+   "type": "narr",
+   "text": "In the final fight, what is Harry actually angry about?",
+   "tts": "In the final fight, what is Harry actually angry about?",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 393.4,
+     "out": 395.85,
+     "crop": "sub"
+    },
+    {
+     "clip": 1007,
+     "in": 399.55,
+     "out": 402.8,
+     "crop": "sub"
+    }
+   ],
+   "gfx": [],
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "Venom drags Peter to the place where, he says, they became best friends. Then he gets to the real complaint.",
+   "tts": "Venom drags Peter to the place where, he says, they became best friends. Then he gets to the real complaint.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 388.5,
+     "out": 390.6
+    },
+    {
+     "clip": 1007,
+     "in": 390.7,
+     "out": 393.3
+    },
+    {
+     "clip": 1007,
+     "in": 413.7,
+     "out": 416.5
+    },
+    {
+     "clip": 1007,
+     "in": 416.6,
+     "out": 418.6
+    }
+   ],
+   "gfx": [],
+   "id": "b033"
+  },
+  {
+   "type": "game",
+   "clip": 1007,
+   "in": 624.7,
+   "out": 628.45,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-16-55).mp4 @ 624.7-628.45 s: \"Venom: Then you replaced us with Miles.\" (boss fight, VENOM bar and ability icons: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b034"
+  },
+  {
+   "type": "narr",
+   "text": "He also says Miles poisoned Peter against them. Peter answers straight away.",
+   "tts": "He also says Miles poisoned Peter against them. Peter answers straight away.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 371.5,
+     "out": 373.2
+    },
+    {
+     "clip": 1007,
+     "in": 377.15,
+     "out": 379.2,
+     "crop": "sub"
+    },
+    {
+     "clip": 1007,
+     "in": 918.1,
+     "out": 920.4
+    }
+   ],
+   "gfx": [],
+   "id": "b035"
+  },
+  {
+   "type": "game",
+   "clip": 1007,
+   "in": 632.6,
+   "out": 637.1,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-16-55).mp4 @ 632.6-637.1 s: \"Spider-Man: No--\" / \"Spider-Man: he saved me,\" / \"Spider-Man: just like I'll save you.\" (Spider-Man: Peter by context; boss fight HUD: crop top 10% and sides, keep the band)",
+   "crop": "band",
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "So I think it's jealousy. Harry's complaint is that Peter replaced him with Miles, and Peter's answer is that Miles is the one who saved him.",
+   "tts": "So I think it's jealousy. Harry's complaint is that Peter replaced him with Miles, and Peter's answer is that Miles is the one who saved him.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 920.5,
+     "out": 924.95
+    },
+    {
+     "clip": 1007,
+     "in": 925.05,
+     "out": 930.2
+    },
+    {
+     "clip": 1007,
+     "in": 930.35,
+     "out": 933.6
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
   }
  ],
  "gfx_cues": []
