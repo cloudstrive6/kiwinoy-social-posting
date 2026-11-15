@@ -74,7 +74,7 @@ FRAME_LAYOUT = {
                "logo": (70, 140)},
     "zoom":   {"hook": (230, 560), "hook_max_w": None, "cap_size": 68, "end": ("FULL VIDEO", "ON THE CHANNEL"),
                "logo": (70, 140)},
-    "square": {"hook": (250, 512), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
+    "square": {"hook": (250, 496), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
                "logo": (112, 128)},
 }
 # The game's logo, centred in the space above the hook on every analysis Short and reel (Bryce,
@@ -881,7 +881,8 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     top = BAND[frame][0]
     row = top - 50 if frame == "band" else (top - 34 if frame == "square" else top - 46)
     if frame == "square":
-        _spoilers_tag(im, s, row)
+        # square reels: a slimmer tag at y 540-582, clear of a two-line hook's shadow (QA 2026-11-16)
+        _spoilers_tag(im, s, 561, half=21, size=32)
         return im
     av = Image.open(AVATAR).convert("RGBA").resize((60, 60), Image.LANCZOS)
     mask = Image.new("L", (60, 60), 0)
@@ -898,15 +899,15 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     return im
 
 
-def _spoilers_tag(im: "Image.Image", s: dict, row: int) -> None:
+def _spoilers_tag(im: "Image.Image", s: dict, row: int, half: int = 26, size: int = 36) -> None:
     if s.get("spoilers"):
-        ft = font(ANTON, 36)
+        ft = font(ANTON, size)
         label = "SPOILERS"
         tw = text_w(ft, label)
         x1 = W - EDGE                    # right-aligned, mirroring the avatar's left margin
         x0 = x1 - tw - 36
         d = ImageDraw.Draw(im)
-        d.rounded_rectangle((x0, row - 26, x1, row + 26), radius=10, fill=(*RED, 240))
+        d.rounded_rectangle((x0, row - half, x1, row + half), radius=10, fill=(*RED, 240))
         d.text(((x0 + x1) // 2, row + 1), label, font=ft, fill=(*OFFWHITE, 255), anchor="mm")
 
 
