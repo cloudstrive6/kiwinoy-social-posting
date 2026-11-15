@@ -74,7 +74,7 @@ FRAME_LAYOUT = {
                "logo": (70, 140)},
     "zoom":   {"hook": (230, 560), "hook_max_w": None, "cap_size": 68, "end": ("FULL VIDEO", "ON THE CHANNEL"),
                "logo": (70, 140)},
-    "square": {"hook": (250, 488), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
+    "square": {"hook": (250, 525), "hook_max_w": 960, "cap_size": 50, "end": ("FOLLOW", "FOR MORE BREAKDOWNS"),
                "logo": (112, 128)},
 }
 # The game's logo, centred in the space above the hook on every analysis Short and reel (Bryce,
@@ -156,12 +156,20 @@ def draw_logo(im: "Image.Image", frame: str) -> None:
 # the edges of the footage, make it feathered as well"): the circular KG logo (config
 # reels.brand_logo, brand_logo_size, brand_logo_opacity) centred in the band under the picture,
 # and the footage's top and bottom edges faded over reels.gameplay.classic_feather px.
-def kg_logo_circle() -> "Image.Image | None":
+def kg_logo_opacity() -> float:
+    try:
+        from core.config import CONFIG
+        return max(0.0, min(1.0, float(CONFIG.reels.get("brand_logo_opacity", 0.6))))
+    except Exception:
+        return 0.6
+
+
+def kg_logo_circle(opacity: "float | None" = None) -> "Image.Image | None":
     try:
         from core.config import CONFIG
         src = ROOT / CONFIG.reels.get("brand_logo", "reels/assets/logo/KG Logo 2.PNG")
         size = int(CONFIG.reels.get("brand_logo_size", 140))
-        opacity = max(0.0, min(1.0, float(CONFIG.reels.get("brand_logo_opacity", 0.6))))
+        opacity = kg_logo_opacity() if opacity is None else opacity
     except Exception as e:
         print(f"KG logo settings unavailable: {e!r}", flush=True)
         return None
@@ -176,6 +184,119 @@ def kg_logo_circle() -> "Image.Image | None":
     ImageDraw.Draw(mask).ellipse((0, 0, size - 1, size - 1), fill=255)
     im.putalpha(ImageChops.multiply(im.getchannel("A"), mask).point(lambda v: int(v * opacity)))
     return im
+
+
+# FOLLOW BOSS KG lower third under the square picture that turns into the KG logo (Bryce,
+# 2026-11-15: "below the footage, before making the logo appear, put a FOLLOW BOSS KG
+# lower-thirds, and then transitions beautifully to the KG Logo at the center"). Same look as the
+# long-form's subscribe lower third (tools/analysis_brand.py: photo in a KG-red ring, dark bar with
+# a red edge, accent in KG red, handle under it), centred in the band. Enter 0.62 s (staggered:
+# photo, bar, name, handle), hold, then the text fades and the bar retracts into the photo while the
+# photo glides to the centre, shrinks to the classic KG logo's size and cross-fades into it. The
+# last frame (the logo) is held to the end by the overlay.
+KG_OP = 0.6
+FOLLOW = {"at": 0.6, "hold": 4.0, "morph": 0.9, "line1": "FOLLOW", "accent": "BOSS KG", "line2": "@Kiwinoy"}
+
+
+def follow_frame(t: float, band_h: int, kg: "Image.Image | None") -> "Image.Image":
+    import analysis_brand as brand
+    im = Image.new("RGBA", (W, band_h), (0, 0, 0, 0))
+    D, bar_h, pad = 124, 94, 22
+    cy = band_h // 2
+    f1, f2 = brand.gfx.font("display", 40), brand.handle_font(26)
+    d = ImageDraw.Draw(im)
+    l1, acc, l2 = FOLLOW["line1"], FOLLOW["accent"], FOLLOW["line2"]
+    w1 = brand.gfx.tw(d, l1 + " ", f1) + brand.gfx.tw(d, acc, f1)
+    w2 = brand.gfx.tw(d, l2, f2)
+    bar_w = D // 2 + pad + max(w1, w2) + 34
+    unit = D // 2 + bar_w                       # photo's left edge to the bar's far end
+    ax0 = CX - unit // 2 + D // 2               # photo centre while the lower third is up
+    enter, hold, morph = brand.ENTER, FOLLOW["hold"], FOLLOW["morph"]
+    u = t - FOLLOW["at"]
+    kg_d = kg.width if kg is not None else 116
+    if u < 0:
+        return im
+    if u < enter + hold:                        # enter, then hold
+        av = brand._ease_out_back(brand._seg(u, 0.0, 0.34), 1.4)
+        av_a = brand._seg(u, 0.0, 0.12)
+        bar = brand._ease_out_cubic(brand._seg(u, 0.10, 0.48))
+        n1 = brand._ease_out_cubic(brand._seg(u, 0.26, 0.56))
+        n2 = brand._ease_out_cubic(brand._seg(u, 0.34, 0.62))
+        ax, dd, mix = ax0, D, 0.0
+    else:                                       # morph into the KG logo
+        m = min(1.0, (u - enter - hold) / morph)
+        n2 = 1 - brand._ease_in_cubic(brand._seg(m, 0.0, 0.22))
+        n1 = 1 - brand._ease_in_cubic(brand._seg(m, 0.04, 0.28))
+        bar = 1 - brand._ease_in_cubic(brand._seg(m, 0.10, 0.45))
+        g = brand._seg(m, 0.30, 1.0)
+        g = g * g * (3 - 2 * g)                 # smoothstep glide
+        ax = round(ax0 + (CX - ax0) * g)
+        dd = max(2, round(D + (kg_d - D) * g))
+        mix = brand._seg(m, 0.45, 1.0)
+        av, av_a = 1.0, 1.0
+    x0, x1 = ax, ax + int(bar_w * bar)
+    tx = ax + D // 2 + pad
+    if bar > 0.001:
+        sh = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rectangle([x0, cy - bar_h // 2 + 6, x1, cy + bar_h // 2 + 6], fill=(0, 0, 0, 110))
+        im = Image.alpha_composite(im, sh.filter(ImageFilter.GaussianBlur(8)))
+        d = ImageDraw.Draw(im)
+        d.rectangle([x0, cy - bar_h // 2, x1, cy + bar_h // 2], fill=(14, 14, 18, 232))
+        d.rectangle([x1 - 6, cy - bar_h // 2, x1, cy + bar_h // 2], fill=brand.BRAND_RED)
+    txt = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    td = ImageDraw.Draw(txt)
+    y1, y2 = cy + 4, cy + 34
+    if n1 > 0:
+        off = -int((1 - n1) * 24)
+        a = int(255 * n1)
+        td.text((tx + off, y1), l1 + " ", font=f1, fill=(255, 255, 255, a), anchor="ls")
+        td.text((tx + off + brand.gfx.tw(td, l1 + " ", f1), y1), acc, font=f1, fill=brand.BRAND_RED[:3] + (a,), anchor="ls")
+    if n2 > 0:
+        off = -int((1 - n2) * 24)
+        td.text((tx + off, y2), l2, font=f2, fill=(225, 225, 230, int(255 * n2)), anchor="ls")
+    clip = Image.new("L", im.size, 0)
+    if bar > 0.001:
+        ImageDraw.Draw(clip).rectangle([x0, cy - bar_h // 2, x1, cy + bar_h // 2], fill=255)
+    from PIL import ImageChops
+    txt.putalpha(ImageChops.multiply(txt.getchannel("A"), clip))
+    im = Image.alpha_composite(im, txt)
+    if av > 0.01 and av_a > 0.01:
+        sz = max(2, int(dd * av))
+        ph = brand._avatar(D).resize((sz, sz), Image.LANCZOS)
+        if mix > 0 and kg is not None:
+            # blend photo -> logo (both full strength, so no dark dip), then ease the opacity
+            # from 1 to the classic logo's opacity
+            ph = Image.blend(ph, kg.resize((sz, sz), Image.LANCZOS), mix)
+        op = av_a * (1 + (KG_OP - 1) * mix)
+        if op < 1:
+            ph.putalpha(ph.getchannel("A").point(lambda v: int(v * op)))
+        im.alpha_composite(ph, (ax - sz // 2, cy - sz // 2))
+    return im
+
+
+def follow_overlay(work: Path, band_h: int) -> "Path | None":
+    """The lower third and its morph as a transparent mov, band_h tall; its last frame is the logo."""
+    try:
+        import analysis_brand as brand
+    except Exception as e:
+        print(f"follow lower third unavailable: {e!r}", flush=True)
+        return None
+    global KG_OP
+    KG_OP = kg_logo_opacity()
+    kg = kg_logo_circle(opacity=1.0)       # full strength; follow_frame eases it to KG_OP
+    secs = FOLLOW["at"] + brand.ENTER + FOLLOW["hold"] + FOLLOW["morph"] + 0.1
+    out = work / f"follow-{W}x{band_h}.mov"
+    if not out.exists():
+        n = int(round(secs * FPS))
+        pr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba",
+                               "-s", f"{W}x{band_h}", "-r", str(FPS), "-i", "-", "-c:v", "qtrle",
+                               "-pix_fmt", "argb", str(out)], stdin=subprocess.PIPE)
+        for i in range(n):
+            pr.stdin.write(follow_frame(i / FPS, band_h, kg).tobytes())
+        pr.stdin.close()
+        if pr.wait() != 0:
+            return None
+    return out
 
 
 def feather_px() -> int:
@@ -686,11 +807,6 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     """Static layer: hook (top), watermark and SPOILERS row above the picture."""
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     draw_logo(im, frame)
-    if frame == "square":
-        kg = kg_logo_circle()
-        if kg is not None:
-            band_top = BAND[frame][0] + BAND[frame][2]
-            im.alpha_composite(kg, (CX - kg.width // 2, band_top + (H - band_top - kg.height) // 2))
     words = [w if any(c.isdigit() for c in w) else w.upper() for w in s["hook"].split()]
     accent = {norm(x) for x in s.get("accent", "").upper().split()}
     lines: list[list[str]] = []
@@ -724,9 +840,14 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
             draw_shadowed(im, (x, y), w, f, (*col, 255), stroke=5, shadow=12)
             x += text_w(f, w) + sp
         y += lh
-    # watermark: KG avatar + BOSS KG, left, just above the picture
+    # watermark: KG avatar + BOSS KG, left, just above the picture (YouTube Shorts only: the square
+    # reel drops it and shows the FOLLOW BOSS KG lower third under the picture instead, Bryce
+    # 2026-11-15)
     top = BAND[frame][0]
-    row = top - 50 if frame == "band" else top - 46
+    row = top - 50 if frame == "band" else (top - 34 if frame == "square" else top - 46)
+    if frame == "square":
+        _spoilers_tag(im, s, row)
+        return im
     av = Image.open(AVATAR).convert("RGBA").resize((60, 60), Image.LANCZOS)
     mask = Image.new("L", (60, 60), 0)
     ImageDraw.Draw(mask).ellipse((0, 0, 59, 59), fill=255)
@@ -738,6 +859,11 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
     fw = font(MONT, 34, "Bold")
     ImageDraw.Draw(im).text((138, row), WATERMARK, font=fw, fill=(*OFFWHITE, 225), anchor="lm",
                             stroke_width=2, stroke_fill=(*INK, 200))
+    _spoilers_tag(im, s, row)
+    return im
+
+
+def _spoilers_tag(im: "Image.Image", s: dict, row: int) -> None:
     if s.get("spoilers"):
         ft = font(ANTON, 36)
         label = "SPOILERS"
@@ -747,7 +873,6 @@ def hook_layer(s: dict, frame: str) -> Image.Image:
         d = ImageDraw.Draw(im)
         d.rounded_rectangle((x0, row - 26, x1, row + 26), radius=10, fill=(*RED, 240))
         d.text(((x0 + x1) // 2, row + 1), label, font=ft, fill=(*OFFWHITE, 255), anchor="mm")
-    return im
 
 
 def end_layer(frame: str) -> Image.Image:
@@ -966,6 +1091,12 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
         inputs += ["-loop", "1", "-framerate", str(FPS), "-i", str(fm)]
         im_, nxt = nxt, nxt + 1
     sub = subscribe_overlay(work) if frame in ("band", "zoom") and body > SUB_AT + 6 else None
+    band_top = BAND[frame][0] + BAND[frame][2]
+    fol = follow_overlay(work, H - band_top) if frame == "square" else None
+    ifol = None
+    if fol:
+        inputs += ["-i", str(fol)]
+        ifol, nxt = nxt, nxt + 1
     if sub:
         inputs += ["-i", str(sub[0])]
         isub, nxt = nxt, nxt + 1
@@ -997,7 +1128,8 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
           f"[{ic}:v]fps={FPS},format=rgba,trim=duration={total:.4f},setpts=PTS-STARTPTS[cp];"
           f"[v2][cp]overlay=0:{cap_y}:eof_action=pass[v3a];"
           + (f"[{isub}:v]format=rgba,setpts=PTS+{SUB_AT}/TB[sub];[v3a][sub]overlay={sub[1]}:{sub[2]}:eof_action=pass[v3];"
-             if sub else "[v3a]null[v3];") +
+             if sub else (f"[{ifol}:v]format=rgba[fol];[v3a][fol]overlay=0:{band_top}:eof_action=repeat[v3];"
+                          if fol else "[v3a]null[v3];")) +
           f"[{ie}:v]format=rgba,trim=duration={total:.4f},fade=t=in:st={body:.3f}:d=0.25:alpha=1[en];"
           f"[v3][en]overlay=0:0:enable='gte(t,{body:.3f})',format=yuv420p[vout]")
     # pass 1: loudness of the joined audio
