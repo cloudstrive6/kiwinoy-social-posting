@@ -831,6 +831,10 @@ def _g_map_data(spec: dict, n: int, lay: dict) -> M.Graphic:
     t1 = base_end + 12 if context else 0
     gap_steps = M.clamp(((c.x0 - 90 - 60) - t1) / max(1, len(steps) - 1), 90, 360)
     step_t = [int(t1 + k * gap_steps) for k in range(len(steps))]
+    if st.get("step_at"):  # seconds after the graphic starts, one per step, set from the narration's
+        # word times so each node lights on its own words (SM2 v10 lit MJ 7 s after "MJ", 2026-11-16)
+        assert len(st["step_at"]) == len(steps), "step_at needs one time per step"
+        step_t = [int(round(float(s) * M.FPS)) for s in st["step_at"]]
     moves: dict = {}
     lit_win: dict = {}
     lit_over = {int(k): v for k, v in lay.get("lit", {}).get(stage, {}).items()} if lay.get("lit") else {}

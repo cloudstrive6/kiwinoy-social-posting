@@ -42,7 +42,7 @@
          "edges": {"e_p": {"pts": [[1245.5, 528.5], [1459.5, 528.5]], "tone": "threat", "arrow": true},
                    "e_h": {"pts": [[1245.5, 505], [1340, 505], [1340, 248.5], [1458.5, 248.5]], "tone": "threat", "arrow": true},
                    "e_m": {"pts": [[1245.5, 552], [1340, 552], [1340, 808.5], [1509, 808.5]], "tone": "threat", "arrow": true}},
-         "steps": [["symbiote"], ["e_p", "peter"], ["e_h", "harry"], ["e_m", "mj"]],
+         "steps": [["symbiote"], ["e_p", "peter"], ["e_h", "harry"], ["e_m", "mj"]], "step_at": [0.2, 4.0, 6.6, 10.4],
          "caption": "MY READING", "caption_y": 990}
   }
  },
