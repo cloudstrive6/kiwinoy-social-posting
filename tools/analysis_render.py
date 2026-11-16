@@ -843,7 +843,9 @@ def main() -> int:
             f.unlink()
         print(f"{b['id']} {b['type']} {dur:.1f}s done ({time.time() - t0:.0f}s elapsed)", flush=True)
     (out / "timeline.json").write_text(json.dumps(timeline, indent=1), encoding="utf-8")
-    chap_txt = "\n".join(f"{fmt_ts(s)} {title}" for s, title in chapters)
+    # YouTube chapter times round UP to the next whole second, so each lands inside its chapter's
+    # first beat, not on the last second of the shot before (Spider-Man 2 v10 review, 2026-11-16).
+    chap_txt = "\n".join(f"{fmt_ts(math.ceil(s - 1e-6))} {title}" for s, title in chapters)
     (out / "chapters.txt").write_text(chap_txt + "\n", encoding="utf-8")
     print(f"planned runtime {fmt_ts(t)} ({t:.1f} s)\n{chap_txt}", flush=True)
     if only:  # test render: one small preview of just those beats, in edit order
