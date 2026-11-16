@@ -1,0 +1,774 @@
+{
+ "note": "YouTube Shorts cut from the Spider-Man 2 analysis long-form (render v11, 2026-11-16; first cut from v10). Each pick is one question and its answer from the script's own claims, cut on narration sentence boundaries. parts: a run of beats with an optional first phrase (from) and last phrase (to); several parts join with a hard cut. The first three picks carry no ending spoilers; picks from the bell on carry a SPOILERS tag. start, end, seconds, cuts, description and tags are written by tools/analysis_shorts.py.",
+ "full_video": "https://youtu.be/cjShbIaGC1M",
+ "slots_utc": [
+  "15:00",
+  "23:00"
+ ],
+ "hashtags_base": [
+  "#MarvelsSpiderMan2",
+  "#SpiderMan2",
+  "#PS5",
+  "#KiwinoyGaming"
+ ],
+ "tags_base": [
+  "Marvel's Spider-Man 2",
+  "Spider-Man 2",
+  "Spider-Man 2 PS5",
+  "Spider-Man 2 explained",
+  "Spider-Man 2 story",
+  "Peter Parker",
+  "Miles Morales",
+  "symbiote suit",
+  "Insomniac",
+  "PS5",
+  "Kiwinoy Gaming",
+  "Boss KG"
+ ],
+ "game_lines": {
+  "_note": "Game lines as heard in the v10 render and shown in the game's own subtitles (subtitle frames checked 2026-11-16). b004: the subtitle on screen reads 'Peter: Okay, class. Uh, read chapter four. Or five. Or whatever--' but the burst starts on 'Uh', so the caption carries the heard part with the subtitle's speaker label. b022: the subtitle reads 'it makes me a better Spider-Man.' with no leading ellipsis, so the caption drops the cue's '...'. The other bursts used (b017, b027, b034, b044, b046, b048, b050, b053, b056, b058, b061, b080) match their cue text.",
+  "b004": [
+   {
+    "speaker": "Peter",
+    "text": "Uh, read chapter four. Or five. Or whatever--"
+   }
+  ],
+  "b022": "it makes me a better Spider-Man."
+ },
+ "shorts": [
+  {
+   "id": "s01",
+   "order": 11,
+   "spoilers": false,
+   "hook": "Peter was sinking before the suit",
+   "accent": "sinking",
+   "title": "Marvel's Spider-Man 2: Was Peter Sinking Before the Suit?",
+   "blurb": "Fired from his teaching job, living in May's mortgaged house, MJ's job on the line and the city calling every night. All of that weight lands on Peter before the black suit shows up, and none of it is alien.",
+   "hashtags_extra": [
+    "#PeterParker"
+   ],
+   "tags_extra": [
+    "Peter Parker fired",
+    "Aunt May house",
+    "Spider-Man 2 opening"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b004",
+      "b007"
+     ]
+    }
+   ],
+   "start": 57.25,
+   "end": 99.46,
+   "flash_holds": {},
+   "seconds": 43.71,
+   "cuts": [
+    [
+     57.25,
+     99.46
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nFired from his teaching job, living in May's mortgaged house, MJ's job on the line and the city calling every night. All of that weight lands on Peter before the black suit shows up, and none of it is alien.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #PeterParker",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Peter Parker fired",
+    "Aunt May house",
+    "Spider-Man 2 opening"
+   ],
+   "hold_note": "2026-11-16: held to the end until the caption chunker keeps a negation on one card (review: 'NONE OF' / 'IT IS ALIEN.' reads as the opposite claim)."
+  },
+  {
+   "id": "s02",
+   "order": 1,
+   "spoilers": false,
+   "hook": "The best case for the suit",
+   "accent": "suit",
+   "title": "Marvel's Spider-Man 2: The Best Case That the Suit Did It",
+   "blurb": "Peter was dying when the symbiote bonded to him, he tried to give it back, and it makes everything louder. Here is the strongest evidence that the suit was in charge.",
+   "hashtags_extra": [
+    "#Symbiote"
+   ],
+   "tags_extra": [
+    "black suit",
+    "symbiote",
+    "Harry Osborn",
+    "Kraven"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b014"
+     ]
+    },
+    {
+     "beats": [
+      "b016",
+      "b018"
+     ]
+    }
+   ],
+   "start": 209.42,
+   "end": 270.24,
+   "flash_holds": {},
+   "seconds": 48.09,
+   "cuts": [
+    [
+     209.42,
+     222.07
+    ],
+    [
+     236.3,
+     270.24
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nPeter was dying when the symbiote bonded to him, he tried to give it back, and it makes everything louder. Here is the strongest evidence that the suit was in charge.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #Symbiote",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "black suit",
+    "symbiote",
+    "Harry Osborn",
+    "Kraven"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s02.mp4"
+  },
+  {
+   "id": "s03",
+   "order": 2,
+   "spoilers": false,
+   "hook": "Did Peter know what it was?",
+   "accent": "know",
+   "title": "Marvel's Spider-Man 2: Peter Knew What the Suit Was",
+   "blurb": "In Connors's lab, Peter learns the suit is a symbiote from a meteorite, and Connors wants it off him. Peter's answer is calm, and it is his own.",
+   "hashtags_extra": [
+    "#BlackSuit"
+   ],
+   "tags_extra": [
+    "Dr. Connors",
+    "black suit",
+    "symbiote",
+    "it makes me a better Spider-Man"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b021",
+      "b023"
+     ],
+     "to": "he says yes."
+    }
+   ],
+   "start": 301.83,
+   "end": 336.41,
+   "flash_holds": {},
+   "seconds": 36.08,
+   "cuts": [
+    [
+     301.83,
+     336.41
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nIn Connors's lab, Peter learns the suit is a symbiote from a meteorite, and Connors wants it off him. Peter's answer is calm, and it is his own.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #BlackSuit",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Dr. Connors",
+    "black suit",
+    "symbiote",
+    "it makes me a better Spider-Man"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s03.mp4"
+  },
+  {
+   "id": "s04",
+   "order": 3,
+   "spoilers": false,
+   "hook": "The warning Peter ignored",
+   "accent": "warning",
+   "title": "Marvel's Spider-Man 2: Why Peter Ignored Connors's Warning",
+   "blurb": "Connors begs Peter to come back to the lab and remove the symbiote. Peter's reply says more about Peter than about the suit.",
+   "hashtags_extra": [
+    "#BlackSuit"
+   ],
+   "tags_extra": [
+    "Dr. Connors",
+    "No one listens",
+    "black suit",
+    "symbiote"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b026",
+      "b028"
+     ]
+    }
+   ],
+   "start": 355.3,
+   "end": 389.91,
+   "flash_holds": {},
+   "seconds": 36.11,
+   "cuts": [
+    [
+     355.3,
+     389.91
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nConnors begs Peter to come back to the lab and remove the symbiote. Peter's reply says more about Peter than about the suit.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #BlackSuit",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Dr. Connors",
+    "No one listens",
+    "black suit",
+    "symbiote"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s04.mp4"
+  },
+  {
+   "id": "s05",
+   "order": 4,
+   "spoilers": false,
+   "hook": "Same anger, no suit",
+   "accent": "no suit",
+   "title": "Marvel's Spider-Man 2: Why Miles Spared Martin Li",
+   "blurb": "Martin Li is the man behind the death of Miles's father, and Miles has him beaten. Miles has the same anger as Peter, with no suit, and he makes a different choice.",
+   "hashtags_extra": [
+    "#MilesMorales"
+   ],
+   "tags_extra": [
+    "Martin Li",
+    "Mister Negative",
+    "Miles spares Li",
+    "Kraven mansion"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b032",
+      "b035"
+     ],
+     "to": "He spares him."
+    },
+    {
+     "beats": [
+      "b038"
+     ],
+     "from": "Miles had every reason"
+    }
+   ],
+   "start": 429.55,
+   "end": 500.87,
+   "flash_holds": {},
+   "seconds": 51.79,
+   "cuts": [
+    [
+     429.55,
+     463.86
+    ],
+    [
+     484.89,
+     500.87
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nMartin Li is the man behind the death of Miles's father, and Miles has him beaten. Miles has the same anger as Peter, with no suit, and he makes a different choice.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #MilesMorales",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Martin Li",
+    "Mister Negative",
+    "Miles spares Li",
+    "Kraven mansion"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s05.mp4"
+  },
+  {
+   "id": "s06",
+   "order": 12,
+   "spoilers": true,
+   "hook": "Was the suit talking here?",
+   "accent": "suit",
+   "title": "Marvel's Spider-Man 2: Was It the Suit Saying 'I Made You'?",
+   "blurb": "In Kraven's mansion Peter turns on Miles: I need this suit, I made you, you owe me. Miles talks to the suit like a separate voice, but listen to where Peter's words come from.",
+   "hashtags_extra": [
+    "#SpiderMan2Ending"
+   ],
+   "tags_extra": [
+    "Peter vs Miles",
+    "I made you",
+    "Kraven mansion",
+    "black suit"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b043",
+      "b051"
+     ],
+     "to": "That's Peter."
+    }
+   ],
+   "start": 544.43,
+   "end": 593.8,
+   "flash_holds": {},
+   "seconds": 50.87,
+   "cuts": [
+    [
+     544.43,
+     593.8
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nIn Kraven's mansion Peter turns on Miles: I need this suit, I made you, you owe me. Miles talks to the suit like a separate voice, but listen to where Peter's words come from. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #SpiderMan2Ending",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Peter vs Miles",
+    "I made you",
+    "Kraven mansion",
+    "black suit"
+   ],
+   "hold_note": "2026-11-16: held to the end until the caption chunker keeps a negation on one card (review: 'NONE OF' / 'IT IS ALIEN.' reads as the opposite claim)."
+  },
+  {
+   "id": "s07",
+   "order": 5,
+   "spoilers": true,
+   "hook": "Who freed Peter at the bell?",
+   "accent": "bell",
+   "title": "Marvel's Spider-Man 2: Who Really Freed Peter at the Bell?",
+   "blurb": "Miles rings the bell, and the game puts the objective on his screen. But the line Miles shouts, and what Peter's own hands do next, tell you who gets Peter out.",
+   "hashtags_extra": [
+    "#SpiderMan2Ending"
+   ],
+   "tags_extra": [
+    "the bell",
+    "save yourself",
+    "symbiote removal",
+    "Miles Morales"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b052",
+      "b054"
+     ]
+    }
+   ],
+   "start": 623.73,
+   "end": 674.65,
+   "flash_holds": {},
+   "seconds": 52.42,
+   "cuts": [
+    [
+     623.73,
+     674.65
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nMiles rings the bell, and the game puts the objective on his screen. But the line Miles shouts, and what Peter's own hands do next, tell you who gets Peter out. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #SpiderMan2Ending",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "the bell",
+    "save yourself",
+    "symbiote removal"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s07.mp4"
+  },
+  {
+   "id": "s08",
+   "order": 6,
+   "spoilers": true,
+   "hook": "Norman's promise in scene one",
+   "accent": "promise",
+   "title": "Marvel's Spider-Man 2: Norman's Promise That Never Let Harry Go",
+   "blurb": "The game's very first scene: Harry asks his father to take him out if the treatment fails, and Norman makes a promise he keeps for the rest of the game.",
+   "hashtags_extra": [
+    "#Venom"
+   ],
+   "tags_extra": [
+    "Norman Osborn",
+    "Harry Osborn",
+    "Venom",
+    "I will never let you go"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b055",
+      "b059"
+     ],
+     "picture": [
+      {
+       "at": 0,
+       "until": 5.5,
+       "clip": 278,
+       "in": 15.05,
+       "crop": "sub",
+       "why": "the long-form chapter card (SAME SUIT, DIFFERENT MAN) covers the opening; the same clip 278 frames without it"
+      }
+     ]
+    }
+   ],
+   "start": 674.8,
+   "end": 724.17,
+   "flash_holds": {},
+   "seconds": 50.87,
+   "cuts": [
+    [
+     674.8,
+     724.17
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nThe game's very first scene: Harry asks his father to take him out if the treatment fails, and Norman makes a promise he keeps for the rest of the game. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #Venom",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Norman Osborn",
+    "Harry Osborn",
+    "Venom",
+    "I will never let you go"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s08.mp4"
+  },
+  {
+   "id": "s09",
+   "order": 7,
+   "spoilers": true,
+   "hook": "Kraven got his final hunt",
+   "accent": "final hunt",
+   "title": "Marvel's Spider-Man 2: Why Venom Killing Kraven Hits Harder",
+   "blurb": "Kraven came to New York for a hunt worth dying in, and he asks Venom if he knows what it's like to have your body betray you. Think about who is in that suit.",
+   "hashtags_extra": [
+    "#Venom"
+   ],
+   "tags_extra": [
+    "Kraven death",
+    "Venom vs Kraven",
+    "Harry Osborn",
+    "Times Square"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b060",
+      "b062"
+     ]
+    }
+   ],
+   "start": 724.3,
+   "end": 759.06,
+   "flash_holds": {},
+   "seconds": 36.26,
+   "cuts": [
+    [
+     724.3,
+     759.06
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nKraven came to New York for a hunt worth dying in, and he asks Venom if he knows what it's like to have your body betray you. Think about who is in that suit. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #Venom",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Kraven death",
+    "Venom vs Kraven",
+    "Harry Osborn",
+    "Times Square"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s09.mp4"
+  },
+  {
+   "id": "s10",
+   "order": 8,
+   "spoilers": true,
+   "hook": "What did the suit make MJ?",
+   "accent": "MJ",
+   "title": "Marvel's Spider-Man 2: What the Suit Turned MJ Into",
+   "blurb": "Harry turns MJ into Scream, and she shouts that she's done begging for validation. The suit is the same every time; what it turns up is the person.",
+   "hashtags_extra": [
+    "#MaryJane"
+   ],
+   "tags_extra": [
+    "MJ Scream",
+    "Mary Jane",
+    "Scream",
+    "Harry Osborn"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b063",
+      "b064"
+     ]
+    },
+    {
+     "beats": [
+      "b067"
+     ],
+     "from": "MJ wanted to be heard"
+    }
+   ],
+   "start": 759.15,
+   "end": 814.62,
+   "flash_holds": {},
+   "seconds": 37.41,
+   "cuts": [
+    [
+     759.15,
+     785.98
+    ],
+    [
+     805.54,
+     814.62
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nHarry turns MJ into Scream, and she shouts that she's done begging for validation. The suit is the same every time; what it turns up is the person. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #MaryJane",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "MJ Scream",
+    "Mary Jane",
+    "Scream",
+    "Harry Osborn"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s10.mp4"
+  },
+  {
+   "id": "s11",
+   "order": 9,
+   "spoilers": true,
+   "hook": "Was Harry taken over?",
+   "accent": "Harry",
+   "title": "Marvel's Spider-Man 2: Was Harry Taken Over by Venom?",
+   "blurb": "Harry and Venom say it together: you have to kill us. It is the hardest evidence against my reading, until you hear what Harry is really asking for.",
+   "hashtags_extra": [
+    "#Venom"
+   ],
+   "tags_extra": [
+    "Harry Osborn",
+    "Venom",
+    "you have to kill us",
+    "Spider-Man 2 final fight"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b068",
+      "b069"
+     ],
+     "from": "In Connors's lab"
+    }
+   ],
+   "start": 817.58,
+   "end": 864.9,
+   "flash_holds": {},
+   "seconds": 48.82,
+   "cuts": [
+    [
+     817.58,
+     864.9
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nHarry and Venom say it together: you have to kill us. It is the hardest evidence against my reading, until you hear what Harry is really asking for. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #Venom",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Harry Osborn",
+    "Venom",
+    "you have to kill us",
+    "Spider-Man 2 final fight"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s11.mp4"
+  },
+  {
+   "id": "s12",
+   "order": 10,
+   "spoilers": true,
+   "hook": "What Miles really tells Peter",
+   "accent": "Miles",
+   "title": "Marvel's Spider-Man 2: What Miles Tells Peter at the End",
+   "blurb": "Outside the house, MJ asks Peter if he's talked to Miles yet, Peter fumbles it, and Miles hands him the answer himself. What Miles tells him at the end isn't about the suit at all.",
+   "hashtags_extra": [
+    "#SpiderMan2Ending"
+   ],
+   "tags_extra": [
+    "Spider-Man 2 ending",
+    "Go be Peter Parker",
+    "Miles Morales",
+    "Peter Parker"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b079",
+      "b080"
+     ],
+     "from": "MJ asks Peter",
+     "why": "starts on MJ's question: the long-form puts MJ's podcast laptop under 'Later, at home in the garage' (review 2026-11-16)"
+    },
+    {
+     "beats": [
+      "b082"
+     ],
+     "from": "And when it mattered",
+     "picture": [
+      {
+       "at": 0,
+       "until": 6.17,
+       "clip": 1003,
+       "in": 300.0,
+       "crop": "sub",
+       "why": "the long-form keeps the Venom-in-the-tank shot of 'Harry is the other test' under 'And when it mattered, Peter'; Peter tearing the symbiote off (the long-form's own 'had to save himself' shot) from the first word, to the cut to 'Go be Peter Parker'"
+      }
+     ]
+    }
+   ],
+   "start": 1009.9,
+   "end": 1118.65,
+   "flash_holds": {
+    "0": 0.0997
+   },
+   "seconds": 33.02,
+   "cuts": [
+    [
+     1009.9,
+     1034.08
+    ],
+    [
+     1111.31,
+     1118.65
+    ]
+   ],
+   "description": "Full video: https://youtu.be/cjShbIaGC1M\n\nOutside the house, MJ asks Peter if he's talked to Miles yet, Peter fumbles it, and Miles hands him the answer himself. What Miles tells him at the end isn't about the suit at all. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#MarvelsSpiderMan2 #SpiderMan2 #PS5 #KiwinoyGaming #SpiderMan2Ending",
+   "tags": [
+    "Marvel's Spider-Man 2",
+    "Spider-Man 2",
+    "Spider-Man 2 PS5",
+    "Spider-Man 2 explained",
+    "Spider-Man 2 story",
+    "Peter Parker",
+    "Miles Morales",
+    "symbiote suit",
+    "Insomniac",
+    "PS5",
+    "Kiwinoy Gaming",
+    "Boss KG",
+    "Spider-Man 2 ending",
+    "Go be Peter Parker"
+   ],
+   "b2_key": "shorts/analysis/spider-man2/s12.mp4"
+  }
+ ]
+}
