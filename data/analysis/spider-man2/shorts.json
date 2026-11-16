@@ -167,7 +167,16 @@
     "Harry Osborn",
     "Kraven"
    ],
-   "b2_key": "shorts/analysis/spider-man2/s02.mp4"
+   "b2_key": "shorts/analysis/spider-man2/s02.mp4",
+   "youtube": {
+    "id": "11gHrEx9HDk",
+    "uploaded_at": "2026-11-16T23:41:01Z",
+    "released_at": "2026-11-16T23:41:01Z",
+    "publish_at": "2026-11-16T23:41:01Z",
+    "slot": "2026-11-16T23:00:00Z",
+    "mode": "at-slot",
+    "playlist": true
+   }
   },
   {
    "id": "s03",
