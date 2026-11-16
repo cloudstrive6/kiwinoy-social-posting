@@ -942,20 +942,66 @@ CAP_SIZE = 68                          # was 80; Bryce asked for a little smalle
 CAP_STRIP_H = 220
 
 
+NEG_WORDS = {"no", "not", "none", "never", "nothing", "nobody", "neither", "nor", "without", "cannot", "nowhere"}
+NEG_TAIL_FILLER = {"of", "a", "an", "the", "to", "it", "one", "even", "at", "all", "that", "this", "his", "her",
+                   "their", "its", "be", "been", "longer", "more", "is", "was", "are", "were", "really"}
+NEG_MAX_WORDS = 5
+
+
+def _bare(w: dict) -> str:
+    return re.sub(r"[^a-z']", "", w["w"].lower().replace("’", "'"))
+
+
+def neg_tail(cur: list[dict]) -> int:
+    """Index where a dangling negation starts at the end of a page ("NONE OF", "IT IS NOT"), else -1.
+
+    A page must never end on a negation: the next page then reads as the opposite claim on its own
+    (Spider-Man 2 Short s01 ended on "NONE OF" / "IT IS ALIEN.", 2026-11-16).
+    """
+    k = len(cur) - 1
+    while k >= 0 and _bare(cur[k]) in NEG_TAIL_FILLER:
+        k -= 1
+    if k < 0 or not _is_neg(cur[k]):
+        return -1
+    while k > 0 and _is_neg(cur[k - 1]):   # "no, no" or "not never": the run starts at its first word
+        k -= 1
+    return k
+
+
+def _is_neg(w: dict) -> bool:
+    b = _bare(w)
+    return b in NEG_WORDS or b.endswith("n't")
+
+
 def caption_pages(words: list[dict]) -> list[list[dict]]:
-    """1 to 3 words per page; a page ends at a sentence or clause end, a pause or the width."""
+    """1 to 3 words per page; a page ends at a sentence or clause end, a pause or the width.
+
+    A negation stays on the page with what it negates: a page that would end on one (soft break:
+    word cap, pause or width) runs on to NEG_MAX_WORDS words, and past that the negation moves to
+    the next page instead. Hard breaks (punctuation, speaker, line, beat, part) still split.
+    """
     f = font(MONT, CAP_SIZE, "Black")
     pages, cur = [], []
     for i, w in enumerate(words):
         if cur:
             prev = cur[-1]
             text = " ".join(x["disp"] for x in cur + [w])
-            if (len(cur) >= 3 or w["s"] - prev["e"] > 0.35 or prev["kind"] != w["kind"]
-                    or prev.get("line", 0) != w.get("line", 0) or prev.get("beat") != w.get("beat")
-                    or prev.get("part") != w.get("part") or re.search(r"[.?!,:;]$", prev["w"].rstrip('"”'))
-                    or text_w(f, text) > CAP_MAX_W - 40):
+            hard = (prev["kind"] != w["kind"] or prev.get("line", 0) != w.get("line", 0)
+                    or prev.get("beat") != w.get("beat") or prev.get("part") != w.get("part")
+                    or re.search(r"[.?!,:;]$", prev["w"].rstrip('"”')))
+            soft = len(cur) >= 3 or w["s"] - prev["e"] > 0.35 or text_w(f, text) > CAP_MAX_W - 40
+            if hard:
                 pages.append(cur)
                 cur = []
+            elif soft:
+                k = neg_tail(cur)
+                if k < 0:
+                    pages.append(cur)
+                    cur = []
+                elif len(cur) >= NEG_MAX_WORDS:
+                    pages.append(cur[:k] if k > 0 else cur)   # too long: the negation opens the next page
+                    cur = cur[k:] if k > 0 else []
+                # else: run on, keeping the negation with the words it negates
         cur.append(w)
     if cur:
         pages.append(cur)
