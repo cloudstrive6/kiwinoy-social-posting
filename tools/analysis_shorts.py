@@ -973,12 +973,28 @@ def _is_neg(w: dict) -> bool:
     return b in NEG_WORDS or b.endswith("n't")
 
 
+def _fit_scale(f, page: list[dict]) -> float:
+    """The font scale draw_caption would use for this page (1.0 = full size)."""
+    sp = int(text_w(f, " ") * 1.7)
+    total = sum(text_w(f, x["disp"]) for x in page) + sp * (len(page) - 1)
+    return min(1.0, (CAP_MAX_W - 30) / max(1, total))
+
+
+def _quote_open(cur: list[dict]) -> bool:
+    """True while a quote inside narration (Peter said "I can't") is open on this page."""
+    n = sum(x["w"].count('"') for x in cur if x["kind"] != "game")
+    return n % 2 == 1
+
+
 def caption_pages(words: list[dict]) -> list[list[dict]]:
     """1 to 3 words per page; a page ends at a sentence or clause end, a pause or the width.
 
     A negation stays on the page with what it negates: a page that would end on one (soft break:
     word cap, pause or width) runs on to NEG_MAX_WORDS words, and past that the negation moves to
     the next page instead. Hard breaks (punctuation, speaker, line, beat, part) still split.
+    A short quote inside narration stays on one page with its lead-in (PETER SAID "I CAN'T"), and
+    its closing mark ends the page, and a clause's last word is never left alone on a page when it
+    follows without a pause (s11 review, 2026-11-17: AT THE BELL / TOO,).
     """
     f = font(MONT, CAP_SIZE, "Black")
     pages, cur = [], []
@@ -988,11 +1004,19 @@ def caption_pages(words: list[dict]) -> list[list[dict]]:
             text = " ".join(x["disp"] for x in cur + [w])
             hard = (prev["kind"] != w["kind"] or prev.get("line", 0) != w.get("line", 0)
                     or prev.get("beat") != w.get("beat") or prev.get("part") != w.get("part")
-                    or re.search(r"[.?!,:;]$", prev["w"].rstrip('"”')))
-            soft = len(cur) >= 3 or w["s"] - prev["e"] > 0.35 or text_w(f, text) > CAP_MAX_W - 40
+                    or re.search(r"[.?!,:;]$", prev["w"].rstrip('"”'))
+                    or (prev["kind"] != "game" and re.search(r'.["][.?!,:;]*$', prev["w"]) and not _quote_open(cur)))
+            pause, wide = w["s"] - prev["e"] > 0.35, text_w(f, text) > CAP_MAX_W - 40
+            soft = len(cur) >= 3 or pause or wide
+            closes = re.search(r"[.?!,:;]$", w["w"].rstrip('"”')) is not None
+            if (soft and not pause and len(cur) == 3 and closes and neg_tail(cur) < 0
+                    and _fit_scale(f, cur + [w]) >= 0.9):
+                soft = False   # the clause's last word joins its card, never left alone ("TOO,"), if the card stays >= 90% size
             if hard:
                 pages.append(cur)
                 cur = []
+            elif soft and _quote_open(cur) and len(cur) < NEG_MAX_WORDS:
+                pass                          # run on: keep the short quote together
             elif soft:
                 k = neg_tail(cur)
                 if k < 0:
@@ -1073,6 +1097,8 @@ def caption_track(s: dict, work: Path) -> tuple[Path, float]:
             disp = w["w"].strip('"').upper()
             if not disp:
                 continue
+            if w["kind"] != "game" and '"' in w["w"]:   # a quote inside narration keeps its marks
+                disp = re.sub(r'"', "”", re.sub(r'^"', "“", w["w"])).upper()
             words.append({"w": w["w"], "disp": disp, "kind": w["kind"], "part": k, "beat": w["beat"],
                           "line": w.get("line", 0), "speaker": w.get("speaker", ""),
                           "s": max(0.0, w["s"] - pt["start"] + off), "e": w["e"] - pt["start"] + off})

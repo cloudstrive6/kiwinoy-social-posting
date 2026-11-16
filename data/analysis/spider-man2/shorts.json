@@ -26,7 +26,21 @@
   "Boss KG"
  ],
  "game_lines": {
-  "_note": "Game lines as heard in the v10 render and shown in the game's own subtitles (subtitle frames checked 2026-11-16). b004: the subtitle on screen reads 'Peter: Okay, class. Uh, read chapter four. Or five. Or whatever--' but the burst starts on 'Uh', so the caption carries the heard part with the subtitle's speaker label. b022: the subtitle reads 'it makes me a better Spider-Man.' with no leading ellipsis, so the caption drops the cue's '...'. The other bursts used (b017, b027, b034, b044, b046, b048, b050, b053, b056, b058, b061, b080) match their cue text.",
+  "_note": "Game lines as heard in the v10 render and shown in the game's own subtitles (subtitle frames checked 2026-11-16). b004: the subtitle on screen reads 'Peter: Okay, class. Uh, read chapter four. Or five. Or whatever--' but the burst starts on 'Uh', so the caption carries the heard part with the subtitle's speaker label. b022: the subtitle reads 'it makes me a better Spider-Man.' with no leading ellipsis, so the caption drops the cue's '...'. The other bursts used (b017, b027, b034, b044, b046, b048, b050, b053, b056, b058, b061, b080) match their cue text. b056 (2026-11-17 review): split by speaker as the subtitles label it (Harry, Norman Osborn, Harry), so each line is quoted on its own.",
+  "b056": [
+   {
+    "speaker": "Harry",
+    "text": "Promise me something?"
+   },
+   {
+    "speaker": "Norman Osborn",
+    "text": "Anything."
+   },
+   {
+    "speaker": "Harry",
+    "text": "If this doesn't work, take me out."
+   }
+  ],
   "b004": [
    {
     "speaker": "Peter",
