@@ -76,6 +76,6 @@
  "G25": [{"kind": "map", "stage": 5, "at": 1.0, "dur": 21.0}],
  "G26": [{"kind": "chapter", "num": 7, "title": "GO BE PETER PARKER", "at": 0.3, "dur": 4.8}],
  "G27": [{"kind": "quote", "text": "Go be Peter Parker for a while.", "by": "MILES", "key": "Peter Parker", "at": 0.3, "dur": 6.0}],
- "G28": [{"kind": "question", "words": ["THE SUIT", "or", "PETER?"], "accent": 2, "strike": 0, "at": 0.5, "dur": 6.0}],
+ "G28": [{"kind": "question", "words": ["THE SUIT", "or", "PETER?"], "accent": 2, "strike": 0, "at": 9.7, "dur": 5.0}],
  "G29": [{"kind": "endscreen", "next": "THE INSOMNIAC MARVEL UNIVERSE SO FAR: SPIDER-MAN TO WOLVERINE", "sub": "COMING LATER", "last": 20}]
 }
