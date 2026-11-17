@@ -1,5 +1,5 @@
 {
- "about": "Blind narrator A/B (Bryce approved 2026-11-17): today's settings against Eleven v4 with a script written for the ear and sparse audio tags. Excerpt: Spider-Man 2 analysis beats b051, b052, b054 (the bell). 2x2: model (v2, v4) x script (original, rewritten). Research: Bryce-Brain wiki/answers/humanize-narration-scripts-github-research.md.",
+ "about": "Blind narrator A/B (Bryce approved 2026-11-17): today's settings against Eleven v4 with a script written for the ear and sparse audio tags. Excerpt: Spider-Man 2 analysis beats b051, b052, b054 (the bell). Two takes (credits were 11,029 on 2026-11-17, so the 2x2 was cut to what Bryce approved): A today's v2 settings and script, D Eleven v4 with the script rewritten for the ear and sparse tags. Takes B and C (one change each) can be added back when credits allow. Research: Bryce-Brain wiki/answers/humanize-narration-scripts-github-research.md.",
  "voice": "BOSS KG Narrator A",
  "context_before": "And then the thing he's wanted since the start of the game.",
  "context_after": "If the suit decides who you become, it should make the same monster out of anyone.",
@@ -21,13 +21,41 @@
   ]
  },
  "takes": {
-  "A": {"model": "eleven_multilingual_v2", "script": "original", "note": "today's settings"},
-  "B": {"model": "eleven_multilingual_v2", "script": "spoken", "note": "writing only"},
-  "C": {"model": "eleven_v4", "script": "original", "note": "model only", "pace_match": "A"},
-  "D": {"model": "eleven_v4", "script": "spoken_tagged", "note": "writing, tags and model", "pace_match": "B"}
+  "A": {
+   "model": "eleven_multilingual_v2",
+   "script": "original",
+   "note": "today's settings"
+  },
+  "D": {
+   "model": "eleven_v4",
+   "script": "spoken_tagged",
+   "note": "writing, tags and model",
+   "pace_match": "A"
+  }
  },
- "v2_settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95},
- "v4_settings": {"stability": 0.5, "similarity_boost": 0.75},
+ "v2_settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.0,
+  "speed": 0.95
+ },
+ "v4_settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75
+ },
  "master": "C",
- "reserve_credits": 8000
+ "reserve_credits": 8000,
+ "unused_takes": {
+  "B": {
+   "model": "eleven_multilingual_v2",
+   "script": "spoken",
+   "note": "writing only"
+  },
+  "C": {
+   "model": "eleven_v4",
+   "script": "original",
+   "note": "model only",
+   "pace_match": "A"
+  }
+ }
 }

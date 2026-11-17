@@ -1,11 +1,11 @@
 """Blind narrator A/B for KG (Bryce approved 2026-11-17).
 
-Voices one excerpt four ways, a 2x2 of model (eleven_multilingual_v2, eleven_v4) by script (original,
+Voices one excerpt in up to four ways, a 2x2 of model (eleven_multilingual_v2, eleven_v4) by script (original,
 rewritten for the ear, plus sparse audio tags on v4), from data/analysis/voice-ab/ab.json. Every take
 gets the same processing as a real narration (silence trim, -16 LUFS, master preset C), and each v4
 take is pace-matched to its v2 twin with atempo so speed does not decide the listen. Parselmouth
 (Praat) measures pitch range and spread, loudness movement and pauses on each take. Output in
-output/analysis/voice-ab/: blind/take-1..4.mp3 for the listen, key.json (which take is which), metrics.json and
+output/analysis/voice-ab/: blind/take-N.mp3 for the listen, key.json (which take is which), metrics.json and
 report.md. Uses ELEVENLABS_API_KEY from the Actions secret (the Starter "KG Actions" key); stops before
 recording if the month's credits would fall under the reserve. Never uploads anywhere.
 
@@ -184,8 +184,8 @@ def main() -> int:
             for i, raw in enumerate(raws):
                 clean(raw, OUT / f"{name}-{i}.dry.wav")
             mine = sum(seconds(OUT / f"{name}-{i}.dry.wav") for i in range(len(raws)))
-            twin = results[tk["pace_match"]]["metrics"]["speech_seconds"]
-            tempo = max(0.85, min(1.15, mine / twin))
+            target = len(words(" ".join(chunks))) / results[tk["pace_match"]]["metrics"]["wpm"] * 60
+            tempo = max(0.85, min(1.15, mine / target))  # same words per minute as the twin
         dry = []
         for i, raw in enumerate(raws):
             p = OUT / f"{name}-{i}.dry.wav"
