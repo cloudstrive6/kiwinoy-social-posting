@@ -1,0 +1,33 @@
+{
+ "about": "Blind narrator A/B (Bryce approved 2026-11-17): today's settings against Eleven v4 with a script written for the ear and sparse audio tags. Excerpt: Spider-Man 2 analysis beats b051, b052, b054 (the bell). 2x2: model (v2, v4) x script (original, rewritten). Research: Bryce-Brain wiki/answers/humanize-narration-scripts-github-research.md.",
+ "voice": "BOSS KG Narrator A",
+ "context_before": "And then the thing he's wanted since the start of the game.",
+ "context_after": "If the suit decides who you become, it should make the same monster out of anyone.",
+ "scripts": {
+  "original": [
+   "None of that is alien. That's Peter. Fired for leaving a classroom to save the city, holding on to May's mortgaged house, trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem, and that now he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him, wanting to save everyone, and turned it into a weapon against the kid he trained. And remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard, and in the fight, ringing it stuns the suit.",
+   "The bell weakens it. It doesn't free him. Miles is the one ringing it, and the game even puts the objective on his screen: remove the symbiote from Peter. So Miles says the line I think answers this whole video.",
+   "In the middle of that, Peter says he can't, and Miles tells him he will. This time, you have to save yourself. Not the bell, not Miles. Him. Miles rings the bell one more time, and then the game shows Peter's own hands tearing the symbiote off his body, with the button prompts on him. When it's over, Peter is on his knees in his own suit, and Miles is standing next to him. The suit made Peter worse. It didn't make him helpless, and the game hands the last move to him."
+  ],
+  "spoken": [
+   "None of that is alien. That's Peter. He got fired for leaving a classroom to save the city. He's holding on to May's house, the one she mortgaged. He's trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem. And now, he says, he's the solution. That's a man who is tired of being told he's the problem. The suit took the oldest thing in him. Wanting to save everyone. And it turned that into a weapon against the kid he trained. Now remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard. In the fight, ringing it stuns the suit.",
+   "The bell weakens it. It doesn't free him. Miles is the one ringing it. The game even puts the objective on his screen: remove the symbiote from Peter. So Miles says the line I think answers this whole video.",
+   "In the middle of that, Peter says he can't. Miles tells him he will. This time, you have to save yourself. Not the bell. Not Miles. Him. Miles rings the bell one more time. Then the game shows Peter's own hands tearing the symbiote off his body. And the button prompts are on him. When it's over, Peter is on his knees, in his own suit. Miles is standing next to him. The suit made Peter worse. It didn't make him helpless. And the game hands the last move to him."
+  ],
+  "spoken_tagged": [
+   "[certain, telling one person] None of that is alien. That's Peter. He got fired for leaving a classroom to save the city. He's holding on to May's house, the one she mortgaged. He's trying to be everywhere at once. Right after, he tells Miles the city thinks he's the problem. And now, he says, he's the solution. [quietly] That's a man who is tired of being told he's the problem. The suit took the oldest thing in him... wanting to save everyone. And it turned that into a weapon against the kid he trained. [leaning in] Now remember the weakness Peter kept from Harry. There's a bell hanging over this courtyard. In the fight, ringing it stuns the suit.",
+   "[tense] The bell weakens it. It doesn't FREE him. Miles is the one ringing it. The game even puts the objective on his screen: remove the symbiote from Peter. [pause] So Miles says the line I think answers this whole video.",
+   "[softly] In the middle of that, Peter says he can't. Miles tells him he will. This time, you have to save yourself. Not the bell. Not Miles... Him. [building] Miles rings the bell one more time. Then the game shows Peter's own hands tearing the symbiote off his body. And the button prompts are on him. [quietly] When it's over, Peter is on his knees, in his own suit. Miles is standing next to him. [thoughtful, landing it] The suit made Peter worse. It didn't make him HELPLESS. And the game hands the last move to him."
+  ]
+ },
+ "takes": {
+  "A": {"model": "eleven_multilingual_v2", "script": "original", "note": "today's settings"},
+  "B": {"model": "eleven_multilingual_v2", "script": "spoken", "note": "writing only"},
+  "C": {"model": "eleven_v4", "script": "original", "note": "model only", "pace_match": "A"},
+  "D": {"model": "eleven_v4", "script": "spoken_tagged", "note": "writing, tags and model", "pace_match": "B"}
+ },
+ "v2_settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95},
+ "v4_settings": {"stability": 0.5, "similarity_boost": 0.75},
+ "master": "C",
+ "reserve_credits": 8000
+}
