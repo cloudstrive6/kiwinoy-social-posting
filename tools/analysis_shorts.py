@@ -973,11 +973,28 @@ def _is_neg(w: dict) -> bool:
     return b in NEG_WORDS or b.endswith("n't")
 
 
+def _caption_tokens(page: list[dict]) -> list[str]:
+    """The words of a page as draw_caption draws them: a game line gets quote marks on its first and last page."""
+    toks = [w["disp"] for w in page]
+    if page and page[0]["kind"] == "game":
+        if page[0].get("q_open"):
+            toks[0] = "“" + toks[0]
+        if page[-1].get("q_close"):
+            toks[-1] = toks[-1] + "”"
+    return toks
+
+
 def _fit_scale(f, page: list[dict]) -> float:
-    """The font scale draw_caption would use for this page (1.0 = full size)."""
+    """The font scale draw_caption would use for this page (1.0 = full size), quote marks included."""
+    toks = _caption_tokens(page)
     sp = int(text_w(f, " ") * 1.7)
-    total = sum(text_w(f, x["disp"]) for x in page) + sp * (len(page) - 1)
+    total = sum(text_w(f, t) for t in toks) + sp * (len(toks) - 1)
     return min(1.0, (CAP_MAX_W - 30) / max(1, total))
+
+
+def _fits_90(f, page: list[dict]) -> bool:
+    """True if draw_caption would draw this page at 90% of CAP_SIZE or more, in the whole pixels it renders at."""
+    return int(CAP_SIZE * _fit_scale(f, page)) >= int(CAP_SIZE * 0.9)
 
 
 def _quote_open(cur: list[dict]) -> bool:
@@ -994,7 +1011,12 @@ def caption_pages(words: list[dict]) -> list[list[dict]]:
     the next page instead. Hard breaks (punctuation, speaker, line, beat, part) still split.
     A short quote inside narration stays on one page with its lead-in (PETER SAID "I CAN'T"), and
     its closing mark ends the page, and a clause's last word is never left alone on a page when it
-    follows without a pause (s11 review, 2026-11-17: AT THE BELL / TOO,).
+    follows without a pause (s11 review, 2026-11-17: AT THE BELL / TOO,): it joins the card if the
+    card stays at 90% size or more, else a full 3-word card gives up its last word so the tail is
+    not alone (STORY SOON / IS OUT.), unless that leaves the first card ending on a negation
+    (IT DOESN'T FREE / HIM. stays). A long-word pair (TEARS THROUGH / OSCORP.) stays as it is:
+    a lone word reads better than shrunken text. Measured 2026-11-17: 149 of 150 lone tails were
+    width breaks, not pauses.
     """
     f = font(MONT, CAP_SIZE, "Black")
     pages, cur = [], []
@@ -1009,9 +1031,14 @@ def caption_pages(words: list[dict]) -> list[list[dict]]:
             pause, wide = w["s"] - prev["e"] > 0.35, text_w(f, text) > CAP_MAX_W - 40
             soft = len(cur) >= 3 or pause or wide
             closes = re.search(r"[.?!,:;]$", w["w"].rstrip('"”')) is not None
-            if (soft and not pause and len(cur) == 3 and closes and neg_tail(cur) < 0
-                    and _fit_scale(f, cur + [w]) >= 0.9):
+            lone = soft and not hard and not pause and closes and neg_tail(cur) < 0
+            if lone and len(cur) <= 3 and _fits_90(f, cur + [w]):
                 soft = False   # the clause's last word joins its card, never left alone ("TOO,"), if the card stays >= 90% size
+            elif (lone and len(cur) == 3 and not _quote_open(cur) and neg_tail(cur[:-1]) < 0
+                    and _fits_90(f, cur[-1:] + [w])):
+                pages.append(cur[:-1])   # too wide to merge: rebalance 3+1 into 2+2 (STORY SOON / IS OUT.)
+                cur = cur[-1:]
+                soft = False
             if hard:
                 pages.append(cur)
                 cur = []
@@ -1037,12 +1064,7 @@ def draw_caption(page: list[dict], active: int, pop: float) -> Image.Image:
     f = font(MONT, CAP_SIZE, "Black")
     im = Image.new("RGBA", (W, CAP_STRIP_H), (0, 0, 0, 0))
     game = page[0]["kind"] == "game"
-    toks = [w["disp"] for w in page]
-    if game:  # quote marks open the line's first page and close its last
-        if page[0].get("q_open"):
-            toks[0] = "\u201c" + toks[0]
-        if page[-1].get("q_close"):
-            toks[-1] = toks[-1] + "\u201d"
+    toks = _caption_tokens(page)   # quote marks open a game line's first page and close its last
     sp = int(text_w(f, " ") * 1.7)
     widths = [text_w(f, t) for t in toks]
     total = sum(widths) + sp * (len(toks) - 1)
