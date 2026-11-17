@@ -15,7 +15,7 @@ up). Graphics specs come from data/analysis/<game>/gfx.json, keyed by the GFX cu
 prints (G01, G02, ...), so the prose cue in the script and the drawn graphic stay linked. Plain
 code, no AI, no network.
 
-    python tools/analysis_edl.py <script.md> wolverine
+    python tools/analysis_edl.py <script.md> wolverine [--new-voice]
 """
 from __future__ import annotations
 
@@ -72,6 +72,52 @@ def tts_text(text: str, game: str = "") -> str:
     for pat, rep in TTS_SUBS + TTS_GAME.get(base_game(game), []):
         text = re.sub(pat, rep, text)
     return text
+
+
+# Delivery tags for Eleven v4 (Bryce picked v4 with tags in a blind A/B, 2026-11-17): a narration
+# paragraph may carry a few [quietly]-style cues before the words they shape. They stay in the TTS
+# text only; the EDL text (captions, Shorts, reviews) never has them, and tools/analysis_narrate.py
+# strips them for models that would read them aloud. Rules from the voice-direction skill: tags at
+# emotional turns only, one per clause, never stacked, about 3 to 4 per 100 words (5 is the limit).
+TAG = re.compile(r"\[[^\]]*\]")
+DELIVERY_TAG = re.compile(r"\[[a-z][a-z ,'-]{0,38}\]")  # under 40 characters with the brackets
+CUE_LINE = re.compile(r"\[(?:CLIPS|GFX|GAME AUDIO|ANALYSIS)")
+# Models that perform [delivery tags]; every other model would read them aloud, so they are stripped.
+TAG_MODELS = ("eleven_v3", "eleven_v4")
+
+
+def reads_tags(nar: dict | None) -> bool:
+    return bool(nar) and str(nar.get("model_id", "")).startswith(TAG_MODELS)
+MAX_TAGS_PER_100 = 5
+MAX_SENTENCE_WORDS = 20  # spoken-script breath test: most sentences under about 15 words
+
+
+def strip_tags(text: str) -> str:
+    """Narration text without delivery tags (unchanged when it has none)."""
+    if "[" not in text:
+        return text
+    text = re.sub(r"\s*\[[^\]]*\]\s*", " ", text)
+    return re.sub(r"\s+([,.?!;:])", r"\1", re.sub(r"\s{2,}", " ", text)).strip()
+
+
+def tag_problems(line: str, bid: str = "") -> list[str]:
+    """Checks on one narration paragraph: tag form, stacking, density, placement, sentence length."""
+    out, clean = [], strip_tags(line)
+    tags = TAG.findall(line)
+    n = max(1, len(clean.split()))
+    for t in tags:
+        if not DELIVERY_TAG.fullmatch(t):
+            out.append(f"{bid} tag {t} is not a plain delivery cue (lowercase words, under 40 characters)")
+    if re.search(r"\]\s*\[", line):
+        out.append(f"{bid} has stacked tags; put several cues in one bracket")
+    if len(tags) > max(1, n * MAX_TAGS_PER_100 // 100):  # one tag is fine in any paragraph
+        out.append(f"{bid} has {len(tags)} tags in {n} words (over {MAX_TAGS_PER_100} per 100 words)")
+    if tags and re.search(r"\]\s*$", line):
+        out.append(f"{bid} ends with a tag; a tag goes before the words it shapes")
+    for sent in re.split(r"(?<=[.?!])\s+", clean):
+        if len(sent.split()) > MAX_SENTENCE_WORDS:
+            out.append(f"{bid} sentence of {len(sent.split())} words (breath test): {sent[:60]}...")
+    return out
 
 
 def shot_flags(note: str, game_beat: bool = False) -> dict:
@@ -220,16 +266,26 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game
                 beat["chapter"], pending_chapter = pending_chapter, None
             beats.append(beat)
             continue
-        if line.startswith("["):
-            continue  # [ANALYSIS n: ...] notes for the editor, not rendered
-        # Plain paragraph: narration.
-        beat = {"type": "narr", "text": line, "tts": tts_text(line, game), "shots": shots, "gfx": gfx}
+        if re.match(r"\[[A-Z]", line):
+            if not CUE_LINE.match(line) and not line.endswith("]"):
+                problems.append(f"paragraph {len(beats)}: '{line[:40]}...' starts with a capitalised bracket and "
+                                "was skipped as an editor note; delivery tags are lowercase")
+            continue  # [ANALYSIS n: ...] notes for the editor (capitalised; delivery tags are lowercase)
+        # Plain paragraph: narration (it may start with a delivery tag such as [quietly]).
+        beat = {"type": "narr", "text": strip_tags(line), "tts": tts_text(line, game), "shots": shots,
+                "gfx": gfx}
+        problems.extend(tag_problems(line, f"paragraph {len(beats)}"))
         shots, gfx = [], []
         if pending_chapter:
             beat["chapter"], pending_chapter = pending_chapter, None
         beats.append(beat)
     for i, b in enumerate(beats):
         b["id"] = f"b{i:03d}"
+    narr = [b for b in beats if b["type"] == "narr"]
+    n_tags = sum(len(TAG.findall(b["tts"])) for b in narr)
+    n_words = sum(len(b["text"].split()) for b in narr) or 1
+    if n_tags > max(1, n_words * MAX_TAGS_PER_100 // 100):
+        problems.append(f"script has {n_tags} delivery tags in {n_words} words (over {MAX_TAGS_PER_100} per 100)")
     for b in beats:
         used = [s["clip"] for s in b.get("shots", []) if "clip" in s]
         used += [x["clip"] for s in b.get("shots", []) for x in s.get("split", [])]
@@ -250,11 +306,18 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game
 # The BOSS KG narrator (Bryce, 2026-11-13): "BOSS KG Narrator A", designed on Bryce's Starter
 # workspace to match his first pick ("KG Essayist" take 3, stuck in another workspace; voice-print
 # match 0.945), read on Multilingual v2. Speed 0.95 is the speed Bryce heard take 3 at when he chose
-# it (0.9 read 13 to 16% slower than take 3).
+# it (0.9 read 13 to 16% slower than take 3). Videos made before 2026-11-17 keep this block.
+NARRATOR_V2 = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
+               "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_multilingual_v2",
+               "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95,
+               "master": "C"}  # narrator mastering preset (tools/analysis_narrate.py MASTERS), Bryce 2026-11-15
+# From 2026-11-17 (Bryce's blind pick, tools/voice_ab.py): the same voice on Eleven v4, which reads
+# delivery tags, ellipses and one-word CAPS. v4 takes only stability and similarity (no style, no
+# speed), and reads about 15% slower than the v2 read, so "tempo" speeds each take up with ffmpeg
+# atempo; 1.15 is what Bryce heard when he picked it. Same cost: about 0.4 credit per character.
 NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
-            "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_multilingual_v2",
-            "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 0.95,
-            "master": "C"}  # narrator mastering preset (tools/analysis_narrate.py MASTERS), Bryce 2026-11-15
+            "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_v4",
+            "stability": 0.5, "similarity_boost": 0.75, "tempo": 1.15, "master": "C"}
 
 # From each script's editor notes: music-risk or banned clips, and clips with HUD or boss bars.
 GAME_NOTES = {
@@ -280,7 +343,25 @@ def main() -> int:
             key_index[v["key"]] = int(k)
     script = script_path.read_text(encoding="utf-8")
     res = parse(script, notes["banned"], notes["hud"], game, key_index, notes.get("crops"))
-    edl = {"game": game, "narrator": NARRATOR, "under_narration_db": -24,
+    # A video keeps the narrator it was first voiced with, so rebuilding an older EDL never changes
+    # its voice (a video never mixes voices). --new-voice moves it to the current NARRATOR.
+    narrator = NARRATOR
+    if (d / "edl.json").exists() and "--new-voice" not in sys.argv:
+        prev = json.loads((d / "edl.json").read_text(encoding="utf-8"))
+        old = prev.get("narrator")
+        if not old and prev.get("voice"):  # a Chirp 3 HD video keeps its voice too
+            old = {"chirp": {"voice": prev["voice"], "speaking_rate": prev.get("speaking_rate")}}
+        if old:
+            narrator = old
+            if old.get("model_id") != NARRATOR["model_id"]:
+                print(f"narrator kept from the existing EDL ({old.get('model_id')}); --new-voice to switch")
+    if not reads_tags(narrator) and any(
+            "[" in b.get("tts", "") for b in res["beats"] if b["type"] == "narr"):
+        res["problems"].append("delivery tags in a script voiced on a v2 narrator: they are stripped, "
+                               "so the tags will have no effect")
+    chirp = narrator.pop("chirp", None) if "chirp" in narrator else None
+    edl = {"game": game, **({"voice": chirp["voice"], "speaking_rate": chirp["speaking_rate"]} if chirp
+                            else {"narrator": narrator}), "under_narration_db": -24,
            "source": script_path.name, "beats": res["beats"], "gfx_cues": res["gfx_cues"]}
     (d / "edl.json").write_text(json.dumps(edl, indent=1, ensure_ascii=False), encoding="utf-8")
     narr = [b for b in res["beats"] if b["type"] == "narr"]

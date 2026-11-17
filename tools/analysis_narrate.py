@@ -27,6 +27,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "tools"))
+from analysis_edl import reads_tags, strip_tags  # noqa: E402
 
 
 def synth(text: str, voice: str, rate: float, key: str) -> bytes:
@@ -43,23 +45,35 @@ def synth(text: str, voice: str, rate: float, key: str) -> bytes:
 
 def synth_el(text: str, nar: dict, key: str, prev: str = "", nxt: str = "") -> bytes:
     """ElevenLabs: MP3 bytes. Stops the run with ElevenLabs' own message (quota, auth) on failure."""
-    body = {"text": text, "model_id": nar.get("model_id", "eleven_multilingual_v2"),
-            "voice_settings": {"stability": nar.get("stability", 0.5),
-                               "similarity_boost": nar.get("similarity_boost", 0.75),
-                               "style": nar.get("style", 0.0), "use_speaker_boost": True,
-                               "speed": nar.get("speed", 1.0)}}
+    prev, nxt = strip_tags(prev), strip_tags(nxt)  # context is always plain text
+    if reads_tags(nar):  # v3/v4 take only stability and similarity (2026-11-17); pace comes from "tempo"
+        vs = {"stability": nar.get("stability", 0.5), "similarity_boost": nar.get("similarity_boost", 0.75)}
+    else:  # a v2 or Flash model would read a tag aloud
+        text = strip_tags(text)
+        vs = {"stability": nar.get("stability", 0.5), "similarity_boost": nar.get("similarity_boost", 0.75),
+              "style": nar.get("style", 0.0), "use_speaker_boost": True, "speed": nar.get("speed", 1.0)}
+    body = {"text": text, "model_id": nar.get("model_id", "eleven_multilingual_v2"), "voice_settings": vs}
     if prev:
         body["previous_text"] = prev
     if nxt:
         body["next_text"] = nxt
-    req = urllib.request.Request(
-        f"https://api.elevenlabs.io/v1/text-to-speech/{nar['voice_id']}?output_format=mp3_44100_128",
-        data=json.dumps(body).encode(), headers={"xi-api-key": key, "Content-Type": "application/json"})
-    try:
+    def call(b: dict) -> bytes:
+        req = urllib.request.Request(
+            f"https://api.elevenlabs.io/v1/text-to-speech/{nar['voice_id']}?output_format=mp3_44100_128",
+            data=json.dumps(b).encode(), headers={"xi-api-key": key, "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=300) as r:
             return r.read()
+    try:
+        return call(body)
     except urllib.error.HTTPError as e:
-        raise SystemExit(f"ElevenLabs refused the take ({e.code}): {e.read().decode()[:300]}")
+        msg = e.read().decode()[:300]
+        if e.code in (400, 422) and ("previous" in msg or "next" in msg) and ("previous_text" in body or "next_text" in body):
+            print(f"ElevenLabs refused the previous/next context ({e.code}); voicing without it", flush=True)
+            try:
+                return call({k: v for k, v in body.items() if k not in ("previous_text", "next_text")})
+            except urllib.error.HTTPError as e2:
+                msg, e = e2.read().decode()[:300], e2
+        raise SystemExit(f"ElevenLabs refused the take ({e.code}): {msg}")
 
 
 def trim_tail(wav: Path) -> bool:
@@ -167,6 +181,8 @@ def main() -> int:
                 raise SystemExit(f"ElevenLabs voice '{voice}' is not on this account; run step voice-setup first.")
             nar = dict(nar, voice_id=found[0])
         tag = f"el|{voice}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}|{nar.get('speed')}"
+        if nar.get("tempo"):  # only new EDLs carry it, so older videos keep their cached takes
+            tag += f"|tempo{nar['tempo']}"
         key = os.environ.get("ELEVENLABS_API_KEY", "")
         need = "ELEVENLABS_API_KEY"
     else:  # Chirp 3 HD (videos made before 2026-11-13)
@@ -182,14 +198,17 @@ def main() -> int:
     tpath = out / "timings.json"
     timings = json.loads(tpath.read_text(encoding="utf-8")) if tpath.exists() else {}
     narr = [b for b in edl["beats"] if b["type"] == "narr"]
+
+    def said(b: dict) -> str:  # the text the model is sent (tags only for models that perform them)
+        return b["tts"] if reads_tags(nar) else strip_tags(b["tts"])
     words = 0
     todo = 0
     if nar:  # never start a video the month's ElevenLabs credits cannot finish (no half-voiced cuts)
         todo = 0
         for b in narr:
-            h = hashlib.sha1(f"{tag}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
+            h = hashlib.sha1(f"{tag}|{rate}|{said(b)}".encode()).hexdigest()[:12]
             if not ((out / f"{b['id']}.wav").exists() and timings.get(b["id"], {}).get("hash") == h):
-                todo += len(b["tts"])
+                todo += len(said(b))
         if todo:
             req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription",
                                          headers={"xi-api-key": key})
@@ -203,7 +222,7 @@ def main() -> int:
                                  "Nothing was recorded. Upgrade the plan or wait for the monthly reset.")
             left_before = left
     for i, b in enumerate(narr):
-        h = hashlib.sha1(f"{tag}|{rate}|{b['tts']}".encode()).hexdigest()[:12]
+        h = hashlib.sha1(f"{tag}|{rate}|{said(b)}".encode()).hexdigest()[:12]
         wav = out / f"{b['id']}.wav"
         words += len(b["text"].split())
         if wav.exists() and timings.get(b["id"], {}).get("hash") == h:
@@ -215,8 +234,10 @@ def main() -> int:
                                      narr[i + 1]["tts"] if i + 1 < len(narr) else ""))
         else:
             raw = out / f"{b['id']}.raw.wav"
-            raw.write_bytes(synth(b["tts"], voice, rate, key))
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af",
+            raw.write_bytes(synth(strip_tags(b["tts"]), voice, rate, key))
+        tempo = float(nar.get("tempo", 1.0)) if nar else 1.0
+        pre = f"atempo={tempo}," if abs(tempo - 1) > 0.001 else ""  # v4 pace (2026-11-17)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af", pre +
                         "silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
                         "silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
                         "loudnorm=I=-16:TP=-2:LRA=11", "-ar", "48000", "-ac", "1",
@@ -249,7 +270,9 @@ def main() -> int:
                            for b in narr), encoding="utf-8")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst),
                     "-b:a", "160k", str(out / "narration_full.mp3")], check=True)
-    report = (f"# Narration: {game}, {voice} at {'speed' if nar else 'rate'} {rate}\n\n"
+    pace = f"tempo {nar['tempo']}" if nar and nar.get("tempo") else f"{'speed' if nar else 'rate'} {rate}"
+    model = f" ({nar.get('model_id')})" if nar else ""
+    report = (f"# Narration: {game}, {voice}{model} at {pace}\n\n"
               f"- {len(narr)} paragraphs, {words} words, {total:.0f} s of speech "
               f"({total / 60:.1f} min), {words / (total / 60):.0f} wpm\n")
     (out / "narration.md").write_text(report, encoding="utf-8")

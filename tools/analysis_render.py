@@ -522,7 +522,8 @@ def narr_words(b: dict, wav: Path, cache_dir: Path, seconds: float) -> dict:
     """{"words": the known text with times (s from the start of the narration WAV), "heard": what
     Whisper actually heard} for one narration beat. Cached (under segs/, which CI keeps) by WAV
     content, model and the text."""
-    text = b.get("tts") or b.get("text") or ""
+    from analysis_edl import strip_tags  # delivery tags are never spoken (Eleven v4, 2026-11-17)
+    text = strip_tags(b.get("tts") or b.get("text") or "")
     sig = hashlib.sha1(wav.read_bytes() + f"|{WORDS_MODEL}|{text}|v2".encode()).hexdigest()[:16]
     f = cache_dir / f"{b['id']}.{sig}.json"
     if f.exists():
