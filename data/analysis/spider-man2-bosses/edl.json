@@ -1,0 +1,846 @@
+{
+ "game": "spider-man2-bosses",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Narrator A",
+  "voice_id": "Jn6g1Ws0FHFBiECPird2",
+  "model_id": "eleven_v4",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "tempo": 1.15,
+  "master": "C"
+ },
+ "under_narration_db": -24,
+ "source": "spider-man2-bosses-script-v1.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "By my count, Spider-Man 2 has eight big story boss fights. Most of the lists I found put the final fight at number one. I think the best one is a fight you mostly play as Miles.",
+   "tts": "By my count, Spider-Man 2 has eight big story boss fights. Most of the lists I found put the final fight at number one. I think the best one is a fight you mostly play as Miles.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 284.0,
+     "out": 296.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G01"
+   ],
+   "chapter": "Rescue or erasure?",
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "So here's my rule. I'm not ranking these by how hard they are. I'm not ranking them by how big they look. I'm ranking them by one thing. How well does the fight tell the story, through what you actually do with the controller? A great boss fight makes you feel the plot in your hands. A weak one just pauses the plot so you can hit something.",
+   "tts": "[certain, telling one person] So here's my rule. I'm not ranking these by how hard they are. I'm not ranking them by how big they look. I'm ranking them by one thing. How well does the fight tell the story, through what you actually do with the controller? A great boss fight makes you feel the plot in your hands. A weak one just pauses the plot so you can hit something.",
+   "shots": [
+    {
+     "clip": 281,
+     "in": 20.0,
+     "out": 32.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1004,
+     "in": 795.0,
+     "out": 805.0,
+     "crop": "hud"
+    },
+    {
+     "clip": 1009,
+     "in": 120.0,
+     "out": 130.0
+    }
+   ],
+   "gfx": [
+    "G02"
+   ],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "Two quick notes. Wraith and Mysterio have their own side-story fights, and they're not on this list. This is the main story only. And this has full spoilers, all the way to the end.",
+   "tts": "Two quick notes. Wraith and Mysterio have their own side-story fights, and they're not on this list. This is the main story only. And this has full spoilers, all the way to the end.",
+   "shots": [
+    {
+     "clip": 1025,
+     "in": 20.0,
+     "out": 30.0
+    },
+    {
+     "clip": 59,
+     "in": 0.0,
+     "out": 8.0
+    }
+   ],
+   "gfx": [],
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "Number eight is the opening fight against Sandman. On size alone, it's the biggest thing in the game. He's as tall as the buildings. He throws whole chunks of the city at you, and you throw them back. Peter and Miles trade off, so you get both Spider-Men in the first mission.",
+   "tts": "Number eight is the opening fight against Sandman. On size alone, it's the biggest thing in the game. He's as tall as the buildings. He throws whole chunks of the city at you, and you throw them back. Peter and Miles trade off, so you get both Spider-Men in the first mission.",
+   "shots": [
+    {
+     "clip": 280,
+     "in": 0.0,
+     "out": 10.0
+    },
+    {
+     "clip": 281,
+     "in": 40.0,
+     "out": 60.0
+    },
+    {
+     "clip": 1014,
+     "in": 100.0,
+     "out": 118.0
+    },
+    {
+     "clip": 1015,
+     "in": 5.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [
+    "G03"
+   ],
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "But it's also the tutorial. The game is teaching you the buttons, so it never trusts you with much. You're mostly told where to go and what to press. And the story it tells is simple. Two Spider-Men, one city, and they can share it. That's a fine opening. It's just not much of an argument.",
+   "tts": "But it's also the tutorial. The game is teaching you the buttons, so it never trusts you with much. You're mostly told where to go and what to press. And the story it tells is simple. Two Spider-Men, one city, and they can share it. That's a fine opening. It's just not much of an argument.",
+   "shots": [
+    {
+     "clip": 1016,
+     "in": 60.0,
+     "out": 75.0
+    },
+    {
+     "clip": 1017,
+     "in": 60.0,
+     "out": 75.0
+    },
+    {
+     "clip": 1018,
+     "in": 20.0,
+     "out": 40.0
+    }
+   ],
+   "gfx": [],
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "So it's last on this list. Not because it's bad, but because it's the fight with the least to say.",
+   "tts": "[dry] So it's last on this list. Not because it's bad, but because it's the fight with the least to say.",
+   "shots": [
+    {
+     "clip": 1019,
+     "in": 0.0,
+     "out": 15.0
+    }
+   ],
+   "gfx": [],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "Number seven is the Lizard. It's the first boss Peter fights in the black suit. The suit hits harder, swings faster, and throws the Lizard around like a toy.",
+   "tts": "Number seven is the Lizard. It's the first boss Peter fights in the black suit. The suit hits harder, swings faster, and throws the Lizard around like a toy.",
+   "shots": [
+    {
+     "clip": 477,
+     "in": 0.0,
+     "out": 12.0
+    },
+    {
+     "clip": 1020,
+     "in": 5.0,
+     "out": 25.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1021,
+     "in": 0.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [
+    "G04"
+   ],
+   "id": "b006"
+  },
+  {
+   "type": "narr",
+   "text": "And that's the point of the fight. It feels good to be this strong. The game wants you to enjoy it, so you'll understand why Peter does. The fight even runs across the city. The sewers, the streets, and back underground. You feel unstoppable the whole way. Then Connors comes back to himself, and Peter tells him how the suit feels.",
+   "tts": "And that's the point of the fight. It feels good to be this strong. The game wants you to enjoy it, so you'll understand why Peter does. The fight even runs across the city. The sewers, the streets, and back underground. You feel unstoppable the whole way. Then Connors comes back to himself, and Peter tells him how the suit feels.",
+   "shots": [
+    {
+     "clip": 1022,
+     "in": 0.0,
+     "out": 15.0
+    },
+    {
+     "clip": 1023,
+     "in": 20.0,
+     "out": 40.0
+    },
+    {
+     "clip": 1024,
+     "in": 0.0,
+     "out": 15.0
+    }
+   ],
+   "gfx": [],
+   "id": "b007"
+  },
+  {
+   "type": "game",
+   "clip": 1012,
+   "in": 383.5,
+   "out": 386.0,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 22-14-25).mp4 @ 383.5-386.0 s: \"Spider-Man: it makes me a better Spider-Man.\" (sub 384-385.5); clean cutscene, \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b008"
+  },
+  {
+   "type": "narr",
+   "text": "That's a strong line. But the fight never makes you pay for the power. It shows you the high and none of the cost. So it sits at seven.",
+   "tts": "That's a strong line. But the fight never makes you pay for the power. It shows you the high and none of the cost. So it sits at seven.",
+   "shots": [
+    {
+     "clip": 1012,
+     "in": 330.0,
+     "out": 340.0
+    }
+   ],
+   "gfx": [],
+   "id": "b009"
+  },
+  {
+   "type": "narr",
+   "text": "Number six is Scream. Harry, as Venom, has spread the symbiote to MJ. She's been ignored at work and pushed aside by Peter, and the suit turns that into rage. Now Peter has to fight her.",
+   "tts": "Number six is Scream. Harry, as Venom, has spread the symbiote to MJ. She's been ignored at work and pushed aside by Peter, and the suit turns that into rage. Now Peter has to fight her.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 190.0,
+     "out": 206.0
+    },
+    {
+     "clip": 581,
+     "in": 0.0,
+     "out": 5.0
+    },
+    {
+     "clip": 1027,
+     "in": 0.0,
+     "out": 20.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G05"
+   ],
+   "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "Here's what I like. You beat her with noise. You pull cars to set off their alarms, and the sound hurts the symbiote. It's the same weakness Peter tried to play down to Harry. Now he has to use it on the person he loves.",
+   "tts": "Here's what I like. You beat her with noise. You pull cars to set off their alarms, and the sound hurts the symbiote. It's the same weakness Peter tried to play down to Harry. Now he has to use it on the person he loves.",
+   "shots": [
+    {
+     "clip": 1027,
+     "in": 20.0,
+     "out": 45.0
+    },
+    {
+     "clip": 1026,
+     "in": 0.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [],
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "That's a hard thing to make a player do, and the game does it. What holds it back is the fight itself. It's long, the phases repeat, and it drifts away from MJ. By the end, you're fighting a health bar, not a person.",
+   "tts": "[quietly] That's a hard thing to make a player do, and the game does it. What holds it back is the fight itself. It's long, the phases repeat, and it drifts away from MJ. By the end, you're fighting a health bar, not a person.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 715.0,
+     "out": 726.0
+    }
+   ],
+   "gfx": [],
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "Number five will start some arguments. It's the final fight against Venom, and most of the lists I found put it first. Venom drags Peter back to their old high school. And it opens with one of the best lines in the game.",
+   "tts": "[playful] Number five will start some arguments. It's the final fight against Venom, and most of the lists I found put it first. Venom drags Peter back to their old high school. And it opens with one of the best lines in the game.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 340.0,
+     "out": 392.0
+    }
+   ],
+   "gfx": [
+    "G06"
+   ],
+   "id": "b013"
+  },
+  {
+   "type": "game",
+   "clip": 1013,
+   "in": 396.0,
+   "out": 405.5,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-15 12-16-55).mp4 @ 396.0-405.5 s: \"Venom: This is where we became best friends.\" / \"And now it's where we become brothers...\" (sub 397, 403.5); clean, \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b014"
+  },
+  {
+   "type": "narr",
+   "text": "The fight is huge, and it looks great. But watch who's holding the controller. Peter fights the first two phases. Then the game hands Venom to Miles for a long stretch. In the biggest fight of Peter's life. When Peter is back, the ending plays out as a run of button prompts.",
+   "tts": "The fight is huge, and it looks great. But watch who's holding the controller. Peter fights the first two phases. Then the game hands Venom to Miles for a long stretch. In the biggest fight of Peter's life. When Peter is back, the ending plays out as a run of button prompts.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 420.0,
+     "out": 450.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1013,
+     "in": 560.0,
+     "out": 600.0
+    },
+    {
+     "clip": 1011,
+     "in": 160.0,
+     "out": 190.0
+    }
+   ],
+   "gfx": [],
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "This is Peter and his oldest friend. It's the most personal fight in the story. And it spends the least time letting you feel that, because it keeps passing you to someone else. I get why. The game is handing the city to Miles. But in this fight, that choice costs it. Number five.",
+   "tts": "This is Peter and his oldest friend. It's the most personal fight in the story. And it spends the least time letting you feel that, because it keeps passing you to someone else. I get why. The game is handing the city to Miles. But in this fight, that choice costs it. Number five.",
+   "shots": [
+    {
+     "clip": 1011,
+     "in": 640.0,
+     "out": 676.0
+    },
+    {
+     "clip": 1011,
+     "in": 745.0,
+     "out": 750.0
+    },
+    {
+     "clip": 1011,
+     "in": 798.0,
+     "out": 812.0
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "narr",
+   "text": "Now the top four. And two of them happen in the same room, under the same bell.",
+   "tts": "Now the top four. And two of them happen in the same room, under the same bell.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 384.0,
+     "out": 388.0
+    },
+    {
+     "clip": 1002,
+     "in": 393.0,
+     "out": 398.0
+    }
+   ],
+   "gfx": [],
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "Number four is Peter against Kraven, in Kraven's mansion. Peter has come to get Miles back. He's deep in the black suit now, and he's angry. Kraven fights with fists, an axe, and land mines.",
+   "tts": "Number four is Peter against Kraven, in Kraven's mansion. Peter has come to get Miles back. He's deep in the black suit now, and he's angry. Kraven fights with fists, an axe, and land mines.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 236.0,
+     "out": 250.0
+    },
+    {
+     "clip": 1002,
+     "in": 250.0,
+     "out": 275.0,
+     "crop": "none"
+    },
+    {
+     "clip": 529,
+     "in": 10.0,
+     "out": 30.0,
+     "crop": "boss"
+    }
+   ],
+   "gfx": [
+    "G07"
+   ],
+   "id": "b018"
+  },
+  {
+   "type": "narr",
+   "text": "Halfway through, a bell starts ringing over the arena. Every time it rings, the suit glitches and Peter is stunned. So the game gives you a job. Web the bell shut.",
+   "tts": "Halfway through, a bell starts ringing over the arena. Every time it rings, the suit glitches and Peter is stunned. So the game gives you a job. Web the bell shut.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 300.0,
+     "out": 330.0
+    },
+    {
+     "clip": 1002,
+     "in": 410.0,
+     "out": 440.0
+    },
+    {
+     "clip": 530,
+     "in": 20.0,
+     "out": 40.0
+    }
+   ],
+   "gfx": [],
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "Think about what you're doing there. The sound is the suit's weakness. It's the one thing that weakens the suit's grip on him. And you, as Peter, stop it ringing so you can keep fighting. That's the whole story of the black suit, in one button.",
+   "tts": "[leaning in] Think about what you're doing there. The sound is the suit's weakness. It's the one thing that weakens the suit's grip on him. And you, as Peter, stop it ringing so you can keep fighting. That's the whole story of the black suit, in one button.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 440.0,
+     "out": 470.0
+    },
+    {
+     "clip": 1002,
+     "in": 500.0,
+     "out": 530.0
+    }
+   ],
+   "gfx": [],
+   "id": "b020"
+  },
+  {
+   "type": "game",
+   "clip": 1002,
+   "in": 565.5,
+   "out": 570.5,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-27-39).mp4 @ 565.5-570.5 s: \"Kraven: But you still hold back.\" / \"Kraven: Kill-- or be killed!\" (sub 566.5, 569); clean, \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b021"
+  },
+  {
+   "type": "narr",
+   "text": "And Peter nearly does. The fight ends with the suit wrapped round Kraven's throat. Number four.",
+   "tts": "And Peter nearly does. The fight ends with the suit wrapped round Kraven's throat. Number four.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 570.0,
+     "out": 590.0
+    }
+   ],
+   "gfx": [],
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "Number three is the fight where you play the monster. The suit has left Peter and found Harry. Harry is Venom now, and Kraven is waiting for him.",
+   "tts": "Number three is the fight where you play the monster. The suit has left Peter and found Harry. Harry is Venom now, and Kraven is waiting for him.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 750.0,
+     "out": 793.0
+    }
+   ],
+   "gfx": [
+    "G08"
+   ],
+   "id": "b023"
+  },
+  {
+   "type": "narr",
+   "text": "People call this fight too easy. Venom tears through him. I think that's on purpose. Listen to what Kraven says while you're winning.",
+   "tts": "People call this fight too easy. Venom tears through him. I think that's on purpose. Listen to what Kraven says while you're winning.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 795.0,
+     "out": 822.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b024"
+  },
+  {
+   "type": "game",
+   "clip": 1004,
+   "in": 823.0,
+   "out": 830.0,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-51-03).mp4 @ 823.0-830.0 s: \"Kraven: Long have I dreamt of a perfect death,\" / \"drenched in fire and blood!\" (sub 824, 828); boss HUD, crop it",
+   "id": "b025"
+  },
+  {
+   "type": "narr",
+   "text": "Kraven is not trying to win. He's sick, and he came to New York to find a death worth dying before his own body finished him. He tells Venom exactly that.",
+   "tts": "Kraven is not trying to win. He's sick, and he came to New York to find a death worth dying before his own body finished him. He tells Venom exactly that.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 840.0,
+     "out": 880.0
+    },
+    {
+     "clip": 1004,
+     "in": 912.0,
+     "out": 927.0
+    }
+   ],
+   "gfx": [],
+   "id": "b026"
+  },
+  {
+   "type": "game",
+   "clip": 1004,
+   "in": 965.5,
+   "out": 976.0,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-51-03).mp4 @ 965.5-976.0 s: \"Kraven: Do you know what it's like to have your body betray you?\" / \"WEAKNESS will not claim me. If I am to die soon, I will die ROARING!!!\" (sub 966, 972-975)",
+   "id": "b027"
+  },
+  {
+   "type": "narr",
+   "text": "So the fight is easy because he wants it to end this way. And when it does, he says two words.",
+   "tts": "So the fight is easy because he wants it to end this way. And when it does, he says two words.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 993.0,
+     "out": 1030.0
+    }
+   ],
+   "gfx": [],
+   "id": "b028"
+  },
+  {
+   "type": "game",
+   "clip": 1004,
+   "in": 1031.0,
+   "out": 1034.0,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-51-03).mp4 @ 1031.0-1034.0 s: \"Kraven: Thank you.\" (sub 1032); clean; cut before the gore at 1041",
+   "id": "b029"
+  },
+  {
+   "type": "narr",
+   "text": "The easiest boss fight in the story is the one where the villain gets what he wanted. That's why it's number three.",
+   "tts": "[softly] The easiest boss fight in the story is the one where the villain gets what he wanted. That's why it's number three.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 1068.0,
+     "out": 1074.0
+    }
+   ],
+   "gfx": [],
+   "id": "b030"
+  },
+  {
+   "type": "narr",
+   "text": "Number two is Miles against Mister Negative. Kraven has trapped them both in his pit, and he wants a fight to the death. Martin Li is the man behind the death of Miles's father.",
+   "tts": "Number two is Miles against Mister Negative. Kraven has trapped them both in his pit, and he wants a fight to the death. Martin Lee is the man behind the death of Miles's father.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 0.0,
+     "out": 10.0
+    },
+    {
+     "clip": 1009,
+     "in": 113.0,
+     "out": 140.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G09"
+   ],
+   "id": "b031"
+  },
+  {
+   "type": "narr",
+   "text": "So you go in angry. Then the fight drags Miles into Li's power, a dark copy of the city. And the attacks stop being the hard part. Now Miles hears the people he loves. His friends. His father.",
+   "tts": "So you go in angry. Then the fight drags Miles into Lee's power, a dark copy of the city. And the attacks stop being the hard part. Now Miles hears the people he loves. His friends. His father.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 160.0,
+     "out": 200.0
+    },
+    {
+     "clip": 1009,
+     "in": 371.0,
+     "out": 420.0
+    }
+   ],
+   "gfx": [],
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "This is where Miles learns a new move. He doesn't get it by hitting harder. He gets it by facing what he's carried since his father died. And at the end, he says it out loud.",
+   "tts": "This is where Miles learns a new move. He doesn't get it by hitting harder. He gets it by facing what he's carried since his father died. And at the end, he says it out loud.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 450.0,
+     "out": 470.0
+    },
+    {
+     "clip": 1009,
+     "in": 740.0,
+     "out": 780.0
+    }
+   ],
+   "gfx": [],
+   "id": "b033"
+  },
+  {
+   "type": "game",
+   "clip": 1009,
+   "in": 788.5,
+   "out": 799.5,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-13 23-12-54).mp4 @ 788.5-799.5 s: \"I'm done listening to you.\" / \"Losing my dad...\" / \"It's not what's holding me back.\" / \"I was the one doing that.\" (sub 789.5, 791.5, 795.5, 798.5); clean, \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b034"
+  },
+  {
+   "type": "narr",
+   "text": "He wins by letting go. And then he spares the man Kraven put him there to kill. A boss fight that ends in mercy, and you earn it. Number two.",
+   "tts": "[thoughtful] He wins by letting go. And then he spares the man Kraven put him there to kill. A boss fight that ends in mercy, and you earn it. Number two.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 812.0,
+     "out": 830.0
+    }
+   ],
+   "gfx": [],
+   "id": "b035"
+  },
+  {
+   "type": "narr",
+   "text": "Number one is the fight right after Kraven's, in the mansion. Same room. Same bell. Peter has gone too far, and Miles has to stop him.",
+   "tts": "Number one is the fight right after Kraven's, in the mansion. Same room. Same bell. Peter has gone too far, and Miles has to stop him.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 589.0,
+     "out": 606.0
+    },
+    {
+     "clip": 1003,
+     "in": 0.0,
+     "out": 20.0
+    }
+   ],
+   "gfx": [
+    "G10"
+   ],
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "Look at the name on the health bar. It just says Peter. Now you're playing Miles, and the bell is your best weapon. The sound Peter webbed shut a few minutes ago is the sound you ring to save him.",
+   "tts": "[leaning in] Look at the name on the health bar. It just says Peter. Now you're playing Miles, and the bell is your best weapon. The sound Peter webbed shut a few minutes ago is the sound you ring to save him.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 90.0,
+     "out": 120.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1003,
+     "in": 130.0,
+     "out": 160.0
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
+  },
+  {
+   "type": "narr",
+   "text": "You ring it, it stuns him, you fight, you ring it again. Miles keeps talking to him the whole time. The game turns the suit's weakness into the rescue plan.",
+   "tts": "You ring it, it stuns him, you fight, you ring it again. Miles keeps talking to him the whole time. The game turns the suit's weakness into the rescue plan.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 160.0,
+     "out": 200.0
+    },
+    {
+     "clip": 1003,
+     "in": 200.0,
+     "out": 232.0
+    }
+   ],
+   "gfx": [],
+   "id": "b038"
+  },
+  {
+   "type": "game",
+   "clip": 1003,
+   "in": 245.0,
+   "out": 248.5,
+   "cue": "GAME AUDIO cutscenes/spider-man2/Spider-Man 2 (2026-11-14 13-38-48).mp4 @ 245.0-248.5 s: \"Miles: This time, you have to save yourself!\" (sub 246); HUD, crop it",
+   "id": "b039"
+  },
+  {
+   "type": "narr",
+   "text": "And then the game does the thing that puts this fight at number one. It takes Miles away from you. You're Peter now. The prompts are on him. And you tear the suit off his body, with your own hands.",
+   "tts": "[building] And then the game does the thing that puts this fight at number one. It takes Miles away from you. You're Peter now. The prompts are on him. And you tear the suit off his body, with your own hands.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 270.0,
+     "out": 284.0
+    }
+   ],
+   "gfx": [],
+   "id": "b040"
+  },
+  {
+   "type": "narr",
+   "text": "The finale ends on button prompts too. The difference is what the prompts mean. Here, they're the whole point. And the finale takes Peter's fight away from him. This one does the reverse. Miles fights his way to the moment, then hands it back. The last move is Peter's, and the game makes sure it's yours too.",
+   "tts": "[quietly] The finale ends on button prompts too. The difference is what the prompts mean. Here, they're the whole point. And the finale takes Peter's fight away from him. This one does the reverse. Miles fights his way to the moment, then hands it back. The last move is Peter's, and the game makes sure it's yours too.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 284.0,
+     "out": 307.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b041"
+  },
+  {
+   "type": "narr",
+   "text": "So that's the list. Sandman, the Lizard, Scream, Venom, Kraven in the mansion, Venom against Kraven, Mister Negative, and Miles against symbiote Peter. The fights at the top all do one thing. They make you do what the story is about.",
+   "tts": "So that's the list. Sandman, the Lizard, Scream, Venom, Kraven in the mansion, Venom against Kraven, Mister Negative, and Miles against symbiote Peter. The fights at the top all do one thing. They make you do what the story is about.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 309.0,
+     "out": 331.0
+    },
+    {
+     "clip": 1003,
+     "in": 371.0,
+     "out": 376.0
+    }
+   ],
+   "gfx": [
+    "G11"
+   ],
+   "id": "b042"
+  },
+  {
+   "type": "narr",
+   "text": "Now it's your turn. Which fight would you put first, the finale or Miles against Peter? Tell me in the comments. If you want the full story behind this fight, I made a whole video on it. Was it the suit, or was it Peter? It's right here. Thanks for watching.",
+   "tts": "[warm] Now it's your turn. Which fight would you put first, the finale or Miles against Peter? Tell me in the comments. If you want the full story behind this fight, I made a whole video on it. Was it the suit, or was it Peter? It's right here. Thanks for watching.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 420.0,
+     "out": 430.0
+    },
+    {
+     "clip": 1004,
+     "in": 795.0,
+     "out": 800.0
+    }
+   ],
+   "gfx": [
+    "G12"
+   ],
+   "id": "b043"
+  }
+ ],
+ "gfx_cues": [
+  {
+   "id": "G01",
+   "cue": "lower: \"MARVEL'S SPIDER-MAN 2: EVERY STORY BOSS, RANKED\" fades in at 0:02"
+  },
+  {
+   "id": "G02",
+   "cue": "question: words \"BIGGEST or BEST?\", accent on BEST; then caption \"SPOILERS: THE WHOLE STORY\" (pos bottom)"
+  },
+  {
+   "id": "G03",
+   "cue": "chapter: num 8, title \"SANDMAN\""
+  },
+  {
+   "id": "G04",
+   "cue": "chapter: num 7, title \"THE LIZARD\""
+  },
+  {
+   "id": "G05",
+   "cue": "chapter: num 6, title \"SCREAM\""
+  },
+  {
+   "id": "G06",
+   "cue": "chapter: num 5, title \"VENOM: THE FINALE\""
+  },
+  {
+   "id": "G07",
+   "cue": "chapter: num 4, title \"KRAVEN: THE MANSION\""
+  },
+  {
+   "id": "G08",
+   "cue": "chapter: num 3, title \"VENOM VS KRAVEN\""
+  },
+  {
+   "id": "G09",
+   "cue": "chapter: num 2, title \"MISTER NEGATIVE\""
+  },
+  {
+   "id": "G10",
+   "cue": "chapter: num 1, title \"MILES VS SYMBIOTE PETER\""
+  },
+  {
+   "id": "G11",
+   "cue": "timeline: 8 stops, from 8 to 1: \"8 SANDMAN\", \"7 THE LIZARD\", \"6 SCREAM\", \"5 VENOM\", \"4 KRAVEN: MANSION\", \"3 VENOM VS KRAVEN\", \"2 MISTER NEGATIVE\", \"1 MILES VS PETER\""
+  },
+  {
+   "id": "G12",
+   "cue": "endscreen"
+  }
+ ]
+}

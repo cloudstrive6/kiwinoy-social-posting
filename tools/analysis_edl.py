@@ -63,9 +63,18 @@ TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in 
 ]
 
 
+BASE_GAMES = ("spider-man1", "spider-man2", "wolverine")
+
+
 def base_game(game: str) -> str:
-    """A reel pack ("spider-man2-reels", 2026-11-15) uses its game's spoken forms."""
-    return game[: -len("-reels")] if game.endswith("-reels") else game
+    """A reel pack ("spider-man2-reels", 2026-11-15) or a second video on the same game
+    ("spider-man2-bosses", 2026-11-18) uses its game's spoken forms and editor notes."""
+    if game.endswith("-reels"):
+        return game[: -len("-reels")]
+    for g in BASE_GAMES:
+        if game.startswith(g + "-"):
+            return g
+    return game
 
 
 def tts_text(text: str, game: str = "") -> str:
@@ -335,7 +344,7 @@ GAME_NOTES = {
 def main() -> int:
     script_path, game = Path(sys.argv[1]), sys.argv[2]
     d = ROOT / "data" / "analysis" / game
-    notes = GAME_NOTES.get(game, {"banned": set(), "hud": set()})
+    notes = GAME_NOTES.get(game) or GAME_NOTES.get(base_game(game), {"banned": set(), "hud": set()})
     key_index = {}
     if (d / "clips.json").exists():
         cm = json.loads((d / "clips.json").read_text(encoding="utf-8"))["clips"]
