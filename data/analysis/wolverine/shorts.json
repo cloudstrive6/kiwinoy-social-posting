@@ -386,8 +386,11 @@
     "uploaded_at": "2026-11-14T00:49:45Z",
     "playlist": true,
     "was_scheduled": "2026-11-16T15:00:00Z",
-    "held": true,
-    "held_at": "2026-11-15T22:25:58Z"
+    "held_at": "2026-11-15T22:25:58Z",
+    "released_at": "2026-11-17T23:06:14Z",
+    "publish_at": "2026-11-17T23:06:14Z",
+    "slot": "2026-11-17T23:00:00Z",
+    "mode": "at-slot"
    },
    "b2_key": "shorts/analysis/wolverine/s04.mp4",
    "facebook": {
