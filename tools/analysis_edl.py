@@ -235,6 +235,8 @@ def parse(script: str, banned: set[int], hud_clips: set[int] = frozenset(), game
             title = m.group(2) if m else head
             if title.lower().startswith("chapter"):
                 pending_chapter = title.split(":", 1)[1].strip()
+            elif re.match(r"number \d+:", title.lower()):  # ranked lists (2026-11-18): "Number 8: Sandman"
+                pending_chapter = title.strip()
             elif m and m.group(1) == "0:00":
                 pending_chapter = opening
             continue
