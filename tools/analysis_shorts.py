@@ -323,11 +323,60 @@ def feather_mask(path: Path, w: int, h: int, fe: int) -> Path:
 # of App buttons and caption area"): tools/analysis_brand.py drawn frame by frame, cropped to its
 # own box, scaled to SUB_W wide and centred on x=540 (so it ends left of the Shorts buttons),
 # its centre at SUB_CY, from SUB_AT seconds.
+# Instead of exiting it turns into the KG logo at the centre (Bryce, 2026-11-17: "after the
+# 'Subscribe to Boss KG' lower thirds, it must then also beautifully transition to the KG logo at
+# the center"), the same move as the square reel's FOLLOW BOSS KG (follow_frame): the lower third's
+# own exit plays for the text and bar (sped so the bar is in by 45% of SUB_MORPH), while the photo
+# glides to x=540, shrinks to the classic KG logo's size and cross-fades into it, easing to the
+# classic logo's opacity. The overlay's last frame (the logo) is held to the end.
 SUB_W, SUB_CY, SUB_AT = 700, 1690, 4.0
+SUB_MORPH = 0.9
+SUB_AV = (96 + 184 // 2, 884, 184)     # analysis_brand.frame's photo for side="left": centre x, y, diameter
+
+
+def sub_frame(t: float, cfg: dict, box: tuple, ow: int, oh: int,
+              kg: "Image.Image | None", kg_op: float) -> "Image.Image":
+    """The Shorts' subscribe lower third at t, cropped to box and scaled to ow x oh, then its morph."""
+    import analysis_brand as brand
+    hold_end = brand.ENTER + float(cfg.get("hold", brand.DEFAULTS["hold"]))
+    if t < hold_end or kg is None:
+        return brand.frame(t, cfg).crop(box).resize((ow, oh), Image.LANCZOS)
+    m = min(1.0, (t - hold_end) / SUB_MORPH)
+    out_t = min(brand.EXIT, m * SUB_MORPH * 0.8)
+    im = brand.frame(hold_end + out_t, {**cfg, "avatar": False}).crop(box).resize((ow, oh), Image.LANCZOS)
+    k = ow / (box[2] - box[0])
+    ax0, ay, d0 = (SUB_AV[0] - box[0]) * k, (SUB_AV[1] - box[1]) * k, SUB_AV[2] * k
+    g = brand._seg(m, 0.30, 1.0)
+    g = g * g * (3 - 2 * g)                 # smoothstep glide
+    ax = ax0 + (ow / 2 - ax0) * g
+    sz = max(2, round(d0 + (kg.width - d0) * g))
+    mix = brand._seg(m, 0.45, 1.0)
+    ph = brand._avatar(SUB_AV[2]).resize((sz, sz), Image.LANCZOS)
+    if mix > 0:                             # photo -> logo at full strength (no dark dip), then fade
+        ph = Image.blend(ph, kg.resize((sz, sz), Image.LANCZOS), mix)
+    op = 1 + (kg_op - 1) * mix
+    if op < 1:
+        ph.putalpha(ph.getchannel("A").point(lambda v: int(v * op)))
+    # the KG-red ring stays at full strength on the logo (Bryce, 2026-11-17: "let's keep the red
+    # ring"), so the faded logo still reads as a badge on the dark band; it is the photo's own ring
+    # redrawn at each size, so there is no pop when the morph starts
+    ph.alpha_composite(sub_ring(sz))
+    im.alpha_composite(ph, (round(ax - sz / 2), round(ay - sz / 2)))
+    return im
+
+
+def sub_ring(d: int) -> "Image.Image":
+    """analysis_brand._avatar's KG-red ring alone, d px across (drawn 4x and scaled down)."""
+    import analysis_brand as brand
+    big = d * 4
+    ring = Image.new("RGBA", (big, big), (0, 0, 0, 0))
+    ImageDraw.Draw(ring).ellipse([0, 0, big - 1, big - 1], outline=brand.BRAND_RED, width=int(big * 0.045))
+    return ring.resize((d, d), Image.LANCZOS)
 
 
 def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
-    """(mov, x, y, seconds) of the scaled lower third; built once and cached in work/."""
+    """(mov, x, y, seconds) of the scaled lower third and its morph into the KG logo (its last
+    frame); built once and cached in work/."""
     try:
         import analysis_brand as brand
     except Exception as e:
@@ -338,7 +387,10 @@ def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
     if shared.exists():
         cfg.update(json.loads(shared.read_text(encoding="utf-8")).get("subscribe", {}))
     cfg["side"] = "left"
-    secs = brand.total_seconds(cfg)
+    kg_op = kg_logo_opacity()
+    kg = kg_logo_circle(opacity=1.0)       # full strength; sub_frame eases it to kg_op
+    secs = (brand.ENTER + float(cfg.get("hold", brand.DEFAULTS["hold"])) + SUB_MORPH + 0.1) if kg \
+        else brand.total_seconds(cfg)
     full = brand.frame(brand.ENTER + 0.5, cfg)
     box = full.getchannel("A").getbbox()
     if not box:
@@ -347,7 +399,12 @@ def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
     box = (max(0, box[0] - pad), max(0, box[1] - pad), min(full.width, box[2] + pad), min(full.height, box[3] + pad))
     k = SUB_W / (box[2] - box[0])
     ow, oh = SUB_W, int(round((box[3] - box[1]) * k)) // 2 * 2
-    tag = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:8]
+    # keyed on the logo's and the photo's pixels too, so a new logo or avatar file re-renders the
+    # cached mov (review 2026-11-17)
+    tag = hashlib.sha1(json.dumps([cfg, "logo-morph-ring", SUB_MORPH, SUB_AV, kg_op,
+                                   hashlib.sha1(kg.tobytes()).hexdigest() if kg else None,
+                                   hashlib.sha1(brand._avatar(SUB_AV[2]).tobytes()).hexdigest()],
+                                  sort_keys=True, default=str).encode()).hexdigest()[:8]
     out = work / f"subscribe-{ow}x{oh}-{tag}.mov"
     if not out.exists():
         n = int(round(secs * FPS))
@@ -355,8 +412,11 @@ def subscribe_overlay(work: Path) -> "tuple[Path, int, int, float] | None":
                                "-s", f"{ow}x{oh}", "-r", str(FPS), "-i", "-", "-c:v", "qtrle",
                                "-pix_fmt", "argb", str(out)], stdin=subprocess.PIPE)
         for i in range(n):
-            fr = brand.frame(i / FPS, cfg).crop(box).resize((ow, oh), Image.LANCZOS)
-            pr.stdin.write(fr.tobytes())
+            pr.stdin.write(sub_frame(i / FPS, cfg, box, ow, oh, kg, kg_op).tobytes())
+        if kg is None:
+            # the render holds the last frame to the end: with no logo that must be blank, not the
+            # exit's last tiny photo (review 2026-11-17)
+            pr.stdin.write(Image.new("RGBA", (ow, oh), (0, 0, 0, 0)).tobytes())
         pr.stdin.close()
         if pr.wait() != 0:
             return None
@@ -1229,7 +1289,7 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
         fm = feather_mask(work / f"feather-{BAND[frame][1]}x{BAND[frame][2]}.png", BAND[frame][1], BAND[frame][2], feather_px())
         inputs += ["-loop", "1", "-framerate", str(FPS), "-i", str(fm)]
         im_, nxt = nxt, nxt + 1
-    sub = subscribe_overlay(work) if frame in ("band", "zoom") and body > SUB_AT + 6 else None
+    sub = subscribe_overlay(work) if frame in ("band", "zoom") and body > SUB_AT + 7 else None
     band_top = BAND[frame][0] + BAND[frame][2]
     fol = follow_overlay(work, H - band_top) if frame == "square" else None
     ifol = None
@@ -1266,7 +1326,7 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
           f"[v1][hk]overlay=0:0:shortest=0[v2];"
           f"[{ic}:v]fps={FPS},format=rgba,trim=duration={total:.4f},setpts=PTS-STARTPTS[cp];"
           f"[v2][cp]overlay=0:{cap_y}:eof_action=pass[v3a];"
-          + (f"[{isub}:v]format=rgba,setpts=PTS+{SUB_AT}/TB[sub];[v3a][sub]overlay={sub[1]}:{sub[2]}:eof_action=pass[v3];"
+          + (f"[{isub}:v]format=rgba,setpts=PTS+{SUB_AT}/TB[sub];[v3a][sub]overlay={sub[1]}:{sub[2]}:eof_action=repeat[v3];"
              if sub else (f"[{ifol}:v]format=rgba[fol];[v3a][fol]overlay=0:{band_top}:eof_action=repeat[v3];"
                           if fol else "[v3a]null[v3];")) +
           f"[{ie}:v]format=rgba,trim=duration={total:.4f},fade=t=in:st={body:.3f}:d=0.25:alpha=1[en];"

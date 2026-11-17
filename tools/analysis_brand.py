@@ -179,8 +179,9 @@ def frame(t: float, cfg: dict) -> Image.Image:
     txt.putalpha(Image.fromarray(ta))
     im = Image.alpha_composite(im, txt)
 
-    # The photo sits on top of the bar's near end.
-    if av > 0.01 and av_a > 0.01:
+    # The photo sits on top of the bar's near end. cfg["avatar"] = False leaves it out, for callers
+    # that draw the photo themselves (the Shorts' morph into the KG logo, tools/analysis_shorts.py).
+    if cfg.get("avatar", True) and av > 0.01 and av_a > 0.01:
         dd = max(2, int(D * av))
         ph = _avatar(D).resize((dd, dd), Image.LANCZOS) if dd != D else _avatar(D)
         if av_a < 1:
