@@ -136,16 +136,21 @@ MASTERS = {
 }
 
 
-def master_takes(narr: list, out: Path, timings: dict, preset: str) -> None:
+def master_takes(narr: list, out: Path, timings: dict, preset: str, pace: float = 1.0) -> None:
     """Master every paragraph from its kept dry take (<id>.dry.wav), so a preset can change later
-    without re-recording or stacking processing. A re-recorded paragraph refreshes its dry take."""
+    without re-recording or stacking processing. A re-recorded paragraph refreshes its dry take.
+    "pace" (2026-11-18) slows or speeds the dry take before mastering, free: the first v4 video read
+    at 220 wpm against the 199 wpm take Bryce picked, so its EDL carries pace 0.91."""
     import shutil
     chain = MASTERS.get(preset, preset)
+    if abs(pace - 1) > 0.001:
+        chain = f"atempo={pace}," + chain
     for b in narr:
         wav, dry, t = out / f"{b['id']}.wav", out / f"{b['id']}.dry.wav", timings.get(b["id"], {})
         if not wav.exists():
             continue
-        if t.get("master") == preset and t.get("master_hash") == t.get("hash") and dry.exists():
+        if (t.get("master") == preset and t.get("master_hash") == t.get("hash") and dry.exists()
+                and float(t.get("pace", 1.0)) == pace):
             continue
         if not dry.exists() or t.get("master_hash") != t.get("hash"):
             shutil.copyfile(wav, dry)  # the current take is unmastered (new, or never mastered)
@@ -154,6 +159,8 @@ def master_takes(narr: list, out: Path, timings: dict, preset: str) -> None:
                         str(tmp)], check=True)
         tmp.replace(wav)
         t.update(master=preset, master_hash=t.get("hash"), seconds=round(seconds(wav), 3))
+        if abs(pace - 1) > 0.001 or "pace" in t:
+            t["pace"] = pace
         timings[b["id"]] = t
     print(f"narration mastered with preset {preset}", flush=True)
 
@@ -252,7 +259,7 @@ def main() -> int:
                 print(f"{b['id']}: tail trimmed {timings[b['id']]['seconds']:.2f} -> {seconds(wav):.2f} s", flush=True)
             timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
     if nar and nar.get("master"):
-        master_takes(narr, out, timings, str(nar["master"]))
+        master_takes(narr, out, timings, str(nar["master"]), float(nar.get("pace", 1.0)))
     tpath.write_text(json.dumps(timings, indent=1), encoding="utf-8")
     if nar and todo:  # what this run really cost (about 0.4 credit per character on Starter)
         req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": key})

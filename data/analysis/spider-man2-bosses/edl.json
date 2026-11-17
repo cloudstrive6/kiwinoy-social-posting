@@ -8,7 +8,8 @@
   "stability": 0.5,
   "similarity_boost": 0.75,
   "tempo": 1.15,
-  "master": "C"
+  "master": "C",
+  "pace": 0.91
  },
  "under_narration_db": -24,
  "source": "spider-man2-bosses-script-v1.md",
