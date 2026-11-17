@@ -1,0 +1,34 @@
+{
+ "note": "Music bed for 'Every Spider-Man 2 Boss Fight, Ranked by Story' (2026-11-18). Epic cinematic orchestra chosen per chapter by the agent (Bryce, 2026-11-12), from the three tracks on private B2: Last Dawn (theme) for the open, the top-four turn, the payoffs and the recap; Epic and Dramatic Trailer Music (tension) under the fights; Red (home) for the personal beats (MJ after Scream, Peter and Harry, Kraven's wish, Miles letting go, the outro). Never the game's own soundtrack. Levels as Spider-Man 2: under_narration_db -23, under_game_db -30. Sections start at a beat; offset is seconds into the track; gain_db overrides the level.",
+ "tracks_note": "B2 keys in the private bucket (licensed tracks stay out of the public repo).",
+ "tracks": {
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "home": "music/analysis/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -23,
+ "under_game_db": -30,
+ "xfade": 2.5,
+ "sections": [
+  {"from": "b000", "track": "theme", "offset": 0, "gain_db": -22},
+  {"from": "b003", "track": "tension", "offset": 0, "gain_db": -25},
+  {"from": "b006", "track": "tension", "offset": 60, "gain_db": -25},
+  {"from": "b010", "track": "home", "offset": 0},
+  {"from": "b013", "track": "tension", "offset": 120, "gain_db": -25},
+  {"from": "b016", "track": "home", "offset": 30},
+  {"from": "b017", "track": "theme", "offset": 40},
+  {"from": "b018", "track": "tension", "offset": 0, "gain_db": -25},
+  {"from": "b023", "track": "tension", "offset": 90, "gain_db": -25},
+  {"from": "b026", "track": "home", "offset": 60},
+  {"from": "b031", "track": "tension", "offset": 45, "gain_db": -25},
+  {"from": "b033", "track": "home", "offset": 90},
+  {"from": "b036", "track": "tension", "offset": 0, "gain_db": -25},
+  {"from": "b040", "track": "theme", "offset": 78, "gain_db": -22},
+  {"from": "b042", "track": "theme", "offset": 120},
+  {"from": "b043", "track": "home", "offset": 90}
+ ]
+}

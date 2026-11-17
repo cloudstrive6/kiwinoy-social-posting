@@ -100,7 +100,8 @@ def g_chapter(spec: dict, n: int, grab=None) -> M.Graphic:
     x, lh, last = 120, 104, 930
     bases = [last - lh * (len(lines) - 1 - k) for k in range(len(lines))]
     ts = [M.text(ln, M.STATEMENT) for ln in lines]
-    lab = M.text(f"CHAPTER {num}", M.MIN_LABEL, "heavy", M.GREY)
+    # "label" (2026-11-18, ranked lists): "NUMBER" reads "NUMBER 8" on a countdown; default CHAPTER.
+    lab = M.text(f"{str(spec.get('label', 'CHAPTER')).upper()} {num}", M.MIN_LABEL, "heavy", M.GREY)
     lab_base = bases[0] - cap(M.STATEMENT) - 30
     hair = M.hline(x, last + 34, x + 200, M.RED, M.LINK)
     # Ghost number: a texture rendered at the 150 token and scaled up, 8% off-white.
