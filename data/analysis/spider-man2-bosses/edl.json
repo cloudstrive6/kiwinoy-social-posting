@@ -9,7 +9,8 @@
   "similarity_boost": 0.75,
   "tempo": 1.15,
   "master": "C",
-  "pace": 0.91
+  "pace": 0.91,
+  "tail_fade": 0.06
  },
  "under_narration_db": -24,
  "source": "spider-man2-bosses-script-v1.md",
