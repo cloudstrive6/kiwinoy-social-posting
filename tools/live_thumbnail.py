@@ -97,7 +97,8 @@ def _fit(im: Image.Image, w: int, h: int) -> Image.Image:
 
 
 def build(game: str, title: str | None, art_path: str | None = None,
-          out_name: str | None = None, fit: bool = False) -> Path:
+          out_name: str | None = None, fit: bool = False,
+          badge_xy: tuple[int, int] = (44, 44)) -> Path:
     key = ART_KEY.get(game, game)
     if art_path:
         src = Path(art_path)
@@ -129,7 +130,7 @@ def build(game: str, title: str | None, art_path: str | None = None,
     text_w, text_h = rb - lb, bb - tb
     dot_r, gap, pad_x, pad_y = 13, 18, 34, 22
     content_w = dot_r * 2 + gap + text_w
-    bx0, by0 = 44, 44
+    bx0, by0 = badge_xy                                  # default top-left; move it off a logo in the art
     badge_w = pad_x * 2 + content_w
     badge_h = pad_y * 2 + max(dot_r * 2, text_h)
     cy = by0 + badge_h // 2
@@ -199,8 +200,12 @@ def main() -> int:
     ap.add_argument("--fit", action="store_true",
                     help="keep the WHOLE art on a blurred fill (box art / portrait sources) "
                          "instead of centre-cropping it to 16:9")
+    ap.add_argument("--badge-xy", default="44,44",
+                    help="top-left corner of the LIVE badge as X,Y (default 44,44). Move it when the "
+                         "art's own game logo sits top-left, e.g. GTA 6: --badge-xy 44,388")
     a = ap.parse_args()
-    build(a.game, a.title, a.art, a.out, a.fit)
+    bx, by = (int(v) for v in a.badge_xy.split(","))
+    build(a.game, a.title, a.art, a.out, a.fit, (bx, by))
     return 0
 
 
