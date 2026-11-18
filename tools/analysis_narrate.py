@@ -212,12 +212,16 @@ def main() -> int:
 
     def said(b: dict) -> str:  # the text the model is sent (tags only for models that perform them)
         return b["tts"] if reads_tags(nar) else strip_tags(b["tts"])
+    def take_hash(b: dict) -> str:  # "take": n on a beat re-rolls that paragraph alone (2026-11-18: the bosses
+        # outro came out about 6 semitones above the paragraph before it; v4 takes vary, so a re-roll fixes it)
+        extra = f"|take{b['take']}" if b.get("take") else ""
+        return hashlib.sha1(f"{tag}|{rate}|{said(b)}{extra}".encode()).hexdigest()[:12]
     words = 0
     todo = 0
     if nar:  # never start a video the month's ElevenLabs credits cannot finish (no half-voiced cuts)
         todo = 0
         for b in narr:
-            h = hashlib.sha1(f"{tag}|{rate}|{said(b)}".encode()).hexdigest()[:12]
+            h = take_hash(b)
             if not ((out / f"{b['id']}.wav").exists() and timings.get(b["id"], {}).get("hash") == h):
                 todo += len(said(b))
         if todo:
@@ -233,7 +237,7 @@ def main() -> int:
                                  "Nothing was recorded. Upgrade the plan or wait for the monthly reset.")
             left_before = left
     for i, b in enumerate(narr):
-        h = hashlib.sha1(f"{tag}|{rate}|{said(b)}".encode()).hexdigest()[:12]
+        h = take_hash(b)
         wav = out / f"{b['id']}.wav"
         words += len(b["text"].split())
         if wav.exists() and timings.get(b["id"], {}).get("hash") == h:
