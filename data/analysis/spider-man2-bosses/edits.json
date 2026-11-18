@@ -1,0 +1,379 @@
+{
+ "note": "Spider-Man 2 bosses build changes on top of the script cues (2026-11-18), from the frame check of every shot (independent Opus agent, sheets at 3 s and 1 s): picture only, no narration or burst wording changes. Wrong subject or no boss bar where the words name one (b001 Sandman face, b002 Wraith, b003, b007 Connors human again, b010 SCREAM bar, b019 the bell stun, b037 the bell rung, b038 the kick, b040 Peter tearing the suit off), talking faces under narration (b009 Connors, b012 MJ, b035 Li, b042 Peter), objective boxes and prompts under crop none or inside the sub crop (b004, b006, b015, b018, b031, b032, b036, b043), b011 the taxi pull at Scream (1006@236-250, boxed to drop the wheels), b013 and b016 the right half of long ranges. Box crops are [x0, y0, x1, y1] fractions. b025 burst ends at 829.6, before Kraven's next line.",
+ "shots": {
+  "b001": [
+   {
+    "clip": 281,
+    "in": 71,
+    "out": 83,
+    "crop": [
+     0.08,
+     0,
+     0.86,
+     0.78
+    ]
+   },
+   {
+    "clip": 1004,
+    "in": 795.0,
+    "out": 805.0,
+    "crop": "hud"
+   },
+   {
+    "clip": 1009,
+    "in": 120.0,
+    "out": 130.0
+   }
+  ],
+  "b002": [
+   {
+    "clip": 1025,
+    "in": 48,
+    "out": 62
+   },
+   {
+    "clip": 59,
+    "in": 0.0,
+    "out": 8.0
+   }
+  ],
+  "b003": [
+   {
+    "clip": 280,
+    "in": 8,
+    "out": 18
+   },
+   {
+    "clip": 281,
+    "in": 82,
+    "out": 98
+   },
+   {
+    "clip": 1014,
+    "in": 100.0,
+    "out": 118.0
+   },
+   {
+    "clip": 1015,
+    "in": 5.0,
+    "out": 20.0
+   }
+  ],
+  "b004": [
+   {
+    "clip": 1016,
+    "in": 60.0,
+    "out": 75.0
+   },
+   {
+    "clip": 1017,
+    "in": 64,
+    "out": 79
+   },
+   {
+    "clip": 1018,
+    "in": 28,
+    "out": 40
+   }
+  ],
+  "b006": [
+   {
+    "clip": 477,
+    "in": 0.0,
+    "out": 12.0
+   },
+   {
+    "clip": 1020,
+    "in": 8,
+    "out": 28,
+    "crop": "none"
+   },
+   {
+    "clip": 1021,
+    "in": 8,
+    "out": 20
+   }
+  ],
+  "b007": [
+   {
+    "clip": 1022,
+    "in": 0.0,
+    "out": 15.0
+   },
+   {
+    "clip": 1023,
+    "in": 20,
+    "out": 34
+   },
+   {
+    "clip": 1024,
+    "in": 79,
+    "out": 94
+   }
+  ],
+  "b009": [
+   {
+    "clip": 1012,
+    "in": 314,
+    "out": 318
+   },
+   {
+    "clip": 1012,
+    "in": 329,
+    "out": 335.5
+   }
+  ],
+  "b010": [
+   {
+    "clip": 1006,
+    "in": 190.0,
+    "out": 206.0
+   },
+   {
+    "clip": 581,
+    "in": 1,
+    "out": 6
+   },
+   {
+    "clip": 1026,
+    "in": 18,
+    "out": 38,
+    "crop": [
+     0.125,
+     0,
+     0.875,
+     0.75
+    ]
+   }
+  ],
+  "b011": [
+   {
+    "clip": 1006,
+    "in": 236,
+    "out": 250,
+    "crop": [
+     0.125,
+     0.04,
+     0.875,
+     0.79
+    ]
+   },
+   {
+    "clip": 1026,
+    "in": 0.0,
+    "out": 20.0
+   }
+  ],
+  "b012": [
+   {
+    "clip": 1006,
+    "in": 546,
+    "out": 566
+   }
+  ],
+  "b013": [
+   {
+    "clip": 1013,
+    "in": 367,
+    "out": 392
+   }
+  ],
+  "b015": [
+   {
+    "clip": 1013,
+    "in": 431,
+    "out": 449,
+    "crop": "none"
+   },
+   {
+    "clip": 1013,
+    "in": 588,
+    "out": 600
+   },
+   {
+    "clip": 1011,
+    "in": 160.0,
+    "out": 190.0
+   }
+  ],
+  "b016": [
+   {
+    "clip": 1011,
+    "in": 651,
+    "out": 676
+   },
+   {
+    "clip": 1011,
+    "in": 745.0,
+    "out": 750.0
+   },
+   {
+    "clip": 1011,
+    "in": 798.0,
+    "out": 812.0
+   }
+  ],
+  "b018": [
+   {
+    "clip": 1002,
+    "in": 236.0,
+    "out": 250.0
+   },
+   {
+    "clip": 1002,
+    "in": 258,
+    "out": 275,
+    "crop": "none"
+   },
+   {
+    "clip": 529,
+    "in": 10.0,
+    "out": 30.0,
+    "crop": "boss"
+   }
+  ],
+  "b019": [
+   {
+    "clip": 530,
+    "in": 4,
+    "out": 34
+   },
+   {
+    "clip": 1002,
+    "in": 407,
+    "out": 437
+   },
+   {
+    "clip": 530,
+    "in": 20.0,
+    "out": 40.0
+   }
+  ],
+  "b022": [
+   {
+    "clip": 1002,
+    "in": 575.5,
+    "out": 590
+   }
+  ],
+  "b031": [
+   {
+    "clip": 1009,
+    "in": 0.0,
+    "out": 10.0
+   },
+   {
+    "clip": 1009,
+    "in": 115,
+    "out": 138,
+    "crop": "none"
+   }
+  ],
+  "b032": [
+   {
+    "clip": 1009,
+    "in": 160.0,
+    "out": 200.0
+   },
+   {
+    "clip": 1009,
+    "in": 374,
+    "out": 420
+   }
+  ],
+  "b035": [
+   {
+    "clip": 1009,
+    "in": 812,
+    "out": 824
+   }
+  ],
+  "b036": [
+   {
+    "clip": 1002,
+    "in": 589.0,
+    "out": 606.0
+   },
+   {
+    "clip": 1003,
+    "in": 6,
+    "out": 26
+   }
+  ],
+  "b037": [
+   {
+    "clip": 1003,
+    "in": 93,
+    "out": 120,
+    "crop": "none"
+   },
+   {
+    "clip": 1003,
+    "in": 27,
+    "out": 57
+   }
+  ],
+  "b038": [
+   {
+    "clip": 1003,
+    "in": 255.5,
+    "out": 271.5
+   },
+   {
+    "clip": 1003,
+    "in": 200.0,
+    "out": 232.0
+   }
+  ],
+  "b040": [
+   {
+    "clip": 1003,
+    "in": 270,
+    "out": 276
+   },
+   {
+    "clip": 1003,
+    "in": 284,
+    "out": 296,
+    "crop": "none"
+   }
+  ],
+  "b041": [
+   {
+    "clip": 1003,
+    "in": 296,
+    "out": 309,
+    "crop": "none"
+   }
+  ],
+  "b042": [
+   {
+    "clip": 1003,
+    "in": 309.0,
+    "out": 331.0
+   },
+   {
+    "clip": 1003,
+    "in": 340,
+    "out": 346
+   }
+  ],
+  "b043": [
+   {
+    "clip": 1013,
+    "in": 431,
+    "out": 441
+   },
+   {
+    "clip": 1003,
+    "in": 221,
+    "out": 226
+   }
+  ]
+ },
+ "beats": {
+  "b025": {
+   "out": 829.6
+  }
+ }
+}

@@ -1,7 +1,9 @@
 {
  "note": "Graphics for 'Every Spider-Man 2 Boss Fight, Ranked by Story' (script v1, approved by Bryce 2026-11-18). Keys are the GFX cue ids from tools/analysis_edl.py. at/dur are seconds from the beat start; at_frac is a fraction of the beat. The timeline (G11) reveals each ranked fight as the recap names it. The end screen (G12) points at the first Spider-Man 2 analysis (the suit or Peter); b043 runs 12 s past its last word so the end screen has its 20 s.",
  "beat_tail": {"b043": 12.0},
- "thumbnails": [],
+ "thumbnails": [{"clip": 1003, "at": 262.0, "words": "NOT VENOM", "accent": "red"},
+                {"clip": 281, "at": 96.0, "words": "BIGGEST OR BEST?", "accent": "red"},
+                {"clip": 1004, "at": 916.0, "words": "TOO EASY?", "accent": "red"}],
  "G01": [{"kind": "lower", "text": "MARVEL'S SPIDER-MAN 2: EVERY STORY BOSS, RANKED", "at": 2.0, "dur": 6.0}],
  "G02": [{"kind": "question", "words": ["BIGGEST", "or", "BEST?"], "accent": 2, "at_frac": 0.18, "dur": 6.0},
          {"kind": "caption", "text": "SPOILERS: THE WHOLE STORY", "pos": "bottom", "at_frac": 0.72, "dur": 5.0}],
