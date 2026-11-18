@@ -1,5 +1,5 @@
 {
- "note": "Spider-Man 2 bosses build changes on top of the script cues (2026-11-18), from the frame check of every shot (independent Opus agent, sheets at 3 s and 1 s): picture only, no narration or burst wording changes. Wrong subject or no boss bar where the words name one (b001 Sandman face, b002 Wraith, b003, b007 Connors human again, b010 SCREAM bar, b019 the bell stun, b037 the bell rung, b038 the kick, b040 Peter tearing the suit off), talking faces under narration (b009 Connors, b012 MJ, b035 Li, b042 Peter), objective boxes and prompts under crop none or inside the sub crop (b004, b006, b015, b018, b031, b032, b036, b043), b011 the taxi pull at Scream (1006@236-250, boxed to drop the wheels), b013 and b016 the right half of long ranges. Box crops are [x0, y0, x1, y1] fractions. b025 burst ends at 829.6, before Kraven's next line. Review of render v1 (independent Opus, 3.3 of 5): crop none shots get a top box that keeps the bar but drops subtitles and wheels (b006, b015, b018, b031, b037); objective boxes and repeated boss bars get the boss crop; b032 uses 1009@398-405 and 411-418 (no waypoints); b035 stops before Li speaks and ends on the wide swing-out (1009@830-834); bursts start before their first word and end before the next line (source word times: b008 It 383.02, b025 Will 829.28, b027 Do 963.82 to roaring 976.38, b039 This 244.30, b021 killed 570.58).",
+ "note": "Spider-Man 2 bosses build changes on top of the script cues (2026-11-18), from the frame check of every shot (independent Opus agent, sheets at 3 s and 1 s): picture only, no narration or burst wording changes. Wrong subject or no boss bar where the words name one (b001 Sandman face, b002 Wraith, b003, b007 Connors human again, b010 SCREAM bar, b019 the bell stun, b037 the bell rung, b038 the kick, b040 Peter tearing the suit off), talking faces under narration (b009 Connors, b012 MJ, b035 Li, b042 Peter), objective boxes and prompts under crop none or inside the sub crop (b004, b006, b015, b018, b031, b032, b036, b043), b011 the taxi pull at Scream (1006@236-250, boxed to drop the wheels), b013 and b016 the right half of long ranges. Box crops are [x0, y0, x1, y1] fractions. b025 burst ends at 829.6, before Kraven's next line. Review of render v1 (independent Opus, 3.3 of 5): crop none shots get a top box that keeps the bar but drops subtitles and wheels (b006, b015, b018, b031, b037); objective boxes and repeated boss bars get the boss crop; b032 uses 1009@398-405 and 411-418 (no waypoints); b035 stops before Li speaks and ends on the wide swing-out (1009@830-834); bursts start before their first word and end before the next line (source word times: b008 It 383.02, b025 Will 829.28, b027 Do 963.82 to roaring 976.38, b039 This 244.30, b021 killed 570.58). Render v2 QC: the boss crop's tight zoom turned a tree trunk passing the camera into 0.23 s of black (b020 at 4:17.7), so shots that only needed the bar removed use the hud crop (centre 70% from 10% height); the boss crop stays only where an objective box sits at the right edge (b003, b007 1022, b011 1026).",
  "shots": {
   "b001": [
    {
@@ -98,7 +98,7 @@
     "clip": 1021,
     "in": 8,
     "out": 20,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b007": [
@@ -112,7 +112,7 @@
     "clip": 1023,
     "in": 20,
     "out": 34,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1024,
@@ -204,13 +204,13 @@
     "clip": 1013,
     "in": 588,
     "out": 600,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1011,
     "in": 160.0,
     "out": 190.0,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b016": [
@@ -251,7 +251,7 @@
     "clip": 529,
     "in": 10.0,
     "out": 30.0,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b019": [
@@ -264,7 +264,7 @@
     "clip": 1002,
     "in": 407,
     "out": 437,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 530,
@@ -302,19 +302,19 @@
     "clip": 1009,
     "in": 160.0,
     "out": 200.0,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1009,
     "in": 398,
     "out": 405,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1009,
     "in": 411,
     "out": 418,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b035": [
@@ -357,7 +357,7 @@
     "clip": 1003,
     "in": 27,
     "out": 57,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b038": [
@@ -365,13 +365,13 @@
     "clip": 1003,
     "in": 255.5,
     "out": 271.5,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1003,
     "in": 200.0,
     "out": 232.0,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b040": [
@@ -412,13 +412,13 @@
     "clip": 1013,
     "in": 431,
     "out": 441,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1003,
     "in": 221,
     "out": 226,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b020": [
@@ -426,13 +426,13 @@
     "clip": 1002,
     "in": 440.0,
     "out": 470.0,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1002,
     "in": 500.0,
     "out": 530.0,
-    "crop": "boss"
+    "crop": "hud"
    }
   ],
   "b026": [
@@ -440,7 +440,7 @@
     "clip": 1004,
     "in": 840.0,
     "out": 880.0,
-    "crop": "boss"
+    "crop": "hud"
    },
    {
     "clip": 1004,
