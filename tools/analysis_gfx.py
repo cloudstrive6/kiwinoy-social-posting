@@ -101,7 +101,9 @@ def g_chapter(spec: dict, n: int, grab=None) -> M.Graphic:
     bases = [last - lh * (len(lines) - 1 - k) for k in range(len(lines))]
     ts = [M.text(ln, M.STATEMENT) for ln in lines]
     # "label" (2026-11-18, ranked lists): "NUMBER" reads "NUMBER 8" on a countdown; default CHAPTER.
-    lab = M.text(f"{str(spec.get('label', 'CHAPTER')).upper()} {num}", M.MIN_LABEL, "heavy", M.GREY)
+    # A ranked card's label is the rank itself, so it is drawn a size up (review of the bosses v1, 2026-11-18).
+    lab = M.text(f"{str(spec.get('label', 'CHAPTER')).upper()} {num}", M.LABEL if spec.get("label") else M.MIN_LABEL,
+                 "heavy", M.GREY)
     lab_base = bases[0] - cap(M.STATEMENT) - 30
     hair = M.hline(x, last + 34, x + 200, M.RED, M.LINK)
     # Ghost number: a texture rendered at the 150 token and scaled up, 8% off-white.
@@ -1276,6 +1278,15 @@ def g_timeline(spec: dict, n: int, grab=None) -> M.Graphic:
             T = int(M.clamp(24 + dist / 25 if reveal else 30 + dist / 20, 36, 96))
             T = int(min(T, max(24, span - 30)))
             hops.append((int(start + k * span), T, a, b))
+    # "step_at" (2026-11-18): seconds after the graphic starts at which each stop is reached, set from the
+    # narration's word times so a recap reveals each name as it is said (one value per stop, from frm).
+    steps = spec.get("step_at")
+    if reveal and legs and steps and len(steps) >= len(path):
+        hops = []
+        for k, (a, b) in enumerate(legs):
+            T = 24
+            arrive = int(round(float(steps[k + 1]) * FPS))
+            hops.append((max(t_ph + 1, arrive - T), T, a, b))
     reach = {frm: t_ph}
     for h0, T, a, b in hops:
         lo, hi = sorted((a, b))

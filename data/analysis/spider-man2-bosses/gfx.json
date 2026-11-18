@@ -16,6 +16,7 @@
  "G09": [{"kind": "chapter", "label": "NUMBER", "num": 2, "title": "MISTER NEGATIVE", "at": 0.3, "dur": 4.8}],
  "G10": [{"kind": "chapter", "label": "NUMBER", "num": 1, "title": "MILES VS SYMBIOTE PETER", "at": 0.3, "dur": 4.8}],
  "G11": [{"kind": "timeline", "stops": ["8 SANDMAN", "7 LIZARD", "6 SCREAM", "5 VENOM", "4 KRAVEN", "3 VENOM VS KRAVEN", "2 MR NEGATIVE", "1 MILES VS PETER"],
-          "from": 0, "to": 7, "reveal": true, "at": 1.2, "dur": 11.0}],
+          "from": 0, "to": 7, "reveal": true, "at": 1.2, "dur": 11.0,
+          "step_at": [0.0, 0.82, 1.58, 2.32, 3.14, 4.40, 5.94, 7.14]}],
  "G12": [{"kind": "endscreen", "next": "SPIDER-MAN 2: THE SUIT OR PETER?", "sub": "THE FULL STORY", "last": 20}]
 }
