@@ -77,6 +77,9 @@ _MARVEL_KW = (
     "captain america", "iron man", "thor", "hulk", "black panther", "blade", "fantastic 4",
     "miles morales", "peter parker", "secret wars", "vision", "wandavision", "ironheart",
 )
+# Whole words only (review 2026-11-20): substring matching let "author" pass as "thor" and
+# "television" as "vision", so DC stories from The Direct slipped through.
+_MARVEL_RE = re.compile(r"\b(?:" + "|".join(re.escape(k) for k in _MARVEL_KW) + r")\b", re.I)
 
 
 def _ssl():
@@ -143,7 +146,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
         try:
             r = requests.get(url, headers=_UA, timeout=15)
             for it in _feed_titles(r.content, 25):
-                if any(k in it["title"].lower() for k in _MARVEL_KW):
+                if _MARVEL_RE.search(it["title"]):
                     cands.append({"title": it["title"], "source": f"news:{name}",
                                   "kind": "news", "link": it.get("link", ""),
                                   "pub": it.get("pub", "")})
