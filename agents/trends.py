@@ -63,6 +63,12 @@ _MARVEL_FEEDS = {
     "Collider": "https://collider.com/feed/",
     "CBR": "https://www.cbr.com/feed/",
     "ComicBook": "https://comicbook.com/feed/",
+    # Added 2026-11-20: ScreenRant, Collider and CBR's main feeds now carry only their latest
+    # 10 stories of any kind, so Marvel ones rarely appear and almost every MCU pick came in as
+    # a Google-News link, whose og:image is the Google-News logo. These two are Marvel-dense
+    # with direct links and real stills.
+    "TheDirect": "https://thedirect.com/rss",
+    "CBR-Marvel": "https://www.cbr.com/feed/tag/marvel/",
 }
 _MARVEL_KW = (
     "marvel", "mcu", "avengers", "spider-man", "spiderman", "spider man", "wolverine",
@@ -81,8 +87,9 @@ def _ssl():
         pass
 
 
-def _feed_titles(xml: str, limit: int) -> list[dict]:
-    """Parse RSS/Atom titles + links + pubDate from a feed body (stdlib only)."""
+def _feed_titles(xml, limit: int) -> list[dict]:
+    """Parse RSS/Atom titles + links + pubDate from a feed body (stdlib only). Pass the raw
+    BYTES so the XML's own encoding declaration is used (2026-11-20 mojibake fix)."""
     out: list[dict] = []
     try:
         root = ET.fromstring(xml)
@@ -105,7 +112,9 @@ def _feed_titles(xml: str, limit: int) -> list[dict]:
         link = ""
         if link_e is not None:
             link = (link_e.text or "").strip() or link_e.get("href", "")   # RSS text vs Atom href
-        out.append({"title": title, "pub": _t("pubDate") or _t("published"), "link": link})
+        dc = it.find("{http://purl.org/dc/elements/1.1/}date")      # The Direct dates items only here
+        pub = _t("pubDate") or _t("published") or ((dc.text or "").strip() if dc is not None else "")
+        out.append({"title": title, "pub": pub, "link": link})
     return out
 
 
@@ -133,7 +142,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
     for name, url in _MARVEL_FEEDS.items():
         try:
             r = requests.get(url, headers=_UA, timeout=15)
-            for it in _feed_titles(r.text, 25):
+            for it in _feed_titles(r.content, 25):
                 if any(k in it["title"].lower() for k in _MARVEL_KW):
                     cands.append({"title": it["title"], "source": f"news:{name}",
                                   "kind": "news", "link": it.get("link", ""),
@@ -148,7 +157,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
             url = ("https://news.google.com/rss/search?q=" + quote_plus(q)
                    + "&hl=en-US&gl=US&ceid=US:en")
             r = requests.get(url, headers=_UA, timeout=15)
-            for it in _feed_titles(r.text, 5):
+            for it in _feed_titles(r.content, 5):
                 cands.append({"title": it["title"], "source": "gnews",
                               "kind": "news", "link": it.get("link", ""),
                               "pub": it.get("pub", "")})
@@ -159,7 +168,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
     for name, url in _NEWS_FEEDS.items():
         try:
             r = requests.get(url, headers=_UA, timeout=15)
-            for it in _feed_titles(r.text, news_per_feed):
+            for it in _feed_titles(r.content, news_per_feed):
                 cands.append({"title": it["title"], "source": f"news:{name}",
                               "kind": "news", "link": it.get("link", ""),
                               "pub": it.get("pub", "")})
@@ -181,7 +190,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
             pass
         try:
             r = requests.get(_GTRENDS_RSS.format(geo=geo), headers=_UA, timeout=15)
-            for it in _feed_titles(r.text, 25):
+            for it in _feed_titles(r.content, 25):
                 cands.append({"title": it["title"], "source": "gtrends:daily", "kind": "trend"})
         except Exception:
             pass
