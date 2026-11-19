@@ -829,6 +829,61 @@ GAME_LORE["ff7rebirth"] = (
 )
 
 
+GAME_LORE["gta6"] = (
+    "GRAND THEFT AUTO VI (GTA 6, Rockstar Games; PS5 and Xbox Series X|S only, no PC version "
+    "announced; launched 19 November 2026). A MATURE open-world CRIME game set in the PRESENT "
+    "DAY in LEONIDA, Rockstar's fictional take on Florida. VICE CITY is its Miami.\n"
+    "PREMISE (official, premise level only): JASON DUVAL and LUCIA CAMINOS, a Bonnie and Clyde "
+    "style outlaw pair, have always had the odds against them. An easy score goes wrong and drags "
+    "them into a criminal CONSPIRACY that spreads across Leonida; they have to rely on each other "
+    "to survive. You play BOTH and can switch between them; a mission can be played as either, "
+    "alone or together.\n"
+    "LEADS:\n"
+    "- LUCIA CAMINOS: taught to fight by her father; jailed in LEONIDA PENITENTIARY for fighting "
+    "for her family, then released by luck. Trailer 1 opens with her in prison orange, talking to "
+    "an officer. Her family came from LIBERTY CITY.\n"
+    "- JASON DUVAL: grew up around grifters and crooks, served in the ARMY, now works for drug "
+    "runners in the LEONIDA KEYS and lives rent-free at BRIAN's place in return for help with "
+    "shakedowns.\n"
+    "SUPPORTING (official): CAL HAMPTON (Jason's friend, home with beer, listening in on COAST "
+    "GUARD radio, sure of wild conspiracies; a friend, NOT a cop). BRIAN HEDER (old Keys smuggler, "
+    "runs a boat yard with his third wife LORI). BOOBIE IKE (Vice City legend who turned street "
+    "money into real estate, a strip club and a studio; co-runs ONLY RAW RECORDS). DRE'QUAN PRIEST "
+    "(more hustler than gangster, wants a music career, signed the REAL DIMEZ). REAL DIMEZ "
+    "(BAE-LUXE and ROXY, school friends turned rap duo with a viral hit). RAUL BAUTISTA (charming "
+    "veteran bank robber who recruits risk-takers).\n"
+    "REGIONS: VICE CITY (art deco, beaches, cruise port), the LEONIDA KEYS, GRASSRIVERS "
+    "(Everglades-style swamp, alligators, fan boats), PORT GELLHORN (faded resort coast), "
+    "AMBROSIA (sugar-refinery town run by bikers), MOUNT KALAGA NATIONAL PARK (northern wilds).\n"
+    "TONE: crime drama plus SATIRE of social media and Florida Man culture: livestreams, phone "
+    "videos, viral stunts. Six-star WANTED level; police remember your face, outfit and car.\n"
+    "KEY TWISTS (read clips right): (1) Jason and Lucia are PARTNERS: both in one robbery or "
+    "getaway is teamwork, never a betrayal. (2) Their bond can be played romantic or platonic, "
+    "so say 'partners' unless the clip shows romance; never say married. (3) This Vice City is "
+    "MODERN, not the 1986 city of GTA Vice City; never claim a cameo from an older GTA. (4) In-game "
+    "streams and phone clips are parody, not real footage. (5) Lucia's prison time is BACKSTORY "
+    "at the start, not an ending. (6) A police chase is gameplay, not a story beat.\n"
+    "NAMING RULE: name a character ONLY when the clip's VISUALS or SUBTITLES clearly show them "
+    "(a subtitle name, or the two leads in a clear shot). Otherwise say 'the pair', 'a crew', "
+    "'the cops'.\n"
+    "DIALOGUE & RELATIONSHIP RULE: never assert who is talking to whom, who betrays whom, who "
+    "works for whom, or why, unless subtitles or visuals make it explicit.\n"
+    "WHAT EACH ONE WANTS (official profiles):\n"
+    "- LUCIA wants the good life her mother has dreamed of, and sees Jason as a way there.\n"
+    "- JASON wants an easier life and is thinking about a change; meeting Lucia may be his "
+    "turning point, for better or worse.\n"
+    "- DRE'QUAN wants music-industry success; BOOBIE wants his empire and label to grow; the REAL "
+    "DIMEZ want a second hit; RAUL wants big scores and takes reckless risks.\n"
+    "BACKWARDS READINGS TO REJECT: Jason and Lucia as enemies or rivals; Lucia as a cop, hostage "
+    "or Jason's sidekick; Cal as a fed or informant; the Real Dimez as a gang; GTA 6 on PC; "
+    "1980s Vice City; Leonida called real Florida.\n"
+    "DON'T FABRICATE: post-launch story details are not reliably sourced. No invented plot "
+    "beats, endings, mission names, betrayals, deaths or voice actors (Rockstar has not "
+    "officially named the cast). When unsure, hook the visible action: the drive, the heist, "
+    "the chase, the city."
+)
+
+
 def lore_for(game: str) -> str:
     """Return the story brief for a game id, or '' if we don't have one."""
     return GAME_LORE.get((game or "").strip().lower(), "")
@@ -837,6 +892,7 @@ def lore_for(game: str) -> str:
 # Keyword -> lore key, for tracks (like Threads) that don't know the game up
 # front. First match wins; order from most specific to least.
 _LORE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("gta6", ("gta 6", "gta6", "gta vi ", "grand theft auto 6", "grand theft auto vi ", "leonida", "jason duval", "lucia caminos", "jason and lucia", "cal hampton", "boobie ike", "dre'quan", "real dimez", "raul bautista", "brian heder", "port gellhorn", "grassrivers", "mount kalaga")),
     ("wolverine", ("wolverine", "logan", "james howlett", "marvel's wolverine", "adamantium")),
     ("re2", ("resident evil 2", "resident evil ii", "re2", "mr. x", "raccoon police")),
     ("re3", ("resident evil 3", "resident evil iii", "re3", "nemesis", "jill valentine")),

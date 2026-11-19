@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import re
 import subprocess
 import sys
@@ -115,8 +116,55 @@ def research_scene(observation: str, subtitles: str, gname: str) -> str:
     return out
 
 
+FACTS_DIR = ROOT / "data" / "lore"
+FACTS_SHOWN = 8
+
+
+def fact_bank(game: str) -> list[dict]:
+    """Sourced behind-the-scenes and did-you-know facts for a game (Bryce, 2026-11-19: the card
+    may also carry "behind-the-scenes facts, the did-you-knows, anything about the game itself").
+    data/lore/<game>-facts.json = {"facts": [{"id", "fact", "source", "wow" 1-5, "pairs_with"}]}."""
+    f = FACTS_DIR / f"{game}-facts.json"
+    try:
+        return [x for x in json.loads(f.read_text(encoding="utf-8")).get("facts", []) if x.get("fact")]
+    except Exception:
+        return []
+
+
+def pick_facts(game: str) -> list[dict]:
+    """Up to FACTS_SHOWN unused facts, highest wow first (random among equals); the bank starts
+    over once every fact has been used."""
+    bank = fact_bank(game)
+    if not bank:
+        return []
+    try:
+        from core import gh_release
+        used = gh_release.used_story_quotes()
+    except Exception:
+        used = set()
+    fresh = [x for x in bank if f"fact:{game}:{x.get('id')}" not in used] or bank
+    random.shuffle(fresh)
+    fresh.sort(key=lambda x: -float(x.get("wow", 3)))
+    return fresh[:FACTS_SHOWN]
+
+
+def facts_text(facts: list[dict]) -> str:
+    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (pairs with: {x.get('pairs_with', 'any clip')})"
+                     for x in facts)
+
+
+def mark_fact(game: str, fact_id: str) -> None:
+    if not fact_id:
+        return
+    try:
+        from core import gh_release
+        gh_release.mark_story_quote(f"fact:{game}:{fact_id}")
+    except Exception as e:
+        log(f"could not record used fact {fact_id} ({e!r})")
+
+
 def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: str = "",
-                research: str = "") -> dict:
+                research: str = "", facts: str = "") -> dict:
     """The card: a short EYEBROW line + the long body text, grounded in this clip."""
     from core import lore
     bible = lore.lore_for(game) or ""
@@ -138,6 +186,18 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "object, a trigger) the frames do not show, and never reverse who is acting on "
            "whom to match a research note (user, 2026-10-09).\n\n"
            if research else "")
+        + (f"VERIFIED GAME FACTS (each one sourced; behind-the-scenes, development, records, "
+           f"real-world inspirations, did-you-knows):\n{facts}\n\n"
+           "You MAY build the card on ONE of these facts instead of on the scene, when it fits "
+           "the KIND of moment on screen (its 'pairs with' note, or the place or activity you "
+           "can see). This is the 'did you know' card, and viewers love a fact they never knew. "
+           "Then beat 1 ties the fact to what is on screen in a few words, beat 2 IS the fact, "
+           "told in your own words with every number and name exactly as given, beat 3 the "
+           "verdict and beat 4 the comparison. Never claim the clip itself shows the fact's "
+           "subject unless the frames do (a fact about a trailer scene is not this clip). "
+           "Put the fact's id in fact_id. If no fact fits, write a scene card and leave "
+           "fact_id empty.\n\n"
+           if facts else "")
         + "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
         "four beats, in this order, as ONE paragraph:\n"
         f"  1. CONTEXT: open with 'In {gname}' and the situation, in a few words.\n"
@@ -189,13 +249,15 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "but it may not state anything untrue\n"
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
         + ('\nReturn ONLY JSON: {"body": "the paragraph", "highlight": "exact phrase from the '
-           'body", "comment": "the reaction line"}')
+           'body", "comment": "the reaction line"'
+           + (', "fact_id": "id of the fact used, or empty"' if facts else '') + '}')
     )
     try:
         d = extract_json(_text(prompt, timeout=240)) or {}
         return {"highlight": sanitize(str(d.get("highlight", ""))).strip()[:60],
                 "comment": sanitize(str(d.get("comment", ""))).strip()[:90],
-                "body": re.sub(r"\s+", " ", sanitize(str(d.get("body", "")))).strip()}
+                "body": re.sub(r"\s+", " ", sanitize(str(d.get("body", "")))).strip(),
+                "fact_id": str(d.get("fact_id", "") or "").strip()[:40]}
     except Exception as e:
         log(f"card writer failed ({e!r})")
         return {}
@@ -319,7 +381,7 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
-                game: str = "", research: str = "") -> tuple[bool, str]:
+                game: str = "", research: str = "", facts: str = "") -> tuple[bool, str]:
     """Adversarial check: every claim must come from the clip, the subtitles or the lore.
     The BIBLE is included (it was not, so a wrong 'five years' sailed through with no
     timeline to check it against — user, 2026-10-07)."""
@@ -338,6 +400,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
            f"so reject anything it imported that the frames contradict:\n{research}\n\n"
            if research else "")
         + (f"{subtitles}\n\n" if subtitles else "")
+        + (f"VERIFIED GAME FACTS (sourced; a card built on one of these is SUPPORTED as long as "
+           f"it keeps every number, date and name exactly as written here, and does not claim "
+           f"the clip itself shows something only the fact describes):\n{facts}\n\n"
+           if facts else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
         # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
         + f"THE CARD:\n{card.get('body', '')}\n\n"
@@ -568,6 +634,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         lcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
         research = (research_scene(observation, subs, gname)
                     if bool(lcfg.get("research", True)) else "")
+        _facts = pick_facts(game) if bool(lcfg.get("facts", True)) else []
+        facts = facts_text(_facts)
+        if _facts:
+            log(f"fact bank: {len(_facts)} sourced facts offered "
+                f"({', '.join(str(x.get('id')) for x in _facts)})")
 
         def _judge(c: dict) -> tuple[bool, str]:
             """Both gates: it must EXPLAIN (not narrate the picture) and be true."""
@@ -575,19 +646,20 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
                                "the moment MEANS instead.")
-            return _check_card(c, observation, subs, gname, game, research)
+            return _check_card(c, observation, subs, gname, game, research, facts)
 
         # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
         # words that go on screen.
         from core import humanize
-        card = humanize.card(_write_card(observation, subs, game, gname, research=research),
+        card = humanize.card(_write_card(observation, subs, game, gname, research=research,
+                                         facts=facts),
                              gname, WORDS_MIN, WORDS_MAX)
         if card.get("body"):
             ok, why = _judge(card)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
                 card2 = humanize.card(_write_card(observation, subs, game, gname, avoid=why,
-                                                  research=research),
+                                                  research=research, facts=facts),
                                       gname, WORDS_MIN, WORDS_MAX)
                 if card2.get("body") and _judge(card2)[0]:
                     card = card2
@@ -596,6 +668,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                                      "invented lore")
         if not card.get("body"):
             raise CardRefused("no card text was written")
+        if card.get("fact_id") and any(str(x.get("id")) == card["fact_id"] for x in _facts):
+            log(f"card is built on fact {card['fact_id']}")
+            mark_fact(game, card["fact_id"])
+        else:
+            card.pop("fact_id", None)
         bad = unsafe_terms(" ".join((card["body"], card.get("comment", ""))))
         if bad:
             log(f"card contains advertiser-unsafe wording ({', '.join(bad)}) — rewriting body")

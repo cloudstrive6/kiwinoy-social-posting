@@ -1043,6 +1043,7 @@ reels:
       re4: "Resident Evil 4 Game Logo.png"
       ff7rebirth: "Final Fantasy VII Rebirth Game Logo.png"
       wolverine: "Wolverine Game Logo.png"
+      gta6: "GTA 6 Logo.png"
   # COMMENTARY reels: a Taglish voiceover over gameplay b-roll with synced
   # subtitles. 'short' posts as a Reel; 'long' posts as a video feed post.
   commentary:
