@@ -1,6 +1,9 @@
 name: KG Analysis Shorts Release (YouTube, at slot)
 
-# Releases ONE YouTube analysis Short per slot (15:00 and 23:00 UTC), games taking turns  (config now 15:00 UTC only, 2026-11-19)
+# Releases ONE YouTube analysis (voiceover) Short per slot, games taking turns: 15:00 UTC every day, and
+# 19:00 UTC on an NZ day with no long-form going public (Bryce, 2026-11-20: 3 Shorts that day, not 2).
+# A slot with no voiceover Short ready gets a FACT CARD Short instead (Bryce, 2026-11-20), rendered
+# in this same run by run.py --youtube-reel --fallback-slot (setup steps run only then).
 # (Bryce, 2026-11-16: upload at the slot, never schedule ahead). tools/analysis_release.py
 # picks the Short, uploads it public (or flips a held one to public) and records it in
 # data/analysis/<game>/shorts.json, committed back here. Several runs per slot: GitHub drops
@@ -9,8 +12,8 @@ name: KG Analysis Shorts Release (YouTube, at slot)
 on:
   schedule:
     - cron: "4 15,16,17 * * *"
-    - cron: "4 23,0,1 * * *"
-    - cron: "34 15,23 * * *"
+    - cron: "4 19,20,21 * * *"
+    - cron: "34 15,19 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -28,8 +31,17 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
+      # fact card fallback (run.py --youtube-reel): Claude subscription for the card + fact-check,
+      # Telegram alerts, the footage/ledger release assets. Same secrets reels.yml uses.
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      GH_TOKEN: ${{ github.token }}
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -53,10 +65,30 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Release the slot's Short
+        id: release
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           python tools/analysis_release.py $DRY
+
+      # ---- fact card fallback: only when the release step found no voiceover Short for the slot ----
+      - uses: actions/setup-node@v4
+        if: always() && steps.release.outputs.fallback_slot != ''
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: reels/package-lock.json
+
+      - name: Install ffmpeg, fonts, Claude Code and the reel renderer
+        if: always() && steps.release.outputs.fallback_slot != ''
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+          npm install -g @anthropic-ai/claude-code
+          cd reels && npm install && npx remotion browser ensure
+
+      - name: Post a fact card Short into the empty slot
+        if: always() && steps.release.outputs.fallback_slot != ''
+        run: python run.py --youtube-reel --fallback-slot "${{ steps.release.outputs.fallback_slot }}"
 
       - name: Commit the release record
         if: always()
@@ -65,7 +97,8 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/analysis/*/shorts.json
-            git commit -m "release-bot: YouTube analysis Short released at its slot"
+            [ -f data/analysis/slot_fills.json ] && git add data/analysis/slot_fills.json
+            git commit -m "release-bot: YouTube Short (voiceover or fact card) posted at its slot"
             ok=""
             for i in 1 2 3; do
               if git pull --rebase --autostash origin main && git push origin HEAD:main; then ok=1; break; fi

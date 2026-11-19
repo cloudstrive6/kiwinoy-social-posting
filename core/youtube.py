@@ -305,7 +305,7 @@ def list_uploads(max_items: int = 300) -> list[dict[str, Any]]:
     """List the channel's own uploads (incl. PRIVATE/scheduled) with status + publishAt.
 
     Walks the uploads playlist, then batch-fetches snippet+status. Returns dicts:
-    {id, title, privacy, publishAt}. Uses youtube.force-ssl (read) — no extra scope.
+    {id, title, privacy, publishAt, publishedAt, seconds, live}. Uses youtube.force-ssl (read) — no extra scope.
     """
     yt = _service()
     ch = yt.channels().list(part="contentDetails", mine=True).execute()
@@ -324,12 +324,25 @@ def list_uploads(max_items: int = 300) -> list[dict[str, Any]]:
             break
     out: list[dict[str, Any]] = []
     for i in range(0, len(ids), 50):
-        r = yt.videos().list(part="snippet,status", id=",".join(ids[i:i + 50])).execute()
+        r = yt.videos().list(part="snippet,status,contentDetails,liveStreamingDetails", id=",".join(ids[i:i + 50])).execute()
         for it in r.get("items", []):
             st = it.get("status", {})
             out.append({"id": it["id"], "title": it["snippet"]["title"],
-                        "privacy": st.get("privacyStatus"), "publishAt": st.get("publishAt")})
+                        "privacy": st.get("privacyStatus"), "publishAt": st.get("publishAt"),
+                        "publishedAt": it["snippet"].get("publishedAt"),
+                        "live": bool(it.get("liveStreamingDetails")),   # a stream or its recording
+                        "seconds": _iso_seconds((it.get("contentDetails") or {}).get("duration", ""))})
     return out
+
+
+def _iso_seconds(d: str) -> int:
+    """ISO 8601 duration (PT1H2M3S) -> seconds; 0 when unknown (still processing)."""
+    import re
+    m = re.fullmatch(r"P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", d or "")
+    if not m:
+        return 0
+    dd, h, mi, se = (int(x or 0) for x in m.groups())
+    return ((dd * 24 + h) * 60 + mi) * 60 + se
 
 
 def reschedule(video_id: str, publish_at: str, made_for_kids: bool = False) -> None:

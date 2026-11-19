@@ -16,6 +16,17 @@ Shorts had booked every slot until 2026-11-21). Nothing is booked ahead any more
   - The workflow runs a few times after each slot; a run more than `window_hours` after the
     latest slot does nothing, so a dropped cron catches up but a stale one never fires late.
 
+Bryce, 2026-11-20, two more rules:
+  - "if there are no voiceover format reels to posted when the schedule comes up, then do the
+    fact format": a slot with no Short ready (or none that released) gets a FACT CARD Short
+    instead. This job writes `fallback_slot=<ISO>` to $GITHUB_OUTPUT and the workflow then runs
+    `run.py --youtube-reel --fallback-slot <ISO>`, which records the fill in
+    data/analysis/slot_fills.json so later runs see the slot taken.
+  - "if there is no long form video scheduled to be published on the day itself, then you need to
+    publish 3 shorts on that day, instead of only 2": the `extra_slots_utc` slots are live only on
+    an NZ day with no long-form (> 3 min, not a stream recording) going public on YouTube. If that check fails, the extra
+    slot stays shut (never a 4th post by mistake).
+
 Usage: python tools/analysis_release.py [--dry-run] [--now ISO] [--hold game:id,id,...]
   --hold  migrate already-scheduled picks to HELD (private, publish time cleared) so their
           slots open up; they are then released by this job in turn.
@@ -35,6 +46,7 @@ sys.path.insert(0, str(ROOT))
 
 UTC = dt.timezone.utc
 FILLED_WITHIN = dt.timedelta(minutes=50)
+FILLS = ROOT / "data" / "analysis" / "slot_fills.json"   # fact-card fallbacks, keyed by slot ISO
 
 
 def iso(t: dt.datetime) -> str:
@@ -57,7 +69,101 @@ def settings() -> dict:
     s.setdefault("slots_utc", ["15:00", "23:00"])
     s.setdefault("games", [])
     s.setdefault("window_hours", 3)
+    s.setdefault("extra_slots_utc", [])           # only on NZ days with no long-form (2026-11-20)
+    s.setdefault("fact_card_fallback", False)     # empty slot -> fact card Short (2026-11-20)
+    s.setdefault("longform_min_seconds", 181)     # longer than this = a long-form, not a Short
+    s.setdefault("timezone", "Pacific/Auckland")  # whose calendar day "the day itself" is
     return s
+
+
+def load_fills() -> dict:
+    try:
+        return json.loads(FILLS.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def record_fill(slot: dt.datetime, entry: dict) -> None:
+    fills = load_fills()
+    fills[iso(slot)] = entry
+    keep = sorted(fills)[-120:]                   # about two months of slots is plenty
+    FILLS.parent.mkdir(parents=True, exist_ok=True)
+    FILLS.write_text(json.dumps({k: fills[k] for k in keep}, indent=1, ensure_ascii=False) + "\n",
+                     encoding="utf-8")
+
+
+def nz_day(t: dt.datetime, tz: str) -> dt.date:
+    from zoneinfo import ZoneInfo
+    return t.astimezone(ZoneInfo(tz)).date()
+
+
+def longform_on_day(slot: dt.datetime, tz: str, min_seconds: int) -> Optional[str]:
+    """'id title' of a long-form that goes (or went) public on the slot's NZ day, else None.
+    Raises if YouTube cannot be asked; the caller then keeps the extra slot shut."""
+    from core import youtube
+    day = nz_day(slot, tz)
+    for u in youtube.list_uploads(max_items=60):
+        if int(u.get("seconds") or 0) < min_seconds or u.get("live"):
+            continue                      # Shorts, and stream recordings (not a scheduled long-form)
+        for when in (u.get("publishAt"), u.get("publishedAt") if u.get("privacy") == "public" else None):
+            t = parse(when)
+            if t and nz_day(t, tz) == day:
+                return f"{u['id']} \"{u.get('title', '')}\""
+    return None
+
+
+def youtube_filled(slot: dt.datetime, min_seconds: int) -> Optional[str]:
+    """A Short already public on the channel since just before the slot (crash safety: an upload
+    whose record never got committed)."""
+    from core import youtube
+    for u in youtube.list_uploads(max_items=15):
+        t = parse(u.get("publishedAt"))
+        if (u.get("privacy") == "public" and t and t >= slot - dt.timedelta(minutes=5)
+                and int(u.get("seconds") or 0) < min_seconds):
+            return u["id"]
+    return None
+
+
+def pick_slot(now: dt.datetime, st: dict) -> Optional[dt.datetime]:
+    """The slot this run serves. An extra slot counts only on an NZ day with no long-form."""
+    win = float(st["window_hours"])
+    base = [str(x) for x in st["slots_utc"]]
+    extra = [str(x) for x in st["extra_slots_utc"] if str(x) not in base]
+    slot = current_slot(now, base + extra, win)
+    if slot and slot.strftime("%H:%M") in extra:
+        try:
+            lf = longform_on_day(slot, st["timezone"], int(st["longform_min_seconds"]))
+        except Exception as e:
+            lf = f"(could not check YouTube: {e!r})"
+            last_chance_alert(now, slot, st, f"the third-Short slot stayed shut: {lf}")
+        if lf:
+            print(f"extra slot {iso(slot)} shut: a long-form goes public that NZ day: {lf}")
+            slot = current_slot(now, base, win)
+        else:
+            print(f"extra slot {iso(slot)} open: no long-form goes public on NZ "
+                  f"{nz_day(slot, st['timezone'])}, so this day gets a third Short")
+    return slot
+
+
+def last_chance_alert(now: dt.datetime, slot: dt.datetime, st: dict, why: str) -> None:
+    """Telegram once per slot, on its last scheduled run (2 h+ after the slot), so an empty slot
+    is never silent (review 2026-11-20)."""
+    if now - slot < dt.timedelta(hours=2) or now - slot > dt.timedelta(hours=float(st["window_hours"])):
+        return
+    try:
+        from core import notify
+        notify.telegram(f"YouTube Short slot {iso(slot)} (NZ {nz_day(slot, st['timezone'])}) is still "
+                        f"empty on its last run: {why}")
+    except Exception as e:
+        print(f"telegram alert failed: {e!r}", flush=True)
+
+
+def emit_fallback(slot: dt.datetime) -> None:
+    import os
+    out = os.environ.get("GITHUB_OUTPUT")
+    if out:
+        with open(out, "a", encoding="utf-8") as fh:
+            fh.write(f"fallback_slot={iso(slot)}\n")
 
 
 def pack_path(game: str) -> Path:
@@ -103,6 +209,9 @@ def current_slot(now: dt.datetime, slots_utc: list[str], window_h: float) -> Opt
 
 
 def slot_filled(packs: dict[str, dict], slot: dt.datetime) -> Optional[str]:
+    f = load_fills().get(iso(slot))
+    if f:
+        return f"fact card {f.get('video_id') or f.get('kind', '')}".strip()
     for g, cfg in packs.items():
         for s in cfg.get("shorts", []):
             t = yt_time(s)
@@ -278,7 +387,7 @@ def main() -> int:
         print("youtube_analysis_shorts disabled in config; nothing to do")
         return 0
     now = parse(a.now) if a.now else dt.datetime.now(UTC)
-    slot = current_slot(now, st["slots_utc"], float(st["window_hours"]))
+    slot = pick_slot(now, st)
     if not slot:
         print(f"{iso(now)}: no slot in the last {st['window_hours']} h; nothing to do")
         return 0
@@ -298,12 +407,17 @@ def main() -> int:
             print(f"{game}/{s['id']}: release FAILED: {e!r}", flush=True)
             errors += 1
             if (s.get("youtube") or {}).get("slot"):
-                break                     # it did go up: the slot is filled, post nothing else
+                return 1                  # it did go up: the slot is filled, post nothing else (no fallback)
             continue                      # try the next game for this slot
         print(f"{game}/{s['id']} public https://youtu.be/{vid}")
         return 1 if errors else 0
     if not errors:
         print(f"slot {iso(slot)}: no Short ready in {st['games']}")
+    if st["fact_card_fallback"]:
+        # Bryce 2026-11-20: no voiceover Short for this slot -> the fact format instead
+        print(f"slot {iso(slot)}: fact card fallback" + (" (dry run, nothing posted)" if a.dry_run else ""))
+        if not a.dry_run:
+            emit_fallback(slot)
     return 1 if errors else 0
 
 

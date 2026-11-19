@@ -819,6 +819,19 @@ reels:
                                     # one lore and one voiceover); was ["15:00", "23:00"]
     games: [gta6, wolverine, spider-man2]   # the games lock leaves only gta6 (2026-11-19)
     window_hours: 3                 # a run later than this after a slot does nothing
+    # FACT CARD FALLBACK (Bryce, 2026-11-20: "if there are no voiceover format reels to posted when
+    # the schedule comes up, then do the fact format"): a slot with no voiceover Short ready gets a
+    # YouTube fact card Short instead (run.py --youtube-reel --fallback-slot, same workflow run).
+    fact_card_fallback: true
+    # THIRD SHORT ON A DAY WITH NO LONG-FORM (Bryce, 2026-11-20: "if there is no long form video
+    # scheduled to be published on the day itself, then you need to publish 3 shorts on that day,
+    # instead of only 2"). 19:00 UTC = 08:00 NZDT (07:00 in NZ winter), the time the analysis
+    # long-forms went public (2026-11-14 and 2026-11-16), so the third Short takes the empty slot.
+    # It opens only when no video longer than longform_min_seconds (stream recordings excluded)
+    # goes public that NZ day; it posts a voiceover Short if one is ready, else a fact card.
+    extra_slots_utc: ["19:00"]
+    longform_min_seconds: 181
+    timezone: Pacific/Auckland
   gameplay:
     enabled: true
     facebook_paused: false  # RESUMED 2026-11-19 (Bryce: "yes start publishing immediately"): Facebook gets a

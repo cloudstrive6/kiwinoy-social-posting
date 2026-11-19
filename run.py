@@ -119,6 +119,50 @@ def _with_backup(track_key: str, label: str, backup: bool, dry_run: bool, fn) ->
     return 0
 
 
+def _youtube_fallback(args) -> int:
+    """FACT CARD Short for a voiceover slot that had no voiceover Short ready (Bryce, 2026-11-20:
+    "if there are no voiceover format reels to posted when the schedule comes up, then do the
+    fact format"). Records the fill in data/analysis/slot_fills.json so the release job never posts
+    a second Short into the slot. Does NOT stamp the youtube_reel backup marker, so the 00:00 UTC
+    fact card slot's own make-up logic is untouched. A refused card posts nothing and records
+    nothing, so the release job's next run for the slot tries again."""
+    import datetime as _dt
+    sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent / "tools"))
+    import analysis_release as ar
+    slot = ar.parse(args.fallback_slot)
+    if not slot:
+        print(f"[youtube-fallback] bad --fallback-slot {args.fallback_slot!r}", flush=True)
+        return 1
+    st = ar.settings()
+    now = _dt.datetime.now(_dt.timezone.utc)
+    if now - slot > _dt.timedelta(hours=float(st["window_hours"])) or slot > now + _dt.timedelta(minutes=5):
+        print(f"[youtube-fallback] slot {ar.iso(slot)} is outside its window; nothing posted.", flush=True)
+        return 0
+    got = ar.slot_filled(ar.load_packs(st["games"]), slot)
+    if not got and not args.dry_run:
+        try:
+            got = ar.youtube_filled(slot, int(st["longform_min_seconds"]))
+        except Exception as e:
+            print(f"[youtube-fallback] could not check recent uploads ({e!r}); posting anyway.", flush=True)
+    if got:
+        print(f"[youtube-fallback] slot {ar.iso(slot)} already filled by {got}; nothing posted.", flush=True)
+        return 0
+    print(f"[youtube-fallback] slot {ar.iso(slot)}: no voiceover Short, posting a fact card.", flush=True)
+    res = run_gameplay_reel(args.slot or 1, dry_run=args.dry_run, youtube_only=True,
+                            layout_override=args.layout, hook_override=args.hook,
+                            caption_override=args.caption)
+    if isinstance(res, dict) and res.get("published") and not args.dry_run:
+        ar.record_fill(slot, {"kind": "fact_card", "video_id": res.get("video_id", ""),
+                              "url": res.get("url", ""), "posted_at": ar.iso(now)})
+        print(f"[youtube-fallback] fact card filled {ar.iso(slot)}: {res.get('url', '')}", flush=True)
+        return 0
+    why = res.get("skipped") if isinstance(res, dict) else res
+    print(f"[youtube-fallback] no fact card posted ({why}); the next release run retries.", flush=True)
+    if not args.dry_run:
+        ar.last_chance_alert(now, slot, st, f"no voiceover Short was ready and the fact card did not post ({why})")
+    return 0
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="KiwinoyGamer social posting team")
     g = p.add_mutually_exclusive_group(required=True)
@@ -228,6 +272,9 @@ def main() -> int:
     p.add_argument("--game", help="(with --youtube/--youtube-short) game key")
     p.add_argument("--layout", default=None,
                    help="(with --youtube-short) force 'classic' or 'triptych' (else alternates)")
+    p.add_argument("--fallback-slot", dest="fallback_slot", default="",
+                   help="(with --youtube-reel) post a FACT CARD Short for this empty voiceover slot "
+                        "(ISO UTC); fired by analysis-shorts-release.yml, records the fill")
     p.add_argument("--clip", default=None,
                    help="(with --youtube-short) explicit 4K HDR clip file (else fresh-first from the pool)")
     p.add_argument("--hook", default=None,
@@ -333,6 +380,8 @@ def main() -> int:
         if not (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
             print("[youtube-reel] reels.youtube.enabled is false — skipping.", flush=True)
             return 0
+        if args.fallback_slot:
+            return _youtube_fallback(args)
         _yslots = [str(s) for s in ((CONFIG.reels.get("youtube", {}) or {}).get("slots_utc") or [])]
         if _yslots and not args.clip:  # lore Shorts on chosen slots only (Bryce, 2026-11-19: 1 lore + 1 voiceover a day)
             import datetime as _dt
