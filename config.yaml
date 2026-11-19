@@ -812,9 +812,10 @@ reels:
     window_hours: 3                 # a run later than this after a slot does nothing
   gameplay:
     enabled: true
-    facebook_paused: true   # PAUSED 2026-11-14 (Bryce): no fill or lore reels to Facebook from this
-                            # track; Facebook posts the analysis Shorts (tools/analysis_shorts.py
-                            # --facebook) instead. Instagram is unchanged. Set false to resume.
+    facebook_paused: false  # RESUMED 2026-11-19 (Bryce: "yes start publishing immediately"): Facebook gets a
+                            # GTA 6 FACT CARD (layout key 'lore') on each feed slot, 3 a day (0/8/16 UTC).
+                            # Paused 2026-11-14 to 2026-11-19. true = Facebook posts only the voiceover
+                            # Shorts (tools/analysis_shorts.py --facebook).
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
     # look each day — format variety helps avoid platform spam-detection.
     #   classic  = footage crop-filled vertical + hook bar + logos (original).
@@ -832,7 +833,9 @@ reels:
                                           # 'rotated' here to resume the IG-exclusive look.
     # PER-PLATFORM ROTATION (per user 2026-10-06). A track rotates through ITS OWN list on
     # its own used-clip counter; anything missing here falls back to `layouts` above.
-    #   lore = the LORE-CARD short (tools/lore_short.py): ~8s clip + a 45-65 word card that
+    #   lore = the FACT CARD short ("fact card format", renamed from lore card by Bryce 2026-11-19;
+    #   the config/code key stays 'lore'). Lore, behind-the-scenes and did-you-know facts from
+    #   data/lore/<game>-facts.json (tools/lore_short.py): clip + a 45-65 word card that
     #   takes ~18s to read, so the viewer loops it. Its clips come from the CUTSCENE pool
     #   (reels/assets/cutscenes/<game> -> B2 cutscenes/<game>), never from footage/.
     # When a game has no unused cutscene clip, the track falls back to its previous layout
