@@ -239,6 +239,454 @@
    "pairs_with": "a cutscene",
    "flag": "Runtime differs by outlet: about 26 minutes (Kotaku) or just over 30 (VGC).",
    "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-22",
+   "fact": "Lucia is the first woman lead of a mainline GTA since the series went 3D with GTA III; the 1997 original let you pick female characters.",
+   "source": "https://shacknews.com/article/137976/gta-6-female-protagonist",
+   "sources": [
+    "https://shacknews.com/article/137976/gta-6-female-protagonist",
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-23",
+   "fact": "The first Vice City game (2002) was set in 1986 and starred Tommy Vercetti. GTA 6 brings Vice City into the modern day.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto:_Vice_City",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto:_Vice_City",
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "Older-game facts from Wikipedia.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-24",
+   "fact": "The first trailer leaked online, so Rockstar posted it a day early, on 4 December 2023, instead of its planned 5 December premiere.",
+   "source": "https://www.videogameschronicle.com/news/the-gta-6-trailer-has-allegedly-leaked-online/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/the-gta-6-trailer-has-allegedly-leaked-online/",
+    "https://www.siliconera.com/rockstar-publishes-gta-6-trailer-early-after-leaks/",
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 3,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-25",
+   "fact": "In November 2023, Sam Houser announced the first trailer for early December, the month of Rockstar's 25th anniversary.",
+   "source": "https://www.videogameschronicle.com/news/confirmed-the-first-grand-theft-auto-6-trailer-will-premier-next-month",
+   "sources": [
+    "https://www.videogameschronicle.com/news/confirmed-the-first-grand-theft-auto-6-trailer-will-premier-next-month"
+   ],
+   "wow": 3,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-26",
+   "fact": "Rockstar first confirmed the next GTA was 'well underway' in February 2022, tucked inside a Newswire post about GTA V on PS5 and Xbox Series X|S.",
+   "source": "https://www.gematsu.com/2022/02/rockstar-games-active-development-for-the-next-entry-in-the-grand-theft-auto-series-is-well-underway",
+   "sources": [
+    "https://www.gematsu.com/2022/02/rockstar-games-active-development-for-the-next-entry-in-the-grand-theft-auto-series-is-well-underway",
+    "https://www.engadget.com/rockstar-gta-6-confirmed-gta-v-ps-5-xbox-series-x-release-date-162720563.html"
+   ],
+   "wow": 3,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-27",
+   "fact": "Cal Hampton, Jason's paranoid friend, feels safest at home with a few beers, snooping on Coast Guard communications.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-28",
+   "fact": "Brian Heder, an old-school Keys smuggler, runs a boat yard with his third wife, Lori, and lets Jason live rent-free in return for help with shakedowns.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-29",
+   "fact": "The Real Dimez are Bae-Luxe and Roxy, high-school friends turned rap duo; an early hit with local rapper DWNPLY lifted them, and they are now signed to Only Raw Records.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-30",
+   "fact": "Boobie Ike turned street money into real estate, a strip club and a recording studio, and co-runs Only Raw Records with Dre'Quan Priest.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-31",
+   "fact": "In Ambrosia, the Allied Crystal sugar refinery provides the jobs and the local biker gang provides almost everything else.",
+   "source": "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+   "sources": [
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-32",
+   "fact": "Mount Kalaga National Park offers hunting, fishing and off-road trails, and its backwoods are home to hillbilly mystics and paranoid radicals.",
+   "source": "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+   "sources": [
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-33",
+   "fact": "Trailer 1 recreated real Ocean Drive hotels such as the Breakwater, the Beacon and the Avalon.",
+   "source": "https://nbcmiami.com/news/local/the-most-florida-things-weve-seen-in-the-gta-6-trailer-released-on-monday/3177578",
+   "sources": [
+    "https://nbcmiami.com/news/local/the-most-florida-things-weve-seen-in-the-gta-6-trailer-released-on-monday/3177578"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-34",
+   "fact": "The six-star Wanted level returns, one more star than GTA 5's five.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.shacknews.com/article/150518/grand-theft-auto-6-wanted-level-system"
+   ],
+   "wow": 3,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-35",
+   "fact": "Police remember what you look like and what car you are driving, and swapping masks, hats or clothes before a crime lowers your Wanted level.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/"
+   ],
+   "wow": 3,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-36",
+   "fact": "Previews in August 2026 said you can pet dogs and buy them treats.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://kotaku.com/pet-dog-gta-6-throw-poop-2000729352"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-37",
+   "fact": "An in-game phone app called Waink scans a car to show whether it is locked, has an alarm or tracker, and what it is worth.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.notebookcheck.net/Rockstar-is-ending-one-button-car-theft-in-GTA-6.1381985.0.html"
+   ],
+   "wow": 3,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-38",
+   "fact": "In August 2026, Rockstar North's Rob Nelson told a YouTuber there would be no dedicated first-person mode at launch; first-person view is limited to certain weapons.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.tweaktown.com/news/113322/rockstar-confirms-gta-6-will-skip-a-dedicated-first-person-mode-at-launch/index.html"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "Confirmed to one Brazilian YouTuber, relayed by Kotaku.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-39",
+   "fact": "Jason and Lucia start out as a couple, but Rockstar said in August 2026 the romance is optional: the pair stay partners in crime either way.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.techradar.com/gaming/rockstar-says-if-you-want-gta-6s-romance-between-jason-and-lucia-to-flourish-you-have-to-nurture-it-but-its-completely-optional-its-not-something-that-we-want-to-foist-upon-players"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "Rockstar to IGN, relayed by Kotaku.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-40",
+   "fact": "Rob Nelson said his own playthrough took about 80 hours; VGC's reviewer put the main story at about 60 hours without side content.",
+   "source": "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+   "sources": [
+    "https://kotaku.com/15-new-things-we-just-learned-about-gta-6-2000728941",
+    "https://www.videogameschronicle.com/review/grand-theft-auto-6/"
+   ],
+   "wow": 3,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-41",
+   "fact": "In August 2026, Take-Two's CEO said pre-orders were skewing towards the $99.99 Ultimate Edition over the $79.99 Standard Edition.",
+   "source": "https://www.videogameschronicle.com/news/the-100-ultimate-edition-of-gta-6-is-selling-more-pre-orders-than-the-80-standard-edition-take-two-ceo-says/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/the-100-ultimate-edition-of-gta-6-is-selling-more-pre-orders-than-the-80-standard-edition-take-two-ceo-says/",
+    "https://www.dexerto.com/gta/rockstar-games-boss-says-100-gta-6-ultimate-edition-is-outselling-the-80-standard-version-3397246/"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-42",
+   "fact": "Sony and Microsoft each said GTA 6 is the most pre-ordered game in the history of their own digital stores.",
+   "source": "https://www.pcguide.com/news/gta-6-confirmed-as-the-most-pre-ordered-game-in-the-history-of-xboxs-and-playstations-stores/",
+   "sources": [
+    "https://www.pcguide.com/news/gta-6-confirmed-as-the-most-pre-ordered-game-in-the-history-of-xboxs-and-playstations-stores/",
+    "https://blog.playstation.com/?p=425567"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "Each claim covers one store only; no combined count was published.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-43",
+   "fact": "GTA 6 needs up to 212 GB of free space, and pre-loading opened on 10 November 2026.",
+   "source": "https://techradar.com/gaming/gta-6-digital-pre-loads-for-ps5-and-xbox-will-begin-9-days-early-and-require-a-whopping-212gb-of-free-space",
+   "sources": [
+    "https://techradar.com/gaming/gta-6-digital-pre-loads-for-ps5-and-xbox-will-begin-9-days-early-and-require-a-whopping-212gb-of-free-space",
+    "https://blog.playstation.com/?p=425567"
+   ],
+   "wow": 3,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-44",
+   "fact": "The worldwide launch rolled out at midnight local time, country by country, and started in New Zealand at 12:00 AM NZDT on 19 November 2026.",
+   "source": "https://blog.playstation.com/?p=425567",
+   "sources": [
+    "https://blog.playstation.com/?p=425567"
+   ],
+   "wow": 3,
+   "pairs_with": "city view",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-45",
+   "fact": "Rockstar North's Rob Nelson said the single-player game has no microtransactions and that no generative AI was used to make it.",
+   "source": "https://www.pushsquare.com/news/2026/08/gta-6-contains-no-microtransactions-or-generative-ai-rockstar-says",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/08/gta-6-contains-no-microtransactions-or-generative-ai-rockstar-says",
+    "https://www.tweaktown.com/news/113329/rockstar-confirms-if-gta-6-single-player-contains-microtransactions-or-generative-ai/index.html"
+   ],
+   "wow": 3,
+   "pairs_with": "a character",
+   "flag": "Covers the story mode only; plans for any online mode were not discussed.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-46",
+   "fact": "GTA 6 was first set for 2025, then delayed on 2 May 2025 to 26 May 2026, then delayed again in November 2025 to 19 November 2026.",
+   "source": "https://www.videogameschronicle.com/news/grand-theft-auto-6-has-been-delayed-to-2026/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/grand-theft-auto-6-has-been-delayed-to-2026/",
+    "https://www.videogameschronicle.com/news/grand-theft-auto-6-has-been-delayed-again-to-the-end-of-2026/",
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 2,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-47",
+   "fact": "Trailer 2 arrived on 6 May 2025, four days after Rockstar announced the first delay.",
+   "source": "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+   "sources": [
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+    "https://www.videogameschronicle.com/news/grand-theft-auto-6-has-been-delayed-to-2026/"
+   ],
+   "wow": 2,
+   "pairs_with": "a cutscene",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-48",
+   "fact": "On YouTube alone, Trailer 2 drew about 75.9 million views in its first day by TweakTown's count, below Trailer 1's 24-hour record of 90.4 million.",
+   "source": "https://www.tweaktown.com/news/105101/grand-theft-auto-6-trailer-2-fails-to-beat-the-world-record-set-by-1/index.html",
+   "sources": [
+    "https://www.tweaktown.com/news/105101/grand-theft-auto-6-trailer-2-fails-to-beat-the-world-record-set-by-1/index.html"
+   ],
+   "wow": 2,
+   "pairs_with": "a cutscene",
+   "flag": "Single outlet's count.",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-49",
+   "fact": "Lucia was taught to fight by her father, and served time in Leonida Penitentiary for fighting for her family.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 2,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-50",
+   "fact": "Jason grew up around grifters and crooks and served in the Army before ending up in the Keys working for local drug runners.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 2,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-51",
+   "fact": "Raul Bautista is a charming, seasoned bank robber who recruits people willing to take big risks.",
+   "source": "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/gta-6s-cast-of-characters-revealed/",
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 2,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-52",
+   "fact": "Grassrivers, Leonida's wetlands, is best known for its gators, and the August 2026 Extended Look showed players crossing Everglades-style swamp by fan boat.",
+   "source": "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+   "sources": [
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+    "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/"
+   ],
+   "wow": 2,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-53",
+   "fact": "Rockstar's Vice City includes pastel art deco hotels, the panaderias (bakeries) of Little Cuba, the Tisha-Wocka flea market and a port billed as the cruise ship capital of the world.",
+   "source": "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed",
+   "sources": [
+    "https://www.gematsu.com/2025/05/grand-theft-auto-vi-second-trailer-characters-and-places-detailed"
+   ],
+   "wow": 2,
+   "pairs_with": "city view",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-54",
+   "fact": "Robberies can be split between the two leads: one robs the store while the other drives the getaway car.",
+   "source": "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/"
+   ],
+   "wow": 2,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-55",
+   "fact": "On the map, the area police are searching shows as a circle rather than as individual police markers.",
+   "source": "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/everything-shown-at-the-grand-theft-auto-6-netflix-special/"
+   ],
+   "wow": 2,
+   "pairs_with": "driving",
+   "flag": "",
+   "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-56",
+   "fact": "GTA 6 costs $79.99 (Standard) or $99.99 (Ultimate) in the US, and £69.99 or £89.99 in the UK.",
+   "source": "https://kotaku.com/grand-theft-auto-6-will-cost-80-and-have-a-100-ultimate-edition-2000709920",
+   "sources": [
+    "https://kotaku.com/grand-theft-auto-6-will-cost-80-and-have-a-100-ultimate-edition-2000709920",
+    "https://techradar.com/gaming/gta-6-pre-orders-go-live-at-midnight-local-time-as-rockstar-unveils-the-ultimate-edition-that-amplifies-the-experience-with-exclusive-items",
+    "https://techradar.com/gaming/ps5/gta-6-uk-pre-orders-are-live-and-we-finally-have-a-price-heres-where-you-can-order-it-and-what-it-costs"
+   ],
+   "wow": 2,
+   "pairs_with": "a character",
+   "flag": "",
+   "checked": "2026-11-19"
   }
  ],
  "note": "Sourced GTA 6 facts for the card writer (tools/lore_short.py fact bank). Only facts an independent check confirmed against their sources go here (2026-11-19). Facts awaiting a check sit in gta6-facts-unchecked.json; move each one over only after checking its source. Removed on purpose: a real private person's money demand and the 2022 hacker's medical detention."
