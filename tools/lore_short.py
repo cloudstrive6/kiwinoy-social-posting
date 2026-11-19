@@ -154,7 +154,8 @@ def facts_text(facts: list[dict]) -> str:
 
 
 def mark_fact(game: str, fact_id: str) -> None:
-    if not fact_id:
+    import os
+    if not fact_id or os.environ.get("LORE_TEST"):  # LORE_TEST=1: a local test never uses up a fact
         return
     try:
         from core import gh_release
@@ -195,6 +196,11 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "told in your own words with every number and name exactly as given, beat 3 the "
            "verdict and beat 4 the comparison. Never claim the clip itself shows the fact's "
            "subject unless the frames do (a fact about a trailer scene is not this clip). "
+           "ADD NOTHING TO THE FACT: no claim the fact does not make, no superlative ('most', "
+           "'first', 'only', 'biggest') unless the fact says it, no invented process or motive "
+           "('Rockstar studied', 'documented', 'visited', 'on purpose'). The fact is the only "
+           "true thing you have; beats 1 and 2 must contain nothing else except what is visibly "
+           "on screen (a test card invented 'Rockstar's most sourced region', 2026-11-19). "
            "Put the fact's id in fact_id. If no fact fits, write a scene card and leave "
            "fact_id empty.\n\n"
            if facts else "")
@@ -403,6 +409,12 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + (f"VERIFIED GAME FACTS (sourced; a card built on one of these is SUPPORTED as long as "
            f"it keeps every number, date and name exactly as written here, and does not claim "
            f"the clip itself shows something only the fact describes):\n{facts}\n\n"
+           "A FACT CARD may contain NOTHING beyond the fact and what is visibly on screen, apart "
+           "from the closing verdict and comparison. Flag as BAD any added claim around the fact: "
+           "a superlative the fact does not make ('most', 'first', 'only', 'biggest'), an invented "
+           "process or motive ('Rockstar documented', 'studied', 'visited', 'on purpose'), or a "
+           "broader generalisation stated as fact. This is how an unsourced 'Rockstar's most "
+           "sourced region' got through (2026-11-19).\n\n"
            if facts else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
         # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
