@@ -1002,7 +1002,8 @@ def run_once(dry_run: bool = False, only_key: Optional[str] = None) -> dict:
     if not c.get("enabled", False) and not dry_run:
         log("disabled (longform_auto.enabled: false) — skipping.")
         return {"skipped": "disabled"}
-    files = b2_store.list_longform()
+    files = [f for f in b2_store.list_longform()
+             if CONFIG.game_allowed(_base_game(f.get("game", ""))[0])]  # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only)
     ledger = _ledger()
     resume = None if only_key else next(
         ((k, v) for k, v in ledger.items() if not k.startswith("__")

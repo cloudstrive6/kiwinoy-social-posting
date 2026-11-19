@@ -67,7 +67,7 @@ def _picks() -> list[tuple[str, dict, dict]]:
         from core.config import CONFIG
         return [p for p in _picks_all() if CONFIG.game_allowed(p[0])]
     except Exception:
-        return _picks_all()
+        return []  # fail closed: never post a possibly paused game
 
 
 def _picks_all() -> list[tuple[str, dict, dict]]:

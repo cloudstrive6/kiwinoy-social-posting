@@ -1701,6 +1701,12 @@ def run_ready_reel(
         log("Queue empty — drop reels in reels/assets/ready/ + run tools/ready_reels.py.")
         return _skip(run_dir, {"kind": "ready_reel"}, "queue_empty")
     assets.sort(key=lambda a: a.get("created_at", ""))  # oldest first (FIFO)
+    # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only): a queued reel of a paused game stays in the queue.
+    allowed = [a for a in assets if CONFIG.game_allowed(Path(a["name"]).stem.partition("__")[0])]
+    if not allowed:
+        log("Queue holds only paused games (reels.games_only) — nothing to post.")
+        return _skip(run_dir, {"kind": "ready_reel"}, "queue_paused_games")
+    assets = allowed
     asset = assets[0]
     log(f"Next of {len(assets)} queued: {asset['name']}")
 
@@ -2370,6 +2376,9 @@ def run_youtube_longform(
     if not yl.get("enabled", True):
         print("[youtube] disabled — skipping.", flush=True)
         return {"kind": "youtube_longform", "published": False, "skipped": "disabled"}
+    if not CONFIG.game_allowed(game or ""):  # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only)
+        print(f"[youtube] {game or 'no game given'} is paused by reels.games_only — skipping.", flush=True)
+        return {"kind": "youtube_longform", "published": False, "skipped": "game_paused"}
 
     src = Path(str(parts))
     if src.is_dir():
@@ -2808,6 +2817,9 @@ def run_youtube_short(
         return {"kind": "youtube_short", "published": False, "skipped": "disabled"}
 
     game = game or str(ys.get("game", "ff7remake"))
+    if not CONFIG.game_allowed(game):  # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only)
+        print(f"[yt-short] {game} is paused by reels.games_only — skipping.", flush=True)
+        return {"kind": "youtube_short", "published": False, "skipped": "game_paused"}
     fps = int(ys.get("fps", 60))
     rw, rh = int(ys.get("width", 2160)), int(ys.get("height", 3840))
     run_dir = OUTPUT_DIR / f"{_stamp()}_youtube_short"

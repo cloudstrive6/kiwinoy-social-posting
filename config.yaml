@@ -397,7 +397,7 @@ reels:
     window_minutes_by_track:
       reels_feed: 480                   # reels 0/8/16 UTC  -> 8h interval
       tiktok: 480                       # tiktok 3/11/19 UTC -> 8h interval
-      youtube_reel: 1440                # YouTube lore Short once a day from 2026-11-19 -> 24h interval
+      youtube_reel: 1200                # YouTube lore Short once a day from 2026-11-19: 20h, under the 24h interval so a missed slot is still made up
       threads_text: 720                 # threads caption 1/13 UTC -> 12h interval
       threads_footage: 720              # threads footage 10/22 UTC -> 12h interval
       quotes: 720                       # quotes 6/18 UTC    -> 12h interval
@@ -427,7 +427,7 @@ reels:
     # other would be the ... voiceover format"). run.py --youtube-reel skips outside these UTC slots
     # (window_hours after each); 00:00 UTC = 13:00 NZDT = 19:00 US Eastern. The voiceover Short has 15:00 UTC.
     slots_utc: ["00:00"]
-    window_hours: 3
+    window_hours: 8      # wide enough for a late native backup or a later trigger to make up a dropped or refused slot
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
     # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
     # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership

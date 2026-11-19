@@ -188,7 +188,7 @@ def cutscene_games() -> list[str]:
         from core.config import CONFIG
         out = [g for g in out if CONFIG.game_allowed(g)]
     except Exception:
-        pass
+        return []  # fail closed: never offer a possibly paused game
     return out
 
 

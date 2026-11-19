@@ -1,6 +1,6 @@
 name: KG Analysis Shorts Release (YouTube, at slot)
 
-# Releases ONE YouTube analysis Short per slot (15:00 and 23:00 UTC), games taking turns
+# Releases ONE YouTube analysis Short per slot (15:00 and 23:00 UTC), games taking turns  (config now 15:00 UTC only, 2026-11-19)
 # (Bryce, 2026-11-16: upload at the slot, never schedule ahead). tools/analysis_release.py
 # picks the Short, uploads it public (or flips a held one to public) and records it in
 # data/analysis/<game>/shorts.json, committed back here. Several runs per slot: GitHub drops
