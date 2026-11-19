@@ -599,14 +599,15 @@ reels:
   # Use H.264 .mp4 clips for best compatibility. Keep the library modest in size
   # (it ships in the repo so the cloud renderer can use it).
   footage:
-    # BLOCKED RANGES (2026-11-19, from the GTA 6 footage map): seconds of a recording that must never
-    # be posted. Fact-card windows that overlap a range are skipped; a gameplay reel (which plays a
-    # recording from its start) skips the whole file. Keyed by file name, so every pool that holds
-    # the same file (footage/, -vertical, cutscenes/) is covered.
-    blocked_ranges:
-      "GTA 6 (2026-11-19 12-39-35).mp4": [[19, 71]]     # car radio plays licensed "Bumble Bee" (Big Mama Thornton)
-      "GTA 6 (2026-11-19 12-47-53).mp4": [[124, 133]]   # point-blank shooting with blood
-      "GTA 6 (2026-11-19 12-34-54).mp4": [[31, 50]]     # Lucia's texts with profanity on screen
+    # BLOCKED RANGES: seconds of a recording never posted, keyed by file name so every pool that holds
+    # the same file (footage/, -vertical, cutscenes/) is covered. [start, end] = never posted;
+    # [start, end, music] = blocked only in a post longer than music_ok_max_seconds.
+    # Bryce, 2026-11-20: gore and swearing are fine, then "if there is licensed music, then just
+    # allow that as well without restrictions". So nothing is blocked now; the GTA 6 entries
+    # (12-39-35 @ 19-71 licensed radio song, 12-47-53 @ 124-133 gore, 12-34-54 @ 31-50 profanity)
+    # were removed. Kept for a future case Bryce names.
+    music_ok_max_seconds: 59
+    blocked_ranges: {}
     enabled: true
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the
@@ -858,6 +859,17 @@ reels:
                             # GTA 6 FACT CARD (layout key 'lore') on each feed slot, 3 a day (0/8/16 UTC).
                             # Paused 2026-11-14 to 2026-11-19. true = Facebook posts only the voiceover
                             # Shorts (tools/analysis_shorts.py --facebook).
+    # FULL-RECORDING FALLBACK (Bryce, 2026-11-20): when a platform has used every clip in
+    # footage/<game> and footage/<game>-vertical, classic/triptych/fill reels cut a `seconds` stretch
+    # out of a whole-session recording in cutscenes/<game>. Claude checks frames of up to
+    # `max_checks` stretches and posts the best one scoring >= min_score (menus, loading, map,
+    # black and nothing-happening stretches are rejected; gore, swearing and music are allowed).
+    # 45 s keeps licensed music fine (music_ok_max_seconds: 59).
+    full_recording_fallback:
+      enabled: true
+      seconds: 45
+      min_score: 6
+      max_checks: 6
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
     # look each day — format variety helps avoid platform spam-detection.
     #   classic  = footage crop-filled vertical + hook bar + logos (original).

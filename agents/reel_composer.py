@@ -187,8 +187,8 @@ def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]
     def _fresh(cid: str) -> bool:                # unused on EVERY target platform
         return all(cid not in led.get(p, set()) for p in plats)
 
-    # A gameplay reel plays the recording from its start, so a file with a blocked range
-    # (licensed music, gore) never goes into one (reels.footage.blocked_ranges, 2026-11-19).
+    # A gameplay reel plays the recording from its start (its length is not known here), so a file
+    # with a blocked range (licensed music) never goes into one (reels.footage.blocked_ranges).
     pool = [(k, i) for (k, i) in pool if not blocked_ranges(_clip_id(k, i, key).partition("__")[2])]
     if not pool:
         return None, None
@@ -265,10 +265,22 @@ def _speech_starts(path: Path, min_gap: float = 3.0) -> list[float]:
     return out
 
 
-def blocked_ranges(name: str) -> list:
-    """reels.footage.blocked_ranges for this file name: [[start, end], ...] seconds never posted."""
-    br = (CONFIG.reels.get("footage", {}) or {}).get("blocked_ranges") or {}
-    return [(float(a), float(b)) for a, b in (br.get(Path(str(name)).name) or [])]
+def blocked_ranges(name: str, seconds: Optional[float] = None) -> list:
+    """reels.footage.blocked_ranges for this file name, as [(start, end), ...] seconds not to post.
+    An entry [start, end, music] (licensed music) only counts when the post is longer than
+    reels.footage.music_ok_max_seconds (59), or when the post length is unknown (seconds=None).
+    Bryce, 2026-11-20: "licensed music (if the whole reel is 59 seconds or less), gore, and
+    swearing is fine"."""
+    fc = CONFIG.reels.get("footage", {}) or {}
+    br = fc.get("blocked_ranges") or {}
+    lim = float(fc.get("music_ok_max_seconds", 59))
+    out = []
+    for e in (br.get(Path(str(name)).name) or []):
+        kind = str(e[2]).lower() if len(e) > 2 else ""
+        if kind == "music" and seconds is not None and float(seconds) <= lim:
+            continue
+        out.append((float(e[0]), float(e[1])))
+    return out
 
 
 def cutscene_windows(path: Path, seconds: float) -> list[float]:
@@ -293,8 +305,8 @@ def cutscene_windows(path: Path, seconds: float) -> list[float]:
         _add(t - 0.6)
     for t in _frange(0.0, last, max(seconds * 1.5, 12.0)):
         _add(t)
-    blocked = blocked_ranges(path.name)
-    if blocked:   # never cut a window across a blocked range (licensed music, gore), 2026-11-19
+    blocked = blocked_ranges(path.name, seconds)
+    if blocked:   # never cut a window across a blocked range (music in a post over 59 s), 2026-11-20
         out = [t for t in out if all(t + seconds <= a or t >= b for a, b in blocked)]
         return sorted(out)
     return sorted(out) or [0.0]
@@ -353,6 +365,157 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
         print(f"[reel] every window of {base_id} is used on {plats} — trying the next file.",
               flush=True)
     return None, None, 0.0
+
+
+# ---- FULL-RECORDING FALLBACK for classic / triptych / fill (Bryce, 2026-11-20) ------------------
+# "if all the footage is already used up in footage/<game> & footage/<game>-vertical then use the
+# ones in cutscenes/<game> as fallback - you will have to review and choose which scenes/gameplay to
+# post as the footage here will be long durations." Bryce records whole sessions into
+# cutscenes/<game>; when a platform has used every footage clip, a gameplay reel cuts a short
+# stretch out of one of those recordings, after a Claude frame check picks a watchable one.
+
+def _fallback_cfg() -> dict:
+    g = (CONFIG.reels.get("gameplay", {}) or {}).get("full_recording_fallback") or {}
+    return {"enabled": bool(g.get("enabled", True)), "seconds": float(g.get("seconds", 45)),
+            "min_score": int(g.get("min_score", 6)), "max_checks": int(g.get("max_checks", 6))}
+
+
+def _source_url(kind: str, item: Any) -> Optional[str]:
+    """A local path, or a signed B2 URL so ffmpeg reads only the stretch it needs (whole-session
+    recordings can be many GB; never download them for one reel)."""
+    if kind == "local":
+        return str(item)
+    if kind == "b2":
+        return b2_store.presigned_url(item["key"], valid_seconds=3 * 3600)
+    return None
+
+
+def _ff(args: list, timeout: int = 600) -> bool:
+    from core import ffmpeg as _f
+    exe = _f.ffmpeg_bin()
+    if not exe:
+        return False
+    try:
+        return subprocess.run([exe, "-v", "error", "-y", *args], capture_output=True,
+                              timeout=timeout).returncode == 0
+    except Exception:
+        return False
+
+
+def judge_stretch(src: str, start: float, seconds: float, work: Path) -> dict:
+    """Claude looks at 6 frames across the stretch and says whether it works as a reel."""
+    from core import claude_code
+    from agents.content import extract_json
+    work.mkdir(parents=True, exist_ok=True)
+    frames = []
+    for i in range(6):
+        t = start + seconds * (i + 0.5) / 6
+        f = work / f"f{i}.jpg"
+        if _ff(["-ss", f"{t:.2f}", "-i", src, "-frames:v", "1", "-vf", "scale=640:-2", str(f)], 120):
+            frames.append(f)
+    if len(frames) < 4:
+        return {"ok": False, "score": 0, "reason": "could not read frames"}
+    prompt = (
+        f"These {len(frames)} frames are in order, spread across one {seconds:.0f}-second stretch of a "
+        "long gameplay recording. Decide if this stretch works on its own as a short social gameplay "
+        "reel. Set ok=false if most frames show any of these: pause, settings or title menus; a "
+        "loading screen; the full-screen map; a black, blank or fading screen; credits; or nothing "
+        "happening (standing still, or slow aimless walking through an empty space). Violence, gore, "
+        "swearing and licensed music are ALLOWED, so never reject for those. Score 1-10 for how "
+        "watchable it is; prefer action, driving, chases, fights, stunts, striking views and story "
+        "cutscenes with characters. Return ONLY JSON {\"ok\": true|false, \"score\": 1-10, "
+        "\"reason\": \"one short line\"}.")
+    try:
+        d = extract_json(claude_code.vision(prompt, frames))
+        return {"ok": bool(d.get("ok")), "score": int(d.get("score") or 0),
+                "reason": str(d.get("reason", ""))[:200]}
+    except Exception as e:
+        return {"ok": False, "score": 0, "reason": f"judge failed: {e!r}"[:200]}
+
+
+def pick_fallback_stretch(game: str, platforms, out_dir: Path,
+                          footage_keys=()) -> tuple[Optional[Path], Optional[str]]:
+    """(trimmed clip, ledger id) cut from a whole-session recording in cutscenes/<game>, or
+    (None, None). Ids are '<game>-cutscene__<file>@<start>', the same per-platform ledger as the
+    fact cards, so a stretch never repeats on a platform. A recording whose file name is also a
+    footage clip already used on these platforms is skipped (cutscenes/gta6 started as copies of
+    footage/gta6, already posted whole)."""
+    cfg = _fallback_cfg()
+    if not cfg["enabled"]:
+        return None, None
+    plats = [str(p) for p in (platforms or []) if p]
+    seconds = cfg["seconds"]
+    key = f"{game}-cutscene"
+    pool = list(_candidates(key))
+    if not pool:
+        return None, None
+    led = gh_release.read_ledger()
+    if led is None:
+        print(f"[reel] used-clip ledger UNREADABLE - no fallback stretch ({key}).", flush=True)
+        return None, None
+    used_names = set()
+    for fk in footage_keys or ():
+        for p in plats:
+            for cid in led.get(p, set()):
+                if str(cid).startswith(f"{fk}__"):
+                    used_names.add(str(cid).partition("__")[2])
+    random.shuffle(pool)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    from core import ffmpeg as _f
+    checks, best = 0, None
+    for kind, item in pool:
+        name = Path(str(item)).name if kind == "local" else str(item.get("name", ""))
+        if name in used_names:
+            continue
+        src = _source_url(kind, item)
+        if not src:
+            continue
+        total = float(_f.duration(src) or 0.0)
+        if total < seconds + 5:
+            continue
+        starts = _frange(2.0, total - seconds - 2.0, seconds)           # non-overlapping stretches
+        blocked = blocked_ranges(name, seconds)
+        starts = [t for t in starts if all(t + seconds <= a or t >= b for a, b in blocked)]
+        base = _clip_id(kind, item, key)
+        free = [t for t in starts if all(f"{base}@{t:g}" not in led.get(p, set()) for p in plats)]
+        random.shuffle(free)
+        for t in free[:3]:                                             # at most 3 tries per file
+            if checks >= cfg["max_checks"]:
+                break
+            checks += 1
+            v = judge_stretch(src, t, seconds, out_dir / f"judge{checks}")
+            print(f"[reel] fallback stretch {name} @ {t:g}s: {v}", flush=True)
+            if v["ok"] and (best is None or v["score"] > best[0]):
+                best = (v["score"], src, t, f"{base}@{t:g}")
+            if best and best[0] >= cfg["min_score"]:
+                break
+        if (best and best[0] >= cfg["min_score"]) or checks >= cfg["max_checks"]:
+            break
+    if not best:
+        return None, None
+    _, src, t, cid = best
+    clip = out_dir / "fallback_stretch.mp4"
+    ok = _ff(["-ss", f"{t:.2f}", "-i", src, "-t", f"{seconds:.2f}", "-map", "0:v:0", "-map", "0:a:0?",
+              "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p",
+              "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(clip)], 900)
+    if not ok or not clip.exists():
+        print(f"[reel] fallback stretch cut FAILED for {cid}", flush=True)
+        return None, None
+    return clip, cid
+
+
+def is_portrait(path: Path) -> bool:
+    from core import ffmpeg as _f
+    exe = _f.ffprobe_bin()
+    try:
+        out = subprocess.run([exe, "-v", "error", "-select_streams", "v:0", "-show_entries",
+                              "stream=width,height", "-of", "csv=p=0", str(path)],
+                             capture_output=True, text=True, timeout=60).stdout.strip()
+        w, h = (int(x) for x in out.split(",")[:2])
+        return h > w
+    except Exception:
+        return False
 
 
 def mark_clip_used(clip_id: str, platforms) -> bool:
