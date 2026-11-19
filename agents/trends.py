@@ -75,7 +75,7 @@ _MARVEL_KW = (
     "x-men", "x-force", "deadpool", "fantastic four", "thunderbolts", "daredevil", "loki",
     "doomsday", "kang", "mutant", "insomniac", "venom", "symbiote", "doctor doom", "doom",
     "captain america", "iron man", "thor", "hulk", "black panther", "blade", "fantastic 4",
-    "miles morales", "peter parker", "secret wars", "vision", "wandavision", "ironheart",
+    "miles morales", "peter parker", "secret wars", "vision", "wandavision", "visionquest", "ironheart",
 )
 # Whole words only (review 2026-11-20): substring matching let "author" pass as "thor" and
 # "television" as "vision", so DC stories from The Direct slipped through.
