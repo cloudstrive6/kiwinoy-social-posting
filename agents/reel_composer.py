@@ -204,9 +204,10 @@ def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]
             if gh_release.low_pool_should_alert(akey):
                 lbl = "+".join(sorted(plats))
                 if n_fresh == 0:
-                    notify.telegram(f"🟥 Footage EXHAUSTED — '{key}' has 0 fresh clips left for {lbl}. "
-                                    "Those posts will PAUSE (no reuse, per your rule) until you add + "
-                                    "sync more footage.")
+                    notify.telegram(f"🟥 Footage used up — '{key}' has 0 fresh clips left for {lbl}. "
+                                    "Classic/triptych/fill reels now cut checked stretches from the full "
+                                    "recordings in cutscenes/<game> (no reuse); they pause only when those "
+                                    "run out too. Add + sync more recordings.")
                 else:
                     notify.telegram(f"🟧 Footage running low — '{key}' has {n_fresh} fresh clip(s) left "
                                     f"for {lbl} (≤20). Add + sync more footage soon to avoid a gap.")

@@ -932,10 +932,8 @@ def run_gameplay_reel(
         clip_path, clip_id = reel_composer.pick_fallback_stretch(
             brief["game"], pick_platforms, run_dir / "fallback", footage_keys=[brief["game"], vkey])
         if clip_path:
-            log(f"Footage used up - posting a checked stretch of a full recording: {clip_id}")
-            if layout == "fill" and not reel_composer.is_portrait(clip_path):
-                layout = "triptych" if (_game_art(brief["game"]) and n % 2 == 0) else "classic"
-                log(f"Landscape recording - using the {layout} layout instead of fill.")
+            # fill centre-crops landscape to 9:16 by design, so the slot keeps its layout
+            log(f"Footage used up - posting a checked stretch of a full recording ({layout}): {clip_id}")
     if not clip_path:
         log("Could not resolve a clip from either pool — skipping.")
         return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief}, "no_media")
