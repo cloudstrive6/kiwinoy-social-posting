@@ -246,7 +246,7 @@ def art_direct(base_path, title_text: str, *, free_side: str = "left",
     into <=2 lines); only placement/size/style are chosen. `free_side` is the
     empty half where text belongs; `prior_issues` are the previous QC failures to
     FIX this round (feedback loop)."""
-    from core import openai_client as ai
+    from core import claude_code as ai  # Claude vision first, OpenAI fallback (2026-11-19)
     side_anchors = (["top-left", "mid-left", "bottom-left"] if free_side == "left"
                     else ["top-right", "mid-right", "bottom-right"])
     logo_corner = "top-left" if free_side == "left" else "top-right"
@@ -378,7 +378,7 @@ def qc(path) -> dict:
     alone aren't enough — a technically-clean thumbnail with a tiny face still
     fails (that gap let a 4/10 full-body shot through once). Returns
     {...,verdict:PASS|FAIL}."""
-    from core import openai_client as ai
+    from core import claude_code as ai  # Claude vision first, OpenAI fallback (2026-11-19)
     prompt = (
         "You are a meticulous YouTube thumbnail QC ART DIRECTOR. FAIL unless the "
         "thumbnail is both mechanically clean AND high-CTR. Check: "
@@ -407,7 +407,7 @@ def fidelity_ok(composite, reference) -> dict:
     """Confirm the composited character still matches the OFFICIAL source render
     (Gemini never touches the character, so this should always pass — it's the
     guardrail that catches an accidental swap/redraw)."""
-    from core import openai_client as ai
+    from core import claude_code as ai  # Claude vision first, OpenAI fallback (2026-11-19)
     raw = ai.vision(
         "Image 1 is a YouTube thumbnail; image 2 is the OFFICIAL game character "
         "render. Does the character in image 1 match image 2 EXACTLY (same outfit, "
@@ -425,7 +425,7 @@ def select_render(candidates: Sequence[str], brief: str = "") -> dict:
     the ONE best for a high-CTR thumbnail, per the mined winning pattern, AND says
     how tightly to frame it so the FACE is prominent. Returns
     {best_index, framing:'full'|'upper'|'closeup', why}."""
-    from core import openai_client as ai
+    from core import claude_code as ai  # Claude vision first, OpenAI fallback (2026-11-19)
     labels = ", ".join(f"{i}:{Path(c).name}" for i, c in enumerate(candidates))
     prompt = (
         "You are a CASTING ART DIRECTOR for high-CTR YouTube gaming thumbnails. "

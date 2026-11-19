@@ -174,3 +174,20 @@ def run(
             continue
     raise (last_err if isinstance(last_err, ClaudeCodeError)
            else ClaudeCodeError(str(last_err)))  # callers catch ClaudeCodeError
+
+
+def vision(prompt: str, image_paths: list, timeout: int = 240) -> str:
+    """Look at local images with Claude (subscription, Read tool) and return the text.
+    Falls back to OpenAI vision only if Claude is unavailable. Added 2026-11-19: the
+    news-card screener and thumbnail directors called OpenAI directly, and when that
+    account ran out of credit (2026-11-07) every headline card failed its screen."""
+    from pathlib import Path as _P
+    paths = [_P(p).resolve() for p in image_paths]      # the CLI's cwd differs
+    listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(paths))
+    try:
+        return run(f"Use the Read tool to open these images first.\n\n{prompt}\n\n"
+                   f"Images:\n{listing}", allowed_tools="Read", timeout=timeout)
+    except ClaudeCodeError as e:
+        print(f"[claude_code] vision unavailable ({e}); using OpenAI vision.", flush=True)
+        from core import openai_client
+        return openai_client.vision(prompt, [str(p) for p in paths])

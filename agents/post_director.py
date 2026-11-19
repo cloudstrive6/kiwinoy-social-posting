@@ -721,7 +721,7 @@ def screen(image, caption: str, topic: str) -> dict:
     """Vision critic: is the post+image accurate to the topic, appealing, on-brand,
     mobile-legible, non-misleading? Returns {ok, score, issues}."""
     import json
-    from core import openai_client as ai
+    from core import claude_code
     from agents.content import extract_json
     prompt = (
         "You are the POST DIRECTOR screening a Facebook gaming NEWS card before it goes to "
@@ -737,7 +737,7 @@ def screen(image, caption: str, topic: str) -> dict:
         "and not colliding with text baked into the image. "
         'Return STRICT JSON {"ok":bool,"score":1-10,"issues":[concise]}.')
     try:
-        d = extract_json(ai.vision(prompt, [str(image)]))
+        d = extract_json(claude_code.vision(prompt, [str(image)]))  # Claude first (2026-11-19)
         return {"ok": bool(d.get("ok", False)), "score": int(d.get("score", 0) or 0),
                 "issues": d.get("issues", [])}
     except Exception as e:
