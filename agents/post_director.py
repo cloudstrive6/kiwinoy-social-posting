@@ -220,7 +220,7 @@ def verify_caption(topic: str, caption: str, game: str = "") -> dict:
         'Return STRICT JSON {"ok":bool,"issues":[concise what you changed],"safe_caption":'
         '"the corrected caption (or the original if already fine)"}.')
     try:
-        d = extract_json(_text(prompt))
+        d = extract_json(_text(prompt, timeout=180))   # longer prompt with the GTA 6 facts (2026-11-20)
         safe = sanitize(str(d.get("safe_caption") or caption)).strip()
         safe = _fix_hashtags(safe) if safe else caption
         # guarantee paragraph spacing survives even if the critic flattened the rewrite

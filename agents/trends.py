@@ -152,7 +152,11 @@ def priority_brief() -> str:
     p = priority()
     if not p:
         return ""
-    lines = [f"- {p.get('name', 'Priority topic')}: {' '.join(str(p.get('topic', '')).split())}"]
+    # Its own heading: inside the 'already public' block these read as a ban list and could
+    # block real launch-week news (review 2026-11-20).
+    lines = [f"CONFIRMED CURRENT BACKGROUND on {p.get('name', 'the priority topic')} (so you know it is "
+             "out now; NOT a ban list: new developments such as sales, player counts, records, "
+             "patches, updates and announcements ARE news, but restating these facts is not):"]
     f = str(p.get("facts_file") or "").strip()
     if f:
         try:
