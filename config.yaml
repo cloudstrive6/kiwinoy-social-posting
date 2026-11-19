@@ -446,6 +446,7 @@ reels:
       thelastofus1: "PLNaUg314KDjBpEy08LBfJC27s_zX1YhPZ"          # The Last of Us: Part 1
       thelastofus2: "PLNaUg314KDjCz9WvDJ_E1qCYRYIY1sxII"          # The Last of Us: Part 2 (Cinematics - Shorts)
       halo: "PLNaUg314KDjDAR_htqkCz4UeEf778eQZo"                  # Halo: Combat Evolved Anniversary
+      gta6: "PLHeS_Sw7YYeM"                                        # Grand Theft Auto VI (created 2026-11-19, public)
   brand_badge: "KG"        # fallback text badge if no logo image is set
   brand_logo: "reels/assets/logo/KG Logo 2.PNG"  # on-screen channel logo (reels + graphics)
   brand_logo_opacity: 0.6  # top-right logo: circular-cropped, 60% opacity

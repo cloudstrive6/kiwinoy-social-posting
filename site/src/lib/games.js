@@ -7,6 +7,10 @@
 // title cue is present, so "Spider-Man 2" / "Miles Morales" win over the generic match.
 
 export const GAMES = [
+  { slug: "gta-6", title: "Grand Theft Auto VI", art: "g-ps", cover: "/game-art/gta6.jpg",
+    blurb: "Rockstar's return to Vice City, with Lucia and Jason in the state of Leonida.",
+    match: ["grand theft auto vi", "grand theft auto 6", "gta vi", "gta 6", "gta6", "gtavi",
+            "leonida", "lucia caminos", "jason duval"] },
   { slug: "spider-man-1", title: "Marvel's Spider-Man", art: "g-spidey", cover: "/game-art/spider-man-1.webp",
     blurb: "Insomniac's original: Peter Parker's Spider-Man.",
     match: ["mister negative", "martin li", "sinister six", "doctor octopus", "otto octavius",
