@@ -187,6 +187,11 @@ def pick_unused_clip(key: str, platforms) -> tuple[Optional[Path], Optional[str]
     def _fresh(cid: str) -> bool:                # unused on EVERY target platform
         return all(cid not in led.get(p, set()) for p in plats)
 
+    # A gameplay reel plays the recording from its start, so a file with a blocked range
+    # (licensed music, gore) never goes into one (reels.footage.blocked_ranges, 2026-11-19).
+    pool = [(k, i) for (k, i) in pool if not blocked_ranges(_clip_id(k, i, key).partition("__")[2])]
+    if not pool:
+        return None, None
     fresh = [(k, i) for (k, i) in pool if _fresh(_clip_id(k, i, key))]
     # LOW-POOL WATCH (per user 2026-07-30): DON'T reuse when a platform's fresh clips run
     # out — Telegram-alert at <=20 remaining, and SKIP (don't repeat) at 0. Adding footage
@@ -260,6 +265,12 @@ def _speech_starts(path: Path, min_gap: float = 3.0) -> list[float]:
     return out
 
 
+def blocked_ranges(name: str) -> list:
+    """reels.footage.blocked_ranges for this file name: [[start, end], ...] seconds never posted."""
+    br = (CONFIG.reels.get("footage", {}) or {}).get("blocked_ranges") or {}
+    return [(float(a), float(b)) for a, b in (br.get(Path(str(name)).name) or [])]
+
+
 def cutscene_windows(path: Path, seconds: float) -> list[float]:
     """Candidate START times for a `seconds`-long lore window inside one cutscene file.
     Prefers where speech begins (a line landing on screen), else an even spread. One file
@@ -282,6 +293,10 @@ def cutscene_windows(path: Path, seconds: float) -> list[float]:
         _add(t - 0.6)
     for t in _frange(0.0, last, max(seconds * 1.5, 12.0)):
         _add(t)
+    blocked = blocked_ranges(path.name)
+    if blocked:   # never cut a window across a blocked range (licensed music, gore), 2026-11-19
+        out = [t for t in out if all(t + seconds <= a or t >= b for a, b in blocked)]
+        return sorted(out)
     return sorted(out) or [0.0]
 
 

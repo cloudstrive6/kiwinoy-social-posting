@@ -579,6 +579,14 @@ reels:
   # Use H.264 .mp4 clips for best compatibility. Keep the library modest in size
   # (it ships in the repo so the cloud renderer can use it).
   footage:
+    # BLOCKED RANGES (2026-11-19, from the GTA 6 footage map): seconds of a recording that must never
+    # be posted. Fact-card windows that overlap a range are skipped; a gameplay reel (which plays a
+    # recording from its start) skips the whole file. Keyed by file name, so every pool that holds
+    # the same file (footage/, -vertical, cutscenes/) is covered.
+    blocked_ranges:
+      "GTA 6 (2026-11-19 12-39-35).mp4": [[19, 71]]     # car radio plays licensed "Bumble Bee" (Big Mama Thornton)
+      "GTA 6 (2026-11-19 12-47-53).mp4": [[124, 133]]   # point-blank shooting with blood
+      "GTA 6 (2026-11-19 12-34-54).mp4": [[31, 50]]     # Lucia's texts with profanity on screen
     enabled: true
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the
