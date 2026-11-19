@@ -59,13 +59,21 @@ def _kg_logo_circular(size: int):
     return lg
 
 
+def _beat() -> str:
+    try:
+        from agents.trends import page_beat
+        return page_beat()
+    except Exception:
+        return "the Marvel Cinematic Universe and Insomniac's Marvel games"
+
+
 def write_caption(topic: str, angle: str, game: str = "") -> str:
     """FB-native caption for the trend post — Marvel beat (MCU + Insomniac's Marvel games),
     a little longer so it gives real CONTEXT, not just a hook."""
     from agents.content import _text, sanitize
     prompt = (
-        "You write scroll-stopping Facebook posts for a MARVEL fan page (KiwinoyGamer) that "
-        "covers the Marvel Cinematic Universe and Insomniac's Marvel games. Write ONE post "
+        "You write scroll-stopping Facebook posts for a fan page (KiwinoyGamer) that "
+        f"covers {_beat()}. Write ONE post "
         f"about this CURRENT trending topic:\nTOPIC: {topic}\nANGLE: {angle}\n"
         f"PROPERTY: {game or 'Marvel'}\n\n"
         "Structure:\n"
@@ -187,9 +195,14 @@ def verify_caption(topic: str, caption: str, game: str = "") -> dict:
         known = history_brief()
     except Exception:
         known = ""
+    try:                                   # priority beat facts (GTA 6 is out, 2026-11-19)
+        from agents.trends import priority_brief
+        known = (known + "\n" + priority_brief()).strip()
+    except Exception:
+        pass
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     prompt = (
-        "You are a strict FACT-CHECK editor for a Marvel fan page. A caption is about to "
+        "You are a strict FACT-CHECK editor for a Marvel and gaming fan page. A caption is about to "
         f"AUTO-POST (no human will review it). TODAY is {today}. Your training data may be "
         "older than today, so things released after your cutoff are real. These facts are "
         f"CONFIRMED and current:\n{known or '(none)'}\n\n"
@@ -281,7 +294,7 @@ def _headline(topic: str, angle: str) -> tuple:
     substring of the headline."""
     from agents.content import _text, sanitize, extract_json
     prompt = (
-        "Write a PUNCHY on-image NEWS-card headline for a Marvel post about: "
+        "Write a PUNCHY on-image NEWS-card headline for a news post about: "
         f"{topic}. Angle: {angle}. Rules: <=9 words, UPPERCASE-friendly, accurate, instantly "
         "readable, no hashtags/quotes/emoji. LEAD WITH WHAT IS NEW TODAY: the new number, "
         "announcement, date or reveal (e.g. '2.4 MILLION SOLD', 'NEW TRAILER'). Never a vague "

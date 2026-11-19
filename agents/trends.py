@@ -121,6 +121,58 @@ def _feed_titles(xml, limit: int) -> list[dict]:
     return out
 
 
+def priority() -> Optional[dict]:
+    """The dated PRIORITY beat (config trends.priority), or None once its `until` NZ date has
+    passed or none is set. Bryce, 2026-11-20: GTA 6 news first for 7 days."""
+    try:
+        from core.config import CONFIG
+        from datetime import date
+        from zoneinfo import ZoneInfo
+        cfg = dict((CONFIG.raw().get("trends", {}) or {}).get("priority") or {})
+        until = str(cfg.get("until") or "").strip()
+        if not until or datetime.now(ZoneInfo("Pacific/Auckland")).date() > date.fromisoformat(until):
+            return None
+        return cfg
+    except Exception:
+        return None
+
+
+def priority_re():
+    """Whole-word regex for the priority beat's keywords, or None."""
+    p = priority()
+    kws = [str(k) for k in ((p or {}).get("keywords") or []) if str(k).strip()]
+    if not kws:
+        return None
+    return re.compile(r"\b(?:" + "|".join(re.escape(k) for k in kws) + r")\b", re.I)
+
+
+def priority_brief() -> str:
+    """Checked facts for the priority beat (its facts_file), so the gates know e.g. that GTA 6
+    is already out (released after the model's training data)."""
+    p = priority()
+    if not p:
+        return ""
+    lines = [f"- {p.get('name', 'Priority topic')}: {' '.join(str(p.get('topic', '')).split())}"]
+    f = str(p.get("facts_file") or "").strip()
+    if f:
+        try:
+            import json
+            from core.config import ROOT
+            for x in json.loads((ROOT / f).read_text(encoding="utf-8")).get("facts", []):
+                if x.get("fact"):
+                    lines.append(f"- {x['fact']}")
+        except Exception:
+            pass
+    return "\n".join(lines)
+
+
+def page_beat() -> str:
+    """One line on what the page covers, for the writer and gate prompts."""
+    base = "the Marvel Cinematic Universe and Insomniac's Marvel games"
+    p = priority()
+    return f"{base}, plus (top priority right now) {p.get('name', 'the priority topic')} news" if p else base
+
+
 def _news_queries() -> list[str]:
     try:
         from core.config import CONFIG
@@ -139,6 +191,10 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
     import requests
     cands: list[dict] = []
     queries = _news_queries()
+    _pri = priority()
+    _pri_re = priority_re()
+    if _pri:                                    # priority searches first (2026-11-20)
+        queries = [str(q) for q in (_pri.get("queries") or [])] + queries
 
     # 1) Marvel entertainment feeds FIRST — DIRECT publisher links = real og:image stills
     #    for the news card. Filtered to Marvel so the beat stays dense.
@@ -146,7 +202,7 @@ def scout(*, news_per_feed: int = 8, yt_max: int = 15, geo: str = "US") -> list[
         try:
             r = requests.get(url, headers=_UA, timeout=15)
             for it in _feed_titles(r.content, 25):
-                if _MARVEL_RE.search(it["title"]):
+                if _MARVEL_RE.search(it["title"]) or (_pri_re and _pri_re.search(it["title"])):
                     cands.append({"title": it["title"], "source": f"news:{name}",
                                   "kind": "news", "link": it.get("link", ""),
                                   "pub": it.get("pub", "")})
@@ -281,6 +337,15 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
              "news; they've been public since the dates shown. Only a GENUINELY NEW development "
              f"on the topic is postable:\n{history}") if history else ""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    pri = priority()
+    if pri:
+        focus = (f"{focus} ALSO ON-BEAT, AND TOP PRIORITY until {pri.get('until')}: "
+                 f"{' '.join(str(pri.get('topic', '')).split())} Rank every strong, genuinely new "
+                 f"{pri.get('name')} story ABOVE every Marvel story; use Marvel picks only to fill "
+                 f"the list after the {pri.get('name')} ones.")
+        pb = priority_brief()
+        if pb and pb not in history:
+            history = (history + "\n" + pb).strip()
     beat = (f"THIS PAGE'S BEAT — pick ONLY topics that clearly fit it: {focus}\n\n"
             if focus else "")
     gline = (f"Our own Insomniac Marvel games are: {', '.join(games)}. " if games else "")
@@ -313,11 +378,11 @@ def analyze(candidates: list[dict], *, games: Optional[list[str]] = None,
         f"CANDIDATES:\n{listing}{excl}{known}\n\n"
         'Return ONLY JSON: {"picks":[{"topic":"short clear topic","why_rising":"1 line",'
         '"stage":"rising|peaking|declining","relevance":1-10,"angle":"the specific post '
-        'angle/hook for KG","game":"the MCU property or Insomniac game (or \'MCU\')",'
+        'angle/hook for KG","game":"the MCU property, Insomniac game or other game named on the beat (or \'MCU\')",'
         '"source_index":the CANDIDATE NUMBER (integer) this pick is based on}]}. Order picks '
         "best-first; include only ON-BEAT, genuinely-new rising/peaking ones.")
     try:
-        d = extract_json(_text(prompt, timeout=150))
+        d = extract_json(_text(prompt, timeout=300))   # 300: the GTA 6 facts made the prompt longer (2026-11-20)
         picks = d.get("picks", []) if isinstance(d, dict) else []
         return [p for p in picks if isinstance(p, dict) and p.get("topic")][:top_n]
     except Exception as e:
@@ -337,7 +402,7 @@ def novelty_check(topic: str, angle: str = "", history: str = "", posted_log: st
         history = _history_brief()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     prompt = (
-        f"TODAY is {today}. You are a gate that stops a Marvel news page from posting OLD news "
+        f"TODAY is {today}. You are a gate that stops a Marvel and gaming news page from posting OLD news "
         "as if it just happened.\n\n"
         f"FACTS ALREADY PUBLIC (since the dates shown):\n{history or '(none provided)'}\n\n"
         + (f"WE ALREADY POSTED (newest first):\n{posted_log}\n\n" if posted_log else "")

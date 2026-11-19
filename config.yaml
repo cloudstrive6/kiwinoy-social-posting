@@ -41,6 +41,26 @@ trends:
   # FRESHNESS: a story older than this (by its article publish date) is no longer "news"
   # and is dropped before the analyst even sees it — so we never post something a week late.
   max_age_days: 7
+  # PRIORITY BEAT (Bryce, 2026-11-20: "add GTA 6 news to the headline cards too - actually
+  # prioritize GTA 6 news for the next 7 days"). Until `until` (NZ date, inclusive) the scout
+  # adds these Google-News queries first, the Marvel feeds also keep items matching `keywords`,
+  # the analyst ranks this topic FIRST (Marvel only when no strong GTA 6 story), and the fact
+  # gates get the checked facts in `facts_file`. After `until` the cards go back to the Marvel
+  # beat alone with no code change.
+  priority:
+    until: "2026-11-27"
+    name: Grand Theft Auto VI
+    topic: >
+      GRAND THEFT AUTO VI (GTA 6, Rockstar Games; launched worldwide on 2026-11-19 on PS5 and
+      Xbox Series X|S, so it IS out now): launch news, sales and player-count milestones,
+      patches and updates, GTA Online news, official Rockstar announcements, notable things
+      players are discovering, and credible reports.
+    queries:
+      - GTA 6
+      - Grand Theft Auto VI
+      - Rockstar Games GTA 6
+    keywords: [gta 6, gta vi, gta6, grand theft auto, rockstar games, leonida, vice city]
+    facts_file: data/lore/gta6-facts.json
   # IMAGES: real key art first; when no strong REAL image passes the screener, GENERATE a
   # stunning ON-TOPIC cinematic scene (still relevance-screened). false = real-images-only.
   allow_ai_scene: true

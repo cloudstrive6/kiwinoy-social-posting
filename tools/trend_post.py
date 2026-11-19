@@ -255,6 +255,10 @@ def main() -> int:
         history = history_brief()
     except Exception:
         history = ""
+    try:                                   # GTA 6 priority facts (Bryce, 2026-11-20)
+        history = (history + "\n" + trends.priority_brief()).strip()
+    except Exception:
+        pass
     # Official trailer upload dates: tells the gates which trailer is new and which is old.
     try:
         from core import trailer_watch
