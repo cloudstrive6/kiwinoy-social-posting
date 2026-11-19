@@ -1538,6 +1538,10 @@ def main() -> int:
                     help="schedule uploaded Shorts on the Boss KG Facebook page at their YouTube slots")
     a = ap.parse_args()
     p = Paths(a.game, a.version)
+    from core.config import CONFIG as _C
+    if a.facebook and not _C.game_allowed(a.game):  # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only)
+        print(f"{a.game} is paused by reels.games_only; nothing scheduled on Facebook.", flush=True)
+        return 1
     cfg = json.loads(p.picks.read_text(encoding="utf-8"))
     only = set(filter(None, a.only.split(",")))
 

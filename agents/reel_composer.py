@@ -119,7 +119,7 @@ def list_games() -> dict[str, int]:
     for entry in fcfg.get("map", []) or []:
         keys.add(str(entry.get("dir", "")))
     out: dict[str, int] = {}
-    for k in sorted(k for k in keys if k and k.lower() not in excluded):
+    for k in sorted(k for k in keys if k and k.lower() not in excluded and CONFIG.game_allowed(k)):
         n = len(_candidates(k))
         if n:
             out[k] = n

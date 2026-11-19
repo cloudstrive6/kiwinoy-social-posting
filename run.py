@@ -316,6 +316,9 @@ def main() -> int:
         if not tk.get("enabled", True):
             print("[tiktok] reels.tiktok.enabled is false — TikTok track paused, skipping.", flush=True)
             return 0
+        if not CONFIG.game_allowed(tk.get("game", "")):
+            print(f"[tiktok] {tk.get('game')} is paused by reels.games_only, skipping.", flush=True)
+            return 0
         return _with_backup(
             "tiktok", "TikTok draft", args.backup, args.dry_run,
             lambda: run_gameplay_reel(args.slot or 1, dry_run=args.dry_run,
@@ -330,6 +333,22 @@ def main() -> int:
         if not (CONFIG.reels.get("youtube", {}) or {}).get("enabled", False):
             print("[youtube-reel] reels.youtube.enabled is false — skipping.", flush=True)
             return 0
+        _yslots = [str(s) for s in ((CONFIG.reels.get("youtube", {}) or {}).get("slots_utc") or [])]
+        if _yslots and not args.clip:  # lore Shorts on chosen slots only (Bryce, 2026-11-19: 1 lore + 1 voiceover a day)
+            import datetime as _dt
+            _now = _dt.datetime.now(_dt.timezone.utc)
+            _win = float((CONFIG.reels.get("youtube", {}) or {}).get("window_hours", 3))
+            _ok = False
+            for _s in _yslots:
+                _h, _m = map(int, _s.split(":"))
+                _t = _now.replace(hour=_h, minute=_m, second=0, microsecond=0)
+                if _t > _now:
+                    _t -= _dt.timedelta(days=1)
+                if (_now - _t).total_seconds() <= _win * 3600:
+                    _ok = True
+            if not _ok:
+                print(f"[youtube-reel] not a YouTube lore slot ({', '.join(_yslots)} UTC) — skipping.", flush=True)
+                return 0
 
         def _run_yt():
             clip, lay = args.clip, args.layout

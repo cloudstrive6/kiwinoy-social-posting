@@ -204,6 +204,23 @@ class _Config:
     def threads_posts(self) -> dict[str, Any]:
         return self._data.get("threads_posts", {})
 
+    def games_lock(self) -> list[str]:
+        """`reels.games_only`: when set, EVERY posting track uses only these games (Bryce,
+        2026-11-19: "only post GTA 6 content and pause all other games until otherwise I say so").
+        Empty = no lock. Enforced where tracks list games, so no fallback can cross to another game."""
+        return [str(g) for g in (self.reels.get("games_only") or []) if str(g).strip()]
+
+    def game_allowed(self, key) -> bool:
+        lock = self.games_lock()
+        if not lock:
+            return True
+        k = str(key or "")
+        for suf in ("-vertical", "-cutscene", "-reels"):
+            if k.endswith(suf):
+                k = k[: -len(suf)]
+                break
+        return k in lock
+
     def preferred_footage_games(self) -> list[str]:
         """The games the footage tracks (FB/IG feed gameplay reel + Threads footage)
         should prefer RIGHT NOW.
@@ -225,10 +242,10 @@ class _Config:
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=timezone.utc)
                 if datetime.now(timezone.utc) <= dt:
-                    return games
+                    return [g for g in games if self.game_allowed(g)]
             except Exception:
                 pass
-        return base
+        return [g for g in base if self.game_allowed(g)]
 
     def slot(self, slot_id: int) -> dict[str, Any]:
         for s in self.schedule["slots"]:

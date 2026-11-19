@@ -61,7 +61,16 @@ def _reel_picks(games: list[str]) -> list[tuple[str, dict, dict]]:
 
 
 def _picks() -> list[tuple[str, dict, dict]]:
-    """(game, config, pick) for every pick, newest long-form first, then pick order."""
+    """(game, config, pick) for every pick, newest long-form first, then pick order.
+    Only games allowed by reels.games_only (2026-11-19 lock)."""
+    try:
+        from core.config import CONFIG
+        return [p for p in _picks_all() if CONFIG.game_allowed(p[0])]
+    except Exception:
+        return _picks_all()
+
+
+def _picks_all() -> list[tuple[str, dict, dict]]:
     games = _reel_games()
     if games:
         return _reel_picks(games)

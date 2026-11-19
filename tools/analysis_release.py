@@ -65,8 +65,9 @@ def pack_path(game: str) -> Path:
 
 
 def load_packs(games: list[str]) -> dict[str, dict]:
+    from core.config import CONFIG
     out = {}
-    for g in games:
+    for g in [x for x in games if CONFIG.game_allowed(x)]:  # reels.games_only lock (2026-11-19)
         f = pack_path(g)
         if f.exists():
             out[g] = json.loads(f.read_text(encoding="utf-8"))

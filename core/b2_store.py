@@ -184,6 +184,11 @@ def cutscene_games() -> list[str]:
         if len(parts) >= 3 and parts[0] == "cutscenes" and parts[1] and parts[1] not in out:
             if Path(parts[-1]).suffix.lower() in VIDEO_EXTS:
                 out.append(parts[1])
+    try:  # reels.games_only lock (2026-11-19): lore never falls across to a paused game
+        from core.config import CONFIG
+        out = [g for g in out if CONFIG.game_allowed(g)]
+    except Exception:
+        pass
     return out
 
 

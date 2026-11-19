@@ -689,7 +689,7 @@ def run_gameplay_reel(
     # crossing over to The Last of Us Part II (user, 2026-10-13). A hand-forced run still
     # wins: pass clip_override/layout_override, or take the platform out of the config.
     _rot = ((gcfg.get("platform_rotation") or {}).get(_lp) or {})
-    _rg = [str(x) for x in (_rot.get("games") or []) if str(x).strip()]
+    _rg = [str(x) for x in (_rot.get("games") or []) if str(x).strip() and CONFIG.game_allowed(x)]
     _rf = [str(x) for x in (_rot.get("formats") or []) if str(x).strip()]
     if _rg and _rf and not layout_override and not clip_override:
         try:

@@ -374,6 +374,12 @@ platforms:
 # a day. Each reel is a 12-15s 9:16 MP4 with Ken Burns motion + animated
 # storytelling captions, rendered free with Remotion and published to IG/FB Reels.
 reels:
+  # GAMES LOCK (Bryce, 2026-11-19): "For all Facebook, Instagram, and TikTok reels, and YouTube shorts
+  # and long form, effective immediately we will only post GTA 6 content and pause all other games
+  # until otherwise I say so." Every track that lists games filters through this (core/config.py
+  # game_allowed), so no fallback crosses to a paused game. Remove the line (or empty it) to resume
+  # the per-track lists below, which keep their previous games.
+  games_only: [gta6]
   enabled: true    # WOLVERINE pivot LIVE 2026-09-15 (user): SM2 paused, now posting
                    # Marvel's Wolverine feed reels. Gated by run.py (--reel skips when false).
   # Backup-trigger self-heal: a 2nd cron-job.org job fires ~15 min after each reel
@@ -391,6 +397,7 @@ reels:
     window_minutes_by_track:
       reels_feed: 480                   # reels 0/8/16 UTC  -> 8h interval
       tiktok: 480                       # tiktok 3/11/19 UTC -> 8h interval
+      youtube_reel: 1440                # YouTube lore Short once a day from 2026-11-19 -> 24h interval
       threads_text: 720                 # threads caption 1/13 UTC -> 12h interval
       threads_footage: 720              # threads footage 10/22 UTC -> 12h interval
       quotes: 720                       # quotes 6/18 UTC    -> 12h interval
@@ -416,6 +423,11 @@ reels:
     # OWN "Video Uploads per day" = 100 allowance; general "Queries per day" = 10,000 barely
     # used (~375). So Shorts (3/day) + 4K60 long-forms (3/day) = ~6/100 — no increase needed.
     via: data_api
+    # ONE lore Short a day from 2026-11-19 (Bryce: "2 shorts per day ... resume the lore format, and the
+    # other would be the ... voiceover format"). run.py --youtube-reel skips outside these UTC slots
+    # (window_hours after each); 00:00 UTC = 13:00 NZDT = 19:00 US Eastern. The voiceover Short has 15:00 UTC.
+    slots_utc: ["00:00"]
+    window_hours: 3
     slots: [1, 2, 3]       # reference only — the real cadence is how often reels.yml fires --youtube-reel
     # GAME PLAYLISTS: after a Short uploads, it's auto-added to its game's YouTube playlist.
     # The bosskg.com Games section files each video onto a game page BY PLAYLIST membership
@@ -581,7 +593,7 @@ reels:
     # Resolved by CONFIG.preferred_footage_games(). TikTok is a separate forced-game track
     # (already spider-man2); YouTube unaffected.
     prefer_override:
-      games: [wolverine]   # Marvel's Wolverine ONLY on FB/IG feed reels (+ the YouTube
+      games: [gta6]        # GTA 6 ONLY (2026-11-19, Bryce). Was [wolverine]: Marvel's Wolverine ONLY on FB/IG feed reels (+ the YouTube
                            # Shorts crosspost). Pivot 2026-09-15 (per user); was spider-man2.
                            # To switch games/resume rotation: change `games` or set
                            # `until` to a past date.
@@ -653,6 +665,7 @@ reels:
     spider-man-miles-morales: "Marvel's Spider-Man: Miles Morales"
     spider-man2: "Marvel's Spider-Man 2"
     wolverine: "Marvel's Wolverine"
+    gta6: "Grand Theft Auto VI"
     general: 'this game'
   # ONE fitting emoji per game. Used for the GAME-TITLE line that sits between the
   # caption body and the hashtags on CLASSIC/TRIPTYCH reel captions (FB/IG/TikTok,
@@ -663,6 +676,7 @@ reels:
     spider-man-miles-morales: "🕸️"
     spider-man2: "🕸️"
     wolverine: "🗡️"
+    gta6: "🌴"
     ff7: "⚔️"
     ff7remake: "⚔️"
     ff7rebirth: "⚔️"
@@ -692,6 +706,7 @@ reels:
     spider-man-miles-morales: ["#MarvelsSpiderManMilesMorales", "#SpiderManMilesMorales", "#SpiderMan", "#PS5", "#gamingreels"]
     spider-man2: ["#SpiderMan2", "#MarvelsSpiderMan2", "#SpiderMan", "#PS5", "#gamingreels"]
     wolverine: ["#MarvelsWolverine", "#Wolverine", "#Insomniac", "#PS5", "#gamingreels"]
+    gta6: ["#GTA6", "#GTAVI", "#GrandTheftAuto6", "#Rockstar", "#gamingreels"]
     ff7: ["#FF7", "#FinalFantasyVII", "#FF7Rebirth", "#FinalFantasy", "#gaming"]
     ff7remake: ["#FF7Remake", "#FinalFantasyVIIRemake", "#FinalFantasy", "#FF7", "#gaming"]
     thelastofus2: ["#thelastofuspart2", "#thelastofus", "#TLOU2", "#PS5", "#gaming"]
@@ -741,7 +756,7 @@ reels:
   # on that game's own used-clip count. Run: `python run.py --tiktok --slot N`.
   tiktok:
     enabled: true        # WOLVERINE TikTok track LIVE 2026-09-15 (user). Gated by run.py.
-    game: wolverine      # Marvel's Wolverine (pivot 2026-09-15, per user). Was spider-man2
+    game: gta6           # GTA 6 only (2026-11-19, Bryce). Was wolverine (pivot 2026-09-15, per user). Before that spider-man2
                          # (2026-07-27); halo 2026-07-24; TLOU2 gameplays paused 2026-07-05.
     extra_hashtags: ["#gaming"]   # appended to the TikTok caption ONLY (per user, 2026-07-06)
     posts_per_day: 3     # reference; actual firing = cron-job.org. 3/day EQUALLY SPACED
@@ -780,7 +795,7 @@ reels:
   # these packs (no YouTube Shorts crossposts), games taking turns; Instagram slots also post to
   # Facebook (facebook: false stops that). "Do only Spider-Man 2 and Spider-Man 1 games for now".
   analysis_reels:
-    games: [spider-man2, spider-man1]
+    games: [gta6, spider-man2, spider-man1]   # gta6 first (2026-11-19); the games lock leaves only gta6 packs
     facebook: true
   # YOUTUBE ANALYSIS SHORTS AT THEIR SLOT (Bryce, 2026-11-16: "only upload them as they hit their
   # timeslot and not upload > schedule them", so other games fit in without waiting for a whole
@@ -791,8 +806,9 @@ reels:
   # and its long-form is public. enabled: false stops releases.
   youtube_analysis_shorts:
     enabled: true
-    slots_utc: ["15:00", "23:00"]   # 04:00 and 12:00 NZDT
-    games: [wolverine, spider-man2]
+    slots_utc: ["15:00"]            # 04:00 NZDT. One voiceover Short a day from 2026-11-19 (Bryce: 2 Shorts a day,
+                                    # one lore and one voiceover); was ["15:00", "23:00"]
+    games: [gta6, wolverine, spider-man2]   # the games lock leaves only gta6 (2026-11-19)
     window_hours: 3                 # a run later than this after a slot does nothing
   gameplay:
     enabled: true
@@ -836,16 +852,16 @@ reels:
     # below are the narrowed "for now" sets.
     platform_rotation:
       instagram:
-        games:   [spider-man2, wolverine]
+        games:   [gta6]                          # GTA 6 only (2026-11-19, Bryce); was [spider-man2, wolverine]
         formats: [fill, analysis, classic]       # triptych held back for now; analysis added 2026-11-14 (Bryce)
       tiktok:
-        games:   [spider-man2, wolverine]
+        games:   [gta6]                          # GTA 6 only (2026-11-19, Bryce); was [spider-man2, wolverine]
         formats: [fill, analysis, classic, triptych]   # analysis added 2026-11-14 (Bryce)
       # analysis = the next ready DEDICATED analysis reel (reels.analysis_reels below) when that is set,
       # else the next ready analysis Short (agents/analysis_feed.py): cut from a KG analysis
       # long-form, on B2 and already live on YouTube. None ready -> the slot uses the next format.
       youtube:
-        games:   [spider-man2]                   # lore only, SM2 only for now
+        games:   [gta6]                          # lore only, GTA 6 only (2026-11-19, Bryce); was [spider-man2]
         formats: [lore]
     # LORE-STRICT platforms (user, 2026-11-12): a lore slot here NEVER falls back to
     # classic/triptych/fill. When a card fails the fact-check it moves on to other footage:
