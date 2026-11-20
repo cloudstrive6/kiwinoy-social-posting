@@ -58,7 +58,15 @@ def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: floa
     times. A banned word is beeped only when at least `need` of the listens covering that moment
     hear a banned word there (overlap within 0.25 s). Real GTA 6 test, 2026-11-20: the pieces
     caught a 'bitch' the full pass heard as 'shit', and kept a 'Fuck!' that only the full pass
-    imagined in a clip with no swearing. Returns (confirmed words, log lines)."""
+    imagined in a clip with no swearing.
+    WHEN UNSURE, DON'T BEEP (Bryce, 2026-11-20, on a chase shout 2 of 3 listens heard as 'Fuck!':
+    "if you're unsure, then don't censor the word"). So a word is beeped only when EVERY listen
+    covering that moment hears a swear there (an allowed one like 'shit' counts: someone clearly
+    swore) and at least `need` of them hear a banned one. One listen that heard that moment and no
+    swear in it means the word is uncertain and stays (the 45 s chase stretch: the full pass heard
+    "Get down! Shots fired." and nothing where two pieces heard "Fuck!"). A piece that starts or
+    ends within 1.5 s of the word and heard no words at all near it abstains: it was cut in with
+    no context (the confirmed "Eat shit, bitch" in a 12 s cut). Returns (confirmed words, log)."""
     listens = [(0.0, dur or 1e9, words)]
     a, i = 0.0, 0
     while a < max(dur - 3.0, 0.01) and i < max_windows:
@@ -66,8 +74,9 @@ def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: floa
         i += 1
         listens.append((a, b2, listen(a, b2, i)))
         a += stride
-    banned = [(a0, b0, [w for w in (ws or []) if beep_word(w.get("text", ""))])
-              for a0, b0, ws in listens]
+    banned = [(a0, b0, [w for w in ws if beep_word(w.get("text", ""))])
+              for a0, b0, ws in listens if ws is not None]     # a failed listen casts no vote
+    heard_ok = [(a0, b0, ws) for a0, b0, ws in listens if ws is not None]  # failed = no evidence
     log, out, seen = [], [], []
     for _, _, ws in banned:
         for w in ws:
@@ -81,7 +90,25 @@ def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: floa
             votes = sum(1 for _, _, bw in cover
                         if any(x["start"] < w["end"] + 0.25 and x["end"] > w["start"] - 0.25
                                for x in bw))
-            if votes >= need:
+            doubt = 0
+            for a0, b0, ws in heard_ok:
+                if not (a0 <= w["start"] - 0.3 and w["end"] + 0.3 <= b0):
+                    continue
+                if any(_is_swearish(x.get("text", "")) and x["start"] < w["end"] + 0.25
+                       and x["end"] > w["start"] - 0.25 for x in ws):
+                    continue                                        # heard a swear there
+                at_edge = w["start"] - a0 < 1.5 or b0 - w["end"] < 1.5
+                reach = 0.25 if at_edge else 2.0
+                near = any(x["start"] < w["end"] + reach and x["end"] > w["start"] - reach
+                           for x in ws)
+                if near or not at_edge:     # it heard this moment and no swear in it: real doubt.
+                    doubt += 1              # A piece cut in under 1.5 s from the word lacks
+                                            # context: it doubts only if it heard another word on
+                                            # the word itself, not a stray fragment beside it.
+            if votes >= need and doubt:
+                log.append(f"not beeped (unsure): '{w['text']}' at {w['start']:.1f}s, {votes}/"
+                           f"{len(cover)} listens heard it but {doubt} heard no swear there")
+            elif votes >= need:
                 out.append({"text": w["text"], "start": min(x["start"] for x in agree),
                             "end": max(x["end"] for x in agree)})
                 log.append(f"BEEP '{w['text']}' at {w['start']:.1f}s ({votes}/{len(cover)} listens)")
@@ -123,7 +150,7 @@ def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
         # it was given, and it imagined a "Fuck!" in a clip with no swearing. Bryce: never censor a
         # word that was not a swear. So one lossless FLAC pass over the whole clip plus overlapping
         # 12 s pieces (see _vote): a word is beeped only when 2 of the ~3 listens of that moment
-        # hear a banned word there.
+        # hear a banned word there, and only when no listen of it heard no swear (unsure = keep).
         with tempfile.TemporaryDirectory() as tmp:
             aud = Path(tmp) / "a.flac"
             r = subprocess.run([exe, "-v", "error", "-y", "-i", str(clip), "-vn", "-ac", "1",
