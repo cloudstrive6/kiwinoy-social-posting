@@ -76,7 +76,11 @@ jobs:
               git rebase --abort 2>/dev/null || true
               sleep 5
             done
-            if [ -z "$ok" ]; then echo "::error::new facts NOT pushed"; exit 1; fi
+            if [ -z "$ok" ]; then
+              echo "::error::new facts NOT pushed"
+              python -c "from core import notify; notify.telegram('KG fact bank top-up: new facts were researched and checked but could NOT be pushed (git conflict on data/lore). They are lost; the next daily run researches again.')" || true
+              exit 1
+            fi
           else
             echo "no fact bank change"
           fi

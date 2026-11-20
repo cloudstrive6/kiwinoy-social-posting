@@ -180,14 +180,17 @@ def check(gname: str, cands: list[dict], existing: list[dict], st: dict) -> list
 def gate(cands: list[dict], results: list[dict], existing: list[dict]) -> tuple[list[dict], list[str]]:
     """Code gates after the check. Returns (accepted candidates, report lines)."""
     from lore_short import attribution_overreach
-    ok, lines = [], []
+    ok, lines, done = [], [], set()
     seen = [f["fact"] for f in existing]
     for r in results:
         try:
             i = int(r.get("i"))
-            c = cands[i - 1]
         except Exception:
             continue
+        if not 1 <= i <= len(cands) or i in done:   # out of range, or a second verdict for one fact
+            continue
+        done.add(i)
+        c = cands[i - 1]
         verdict = str(r.get("verdict", "")).upper().strip()
         fact = re.sub(r"\s+", " ", str(r.get("fact") or c.get("fact") or "")).strip()
         srcs = [s for s in (r.get("sources") or []) if _domain(s)]
@@ -201,11 +204,17 @@ def gate(cands: list[dict], results: list[dict], existing: list[dict]) -> tuple[
             drop = f"too long ({len(fact.split())} words)"
         else:
             dup = near_duplicate(fact, seen)
-            over = attribution_overreach(fact, " ".join(_domain(s) for s in srcs) + " " + why)
+            # support = the source domains only: the checker's free-text reason ("not said by the
+            # developer") would otherwise switch the credit check off (review, 2026-11-20)
+            over = attribution_overreach(fact, " ".join(_domain(s) for s in srcs))
+            a, b = _words(fact), _words(c.get("fact", ""))
+            related = bool(a and b and len(a & b) / len(a | b) >= 0.2)
             if dup:
                 drop = f"repeats: {dup[:60]}"
             elif over:
                 drop = f"credit: {over}"
+            elif not related:
+                drop = "checker's wording is not about this candidate"
         status = "DROP" if drop else verdict
         lines.append(f"| {i} | {status} | {fact} | {'; '.join(_domain(s) for s in srcs)} | "
                      f"{drop or why} |")
@@ -217,8 +226,12 @@ def gate(cands: list[dict], results: list[dict], existing: list[dict]) -> tuple[
     return ok, lines
 
 
-def next_ids(game: str, facts: list[dict], n: int) -> list[str]:
-    nums = [int(m.group(1)) for f in facts for m in [re.search(r"-(\d+)$", str(f.get("id", "")))] if m]
+def next_ids(game: str, facts: list[dict], n: int, used: set | None = None) -> list[str]:
+    """Next free ids, above every id in the bank AND in the used ledger: a removed fact's id stays
+    marked used, so reusing it would hide the new fact until the bank cycles."""
+    ids = [str(f.get("id", "")) for f in facts]
+    ids += [k.split(":", 2)[2] for k in (used or set()) if k.startswith(f"fact:{game}:")]
+    nums = [int(m.group(1)) for x in ids for m in [re.search(r"-(\d+)$", x)] if m]
     start = max(nums or [0]) + 1
     return [f"{game}-{k:02d}" for k in range(start, start + n)]
 
@@ -228,6 +241,10 @@ def topup(game: str, st: dict, force: bool = False, dry: bool = False, batch: in
     data = load_bank(game)
     facts = [f for f in data.get("facts", []) if f.get("fact")]
     used = used_keys()
+    if not used:
+        # gh_release returns an empty set on ANY read failure, which would make every fact look
+        # unused and hide a dry bank. The ledger always holds keys once anything has posted.
+        raise RuntimeError("could not read the used-fact ledger (empty), so the bank level is unknown")
     left = unused(game, facts, used)
     log(f"{game}: {len(left)} unused of {len(facts)} (top up below {st['min_unused']})")
     if len(left) >= int(st["min_unused"]) and not force:
@@ -241,7 +258,7 @@ def topup(game: str, st: dict, force: bool = False, dry: bool = False, batch: in
         raise RuntimeError("the independent check returned no verdicts")
     ok, lines = gate(cands, results, facts)
     today = dt.date.today().isoformat()
-    ids = next_ids(game, facts, len(ok))
+    ids = next_ids(game, facts, len(ok), used)
     new = [{"id": fid, "fact": f["fact"], "source": f["sources"][0], "sources": f["sources"],
             "wow": f["wow"], "pairs_with": f["pairs_with"], "flag": "", "checked": today}
            for fid, f in zip(ids, ok)]
