@@ -57,6 +57,14 @@ jobs:
         if: steps.check.outputs.fire == '1' && (steps.check.outputs.kind == 'approve' || steps.check.outputs.kind == 'drafts' || steps.check.outputs.kind == 'prioritise')
         run: pip install -r requirements.txt
 
+      # same-story check before an approved article's card (Bryce, 2026-11-20): the news-card ledger
+      # lives on B2 (rclone) and Claude judges "same story" when link and headline differ
+      - name: Install the same-story check tools
+        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'approve'
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          npm install -g @anthropic-ai/claude-code
+
       # ── "prioritise <game>" path: reorder the 4K60 long-form upload queue ──
       - name: Set long-form queue priority
         if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'prioritise'

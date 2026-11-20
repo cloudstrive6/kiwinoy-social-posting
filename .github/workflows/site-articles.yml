@@ -12,6 +12,9 @@ on:
       count:
         description: "How many articles to generate"
         default: "3"
+      auto_publish:
+        description: "Auto-publish the day's top draft? true/false"
+        default: "true"
 
 concurrency:
   group: site-articles
@@ -30,6 +33,11 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  # so the DRAFT approval ping actually sends
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # daily auto-publish (publish_article.py --auto): Facebook/Threads/IG Story card via Post for Me,
+      # and the news-card ledger on B2 for the same-story check (Bryce, 2026-11-20)
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +50,22 @@ jobs:
       - name: Install Claude Code CLI (article writer)
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Install rclone (news-card ledger for the same-story check)
+        run: curl -fsSL https://rclone.org/install.sh | sudo bash
+
       - name: Generate articles
         run: python tools/site_article.py --count "${{ github.event.inputs.count || '3' }}"
+
+      # DAILY AUTO-PUBLISH (Bryce, 2026-11-20: "automatically publish a blog post daily"): the day's
+      # top fresh draft goes live with no approval; the others still wait for "approved" on Telegram.
+      # Its card goes to Facebook, Threads and IG Story unless the news-card track already posted
+      # the same story. Skipped on a manual run that sets auto_publish to false.
+      - name: Auto-publish today's top article
+        if: github.event.inputs.auto_publish != 'false'
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          python tools/publish_article.py --auto || echo "auto-publish failed (drafts kept)"
 
       # Re-pick the hero by trend buzz + recency (features the hottest live story today).
       - name: Pick trending featured

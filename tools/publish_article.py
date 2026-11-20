@@ -208,6 +208,82 @@ def _build_card(title: str, game: str, slug: str):
     return None, None
 
 
+def _tok(s: str) -> set:
+    return {w for w in re.sub(r"[^a-z0-9 ]", " ", str(s or "").lower()).split() if len(w) > 2}
+
+
+def _norm_url(u: str) -> str:
+    return re.sub(r"^https?://(www\.)?", "", str(u or "").split("?")[0].split("#")[0]).rstrip("/").lower()
+
+
+def same_story_card(title: str, excerpt: str, source_url: str, days: int = 7) -> tuple[str, bool]:
+    """(the news card already posted on this SAME story, or '', ledger_ok).
+
+    Bryce, 2026-11-20: "when Telegram Bot asks me to approve a blog article, and then I approve it,
+    and if that exactly the same topic's card is already posted on Facebook, Threads and IG-story,
+    then no need to post another similar duplicate card". The news-card track (tools/trend_post.py)
+    posts to all three and records each story in its B2 ledger. A match is the same source link,
+    a near-identical headline, or (Claude, given the recent cards) the same news story."""
+    try:
+        from tools import trend_post as tp
+        recs = tp._load_posted()
+    except Exception as e:
+        print(f"   card ledger unreadable ({e!r})", flush=True)
+        return "", False
+    if not recs:
+        return "", False
+    import datetime as _dt
+    cut = (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=days)).strftime("%Y-%m-%d")
+    recent = [r for r in recs if str(r.get("date") or "") >= cut and r.get("topic")]
+    label = lambda r: f"{r.get('date')}: {r.get('topic')}"  # noqa: E731
+    su = _norm_url(source_url)
+    for r in recent:
+        if su and su == _norm_url(r.get("url", "")):
+            return label(r), True
+    a = _tok(title)
+    for r in recent:
+        b = _tok(r.get("topic", ""))
+        if a and b and len(a & b) / len(a | b) >= 0.5:
+            return label(r), True
+    if not recent:
+        return "", True
+    listing = "\n".join(f"{i}. {r.get('topic')}" for i, r in enumerate(recent, 1))
+    prompt = (
+        "A gaming news site is about to post a news card for this article on Facebook, Threads and "
+        "an Instagram Story:\n"
+        f"TITLE: {title}\nSUMMARY: {excerpt}\n\n"
+        f"News cards already posted in the last {days} days:\n{listing}\n\n"
+        "Is the article about the SAME news story as one of those cards (same event or "
+        "announcement, even if worded differently)? A different story about the same game or "
+        "company is NOT the same. Reply with JSON only: {\"same\": <card number, or 0>}")
+    try:
+        from core import claude_code
+        from core.openai_client import extract_json
+        n = int((extract_json(claude_code.run(prompt, timeout=180)) or {}).get("same") or 0)
+        if 1 <= n <= len(recent):
+            return label(recent[n - 1]), True
+    except Exception as e:
+        print(f"   same-story check by Claude skipped ({e!r}); link and headline checks only", flush=True)
+    return "", True
+
+
+def _record_card(title: str, url: str, game: str) -> None:
+    """Add the article's card to the news-card ledger, so the news-card track will not card the
+    same story again later (the duplicate rule, the other way round)."""
+    try:
+        import datetime as _dt
+        from tools import trend_post as tp
+        recs = tp._load_posted()
+        if not recs:
+            return                                     # unreadable: never overwrite the ledger
+        recs.append({"key": tp._key(title), "topic": title,
+                     "date": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d"),
+                     "stage": "article", "game": game, "source": "bosskg article", "url": url})
+        tp._save_posted(recs)
+    except Exception as e:
+        print(f"   card ledger update skipped ({e!r})", flush=True)
+
+
 def _post(caps: dict, url: str, title: str, slug: str, game: str) -> list[str]:
     """Post the news CARD (graphic + headline) with the caption + link CTA to Facebook + Threads,
     and an Instagram STORY (same card on a 9:16 canvas + link-in-bio CTA) — like the auto-posts.
@@ -297,9 +373,38 @@ def main() -> int:
     ap.add_argument("--dry", action="store_true", help="show captions; do not publish/post/push")
     ap.add_argument("--list", action="store_true",
                     help="READ-ONLY: Telegram the full pending-draft backlog (publishes nothing)")
+    ap.add_argument("--auto", action="store_true",
+                    help="DAILY AUTO-PUBLISH: publish the day's top fresh draft without approval")
     a = ap.parse_args()
 
     pending = _pending()
+    if a.auto:
+        # Bryce, 2026-11-20: "Moving forward, make sure to automatically publish a blog post daily".
+        # site-articles.yml drafts the day's articles (best pick first), then runs this: the first
+        # draft written today goes live; the rest still wait for "approved" on Telegram. Only drafts
+        # from the last 2 days count, so stale news never goes up on its own.
+        import datetime as _dt
+        now = _dt.datetime.now(_dt.timezone.utc).date()
+        fresh = []
+        for p, fm, body in pending:
+            try:
+                d = _dt.date.fromisoformat(str(fm.get("date", ""))[:10])
+            except Exception:
+                continue
+            if (now - d).days <= 1:
+                fresh.append((d, p.stat().st_mtime, p, fm, body))
+        if not fresh:
+            print("[publish] auto: no fresh draft (today or yesterday) to publish.", flush=True)
+            if not a.dry:
+                from core import notify
+                notify.telegram("📰 Daily blog: no fresh draft today, so nothing was auto-published. "
+                                "Send \"blog <topic>\" to have one written.")
+            return 0
+        fresh.sort(key=lambda x: (-x[0].toordinal(), x[1]))   # newest day, then first written
+        _, _, p, fm, body = fresh[0]
+        print(f"[publish] auto: today's pick is {p.stem}", flush=True)
+        pending = [(p, fm, body)]
+        a.match = p.stem
     if a.list:
         print(f"[publish] listing {len(pending)} pending draft(s).", flush=True)
         _notify_list(pending)
@@ -335,13 +440,23 @@ def main() -> int:
         print("  deploying… waiting for the page to go live", flush=True)
         live = _wait_live(url)
         print(f"  live={live}", flush=True)
-        results = _post(caps, url, title, slug, str(fm.get("game", "")))
+        dup, ledger_ok = same_story_card(title, str(fm.get("excerpt", "")), str(fm.get("sourceUrl", "")))
+        if dup:
+            print(f"  same story already carded ({dup}) - no second card", flush=True)
+            results = [f"⏭ No card: the same story was already posted to Facebook, Threads and "
+                       f"IG Story ({dup})"]
+        else:
+            results = _post(caps, url, title, slug, str(fm.get("game", "")))
+            if not ledger_ok:
+                results.append("(card ledger unreadable, so the duplicate check could not run)")
+            elif any(r.startswith("✅") for r in results):
+                _record_card(title, url, str(fm.get("game", "")))
 
         from core import notify
         notify.telegram(
             f"🚀 Published: {title}\n{url}\n\n" + "  ".join(results) +
             ("" if live else "\n(note: deploy still finishing — link goes live shortly)") +
-            f"\n\n— Facebook —\n{caps['facebook']}\n\n— Threads —\n{caps['threads']}"
+            ("" if dup else f"\n\n— Facebook —\n{caps['facebook']}\n\n— Threads —\n{caps['threads']}")
         )
     return 0
 
