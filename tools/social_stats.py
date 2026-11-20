@@ -91,8 +91,43 @@ def _tiktok_followers() -> int | None:
         return None
 
 
+def _instagram_graph() -> int | None:
+    """OFFICIAL count (2026-11-20): the public endpoint below answers GitHub's servers with HTTP 429,
+    so the site showed 858 from 2026-10-29 while the real count was 1,206. Post for Me holds the
+    Facebook login that @kiwinoygaming is connected through; with it, the Graph API gives the linked
+    Instagram business account's followers_count. Read-only; the token is fetched per run, never
+    stored or printed."""
+    import requests
+    try:
+        from core import postforme
+        acct = next((a for a in postforme.list_accounts()
+                     if str(a.get("platform", "")).lower() == "instagram"
+                     and str(a.get("username", "")).lower() == IG_USER), None)
+        tok = (acct or {}).get("access_token")
+        if not tok:
+            print("   instagram (graph): no connected account token", flush=True)
+            return None
+        r = requests.get("https://graph.facebook.com/v21.0/me/accounts", timeout=25, params={
+            "fields": "instagram_business_account{username,followers_count}", "access_token": tok})
+        if r.status_code != 200:
+            print(f"   instagram (graph): HTTP {r.status_code}", flush=True)
+            return None
+        for page in r.json().get("data", []) or []:
+            ig = page.get("instagram_business_account") or {}
+            if str(ig.get("username", "")).lower() == IG_USER and ig.get("followers_count"):
+                return int(ig["followers_count"])
+        print("   instagram (graph): account not found on the linked pages", flush=True)
+    except Exception as e:
+        print(f"   instagram (graph): {type(e).__name__}", flush=True)   # never echo the token
+    return None
+
+
 def _instagram_followers() -> int | None:
-    """Best-effort: the public web_profile_info endpoint (needs the web app-id header)."""
+    """The official Graph API count first, then the public web_profile_info endpoint (needs the
+    web app-id header; often refused from cloud IPs)."""
+    c = _instagram_graph()
+    if c:
+        return c
     import requests
     try:
         url = f"https://www.instagram.com/api/v1/users/web_profile_info/?username={IG_USER}"

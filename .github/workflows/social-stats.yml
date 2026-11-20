@@ -26,6 +26,8 @@ jobs:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      # Instagram count via the official Graph API, using the login Post for Me holds (2026-11-20)
+      POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
