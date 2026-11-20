@@ -358,6 +358,8 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
         wins = list(cutscene_windows(Path(path), seconds))
         random.shuffle(wins)                 # RANDOM scene inside that clip
         for start in wins:
+            # Fact cards may reuse a moment already posted as classic/triptych/fill (Bryce,
+            # 2026-11-20), so only an exact lore id counts as used here.
             cid = f"{base_id}@{start:g}"
             if cid in skip:
                 continue
@@ -377,8 +379,14 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
 
 def _fallback_cfg() -> dict:
     g = (CONFIG.reels.get("gameplay", {}) or {}).get("full_recording_fallback") or {}
-    return {"enabled": bool(g.get("enabled", True)), "seconds": float(g.get("seconds", 45)),
-            "min_score": int(g.get("min_score", 6)), "max_checks": int(g.get("max_checks", 6))}
+    return {"enabled": bool(g.get("enabled", True)),
+            "min_seconds": float(g.get("min_seconds", 15)),
+            "max_seconds": float(g.get("max_seconds", 120)),
+            "scan_seconds": float(g.get("scan_seconds", 150)),
+            "frames": int(g.get("frames", 18)),
+            "min_score": int(g.get("min_score", 6)),
+            "max_checks": int(g.get("max_checks", 4)),
+            "old_id_seconds": float(g.get("old_id_seconds", 60))}
 
 
 def _source_url(kind: str, item: Any) -> Optional[str]:
@@ -403,32 +411,180 @@ def _ff(args: list, timeout: int = 600) -> bool:
         return False
 
 
-def judge_stretch(src: str, start: float, seconds: float, work: Path) -> dict:
-    """Claude looks at 6 frames across the stretch and says whether it works as a reel."""
+def used_ranges(base: str, led: dict, plats, default_len: float = 45.0,
+                include_lore: bool = False) -> list[tuple[float, float]]:
+    """(start, end) of every fallback moment of one recording already used on these platforms
+    ('<base>@<start>~<end>'). Fact-card ids ('<base>@<start>', no end) are left out by default:
+    Bryce, 2026-11-20, fact cards and classic/triptych/fill may share a moment. With
+    include_lore they count as `default_len` long."""
+    out = []
+    for p in plats:
+        for cid in (led or {}).get(p, set()) or set():
+            head, _, tail = str(cid).partition("@")
+            if head != base or not tail:
+                continue
+            a, _, b = tail.partition("~")
+            if not b and not include_lore:
+                continue
+            try:
+                a = float(a)
+                b = float(b) if b else a + default_len
+            except ValueError:
+                continue
+            out.append((a, b))
+    return out
+
+
+def _free_gaps(total: float, taken, min_len: float, edge: float = 2.0) -> list[tuple[float, float]]:
+    """Stretches of [edge, total-edge] not covered by any taken range, at least min_len long."""
+    gaps, t = [], edge
+    for a, b in sorted((max(0.0, min(total, a)), max(0.0, min(total, b))) for a, b in taken):
+        if a - t >= min_len:
+            gaps.append((t, a))
+        t = max(t, b)
+    if total - edge - t >= min_len:
+        gaps.append((t, total - edge))
+    return gaps
+
+
+def _dialogue_lines(src: str, a: float, b: float, work: Path) -> list[tuple[float, float, str]]:
+    """Spoken lines inside [a, b] of the recording as (start, end, text), absolute seconds.
+    Words come from ElevenLabs Scribe; a pause of 0.8 s or a sentence end closes a line.
+    [] when there is no speech or STT is unavailable."""
+    from core import elevenlabs
+    aud = work / "region.mp3"
+    if not _ff(["-ss", f"{a:.2f}", "-i", src, "-t", f"{b - a:.2f}", "-vn", "-ac", "1",
+                "-ar", "16000", "-b:a", "64k", str(aud)], 300) or not aud.exists():
+        return []
+    words = elevenlabs.speech_to_text_words(aud) or []
+    lines, cur = [], []
+    for w in words:
+        if cur and (w["start"] - cur[-1]["end"] > 0.8):
+            lines.append(cur)
+            cur = []
+        cur.append(w)
+        if re.search(r"[.!?]$", w["text"]):
+            lines.append(cur)
+            cur = []
+    if cur:
+        lines.append(cur)
+    return [(a + l[0]["start"], a + l[-1]["end"], " ".join(x["text"] for x in l)) for l in lines]
+
+
+def _quiet_spans(src: str, a: float, b: float) -> list[tuple[float, float]]:
+    """Quiet spans inside [a, b] (absolute seconds) from silencedetect, relative to the region's
+    own loudness. The no-STT fallback for snapping cuts off speech."""
+    import re as _re
+    from core import ffmpeg as _f
+    exe = _f.ffmpeg_bin()
+    if not exe:
+        return []
+    noise = -32.0
+    try:
+        v = subprocess.run([exe, "-hide_banner", "-ss", f"{a:.2f}", "-t", f"{b - a:.2f}", "-i", src,
+                            "-vn", "-af", "volumedetect", "-f", "null", "-"],
+                           capture_output=True, text=True, timeout=300)
+        m = _re.search(r"mean_volume:\s*(-?[0-9.]+) dB", v.stderr or "")
+        if m:
+            noise = max(-50.0, min(-20.0, float(m.group(1)) - 10.0))
+        r = subprocess.run([exe, "-hide_banner", "-ss", f"{a:.2f}", "-t", f"{b - a:.2f}", "-i", src,
+                            "-vn", "-af", f"silencedetect=noise={noise:.0f}dB:d=0.35", "-f", "null", "-"],
+                           capture_output=True, text=True, timeout=300)
+    except Exception:
+        return []
+    st = [float(x) for x in _re.findall(r"silence_start:\s*(-?[0-9.]+)", r.stderr or "")]
+    en = [float(x) for x in _re.findall(r"silence_end:\s*([0-9.]+)", r.stderr or "")]
+    return [(a + max(0.0, s), a + e) for s, e in zip(st, en)]
+
+
+def _snap(start: float, end: float, lines, quiet, lo: float, hi: float,
+          min_len: float, max_len: float) -> tuple[float, float]:
+    """Move a cut so it never lands inside a spoken line: the start goes back to just before the
+    line it falls in, the end forward to just after its line. Without line timings, each end
+    goes to the nearest quiet span within 3 s. Then the length is held to [min_len, max_len]
+    by dropping whole lines from the end, and everything stays inside [lo, hi]."""
+    start, end = max(lo, start), min(hi, end)
+    if end <= start:
+        end = min(hi, start + min_len)
+
+    def _inside(t):                                 # the line a cut point falls in, if any
+        return next(((s, e) for s, e, _ in lines if s - 0.15 < t < e + 0.15), None)
+
+    if lines:
+        for _ in range(len(lines) + 1):             # back off until the start sits in a gap
+            hit = _inside(start)
+            if not hit or hit[0] - 0.3 <= lo:
+                break
+            start = max(lo, hit[0] - 0.3)
+        for _ in range(len(lines) + 1):             # forward until the end sits in a gap
+            hit = _inside(end)
+            if not hit or hit[1] + 0.3 >= hi:
+                break
+            end = min(hi, hit[1] + 0.3)
+        if end - start > max_len:                   # drop whole lines from the end
+            cap = start + max_len
+            ends = [e + 0.3 for s, e, _ in lines
+                    if start + min_len <= e + 0.3 <= cap and not _inside(e + 0.3)]
+            end = max(ends) if ends else cap
+        hit = _inside(end)                          # the hi clamp / cap can still split a line
+        if hit and hit[0] - 0.2 - start >= min_len:
+            end = hit[0] - 0.2
+    elif quiet:
+        def _near(t):
+            c = [((qs + qe) / 2, abs((qs + qe) / 2 - t)) for qs, qe in quiet
+                 if abs((qs + qe) / 2 - t) <= 3.0]
+            return min(c, key=lambda x: x[1])[0] if c else t
+        start, end = max(lo, _near(start)), min(hi, _near(end))
+    if end - start > max_len:                       # on every branch (review 2026-11-20)
+        end = start + max_len
+    if end - start < min_len:
+        end = min(hi, start + min_len)
+    return round(start, 1), round(end, 1)
+
+
+def judge_region(src: str, a: float, b: float, lines, cfg: dict, work: Path) -> dict:
+    """Claude looks at timestamped frames across [a, b] plus the timed dialogue and picks the one
+    best self-contained moment: where it should START and END so the whole scene or play is in
+    the reel. Returns {ok, score, start, end, cut_off, reason} in absolute seconds."""
     from core import claude_code
     from agents.content import extract_json
     work.mkdir(parents=True, exist_ok=True)
-    frames = []
-    for i in range(6):
-        t = start + seconds * (i + 0.5) / 6
-        f = work / f"f{i}.jpg"
-        if _ff(["-ss", f"{t:.2f}", "-i", src, "-frames:v", "1", "-vf", "scale=640:-2", str(f)], 120):
+    n = max(8, cfg["frames"])
+    frames, stamps = [], []
+    for i in range(n):
+        t = a + (b - a) * (i + 0.5) / n
+        f = work / f"f{i:02d}.jpg"
+        if _ff(["-ss", f"{t:.2f}", "-i", src, "-frames:v", "1", "-vf", "scale=512:-2", str(f)], 120):
             frames.append(f)
-    if len(frames) < 4:
+            stamps.append(t)
+    if len(frames) < max(6, n // 2):
         return {"ok": False, "score": 0, "reason": "could not read frames"}
+    times = "\n".join(f"image {i + 1} = {t:.1f}s" for i, t in enumerate(stamps))
+    talk = "\n".join(f"{s:.1f}-{e:.1f}s: {txt}" for s, e, txt in lines) or "(no dialogue found)"
     prompt = (
-        f"These {len(frames)} frames are in order, spread across one {seconds:.0f}-second stretch of a "
-        "long gameplay recording. Decide if this stretch works on its own as a short social gameplay "
-        "reel. Set ok=false if most frames show any of these: pause, settings or title menus; a "
-        "loading screen; the full-screen map; a black, blank or fading screen; credits; or nothing "
-        "happening (standing still, or slow aimless walking through an empty space). Violence, gore, "
-        "swearing and licensed music are ALLOWED, so never reject for those. Score 1-10 for how "
-        "watchable it is; prefer action, driving, chases, fights, stunts, striking views and story "
-        "cutscenes with characters. Return ONLY JSON {\"ok\": true|false, \"score\": 1-10, "
+        f"These {len(frames)} images are frames, in order, from {a:.1f}s to {b:.1f}s of a long "
+        "gameplay recording. Times of each image:\n" + times + "\n\nSpoken dialogue in this "
+        "stretch, with times:\n" + talk + "\n\n"
+        "Pick the ONE best moment here to post as a short social gameplay reel, and say exactly "
+        "where it should START and END (seconds, on the same clock as above) so the WHOLE scene or "
+        "play is included: start a beat before the action or the first line of the exchange, end "
+        "just after the payoff or the last line of it. Never start or end inside a spoken line. "
+        f"The moment must be {cfg['min_seconds']:.0f}-{cfg['max_seconds']:.0f} seconds long; pick "
+        "the length the moment needs, not the maximum. Leave out pause, settings or title menus, "
+        "loading screens, the full-screen map, black or fading screens and stretches where nothing "
+        "happens (standing still, slow aimless walking through an empty space). Violence, gore, "
+        "swearing and licensed music are ALLOWED, so never reject for those. If nothing here works, "
+        "set ok=false. If the best moment clearly carries on past the first or last image, set "
+        "cut_off to \"start\" or \"end\" (else \"none\"). Score 1-10 for how watchable the moment "
+        "is; prefer action, driving with something happening, chases, fights, stunts, striking "
+        "views and story scenes with characters. Return ONLY JSON {\"ok\": true|false, \"score\": "
+        "1-10, \"start\": seconds, \"end\": seconds, \"cut_off\": \"none|start|end\", "
         "\"reason\": \"one short line\"}.")
     try:
-        d = extract_json(claude_code.vision(prompt, frames))
+        d = extract_json(claude_code.vision(prompt, frames, timeout=300))
         return {"ok": bool(d.get("ok")), "score": int(d.get("score") or 0),
+                "start": float(d.get("start") or a), "end": float(d.get("end") or b),
+                "cut_off": str(d.get("cut_off") or "none").lower(),
                 "reason": str(d.get("reason", ""))[:200]}
     except Exception as e:
         return {"ok": False, "score": 0, "reason": f"judge failed: {e!r}"[:200]}
@@ -437,15 +593,18 @@ def judge_stretch(src: str, start: float, seconds: float, work: Path) -> dict:
 def pick_fallback_stretch(game: str, platforms, out_dir: Path,
                           footage_keys=()) -> tuple[Optional[Path], Optional[str]]:
     """(trimmed clip, ledger id) cut from a whole-session recording in cutscenes/<game>, or
-    (None, None). Ids are '<game>-cutscene__<file>@<start>', the same per-platform ledger as the
-    fact cards, so a stretch never repeats on a platform. A recording whose file name is also a
-    footage clip already used on these platforms is skipped (cutscenes/gta6 started as copies of
-    footage/gta6, already posted whole)."""
+    (None, None). FLEXIBLE LENGTH (Bryce, 2026-11-20: "Better to make it flexible and not just a
+    45-second fixed duration"): Claude reads timestamped frames and timed dialogue across a
+    `scan_seconds` stretch and picks where the moment starts and ends; the cut then snaps off
+    any spoken line. Ids are '<game>-cutscene__<file>@<start>~<end>' in the per-platform ledger,
+    and a new moment never overlaps one already used there (fact cards included). A recording
+    whose file name is also a footage clip already used on these platforms is skipped
+    (cutscenes/gta6 started as copies of footage/gta6, already posted whole)."""
     cfg = _fallback_cfg()
     if not cfg["enabled"]:
         return None, None
     plats = [str(p) for p in (platforms or []) if p]
-    seconds = cfg["seconds"]
+    mn, mx, scan = cfg["min_seconds"], cfg["max_seconds"], max(cfg["scan_seconds"], cfg["max_seconds"])
     key = f"{game}-cutscene"
     pool = list(_candidates(key))
     if not pool:
@@ -466,6 +625,8 @@ def pick_fallback_stretch(game: str, platforms, out_dir: Path,
     from core import ffmpeg as _f
     checks, best = 0, None
     for kind, item in pool:
+        if checks >= cfg["max_checks"] or (best and best[0] >= cfg["min_score"]):
+            break
         name = Path(str(item)).name if kind == "local" else str(item.get("name", ""))
         if name in used_names:
             continue
@@ -473,36 +634,55 @@ def pick_fallback_stretch(game: str, platforms, out_dir: Path,
         if not src:
             continue
         total = float(_f.duration(src) or 0.0)
-        if total < seconds + 5:
+        if total < mn + 4:
             continue
-        starts = _frange(2.0, total - seconds - 2.0, seconds)           # non-overlapping stretches
-        blocked = blocked_ranges(name, seconds)
-        starts = [t for t in starts if all(t + seconds <= a or t >= b for a, b in blocked)]
         base = _clip_id(kind, item, key)
-        free = [t for t in starts if all(f"{base}@{t:g}" not in led.get(p, set()) for p in plats)]
-        random.shuffle(free)
-        for t in free[:3]:                                             # at most 3 tries per file
+        taken = used_ranges(base, led, plats) + blocked_ranges(name)   # fact-card ids do not count
+        gaps = _free_gaps(total, taken, mn)
+        if not gaps:
+            continue
+        lo, hi = random.choice(gaps)                                 # a free stretch of this file
+        a = random.uniform(lo, max(lo, hi - scan))
+        b = min(hi, a + scan)
+        for attempt in range(2):                                     # 2nd = re-centred on a cut-off moment
             if checks >= cfg["max_checks"]:
                 break
             checks += 1
-            v = judge_stretch(src, t, seconds, out_dir / f"judge{checks}")
-            print(f"[reel] fallback stretch {name} @ {t:g}s: {v}", flush=True)
-            if v["ok"] and (best is None or v["score"] > best[0]):
-                best = (v["score"], src, t, f"{base}@{t:g}")
-            if best and best[0] >= cfg["min_score"]:
+            work = out_dir / f"judge{checks}"
+            work.mkdir(parents=True, exist_ok=True)
+            lines = _dialogue_lines(src, a, b, work)
+            v = judge_region(src, a, b, lines, cfg, work)
+            print(f"[reel] fallback moment {name} {a:.0f}-{b:.0f}s ({len(lines)} lines): {v}",
+                  flush=True)
+            if not v["ok"]:
                 break
-        if (best and best[0] >= cfg["min_score"]) or checks >= cfg["max_checks"]:
+            if v.get("cut_off") in ("start", "end") and attempt == 0:
+                mid = (v["start"] + v["end"]) / 2
+                na = max(lo, min(hi - scan, mid - scan / 2)) if hi - lo > scan else lo
+                nb = min(hi, na + scan)
+                if (na, nb) != (a, b) and abs(na - a) > 5:
+                    print(f"[reel] moment runs past the {v['cut_off']} - rescanning {na:.0f}-{nb:.0f}s",
+                          flush=True)
+                    a, b = na, nb
+                    continue
+            s, e = _snap(v["start"], v["end"], lines,
+                         [] if lines else _quiet_spans(src, max(lo, v["start"] - 4),
+                                                       min(hi, v["end"] + 4)),
+                         lo, hi, mn, mx)
+            if e - s >= mn and (best is None or v["score"] > best[0]):
+                best = (v["score"], src, s, e, f"{base}@{s:g}~{e:g}")
             break
     if not best:
         return None, None
-    _, src, t, cid = best
+    _, src, s, e, cid = best
     clip = out_dir / "fallback_stretch.mp4"
-    ok = _ff(["-ss", f"{t:.2f}", "-i", src, "-t", f"{seconds:.2f}", "-map", "0:v:0", "-map", "0:a:0?",
+    ok = _ff(["-ss", f"{s:.2f}", "-i", src, "-t", f"{e - s:.2f}", "-map", "0:v:0", "-map", "0:a:0?",
               "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p",
               "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(clip)], 900)
     if not ok or not clip.exists():
         print(f"[reel] fallback stretch cut FAILED for {cid}", flush=True)
         return None, None
+    print(f"[reel] fallback moment cut: {cid} ({e - s:.1f}s)", flush=True)
     return clip, cid
 
 

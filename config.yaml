@@ -819,6 +819,15 @@ reels:
   # than the maximum allowed duration of 60 seconds", page-stories-api). The main reel is
   # reposted to FB/IG Stories, so it's trimmed to this before the Story post (0 = no cap).
   story_max_seconds: 60
+  # SWEAR RULE (Bryce, 2026-11-20: "Use *** for the swear words, like f**k or b**ch ... you can
+  # also blip the audio ... Make this rule only for GTA 6 for now. Other games are fine."). For the
+  # games listed, hooks and captions star swear words out instead of rewording them (slurs are
+  # still reworded), and core/bleep.py beeps only the spoken swear word in the clip's audio
+  # (ElevenLabs Scribe word timings). Every other game keeps the old rewrite gate, audio untouched.
+  swear_rule:
+    games: [gta6]
+    beep_hz: 1000
+    beep_volume: 0.35
   # DEDICATED ANALYSIS REELS for TikTok, Instagram and Facebook (Bryce, 2026-11-15): square layout,
   # written and narrated for these apps, payoff inside the reel (tools/analysis_shorts.py frame
   # "square", packs in data/analysis/<game>-reels/). When `games` is set, analysis slots post ONLY
@@ -860,16 +869,24 @@ reels:
                             # Paused 2026-11-14 to 2026-11-19. true = Facebook posts only the voiceover
                             # Shorts (tools/analysis_shorts.py --facebook).
     # FULL-RECORDING FALLBACK (Bryce, 2026-11-20): when a platform has used every clip in
-    # footage/<game> and footage/<game>-vertical, classic/triptych/fill reels cut a `seconds` stretch
-    # out of a whole-session recording in cutscenes/<game>. Claude checks frames of up to
-    # `max_checks` stretches and posts the best one scoring >= min_score (menus, loading, map,
-    # black and nothing-happening stretches are rejected; gore, swearing and music are allowed).
-    # 45 s keeps licensed music fine (music_ok_max_seconds: 59).
+    # footage/<game> and footage/<game>-vertical, classic/triptych/fill reels cut a moment out of a
+    # whole-session recording in cutscenes/<game>. FLEXIBLE LENGTH (Bryce, same day: "Better to
+    # make it flexible and not just a 45-second fixed duration"): Claude reads `frames` timestamped
+    # frames plus the timed dialogue (ElevenLabs Scribe) across a `scan_seconds` stretch, picks
+    # where the moment starts and ends (min_seconds to max_seconds), and the cut snaps off any
+    # spoken line. A moment that runs past the stretch is re-centred and checked once more. Up
+    # to `max_checks` looks per post; the best scoring >= min_score posts. Menus, loading, map,
+    # black and nothing-happening moments are rejected; gore, swearing and music are allowed.
+    # Fact cards may reuse a moment posted here, and this fallback may reuse a fact-card moment
+    # (Bryce, 2026-11-20): only earlier fallback moments on the same platform are avoided.
     full_recording_fallback:
       enabled: true
-      seconds: 45
+      min_seconds: 15
+      max_seconds: 120
+      scan_seconds: 150
+      frames: 18
       min_score: 6
-      max_checks: 6
+      max_checks: 4
     # Alternate the reel LAYOUT per slot (1-6) so the channel isn't 6x the same
     # look each day — format variety helps avoid platform spam-detection.
     #   classic  = footage crop-filled vertical + hook bar + logos (original).

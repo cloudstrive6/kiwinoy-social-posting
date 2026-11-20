@@ -628,6 +628,16 @@ def run_gameplay_reel(
         log(f"Forced game (dedicated track): {disp}")
     else:
         games = reel_composer.list_games()
+        if (gcfg.get("full_recording_fallback", {}) or {}).get("enabled", False):
+            # A game whose footage/ folders are empty (or deleted) but which has full
+            # recordings in cutscenes/<game> still gets picked: the full-recording fallback
+            # below cuts its clip (2026-11-20, after the GTA 6 duplicates were removed).
+            try:
+                for _g in b2_store.cutscene_games():
+                    if _g not in games:
+                        games[_g] = len(b2_store.list_cutscenes(_g))
+            except Exception as e:
+                log(f"cutscene game list failed: {e}")
         if not games:
             log("No gameplay footage available — skipping.")
             return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay"}, "no_media")
@@ -997,6 +1007,14 @@ def run_gameplay_reel(
                 "layout for this slot.")
             clip_path, clip_id = reel_composer.pick_unused_clip(brief["game"], pick_platforms)
             if not clip_path:
+                # footage/ used up too: a checked stretch of a full recording (2026-11-20)
+                clip_path, clip_id = reel_composer.pick_fallback_stretch(
+                    brief["game"], pick_platforms, run_dir / "fallback",
+                    footage_keys=[brief["game"], vkey])
+                if clip_path:
+                    log(f"Footage used up - posting a checked stretch of a full recording "
+                        f"({layout}): {clip_id}")
+            if not clip_path:
                 return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay",
                                        "brief": brief}, "no_media")
             hook, caption = content.hook_and_caption_from_video(
@@ -1055,6 +1073,19 @@ def run_gameplay_reel(
         log(f"Caption forced by override (body: {str(caption_override).strip()!r})")
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+    # SWEAR RULE (Bryce, 2026-11-20, config reels.swear_rule, GTA 6 only for now): swear words are
+    # starred out in the caption ("f**k") and beeped in the audio, word by word. Other games as before.
+    if content.swear_rule_game(brief.get("game", "")):
+        if layout == "fill":                    # fill captions had no swear gate at all
+            caption = content.mask_swears(caption)
+            if content.slur_terms(caption):
+                caption = content.generic_game_caption(brief.get("game", ""))
+        if layout == "lore":
+            reel_path = Path(_swear_beep(reel_path, brief.get("game", ""),
+                                         run_dir / "reel_bleeped.mp4", log))
+        else:
+            clip_path = _swear_beep(clip_path, brief.get("game", ""),
+                                    run_dir / "clip_bleeped.mp4", log)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
 
     # DURATION (per user 2026-07-11): post the WHOLE clip, capped at this track's platform
@@ -1392,6 +1423,8 @@ def run_gameplay_reel(
                         log(f"FB lore: building its own card from {fb_cid}")
                         fb_src = Path(_build_lore_fb(Path(fb_clip), fb_lore_game,
                                                      _s, _d, None, run_dir / "lore_fb"))
+                        fb_src = Path(_swear_beep(fb_src, fb_lore_game,
+                                                  run_dir / "lore_fb_bleeped.mp4", log))
                         _fc = json.loads(
                             (run_dir / "lore_fb" / "card.json").read_text(encoding="utf-8"))
                         fb_caption = content.compose_reel_caption(
@@ -1424,6 +1457,8 @@ def run_gameplay_reel(
                     if fb_clip:
                         fb_story_hook, fb_caption = content.hook_and_caption_from_video(
                             fb_clip, brief.get("game", ""), taglish=False, with_game_title=True)
+                        fb_clip = _swear_beep(fb_clip, brief.get("game", ""),
+                                              run_dir / "fb_clip_bleeped.mp4", log)
                         fb_tgt = min(float(ffmpeg.duration(fb_clip) or target), track_cap)
                         fb_src = run_dir / "reel_fb_triptych.mp4"
                         reel_ffmpeg.build_gameplay_triptych(
@@ -1677,6 +1712,18 @@ def run_commentary_reel(
         log(f"Published. Post id: {api_result.get('id', '(see result.json)')}")
     _save(run_dir, result)
     return result
+
+
+def _swear_beep(path, game: str, out: Path, log=print):
+    """GTA 6 swear rule (config reels.swear_rule, 2026-11-20): the clip with each spoken swear
+    word beeped, or the clip unchanged for other games / when nothing was said."""
+    if not path or not content.swear_rule_game(game or ""):
+        return path
+    from core import bleep as _bleep
+    newp, nb = _bleep.bleep_swears(Path(path), Path(out))
+    if nb:
+        log(f"Swear rule: beeped {nb} spoken swear word(s) in {Path(path).name}.")
+    return newp
 
 
 def _skip(run_dir, result: dict[str, Any], reason: str) -> dict[str, Any]:
@@ -2163,6 +2210,7 @@ def run_threads_footage(
 
     log("Reviewing the clip to write the hook caption...")
     hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
+    clip = _swear_beep(clip, game, run_dir / "clip_bleeped.mp4", log)
     caption = hook  # horizontal (as-is) footage -> hook + #GamingThreads (added by publisher)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     log(f"Hook: {hook}")
@@ -2911,6 +2959,7 @@ def run_youtube_short(
     else:
         log("Reviewing the clip to write the on-screen hook + caption...")
         hook, caption = content.hook_and_caption_from_video(clip_path, game, taglish=False)
+        clip_path = _swear_beep(clip_path, game, run_dir / "clip_bleeped.mp4", log)
         (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
         target = yt_target     # whole clip up to 3 min
         log(f"Game: {game} | Layout: {layout} | Hook: {hook}")

@@ -1009,9 +1009,12 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
         "Never generic: no 'watch this play', no 'you won't believe this'. A flat scenery "
         "line ('rainy street, glowing eyes') is a FAILURE — the clip's words or action almost "
         "always give you something better.\n"
-        "ADVERTISER-SAFE: no profanity or censored profanity (f-word, s-word, 'wtf') and no "
-        "slurs — if a line you're drawing on contains them, re-angle it without them. Ordinary "
-        "action words (kill, die, blood, hell) are FINE; don't tiptoe around the game.\n"
+        + (("SWEARING: a swear word is allowed when it is the point of the moment (it is starred "
+            "out automatically, e.g. 'f**k'), but never a slur. Ordinary action words (kill, die, "
+            "blood, hell) are FINE; don't tiptoe around the game.\n") if _swear_ok_name(gname) else
+           ("ADVERTISER-SAFE: no profanity or censored profanity (f-word, s-word, 'wtf') and no "
+            "slurs — if a line you're drawing on contains them, re-angle it without them. Ordinary "
+            "action words (kill, die, blood, hell) are FINE; don't tiptoe around the game.\n")) +
         "ENGLISH. No hashtags, no emojis, no preamble — just the line."
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix THAT specific problem; keep using "
            "the dialogue and action, just drop the unsupported part." if avoid else "")
@@ -1051,10 +1054,66 @@ def unsafe_terms(text: str) -> list[str]:
     return out
 
 
-def _make_safe(text: str, kind: str, gname: str = "") -> str:
+# SWEAR RULE, per game (Bryce, 2026-11-20, GTA 6 only for now): instead of rewording a hook or
+# caption, star the swear word out ("f**k", "b**ch"), and beep only the spoken word in the audio
+# (core/bleep.py). Slurs are never starred: they are still reworded by _make_safe.
+_SLUR_RE = re.compile(r"\b(?:rape\w*|retard\w*|f[a4]gg?\w*|n[i1]gg\w*)\b", re.I)
+_MASK_ROOTS = ("fuck", "shit", "bitch", "cunt", "ass")
+
+
+def swear_rule_game(game: str) -> bool:
+    """True when this game uses the star-and-beep rule (config reels.swear_rule.games)."""
+    g = (CONFIG.reels.get("swear_rule", {}) or {})
+    return bool(game) and str(game).strip().lower() in {str(x).lower() for x in (g.get("games") or [])}
+
+
+def _swear_ok_name(gname: str) -> bool:
+    """swear_rule_game() for callers that only know the display name ('Grand Theft Auto VI')."""
+    names = CONFIG.reels.get("game_names", {}) or {}
+    return any(swear_rule_game(k) for k, v in names.items() if str(v) == str(gname or ""))
+
+
+def slur_terms(text: str) -> list[str]:
+    return [m.group(0) for m in _SLUR_RE.finditer(text or "")]
+
+
+def _mask_word(w: str) -> str:
+    low = w.lower()
+    for root in _MASK_ROOTS:
+        i = low.find(root)
+        if i >= 0:
+            return w[:i + 1] + "**" + w[i + 3:]
+    if len(w) <= 4:
+        return w[0] + "*" * (len(w) - 2) + w[-1]
+    return w[0] + "**" + w[3:]
+
+
+def mask_swears(text: str) -> str:
+    """'fuck' -> 'f**k', 'bitch' -> 'b**ch', 'bullshit' -> 'bulls**t'. Slurs are left for the
+    rewrite gate. Idempotent ('f**k' stays 'f**k')."""
+    return _UNSAFE_RE.sub(lambda m: m.group(0) if _SLUR_RE.fullmatch(m.group(0))
+                          else _mask_word(m.group(0)), text or "")
+
+
+def apply_swear_rule(text: str, kind: str, game: str, gname: str = "") -> str:
+    """The advertiser-safety gate for one hook/caption. Star-and-beep games get their swear words
+    starred out; a slur still means a rewrite. Every other game keeps the rewrite gate as before."""
+    if not text:
+        return text
+    if swear_rule_game(game):
+        if slur_terms(text):
+            return mask_swears(_make_safe(text, kind, gname, starred_ok=True) or "")
+        return mask_swears(text)
+    if unsafe_terms(text):
+        return _make_safe(text, kind, gname) or ""
+    return text
+
+
+def _make_safe(text: str, kind: str, gname: str = "", starred_ok: bool = False) -> str:
     """Rewrite a hook/caption that trips the advertiser-safety gate, keeping the MEANING.
-    Returns '' if it still isn't clean, so the caller can fall back rather than publish it."""
-    bad = unsafe_terms(text)
+    Returns '' if it still isn't clean, so the caller can fall back rather than publish it.
+    starred_ok (swear-rule games): only slurs must go; swear words get starred afterwards."""
+    bad = slur_terms(text) if starred_ok else unsafe_terms(text)
     if not bad:
         return text
     print(f"[content] {kind} flagged as advertiser-unsafe ({', '.join(bad)}); rewriting.",
@@ -1072,7 +1131,7 @@ def _make_safe(text: str, kind: str, gname: str = "") -> str:
     except Exception:
         return ""
     out = out.strip(" ,;:-")[:90]
-    if not out or unsafe_terms(out):
+    if not out or (slur_terms(out) if starred_ok else unsafe_terms(out)):
         print(f"[content] {kind} still unsafe after a rewrite — using a safe fallback.",
               flush=True)
         return ""
@@ -1591,10 +1650,9 @@ def hook_and_caption_from_video(
     # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
     # BURNED ON the video and the caption ships with it, so profanity or graphic wording
     # risks demonetisation / age-restriction. Rewrite, then drop to a safe line if needed.
-    if hook and unsafe_terms(hook):
-        hook = _make_safe(hook, "hook", gname) or ""
-    if line and unsafe_terms(line):
-        line = _make_safe(line, "caption", gname) or ""
+    # GTA 6 (config reels.swear_rule, 2026-11-20): star the swear words out instead of rewording.
+    hook = apply_swear_rule(hook, "hook", game, gname)
+    line = apply_swear_rule(line, "caption", game, gname)
     if not hook:
         hook = "Wait for it"
     # A REEL ALWAYS SHIPS WITH A CAPTION (user, 2026-10-09). Leaving the body empty posted a
@@ -1605,6 +1663,8 @@ def hook_and_caption_from_video(
     if not line:
         # NEVER the hook word-for-word (user, 2026-10-09): say its point a different way.
         line = _recast_hook(hook)
+        if swear_rule_game(game):            # the recast must not un-star a starred hook word
+            line = apply_swear_rule(line, "caption", game, gname)
         print(f"[content] caption recast from the hook: {line}", flush=True)
     return hook, compose_reel_caption(line, game, with_game_title)
 

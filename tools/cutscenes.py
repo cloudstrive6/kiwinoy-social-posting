@@ -66,7 +66,7 @@ def used_log(only_game: str | None = None) -> None:
             if only_game and game != only_game:
                 continue
             try:
-                t = float(start)
+                t = float(start.partition("~")[0])     # '@a~b' = flexible fallback moment
             except ValueError:
                 t = -1.0
             rows.setdefault(head, {}).setdefault(t, []).append(plat)
