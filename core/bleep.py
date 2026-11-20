@@ -17,6 +17,12 @@ def _cfg() -> dict:
     return dict(CONFIG.reels.get("swear_rule", {}) or {})
 
 
+def cfg_passes() -> list[str]:
+    """MP3 bitrates for the Scribe passes ('' = ffmpeg's default, about 32 kbps at 16 kHz mono)."""
+    p = _cfg().get("stt_bitrates")
+    return [str(x) for x in p] if p else ["128k", ""]
+
+
 def swear_spans(words: list[dict], pad: float = 0.06) -> list[tuple[float, float]]:
     """(start, end) of each spoken swear word, slurs included, padded and merged."""
     from agents.content import _UNSAFE_RE, _SLUR_RE
@@ -43,14 +49,24 @@ def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
     if not exe or not clip.exists():
         return clip, 0
     try:
+        # TWO PASSES, two encodings (real GTA 6 test, 2026-11-20): over gunfire Scribe heard the
+        # same line as "Holy shit, bitch!" from a 128 kbps copy and "Fuck this shit, bitch!" from
+        # a ~32 kbps one. A word either pass hears as a swear gets beeped.
+        words, any_ok = [], False
         with tempfile.TemporaryDirectory() as tmp:
-            aud = Path(tmp) / "a.mp3"
-            r = subprocess.run([exe, "-v", "error", "-y", "-i", str(clip), "-vn", "-ac", "1",
-                                "-ar", "16000", "-b:a", "64k", str(aud)],
-                               capture_output=True, timeout=300)
-            if r.returncode != 0 or not aud.exists() or aud.stat().st_size < 1024:
-                return clip, 0                                  # silent / no audio track
-            words = elevenlabs.speech_to_text_words(aud)
+            for i, br in enumerate(cfg_passes()):
+                aud = Path(tmp) / f"a{i}.mp3"
+                r = subprocess.run([exe, "-v", "error", "-y", "-i", str(clip), "-vn", "-ac", "1",
+                                    "-ar", "16000", *(["-b:a", br] if br else []), str(aud)],
+                                   capture_output=True, timeout=300)
+                if r.returncode != 0 or not aud.exists() or aud.stat().st_size < 1024:
+                    return clip, 0                              # silent / no audio track
+                w = elevenlabs.speech_to_text_words(aud)
+                if w is not None:
+                    any_ok = True
+                    words += w
+        if not any_ok:
+            words = None
         if words is None:                            # STT down: say so, a swear may slip through
             print("[bleep] speech-to-text unavailable - clip NOT checked for swear words.",
                   flush=True)
@@ -66,6 +82,12 @@ def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
         spans = swear_spans(words)
         if not spans:
             return clip, 0
+        from agents.content import _UNSAFE_RE, _SLUR_RE
+        hit = [f"{str(w['text']).strip()}@{float(w['start']):.1f}s" for w in words
+               if (_UNSAFE_RE.fullmatch(str(w['text']).strip(" .,!?;:\"'()[]"))
+                   or _SLUR_RE.fullmatch(str(w['text']).strip(" .,!?;:\"'()[]")))]
+        hit = list(dict.fromkeys(hit))               # both passes usually hear the same word
+        print(f"[bleep] beeping {len(hit)} word(s): {', '.join(hit)}", flush=True)
         cfg = _cfg()
         hz = float(cfg.get("beep_hz", 1000))
         vol = float(cfg.get("beep_volume", 0.35))

@@ -454,7 +454,7 @@ def _dialogue_lines(src: str, a: float, b: float, work: Path) -> list[tuple[floa
     from core import elevenlabs
     aud = work / "region.mp3"
     if not _ff(["-ss", f"{a:.2f}", "-i", src, "-t", f"{b - a:.2f}", "-vn", "-ac", "1",
-                "-ar", "16000", "-b:a", "64k", str(aud)], 300) or not aud.exists():
+                "-ar", "16000", "-b:a", "128k", str(aud)], 300) or not aud.exists():
         return []
     words = elevenlabs.speech_to_text_words(aud) or []
     lines, cur = [], []
