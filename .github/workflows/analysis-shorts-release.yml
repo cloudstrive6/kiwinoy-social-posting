@@ -20,6 +20,10 @@ on:
         description: "Dry run (show the pick, change nothing)? true/false"
         required: false
         default: "false"
+      post_now:
+        description: "Post ONE fact card Short now, outside the slots (Bryce, 2026-11-20)? true/false"
+        required: false
+        default: "false"
 
 permissions:
   contents: write
@@ -67,6 +71,14 @@ jobs:
       - name: Release the slot's Short
         id: release
         run: |
+          # POST NOW (Bryce, 2026-11-20: "If the next one is still tomorrow, then publish one now"):
+          # a one-off fact card Short with the slot set to this minute, recorded in slot_fills.json
+          # like any fallback, so it never fills or blocks a real slot (those are hours away).
+          if [ "${{ github.event.inputs.post_now }}" = "true" ] && [ "${{ github.event.inputs.dry_run }}" != "true" ]; then
+            echo "post now: one fact card Short outside the slots"
+            echo "fallback_slot=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           python tools/analysis_release.py $DRY
