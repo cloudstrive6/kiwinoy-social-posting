@@ -608,11 +608,12 @@ reels:
     # were removed. Kept for a future case Bryce names.
     music_ok_max_seconds: 59
     # SEXUAL CONTENT (2026-11-21): the hotel-suite party in the 2026-11-20 23-46-51 recording
-    # (about 8:20 to 11:40 of the original, split into 5-minute parts) shows sex on beds. Meta
-    # removes sexual activity, so it is blocked here; the fact-card observer ('ADULT: yes') and
-    # the moment judge also refuse sexual activity and nudity anywhere else.
+    # (sex on beds about 9:15 to 11:20 of the original; blocked 7:15 to 11:45 with the dark club
+    # lounge before it, in the 5-minute parts). Meta removes sexual activity, so it is blocked
+    # here; the fact-card observer ('ADULT: yes') and the moment judge also refuse sexual
+    # activity and nudity anywhere else. A scan of all 3 h at one frame per 20 s found no other.
     blocked_ranges:
-      "GTA 6 (2026-11-20 23-46-51) p02.mp4": [[195, 301]]
+      "GTA 6 (2026-11-20 23-46-51) p02.mp4": [[135, 301]]
       "GTA 6 (2026-11-20 23-46-51) p03.mp4": [[0, 105]]
     enabled: true
     dir: reels/assets/footage
