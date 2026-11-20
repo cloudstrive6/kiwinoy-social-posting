@@ -26,6 +26,9 @@ Bryce, 2026-11-20, two more rules:
     publish 3 shorts on that day, instead of only 2": the `extra_slots_utc` slots are live only on
     an NZ day with no long-form (> 3 min, not a stream recording) going public on YouTube. If that check fails, the extra
     slot stays shut (never a 4th post by mistake).
+  - "for the YouTube shorts, let's do only the fact card format and pause the voiceover format
+    until I say so": with `voiceover_paused: true` every slot (extra slots included) gets a fact
+    card Short and no voiceover Short is released. Set it to false to bring voiceover back.
 
 Usage: python tools/analysis_release.py [--dry-run] [--now ISO] [--hold game:id,id,...]
   --hold  migrate already-scheduled picks to HELD (private, publish time cleared) so their
@@ -71,6 +74,7 @@ def settings() -> dict:
     s.setdefault("window_hours", 3)
     s.setdefault("extra_slots_utc", [])           # only on NZ days with no long-form (2026-11-20)
     s.setdefault("fact_card_fallback", False)     # empty slot -> fact card Short (2026-11-20)
+    s.setdefault("voiceover_paused", False)       # every slot -> fact card Short (2026-11-20)
     s.setdefault("longform_min_seconds", 181)     # longer than this = a long-form, not a Short
     s.setdefault("timezone", "Pacific/Auckland")  # whose calendar day "the day itself" is
     return s
@@ -397,6 +401,15 @@ def main() -> int:
         print(f"slot {iso(slot)} already filled by {got}")
         return 0
     errors = 0
+    if st["voiceover_paused"]:
+        # Bryce 2026-11-20: "for the YouTube shorts, let's do only the fact card format and pause
+        # the voiceover format until I say so" (fact cards had about twice the median views).
+        # The slot stays and is filled with a fact card Short.
+        print(f"slot {iso(slot)}: voiceover Shorts paused (voiceover_paused) - fact card instead"
+              + (" (dry run, nothing posted)" if a.dry_run else ""))
+        if not a.dry_run:
+            emit_fallback(slot)
+        return 0
     for game, s, action in choose(packs, st["games"], slot, offline=a.offline):
         print(f"slot {iso(slot)}: {action} {game}/{s['id']} \"{s['title']}\"")
         if a.dry_run:

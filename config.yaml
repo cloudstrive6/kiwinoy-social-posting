@@ -436,7 +436,7 @@ reels:
     # NOTE: YouTube previously throttled the channel's Shorts reach from bulk auto-posting
     # (paused 2026-06-26) — watch reach; lower the cadence (fire on fewer slots) if it
     # throttles again. The DEDICATED 4K/60 HDR Data-API track (youtube_shorts below) is separate/idle.
-    enabled: true    # RESUMED 2026-11-19 (Bryce): one GTA 6 lore Short a day (slots_utc below) beside one voiceover Short. Paused 2026-11-13 to 2026-11-19.
+    enabled: true    # RESUMED 2026-11-19 (Bryce): one GTA 6 lore Short a day (slots_utc below) beside one voiceover Short. Paused 2026-11-13 to 2026-11-19. From 2026-11-20 the voiceover slot posts a fact card too (youtube_analysis_shorts.voiceover_paused).
     # data_api (default) = upload via our YouTube Data API client (returns the video id ->
     # playlist filing). postforme = route through Post for Me instead (no playlist filing).
     # QUOTA (checked in Cloud Console 2026-09-21, project kg-postforme): uploads have their
@@ -857,6 +857,12 @@ reels:
     # the schedule comes up, then do the fact format"): a slot with no voiceover Short ready gets a
     # YouTube fact card Short instead (run.py --youtube-reel --fallback-slot, same workflow run).
     fact_card_fallback: true
+    # VOICEOVER PAUSED ON YOUTUBE (Bryce, 2026-11-20: "for the YouTube shorts, let's do only the fact
+    # card format and pause the voiceover format until I say so"). true = every slot above, extra
+    # slots included, posts a fact card Short; no voiceover Short is released. Analytics that day:
+    # fact card Shorts median 2,302 views (31) vs voiceover 1,018 (5). false brings voiceover back.
+    # FB/IG/TikTok voiceover reels (analysis_reels) are not affected.
+    voiceover_paused: true
     # THIRD SHORT ON A DAY WITH NO LONG-FORM (Bryce, 2026-11-20: "if there is no long form video
     # scheduled to be published on the day itself, then you need to publish 3 shorts on that day,
     # instead of only 2"). 19:00 UTC = 08:00 NZDT (07:00 in NZ winter), the time the analysis
