@@ -1073,6 +1073,14 @@ def _swear_ok_name(gname: str) -> bool:
     return any(swear_rule_game(k) for k, v in names.items() if str(v) == str(gname or ""))
 
 
+def swear_allowed(word: str) -> bool:
+    """A swear word the rule lets through untouched, in text and audio (config
+    reels.swear_rule.allow, matched as a root: 'shit' also covers 'bullshit', 'shitty')."""
+    allow = [str(x).lower() for x in ((CONFIG.reels.get("swear_rule", {}) or {}).get("allow") or [])]
+    w = str(word or "").lower()
+    return any(a and a in w for a in allow)
+
+
 def slur_terms(text: str) -> list[str]:
     return [m.group(0) for m in _SLUR_RE.finditer(text or "")]
 
@@ -1091,7 +1099,8 @@ def _mask_word(w: str) -> str:
 def mask_swears(text: str) -> str:
     """'fuck' -> 'f**k', 'bitch' -> 'b**ch', 'bullshit' -> 'bulls**t'. Slurs are left for the
     rewrite gate. Idempotent ('f**k' stays 'f**k')."""
-    return _UNSAFE_RE.sub(lambda m: m.group(0) if _SLUR_RE.fullmatch(m.group(0))
+    return _UNSAFE_RE.sub(lambda m: m.group(0) if (_SLUR_RE.fullmatch(m.group(0))
+                                                   or swear_allowed(m.group(0)))
                           else _mask_word(m.group(0)), text or "")
 
 

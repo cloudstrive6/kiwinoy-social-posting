@@ -824,10 +824,14 @@ reels:
   # games listed, hooks and captions star swear words out instead of rewording them (slurs are
   # still reworded), and core/bleep.py beeps only the spoken swear word in the clip's audio
   # (ElevenLabs Scribe word timings). Every other game keeps the old rewrite gate, audio untouched.
+  # allow = swear words left alone in text AND audio (Bryce, 2026-11-20: "the word shit is fine").
+  # The n-word and other slurs are always beeped (and reworded in text, never starred).
+  # beep_volume 0.32 = about 0.8 dB softer than the first 0.35 (Bryce, same day).
   swear_rule:
     games: [gta6]
+    allow: [shit]
     beep_hz: 1000
-    beep_volume: 0.35
+    beep_volume: 0.32
   # DEDICATED ANALYSIS REELS for TikTok, Instagram and Facebook (Bryce, 2026-11-15): square layout,
   # written and narrated for these apps, payoff inside the reel (tools/analysis_shorts.py frame
   # "square", packs in data/analysis/<game>-reels/). When `games` is set, analysis slots post ONLY

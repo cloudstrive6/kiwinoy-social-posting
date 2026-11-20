@@ -85,7 +85,8 @@ def speech_to_text(audio_path, model_id: str = "scribe_v1") -> str:
     return ""
 
 
-def speech_to_text_words(audio_path, model_id: str = "scribe_v1") -> Optional[list[dict[str, Any]]]:
+def speech_to_text_words(audio_path, model_id: str = "scribe_v1",
+                         language_code: str = "en") -> Optional[list[dict[str, Any]]]:
     """Scribe with WORD TIMINGS: [{"text", "start", "end"}] for spoken words only (spacing and
     audio events dropped); [] when nobody speaks; None when STT itself failed (no key, HTTP
     error). Used to cut full-recording clips on line boundaries and to beep swear words
@@ -98,9 +99,14 @@ def speech_to_text_words(audio_path, model_id: str = "scribe_v1") -> Optional[li
             resp = requests.post(
                 "https://api.elevenlabs.io/v1/speech-to-text",
                 headers={"xi-api-key": key},
+                # language_code 'en' (2026-11-20): on auto-detect Scribe gave 'bitch' a zero-length
+                # end time over gunfire, so the beep missed half the word
                 data={"model_id": model_id, "timestamps_granularity": "word",
-                      "tag_audio_events": "false"},
-                files={"file": ("audio.mp3", f, "audio/mpeg")},
+                      "tag_audio_events": "false",
+                      **({"language_code": language_code} if language_code else {})},
+                files={"file": (f"audio{Path(audio_path).suffix or '.mp3'}", f,
+                                {".flac": "audio/flac", ".wav": "audio/wav"}.get(
+                                    Path(audio_path).suffix.lower(), "audio/mpeg"))},
                 timeout=180)
         if resp.status_code != 200:
             print(f"[elevenlabs] STT words failed ({resp.status_code}): {resp.text[:200]}", flush=True)
