@@ -54,6 +54,10 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       # Required for the TikTok DRAFT post (PfM) — unset -> renders but SKIPS the post.
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      # Speech-to-text (Scribe): the GTA 6 slur beep and the timed dialogue the full-recording
+      # moment judge uses so cuts never land inside a line. Bryce's own "KG Actions" key; the
+      # first fill draft on 2026-11-21 ran without it ("speech-to-text unavailable").
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       B2_KEY_ID: ${{ secrets.B2_KEY_ID }}                   # read gameplay footage from Backblaze B2
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
