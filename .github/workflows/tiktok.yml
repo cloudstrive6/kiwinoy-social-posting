@@ -27,6 +27,10 @@ on:
         description: "Dry run (render but no publish)? true/false"
         required: false
         default: "false"
+      layout:
+        description: "Force a layout for this run: fill (full vertical), classic or triptych. Blank = normal rotation"
+        required: false
+        default: ""
 
 concurrency:
   group: kiwinoy-tiktok
@@ -81,7 +85,11 @@ jobs:
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
           BACKUP=""
           if [ "${{ github.event.schedule }}" = "30 3,11,19 * * *" ]; then BACKUP="--backup"; fi
-          python run.py --tiktok $DRY $BACKUP
+          LAYOUT=""
+          case "${{ github.event.inputs.layout }}" in
+            fill|classic|triptych) LAYOUT="--layout ${{ github.event.inputs.layout }}" ;;
+          esac
+          python run.py --tiktok $DRY $BACKUP $LAYOUT
 
       - name: Upload run artifacts (brief, caption, mp4)
         if: always()
