@@ -783,6 +783,9 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         with tempfile.TemporaryDirectory() as tmp:
             cands = frames.extract_candidates(seg, Path(tmp), n=max(6, observe_frame_count(dur)))
             observation = _observe_clip(cands, gname, dur)
+            from agents.content import adult_on_screen
+            if adult_on_screen(observation):    # sexual activity or nudity: never post it
+                raise CardRefused("sexual content or nudity on screen")
             ctx_start = max(0.0, start - CTX_PAD)
             ctx = Path(tmp) / "context.mp4"
             subprocess.run([ff, "-y", "-v", "error", "-ss", f"{ctx_start:.2f}",

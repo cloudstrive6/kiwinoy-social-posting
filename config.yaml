@@ -607,7 +607,13 @@ reels:
     # (12-39-35 @ 19-71 licensed radio song, 12-47-53 @ 124-133 gore, 12-34-54 @ 31-50 profanity)
     # were removed. Kept for a future case Bryce names.
     music_ok_max_seconds: 59
-    blocked_ranges: {}
+    # SEXUAL CONTENT (2026-11-21): the hotel-suite party in the 2026-11-20 23-46-51 recording
+    # (about 8:20 to 11:40 of the original, split into 5-minute parts) shows sex on beds. Meta
+    # removes sexual activity, so it is blocked here; the fact-card observer ('ADULT: yes') and
+    # the moment judge also refuse sexual activity and nudity anywhere else.
+    blocked_ranges:
+      "GTA 6 (2026-11-20 23-46-51) p02.mp4": [[195, 301]]
+      "GTA 6 (2026-11-20 23-46-51) p03.mp4": [[0, 105]]
     enabled: true
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the

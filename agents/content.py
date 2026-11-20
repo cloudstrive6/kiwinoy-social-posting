@@ -588,7 +588,12 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         "ACTION sentences above with its frames; otherwise 'TONE: serious' or 'TONE: "
         "neutral'. A story cutscene, a death or injury, a deliberate stunt and an ordinary "
         "crash in a chase or fight are NOT funny on their own, and the game's reputation for "
-        "humour never makes a clip funny (Bryce, 2026-11-20)."
+        "humour never makes a clip funny (Bryce, 2026-11-20).\n"
+        "- ADULT, as the very last line: 'ADULT: yes' if any frame shows sexual activity "
+        "(simulated sex, people having sex on a bed or floor, explicit sexual posing or "
+        "grinding) or real nudity (exposed nipples or genitals, or a person wearing nothing); "
+        "otherwise 'ADULT: no'. Swimwear of any cut (bikinis and thongs included), lingerie-like "
+        "club outfits, a party, dancing, flirting or kissing on its own is 'ADULT: no'."
     )
     _who = _who_note(gname)
     if _who:   # the one naming exception: the game's playable leads (GTA 6, 2026-11-20)
@@ -606,6 +611,13 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
     except claude_code.ClaudeCodeError as e:
         print(f"[content] observer: Claude unavailable ({e}); using OpenAI vision.", flush=True)
         return sanitize(openai_client.vision(instruction, cands)).strip()
+
+
+def adult_on_screen(observation: str) -> bool:
+    """True when the frame observer reported sexual activity or nudity ('ADULT: yes').
+    Meta removes sexual activity and YouTube age-restricts it, so posts skip those moments
+    (2026-11-21, after the GTA 6 recordings of that night included a hotel-suite sex scene)."""
+    return bool(re.search(r"(?im)^\W*ADULT\W*:\W*yes\b", observation or ""))
 
 
 def _transcribe_clip(video_path, gname: str = "") -> str:
