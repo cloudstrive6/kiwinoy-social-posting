@@ -827,8 +827,13 @@ reels:
   # allow = swear words left alone in text AND audio (Bryce, 2026-11-20: "the word shit is fine").
   # The n-word and other slurs are always beeped (and reworded in text, never starred).
   # beep_volume 0.32 = about 0.8 dB softer than the first 0.35 (Bryce, same day).
+  # SHORTS AND REELS (Bryce, 2026-11-21: "don't anymore beep the profane words for shorts and
+  # reels"): beep_swears_in_reels false leaves spoken swear words in every Short and Reel; slurs
+  # are still beeped there. Feed videos (the Threads footage post) keep the full beep. Captions
+  # still star swear words ("f**k"); that is text, not the beep.
   swear_rule:
     games: [gta6]
+    beep_swears_in_reels: false
     allow: [shit]
     beep_hz: 1000
     beep_volume: 0.32

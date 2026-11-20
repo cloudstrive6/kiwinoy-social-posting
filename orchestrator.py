@@ -1714,15 +1714,23 @@ def run_commentary_reel(
     return result
 
 
-def _swear_beep(path, game: str, out: Path, log=print):
+def _swear_beep(path, game: str, out: Path, log=print, reel: bool = True):
     """GTA 6 swear rule (config reels.swear_rule, 2026-11-20): the clip with each spoken swear
-    word beeped, or the clip unchanged for other games / when nothing was said."""
+    word beeped, or the clip unchanged for other games / when nothing was said.
+    Shorts and Reels (reel=True) keep their swear words since 2026-11-21 (Bryce: "don't anymore
+    beep the profane words for shorts and reels"); slurs are still beeped there. Feed videos
+    such as the Threads footage post (reel=False) keep the full beep."""
     if not path or not content.swear_rule_game(game or ""):
         return path
+    rule = CONFIG.reels.get("swear_rule", {}) or {}
+    slurs_only = reel and not bool(rule.get("beep_swears_in_reels", False))
     from core import bleep as _bleep
-    newp, nb = _bleep.bleep_swears(Path(path), Path(out))
+    newp, nb = _bleep.bleep_swears(Path(path), Path(out), slurs_only=slurs_only)
     if nb:
-        log(f"Swear rule: beeped {nb} spoken swear word(s) in {Path(path).name}.")
+        log(f"Swear rule: beeped {nb} spoken {'slur' if slurs_only else 'swear word'}(s) "
+            f"in {Path(path).name}.")
+    elif slurs_only:
+        log("Swear rule: Short/Reel, swear words left in (only slurs are beeped).")
     return newp
 
 
@@ -2210,7 +2218,7 @@ def run_threads_footage(
 
     log("Reviewing the clip to write the hook caption...")
     hook, _cap = content.hook_and_caption_from_video(clip, game, taglish=False)
-    clip = _swear_beep(clip, game, run_dir / "clip_bleeped.mp4", log)
+    clip = _swear_beep(clip, game, run_dir / "clip_bleeped.mp4", log, reel=False)
     caption = hook  # horizontal (as-is) footage -> hook + #GamingThreads (added by publisher)
     (run_dir / "caption.txt").write_text(caption, encoding="utf-8")
     log(f"Hook: {hook}")

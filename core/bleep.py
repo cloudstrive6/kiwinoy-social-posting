@@ -17,15 +17,18 @@ def _cfg() -> dict:
     return dict(CONFIG.reels.get("swear_rule", {}) or {})
 
 
-def beep_word(text: str) -> bool:
+def beep_word(text: str, slurs_only: bool = False) -> bool:
     """True when this spoken word gets beeped: a swear word or slur that is not on the rule's
-    allow list (Bryce, 2026-11-20: 'the word shit is fine')."""
+    allow list (Bryce, 2026-11-20: 'the word shit is fine'). With `slurs_only` (Shorts and Reels
+    since 2026-11-21, config swear_rule.beep_swears_in_reels) only slurs are beeped."""
     from agents.content import _UNSAFE_RE, _SLUR_RE, swear_allowed
     t = str(text or "").strip(" .,!?;:\"'()[]")
     if not t:
         return False
     if _SLUR_RE.fullmatch(t):
         return True
+    if slurs_only:
+        return False
     return bool(_UNSAFE_RE.fullmatch(t)) and not swear_allowed(t)
 
 
@@ -52,7 +55,8 @@ def _listen(exe: str, clip: Path, a: float, b: float, tmp: Path, i: int):
 
 
 def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: float = 6.0,
-          need: int = 2, max_windows: int = 40) -> tuple[list[dict], list[str]]:
+          need: int = 2, max_windows: int = 40,
+          slurs_only: bool = False) -> tuple[list[dict], list[str]]:
     """Majority vote across listens. Besides the full pass (`words`), the clip is heard again in
     overlapping `win`-second pieces `stride` seconds apart, so every moment is heard about three
     times. A banned word is beeped only when at least `need` of the listens covering that moment
@@ -74,7 +78,7 @@ def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: floa
         i += 1
         listens.append((a, b2, listen(a, b2, i)))
         a += stride
-    banned = [(a0, b0, [w for w in ws if beep_word(w.get("text", ""))])
+    banned = [(a0, b0, [w for w in ws if beep_word(w.get("text", ""), slurs_only)])
               for a0, b0, ws in listens if ws is not None]     # a failed listen casts no vote
     heard_ok = [(a0, b0, ws) for a0, b0, ws in listens if ws is not None]  # failed = no evidence
     log, out, seen = [], [], []
@@ -119,12 +123,12 @@ def _vote(words: list[dict], listen, dur: float, win: float = 12.0, stride: floa
 
 
 def swear_spans(words: list[dict], pad: float = 0.06, post: float = 0.12,
-                min_len: float = 0.3) -> list[tuple[float, float]]:
+                min_len: float = 0.3, slurs_only: bool = False) -> list[tuple[float, float]]:
     """(start, end) of each spoken word to beep, padded, at least `min_len` long (Scribe sometimes
     ends a word too early, which left half of 'bitch' audible), merged."""
     spans = []
     for w in words:
-        if beep_word(w.get("text", "")):
+        if beep_word(w.get("text", ""), slurs_only):
             a = max(0.0, float(w["start"]) - pad)
             spans.append((a, max(float(w["end"]) + post, a + min_len)))
     spans.sort()
@@ -137,8 +141,9 @@ def swear_spans(words: list[dict], pad: float = 0.06, post: float = 0.12,
     return out
 
 
-def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
-    """(clip to use, number of words beeped). Returns the input clip when nothing was beeped."""
+def bleep_swears(clip: Path, out: Path, slurs_only: bool = False) -> tuple[Path, int]:
+    """(clip to use, number of words beeped). Returns the input clip when nothing was beeped.
+    `slurs_only`: beep slurs but leave ordinary swear words (Shorts and Reels, 2026-11-21)."""
     from core import elevenlabs, ffmpeg
     clip, out = Path(clip), Path(out)
     exe = ffmpeg.ffmpeg_bin()
@@ -162,7 +167,7 @@ def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
             if words:
                 dur0 = float(ffmpeg.duration(clip) or 0.0)
                 voted, heard = _vote(words, lambda a, b, i: _listen(exe, clip, a, b, Path(tmp), i),
-                                     dur0)                  # full pass + overlapping 12 s pieces
+                                     dur0, slurs_only=slurs_only)  # full pass + overlapping 12 s pieces
                 for line in heard:
                     print(f"[bleep] {line}", flush=True)
                 words = voted
@@ -178,11 +183,11 @@ def bleep_swears(clip: Path, out: Path) -> tuple[Path, int]:
             return clip, 0
         if not words:
             return clip, 0
-        spans = swear_spans(words)
+        spans = swear_spans(words, slurs_only=slurs_only)
         if not spans:
             return clip, 0
         hit = [f"{str(w['text']).strip()}@{float(w['start']):.1f}s" for w in words
-               if beep_word(w.get("text", ""))]
+               if beep_word(w.get("text", ""), slurs_only)]
         print(f"[bleep] beeping {len(hit)} word(s): {', '.join(hit)}", flush=True)
         cfg = _cfg()
         hz = float(cfg.get("beep_hz", 1000))

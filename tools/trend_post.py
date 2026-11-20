@@ -50,21 +50,45 @@ def _tokens(s: str) -> set:
     return set(re.sub(r"[^a-z0-9 ]", " ", (s or "").lower()).split())
 
 
+# Words that say which franchise a headline is about, not which STORY. The old match counted
+# them, so "GTA 6 sales top $2.3bn" took a Push Square "GTA 6's Mandy..." link and four of
+# twelve cards from 2026-11-03 to 2026-11-20 saved another article's link (fixed 2026-11-21).
+_LINK_STOP = set("""a an the and or of to in on for with at by from as is are was were be been
+it its it's this that these those new now just over more most first after before into out up
+how why what who when here there says said report reports reportedly could would will may
+gta grand theft auto vi 6 v 5 marvel marvels marvel's mcu avengers doomsday spider man spiderman
+x men xmen wolverine game games gaming trailer ps5 xbox pc playstation nintendo switch s
+official update news""".split())
+
+
+def _story_words(title: str) -> set:
+    # drop a " - Publisher" suffix (Google News format), but only when the tail is outlet-sized
+    # (1 to 4 words), so "Avengers: Doomsday - Russo Brothers reveal new cast" keeps its story
+    t = re.sub(r"\s+[-|]\s+(?:[^\s\-|]+(?:\s+[^\s\-|]+){0,3})\s*$", "", title or "")
+    return {w for w in _tokens(t) if w not in _LINK_STOP and len(w) > 1}
+
+
 def _best_link(title: str, chosen: str, cands: list[dict]) -> str:
     """Prefer a DIRECT publisher link over a Google-News redirect (whose og:image is just
-    the Google-News logo). If `chosen` is a google-news URL, find a direct-link candidate
-    covering the same story (title-word overlap) and use that link instead."""
+    the Google-News logo). If `chosen` is a google-news URL, use a direct-link candidate only
+    when it is plainly the SAME story: at least 3 shared story words (franchise names and
+    filler don't count) and at least 60% word overlap. Otherwise keep the Google-News link,
+    which is a redirect to the right article; a wrong article is worse than a plain image."""
     if chosen and "news.google.com" not in chosen:
         return chosen
-    ct = _tokens(title)
-    best, score = chosen, 0
+    ct = _story_words(title)
+    if len(ct) < 2:
+        return chosen
+    best, score = chosen, 0.0
     for c in cands:
         link = c.get("link", "")
         if not link or "news.google.com" in link:
             continue
-        ov = len(ct & _tokens(c.get("title", "")))
-        if ov >= 3 and ov > score:
-            best, score = link, ov
+        cw = _story_words(c.get("title", ""))
+        ov = len(ct & cw)
+        jac = ov / len(ct | cw) if cw else 0.0
+        if ov >= 3 and jac >= 0.6 and jac > score:
+            best, score = link, jac
     return best
 
 
