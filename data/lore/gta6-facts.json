@@ -1,6 +1,6 @@
 {
  "game": "gta6",
- "updated": "2026-11-19",
+ "updated": "2026-11-20",
  "facts": [
   {
    "id": "gta6-01",
@@ -687,6 +687,347 @@
    "pairs_with": "a character",
    "flag": "",
    "checked": "2026-11-19"
+  },
+  {
+   "id": "gta6-57",
+   "fact": "Weird Al Yankovic is one of the two hosts of Vice City FM, the station for 1980s hits. On 18 November 2026, Kotaku said that as far as it could tell, none of his own songs or parodies are on the radio.",
+   "source": "https://kotaku.com/yes-thats-weird-al-hosting-a-radio-station-in-gta-6-2000758140",
+   "sources": [
+    "https://kotaku.com/yes-thats-weird-al-hosting-a-radio-station-in-gta-6-2000758140"
+   ],
+   "wow": 5,
+   "pairs_with": "cruising Vice City with the radio on",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-58",
+   "fact": "Rockstar's October 2026 radio reveal cast Bad Bunny as El Martillo, a DJ on the Latin station Cocoteo FM. On Back Country Radio, Lana Del Rey plays Delta Dawne alongside Morgan Wallen.",
+   "source": "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/",
+   "sources": [
+    "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/"
+   ],
+   "wow": 5,
+   "pairs_with": "driving with the radio on, highways",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-59",
+   "fact": "Slayer's Kerry King and Tom Araya host GTA 6's metal station, The Chamber 106.6, as DJ Kerry and DJ Tom. Slayer's 'Raining Blood' is on the playlist.",
+   "source": "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/",
+   "sources": [
+    "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/"
+   ],
+   "wow": 4,
+   "pairs_with": "high-speed chases, wanted level",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-60",
+   "fact": "Flash FM, billed as the Vice City institution for pop music, is hosted by Robyn. Rappers Trick Daddy and Trina host Dirty South Classics, a station for regional rap and hip-hop classics.",
+   "source": "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/",
+   "sources": [
+    "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/"
+   ],
+   "wow": 3,
+   "pairs_with": "neon Vice City night driving",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-61",
+   "fact": "GTA 6 adds on-demand podcasts. Rockstar announced in October 2026 that both radio and podcasts also play through headphones or earbuds connected to the character's phone, not just in vehicles.",
+   "source": "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/",
+   "sources": [
+    "https://consequence.net/2026/10/gta-6-radio-stations-hosts-details/"
+   ],
+   "wow": 3,
+   "pairs_with": "walking or jogging on the beach",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-62",
+   "fact": "The French duo Justice composed GTA 6's score: about three hours across 50 digital tracks. Separately, 'Flower in a Hurricane' from GTA VI: The Album features Tame Impala, SZA and King Gizzard & the Lizard Wizard.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI:_Original_Score",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI:_Original_Score"
+   ],
+   "wow": 4,
+   "pairs_with": "cinematic city skyline at sunset",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-63",
+   "fact": "Game Informer reported in September 2026 that Leonida has more than 170 animal species, including invasive ones: green iguanas, cane toads, feral cats and even rhesus macaque monkeys.",
+   "source": "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-includes-over-170-animal-species",
+   "sources": [
+    "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-includes-over-170-animal-species"
+   ],
+   "wow": 5,
+   "pairs_with": "swamps and wildlife",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-64",
+   "fact": "According to Game Informer, some of Leonida's animals are labelled Rare, Discoverable or Legendary, and Rockstar kept the identities of the hardest-to-find creatures secret.",
+   "source": "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-includes-over-170-animal-species",
+   "sources": [
+    "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-includes-over-170-animal-species"
+   ],
+   "wow": 4,
+   "pairs_with": "hunting in Mount Kalaga, wildlife",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-65",
+   "fact": "Leonida's seas hold several kinds of shark, plus whales, rays, turtles and jellyfish, Game Informer's cover story reported. Rockstar also built new fur systems so animal coats get wet, dirty and matted.",
+   "source": "https://www.vice.com/en/article/all-gta-6-features-game-informer/",
+   "sources": [
+    "https://www.vice.com/en/article/all-gta-6-features-game-informer/"
+   ],
+   "wow": 4,
+   "pairs_with": "scuba diving, boats, ocean",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-66",
+   "fact": "Game Informer's September 2026 cover story said Leonida gets tropical storms and seasonal hurricanes. Storms are local too: you can stand in sunshine and watch rain pouring down in the distance.",
+   "source": "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-features-tropical-storms-and-hurricanes",
+   "sources": [
+    "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-features-tropical-storms-and-hurricanes",
+    "https://www.vice.com/en/article/all-gta-6-features-game-informer/"
+   ],
+   "wow": 4,
+   "pairs_with": "storms, rain, driving on the coast",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-67",
+   "fact": "Rain leaves puddles that stay on the ground after a storm, and in the right light you can spot a rainbow after a fresh shower, Game Informer reported.",
+   "source": "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-features-tropical-storms-and-hurricanes",
+   "sources": [
+    "https://gameinformer.com/exclusive/2026/09/29/exclusive-grand-theft-auto-vi-features-tropical-storms-and-hurricanes"
+   ],
+   "wow": 3,
+   "pairs_with": "wet streets after rain",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-68",
+   "fact": "Rockstar North's Rob Nelson told Edge magazine that GTA 6's pedestrians have more than 600,000 animations, plus personality traits that decide how aggressive they are and whether they go for a weapon.",
+   "source": "https://gamerant.com/gta6-npc-animations-behaviors-traits/",
+   "sources": [
+    "https://gamerant.com/gta6-npc-animations-behaviors-traits/"
+   ],
+   "wow": 5,
+   "pairs_with": "crowded streets and pedestrians",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-69",
+   "fact": "Rockstar brought in more than 50 real street artists to design the murals in Vice City's Stockyard, a district modelled on Miami's Wynwood, Shacknews reported in August 2026, citing Dazed.",
+   "source": "https://www.shacknews.com/article/150515/grand-theft-auto-6-street-artist-murals",
+   "sources": [
+    "https://www.shacknews.com/article/150515/grand-theft-auto-6-street-artist-murals"
+   ],
+   "wow": 4,
+   "pairs_with": "walking past graffiti and murals",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-70",
+   "fact": "The Kaseya Center, home of the Miami Heat, appears in GTA 6 as the Sahara Arena.",
+   "source": "https://en.wikipedia.org/wiki/Kaseya_Center",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kaseya_Center",
+    "https://www.tweaktown.com/news/113533/grand-theft-auto-6-marketing-surfaces-in-miami-after-rockstar-paid-the-city-dollars3-million/index.html"
+   ],
+   "wow": 3,
+   "pairs_with": "downtown Vice City, waterfront",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-71",
+   "fact": "GTA 6 has a Metascore of 99, tying The Legend of Zelda: Ocarina of Time for Metacritic's highest score ever.",
+   "source": "https://www.metacritic.com/game/grand-theft-auto-vi/",
+   "sources": [
+    "https://www.metacritic.com/game/grand-theft-auto-vi/",
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 5,
+   "pairs_with": "any epic gameplay montage",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-72",
+   "fact": "Spanish magazine HobbyConsolas gave GTA 6 100 out of 100, the first perfect score in its 35-year history.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 3,
+   "pairs_with": "scenic cruising montage",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-73",
+   "fact": "Wccftech's review counted 121 bars, 287 bus stops, 57 gas stations, 24 Ammu-Nations and 167 ATMs you can tow away across Leonida.",
+   "source": "https://wccftech.com/review/grand-theft-auto-vi-review-ps5pro/",
+   "sources": [
+    "https://wccftech.com/review/grand-theft-auto-vi-review-ps5pro/"
+   ],
+   "wow": 5,
+   "pairs_with": "city streets, shops, robberies",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-74",
+   "fact": "Wccftech's review counted 13 stunt jumps, two golf courses, eight drone time trials and off-road races at a place called the Thrillbilly Mud Club.",
+   "source": "https://wccftech.com/review/grand-theft-auto-vi-review-ps5pro/",
+   "sources": [
+    "https://wccftech.com/review/grand-theft-auto-vi-review-ps5pro/"
+   ],
+   "wow": 4,
+   "pairs_with": "stunt jumps, off-road trucks",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-75",
+   "fact": "You can carry only two main firearms and two sidearms at a time, according to Wikipedia's summary of the game, a change from earlier GTAs.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 4,
+   "pairs_with": "shootouts, Ammu-Nation",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-76",
+   "fact": "Some cars must be broken into with a 'Slim Jim' minigame. Engadget reported in August 2026, citing Rob Nelson, that fancier cars with electronic locks need a key cloner before you can steal them.",
+   "source": "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/",
+   "sources": [
+    "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/"
+   ],
+   "wow": 4,
+   "pairs_with": "stealing cars",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-77",
+   "fact": "Small good deeds help your Criminal Profile: previews of the August 2026 Extended Look noted that throwing rubbish into a bin or feeding animals can improve it.",
+   "source": "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/",
+   "sources": [
+    "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/",
+    "https://www.pushsquare.com/news/2026/08/watch-gta-6-extended-look-here-17-things-weve-learned"
+   ],
+   "wow": 4,
+   "pairs_with": "walking around town, animals",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-78",
+   "fact": "VGC's review says your Criminal Profile can sink to 'Irredeemable', and once you hit it, it is permanent. Crimes in the open world count for more than those in missions.",
+   "source": "https://www.videogameschronicle.com/review/grand-theft-auto-6/",
+   "sources": [
+    "https://www.videogameschronicle.com/review/grand-theft-auto-6/"
+   ],
+   "wow": 4,
+   "pairs_with": "rampages, wanted level",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-79",
+   "fact": "VGC's reviewer ran into drag queens flirting with police after a traffic stop, and streamers filming themselves jumping off a bridge.",
+   "source": "https://www.videogameschronicle.com/review/grand-theft-auto-6/",
+   "sources": [
+    "https://www.videogameschronicle.com/review/grand-theft-auto-6/"
+   ],
+   "wow": 4,
+   "pairs_with": "police traffic stops, bridges",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-80",
+   "fact": "TechRadar's review notes an Uber-style app called RydeMe for booking rides, and a scooter service that delivers your car to you.",
+   "source": "https://www.techradar.com/gaming/gta-6-review",
+   "sources": [
+    "https://www.techradar.com/gaming/gta-6-review"
+   ],
+   "wow": 3,
+   "pairs_with": "phone use, driving, taxis",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-81",
+   "fact": "GTA 6 is the first mainline GTA story written without Dan Houser since the 1997 original. He left Rockstar in 2020.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 4,
+   "pairs_with": "cutscenes, Jason and Lucia",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-82",
+   "fact": "Rockstar's staff reportedly almost doubled during development, from 2,441 to 4,711 people across 12 offices, and a Los Angeles branch worked almost solely on making its pedestrians more realistic.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+    "https://www.shacknews.com/article/150515/grand-theft-auto-6-street-artist-murals"
+   ],
+   "wow": 3,
+   "pairs_with": "busy crowds, city life",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-83",
+   "fact": "Stay awake for days on end and it shows on your character's face, according to Wikipedia's summary of the game.",
+   "source": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Grand_Theft_Auto_VI"
+   ],
+   "wow": 3,
+   "pairs_with": "close-ups of Jason or Lucia",
+   "flag": "",
+   "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-84",
+   "fact": "In the August 2026 Extended Look, Brian Heder offers Jason and Lucia a job at the Effluvia rooftop bar in downtown Vice City, and Jason drinks Pißwasser, the series' long-running parody lager.",
+   "source": "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/",
+   "sources": [
+    "https://www.engadget.com/2246846/things-you-may-have-missed-gta-6-extended-look/"
+   ],
+   "wow": 2,
+   "pairs_with": "rooftops, bars, nightlife",
+   "flag": "",
+   "checked": "2026-11-20"
   }
  ],
  "note": "Sourced GTA 6 facts for the card writer (tools/lore_short.py fact bank). Only facts an independent check confirmed against their sources go here (2026-11-19). Facts awaiting a check sit in gta6-facts-unchecked.json; move each one over only after checking its source. Removed on purpose: a real private person's money demand and the 2022 hacker's medical detention."
