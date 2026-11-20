@@ -148,9 +148,22 @@ def pick_facts(game: str) -> list[dict]:
     return fresh[:FACTS_SHOWN]
 
 
+def _domain(url: str) -> str:
+    m = re.match(r"https?://(?:www\.)?([^/]+)", str(url or "").strip())
+    return m.group(1).lower() if m else str(url or "").strip()
+
+
+def fact_source(x: dict) -> str:
+    """Who reported a fact, as a domain ('kotaku.com'). The writer and the checker need it: a
+    card turned a Kotaku preview into 'Rockstar confirmed...' because neither was ever told
+    where the fact came from (Bryce, 2026-11-20)."""
+    srcs = [x.get("source")] + list(x.get("sources") or [])
+    return ", ".join(dict.fromkeys(_domain(s) for s in srcs if s)) or "unknown"
+
+
 def facts_text(facts: list[dict]) -> str:
-    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (pairs with: {x.get('pairs_with', 'any clip')})"
-                     for x in facts)
+    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}; "
+                     f"pairs with: {x.get('pairs_with', 'any clip')})" for x in facts)
 
 
 def mark_fact(game: str, fact_id: str) -> None:
@@ -185,7 +198,10 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "ON SCREEN above — who is doing what to whom, who is awake, where they are — the "
            "screen wins and you DROP that finding. Never import an event (a flashback, an "
            "object, a trigger) the frames do not show, and never reverse who is acting on "
-           "whom to match a research note (user, 2026-10-09).\n\n"
+           "whom to match a research note (user, 2026-10-09).\n"
+           "A finding the research marks as unconfirmed, possible, rumoured or a fan theory is "
+           "NEVER stated as fact, and a place name from it never goes in the card as where "
+           "this happens.\n\n"
            if research else "")
         + (f"VERIFIED GAME FACTS (each one sourced; behind-the-scenes, development, records, "
            f"real-world inspirations, did-you-knows):\n{facts}\n\n"
@@ -201,6 +217,13 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "('Rockstar studied', 'documented', 'visited', 'on purpose'). The fact is the only "
            "true thing you have; beats 1 and 2 must contain nothing else except what is visibly "
            "on screen (a test card invented 'Rockstar's most sourced region', 2026-11-19). "
+           "WHO SAID IT: credit a fact only to its listed source ('Kotaku reports', 'previews "
+           "say') or to nobody. Never write 'Rockstar confirmed', 'Rockstar revealed' or 'the "
+           "developers said' unless the source is Rockstar or the fact itself says Rockstar "
+           "said it. NO NEW NAMES OR LABELS: no place, district, building or 'his safehouse' "
+           "unless the fact names it or it is readable on screen, and no label for the feature "
+           "the fact does not use ('RPG-lite', 'physique system', 'connects to'). A card added "
+           "'Rockstar confirmed' and 'his Key Lento safehouse' to a Kotaku fact (2026-11-20). "
            "Put the fact's id in fact_id. If no fact fits, write a scene card and leave "
            "fact_id empty.\n\n"
            if facts else "")
@@ -289,6 +312,87 @@ def card_shape_ok(body: str) -> tuple[bool, str]:
     if hits:
         return False, f"describes the footage ({', '.join(hits[:3])})"
     return True, ""
+
+
+# "Rockstar confirmed ..." on a fact whose only source was a Kotaku preview round-up, and the
+# AI critic passed it (2026-11-20). Crediting the developer is a factual claim of its own, so
+# code checks it: the card may credit the developer only when the support says the developer.
+_DEV = (r"(?:rockstar(?:\s+games)?(?:['’]s?\s+(?:devs|developers|team|writers|director\w*))?|"
+        r"the\s+(?:devs|developers|studio|writers)|(?:the\s+)?developers?|(?:the\s+)?devs|take-two)")
+# Only verbs that claim the developer SAID something. 'showed', 'teased', 'told' are left out:
+# a comparison like 'the grind the devs teased in San Andreas' is opinion, not a credit (review
+# 2026-11-20). Up to two filler words may sit between ('Rockstar has since confirmed').
+_SAID = r"(?:confirm\w*|reveal\w*|said|says|announc\w*|explain\w*|stat(?:ed|es)|admit\w*|verif\w*)"
+_ATTRIB_RES = (
+    re.compile(rf"\b{_DEV}(?:\s+(?!and\b|but\b|nor\b)\w+){{0,2}}?\s+{_SAID}\b", re.I),
+    re.compile(rf"\b{_DEV}['’]s\s+{_SAID}\b", re.I),
+    re.compile(rf"\b(?:confirmed|revealed|announced|explained|verified|stated)\s+by\s+{_DEV}\b", re.I),
+    re.compile(rf"\b(?:according\s+to|per|straight\s+from|as)\s+{_DEV}(?:\s+put\s+it)?\b", re.I),
+)
+# Support that DOES come from the people who made the game: their site, or a line crediting
+# a developer, director, writer or interview. No trailing \b on rockstar, so the
+# rockstargames.com source domain counts.
+_DEV_WORD = re.compile(r"(?:rockstar|\bdevelopers?\b|\bdevs\b|take-two|\bstudio\b|\bdirector\b|"
+                       r"\bwriters?\b|\binterview\w*|\bproducer\b|\bnewswire\b|\bplaystation\.blog)", re.I)
+
+
+def attribution_overreach(text: str, support: str) -> str:
+    """A credit to the developer ('Rockstar confirmed') that the support never makes. A false
+    hit costs one rewrite with the reason, not a lost post."""
+    if _DEV_WORD.search(support or ""):
+        return ""
+    for rx in _ATTRIB_RES:
+        m = rx.search(text or "")
+        if m:
+            return (f"'{m.group(0)}' credits the developer, but the source never says the "
+                    "developer said it; credit the listed source or nobody")
+    return ""
+
+
+_HEDGE = re.compile(r"\b(?:unconfirmed|unverified|not\s+confirmed|rumou?r\w*|speculat\w*|fan\s+theor\w*|"
+                    r"theor(?:y|ize|ise)\w*|possibl\w*|likely|may\s+be|might|appears?\s+to|seems?|"
+                    r"unclear|unknown|reportedly|believ\w*|guess\w*|suggest\w*|could\s+be)\b", re.I)
+_NAME_RUN = re.compile(r"[A-Z][\w-]*(?:\s+(?:of\s+|the\s+|de\s+)?[A-Z][\w-]*)*")
+_NAME_SKIP = {"i", "in", "the", "a", "an", "and", "but", "so", "that", "this", "it", "its", "they",
+              "he", "she", "his", "her", "their", "when", "then", "now", "keep", "watch", "yes",
+              "no", "not", "one", "every", "after", "before", "while", "even", "if", "you", "your",
+              "gta", "vi", "6", "ok"}
+
+
+def confirmed_research(research: str) -> str:
+    """The research lines that do NOT hedge; a hedged line supports nothing stated as fact."""
+    return "\n".join(l for l in (research or "").splitlines() if l.strip() and not _HEDGE.search(l))
+
+
+def unsupported_names(text: str, support: str, extra_ok: tuple = ()) -> list[str]:
+    """Capitalised names in the card that appear nowhere in the support. Heuristic, so the
+    list goes to the checker as suspects rather than rejecting on its own (a comparison beat
+    may rightly name another game). A single capitalised word that opens a sentence is just
+    the sentence start ('Imagine', 'Hit'), and a possessive splits a run ('CJ's San Andreas')."""
+    sup = " " + re.sub(r"\s+", " ", (support or "")).lower() + " "
+    ok = {w.lower() for w in extra_ok if w}
+    out = []
+    # split on possessives so "CJ's San Andreas" is two names
+    flat = re.sub(r"['’]s\b", " ,", text or "")
+    for m in _NAME_RUN.finditer(flat):
+        words = m.group(0).split()
+        before = flat[:m.start()].rstrip()
+        at_start = not before or before[-1] in ".!?:;\"“"
+        if at_start:
+            if len(words) == 1:
+                continue
+            if words[0].lower() in _NAME_SKIP:
+                words = words[1:]
+        while words and words[0].lower() in _NAME_SKIP:
+            words = words[1:]
+        name = " ".join(words).strip(" -")
+        if not name or name.lower() in ok:
+            continue
+        if all(w.lower() in ok or w.lower() in _NAME_SKIP for w in words):
+            continue
+        if name.lower() not in sup and name not in out:
+            out.append(name)
+    return out
 
 
 def _write_caption(card: dict, gname: str, avoid: str = "") -> dict:
@@ -387,10 +491,12 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
 
 
 def _check_card(card: dict, observation: str, subtitles: str, gname: str,
-                game: str = "", research: str = "", facts: str = "") -> tuple[bool, str]:
+                game: str = "", research: str = "", facts: str = "",
+                used_fact: str = "", suspects: list | None = None) -> tuple[bool, str]:
     """Adversarial check: every claim must come from the clip, the subtitles or the lore.
     The BIBLE is included (it was not, so a wrong 'five years' sailed through with no
-    timeline to check it against — user, 2026-10-07)."""
+    timeline to check it against — user, 2026-10-07). `used_fact` is the one fact the card
+    says it is built on, with its source; `suspects` are names code found in no evidence."""
     from core import lore as _lore
     bible = (_lore.lore_for(game) if game else "") or ""
     prompt = (
@@ -416,6 +522,26 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
            "broader generalisation stated as fact. This is how an unsourced 'Rockstar's most "
            "sourced region' got through (2026-11-19).\n\n"
            if facts else "")
+        + (f"THIS CARD IS BUILT ON ONE FACT, and this is ALL it may state as fact apart from "
+           f"what is visibly on screen:\n{used_fact}\n\n"
+           "Go through beats 1 and 2 claim by claim and hold each one against this fact and "
+           "the on-screen evidence. Flag as BAD:\n"
+           "- a credit the source does not give: 'Rockstar confirmed', 'Rockstar revealed', "
+           "'the developers said' when the source is a news site or preview\n"
+           "- a place, district, building, home or safehouse the fact does not name and the "
+           "screen does not show in readable text\n"
+           "- a label, mechanic name or link the fact does not make ('RPG-lite', 'connects "
+           "to', 'physique system')\n"
+           "- a research finding the research itself calls unconfirmed, possible or a theory, "
+           "stated as fact\n"
+           "A card that is true in spirit but adds any of these is still BAD. That is how "
+           "'Rockstar confirmed' and 'his Key Lento safehouse' reached a card built on a "
+           "Kotaku preview (2026-11-20).\n\n"
+           if used_fact else "")
+        + (f"NAMES IN THE CARD THAT APPEAR IN NONE OF THE EVIDENCE: {', '.join(suspects)}.\n"
+           "Each one is BAD if it is used in beats 1 or 2 or stated as fact. It is fine only "
+           "inside the closing comparison, naming another game or one of its characters.\n\n"
+           if suspects else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
         # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
         + f"THE CARD:\n{card.get('body', '')}\n\n"
@@ -658,7 +784,34 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
                                "the moment MEANS instead.")
-            return _check_card(c, observation, subs, gname, game, research, facts)
+            text = " ".join((c.get("body", ""), c.get("comment", "")))
+            # The writer may return '[gta6-16]' for 'gta6-16'; an id that still matches
+            # nothing would quietly skip the strict fact check, so it is a reject instead.
+            fid = str(c.get("fact_id") or "").strip("[] ").lower()
+            used = next((x for x in _facts if str(x.get("id")).lower() == fid), None)
+            if fid and not used:
+                return False, (f"fact_id '{c.get('fact_id')}' is not one of the listed facts; "
+                               "use an exact id from the list, or leave it empty for a scene card")
+            if used:
+                c["fact_id"] = str(used.get("id"))
+            # A fact card's facts come from the fact alone; a scene card's may also come from
+            # research that does not hedge. Either way the screen and subtitles count.
+            if used:
+                fact_sup = f"{used.get('fact', '')} {fact_source(used)}"
+                used_fact = f"[{used.get('id')}] {used.get('fact')} (source: {fact_source(used)})"
+            else:
+                fact_sup, used_fact = confirmed_research(research), ""
+            over = attribution_overreach(text, f"{fact_sup} {subs}")
+            if over:
+                return False, over
+            from core import lore as _lore
+            names_sup = " ".join((fact_sup, observation, subs, _lore.lore_for(game) or "",
+                                  _lore.playable_note(game) or ""))
+            suspects = unsupported_names(text, names_sup, extra_ok=(gname, *gname.split()))
+            if suspects:
+                log(f"names in no evidence, sent to the checker: {', '.join(suspects)}")
+            return _check_card(c, observation, subs, gname, game, research, facts,
+                               used_fact=used_fact, suspects=suspects)
 
         # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
         # words that go on screen.
