@@ -71,13 +71,27 @@ def _hex(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def _og_image_url(page_url: str) -> str | None:
-    """The social preview image the source outlet published for this story."""
+def _fetch_html(page_url: str) -> str:
+    """The source page's HTML. Some outlets (TweakTown, 2026-11-20) drop the `requests` connection
+    but answer urllib, so a failed first try gets a second, plain urllib request."""
     import requests
     try:
-        h = requests.get(page_url, headers={"User-Agent": _UA}, timeout=25).text
+        return requests.get(page_url, headers={"User-Agent": _UA}, timeout=25).text
     except Exception as e:
-        print(f"      source fetch failed: {e!r}", flush=True)
+        print(f"      source fetch failed ({type(e).__name__}), retrying plainly", flush=True)
+    try:
+        import urllib.request
+        req = urllib.request.Request(page_url, headers={"User-Agent": "Mozilla/5.0"})
+        return urllib.request.urlopen(req, timeout=25).read().decode("utf-8", "replace")
+    except Exception as e:
+        print(f"      source fetch failed again: {e!r}", flush=True)
+        return ""
+
+
+def _og_image_url(page_url: str) -> str | None:
+    """The social preview image the source outlet published for this story."""
+    h = _fetch_html(page_url)
+    if not h:
         return None
     for prop in ("og:image:secure_url", "og:image", "twitter:image", "twitter:image:src"):
         m = (re.search(rf'<meta[^>]+(?:property|name)=["\']{re.escape(prop)}["\'][^>]+content=["\']([^"\']+)', h, re.I)
@@ -94,8 +108,47 @@ def _download(img_url: str) -> bytes | None:
         if r.status_code == 200 and len(r.content) > 8000 and "image" in r.headers.get("content-type", "image"):
             return r.content
     except Exception as e:
-        print(f"      image download failed: {e!r}", flush=True)
+        print(f"      image download failed ({type(e).__name__}), retrying plainly", flush=True)
+    try:
+        import urllib.request
+        req = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
+        data = urllib.request.urlopen(req, timeout=25).read()
+        return data if len(data) > 8000 else None
+    except Exception as e:
+        print(f"      image download failed again: {e!r}", flush=True)
     return None
+
+
+GAME_ART = ROOT / "reels" / "assets" / "game-art"
+
+
+def _squash(s: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(s or "").lower())
+
+
+def _game_art(fm: dict) -> tuple[Path | None, str]:
+    """(an official key-art file for the article's game, the game's display name). Second fallback
+    when the source has no usable image (Bryce, 2026-11-20: a GTA 6 article went up with a plain
+    gradient card and 'Image: TweakTown' under it). Matches the article's `game` ('gta-6', 'gta6')
+    or its tags against the game-art folders and the config game names."""
+    import random
+    try:
+        from core.config import CONFIG
+        names = CONFIG.reels.get("game_names", {}) or {}
+    except Exception:
+        names = {}
+    wants = [_squash(fm.get("game", ""))] + [_squash(t) for t in (fm.get("tags") or [])]
+    wants = [w for w in wants if w]
+    folders = sorted(p for p in GAME_ART.iterdir() if p.is_dir()) if GAME_ART.exists() else []
+    for folder in folders:
+        keys = {_squash(folder.name), _squash(names.get(folder.name, ""))}
+        keys |= {k.replace("grandtheftautovi", "gta6").replace("grandtheftauto6", "gta6") for k in keys}
+        if not any(w in keys for w in wants):
+            continue
+        imgs = [p for p in folder.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")]
+        if imgs:
+            return random.choice(imgs), str(names.get(folder.name) or folder.name)
+    return None, ""
 
 
 def _cover_from_bytes(data: bytes, out: Path) -> bool:
@@ -170,10 +223,17 @@ def _cover_branded(fm: dict, out: Path) -> None:
     img.save(out, "JPEG", quality=88, optimize=True)
 
 
-def _set_cover(text: str, cover_rel: str) -> str:
+def _set_cover(text: str, cover_rel: str, credit: str = "") -> str:
+    """Set `cover` and `coverCredit` (who the image belongs to; empty = the cited source's own
+    image, which the page credits as 'Image: <sourceName>')."""
     if re.search(r"(?m)^cover:\s*.*$", text):
-        return re.sub(r"(?m)^cover:\s*.*$", f'cover: "{cover_rel}"', text, count=1)
-    return re.sub(r"(?m)^(date:.*)$", f'cover: "{cover_rel}"\n\\1', text, count=1)
+        text = re.sub(r"(?m)^cover:\s*.*$", f'cover: "{cover_rel}"', text, count=1)
+    else:
+        text = re.sub(r"(?m)^(date:.*)$", f'cover: "{cover_rel}"\n\\1', text, count=1)
+    text = re.sub(r"(?m)^coverCredit:.*\n", "", text)
+    if credit:
+        text = re.sub(r"(?m)^(cover:.*)$", f'\\1\ncoverCredit: "{credit}"', text, count=1)
+    return text
 
 
 def main() -> int:
@@ -194,17 +254,28 @@ def main() -> int:
         slug = path.stem
         out = COVERS / f"{slug}.jpg"
         src_url = str(fm.get("sourceUrl", "")).strip()
-        how = None
+        how, credit = None, ""
         if src_url:
             img_url = _og_image_url(src_url)
             if img_url:
                 data = _download(img_url)
                 if data and _cover_from_bytes(data, out):
                     how = f"scraped {img_url.split('/')[2]}"
-        if not how:                                   # no usable press image -> branded fallback
+        if not how:                                   # no usable press image -> the game's key art
+            art, gname = _game_art(fm)
+            if art and _cover_from_bytes(art.read_bytes(), out):
+                how, credit = f"game art {art.name}", f"{gname} official art"
+        if not how:                                   # last resort: our branded card, credited to us
             _cover_branded(fm, out)
-            how = "branded card (no source image)"
-        path.write_text(_set_cover(text, f"/covers/{slug}.jpg"), encoding="utf-8")
+            how, credit = "branded card (no source image, no game art)", "BOSS KG"
+            try:
+                from core import notify
+                notify.telegram(f"🖼 Article \"{fm.get('title', slug)}\" got a plain branded cover: "
+                                "its source had no usable image and there is no game art for "
+                                f"'{fm.get('game', '')}'. Add art to reels/assets/game-art/<game>/.")
+            except Exception:
+                pass
+        path.write_text(_set_cover(text, f"/covers/{slug}.jpg", credit), encoding="utf-8")
         print(f"   {slug}: {how}", flush=True)
         made += 1
     print(f"[article-cover] set {made} cover(s).", flush=True)

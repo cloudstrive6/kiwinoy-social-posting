@@ -14,6 +14,7 @@ const articles = defineCollection({
     game: z.string().optional(),               // franchise/property for theming
     cover: z.string().optional(),              // /images/... hero image (our card / official still)
     coverAlt: z.string().default(""),
+    coverCredit: z.string().optional(),        // who the cover belongs to when it is NOT the source's image
     date: z.coerce.date(),
     author: z.string().default("BOSS KG"),
     sourceName: z.string().optional(),         // outlet we credit (e.g. "IGN")

@@ -56,7 +56,8 @@ const iso = d.date.toISOString();
 const by = !d.author || d.author === "BOSS KG" ? "KG" : d.author;
 const url = abs(`/news/${entry.id}/`);
 const cover = imgAttrs(d.cover, { sizes: SIZES.cover });
-const credit = d.sourceName ? `Image: ${d.sourceName}` : "Image belongs to its respective owner.";
+// coverCredit = game key art or our own card (never credit the outlet for an image it did not publish)
+const credit = d.coverCredit ? `Image: ${d.coverCredit}` : d.sourceName ? `Image: ${d.sourceName}` : "Image belongs to its respective owner.";
 const crumbs = [{ label: "Home", href: "/" }, { label: sec.label, href: sec.href }, { label: d.title }];
 const ld = [
   {

@@ -91,6 +91,32 @@ def _tiktok_followers() -> int | None:
         return None
 
 
+_GRAPH_EXTRA: dict = {}          # the Facebook page count, filled by _instagram_graph's call
+
+
+def _facebook_followers() -> int | None:
+    """The Boss KG Facebook page's followers, from the same official Graph call as Instagram
+    (Bryce, 2026-11-20: "for all the rest of the accounts - needs automatic updating")."""
+    if "facebook" not in _GRAPH_EXTRA:
+        _instagram_graph()
+    return _GRAPH_EXTRA.get("facebook")
+
+
+def _kick_followers() -> int | None:
+    """kick.com's public channel endpoint (the one its own web page reads)."""
+    import requests
+    try:
+        r = requests.get("https://kick.com/api/v2/channels/kiwinoy", timeout=25,
+                         headers={"User-Agent": _UA, "Accept": "application/json"})
+        if r.status_code != 200:
+            print(f"   kick: HTTP {r.status_code}", flush=True)
+            return None
+        return int(r.json().get("followers_count") or 0) or None
+    except Exception as e:
+        print(f"   kick: {type(e).__name__}", flush=True)
+        return None
+
+
 def _instagram_graph() -> int | None:
     """OFFICIAL count (2026-11-20): the public endpoint below answers GitHub's servers with HTTP 429,
     so the site showed 858 from 2026-10-29 while the real count was 1,206. Post for Me holds the
@@ -108,13 +134,17 @@ def _instagram_graph() -> int | None:
             print("   instagram (graph): no connected account token", flush=True)
             return None
         r = requests.get("https://graph.facebook.com/v21.0/me/accounts", timeout=25, params={
-            "fields": "instagram_business_account{username,followers_count}", "access_token": tok})
+            "fields": "name,followers_count,instagram_business_account{username,followers_count}",
+            "access_token": tok})
         if r.status_code != 200:
             print(f"   instagram (graph): HTTP {r.status_code}", flush=True)
             return None
         for page in r.json().get("data", []) or []:
             ig = page.get("instagram_business_account") or {}
             if str(ig.get("username", "")).lower() == IG_USER and ig.get("followers_count"):
+                # the same call carries the linked Facebook page ("Boss KG") follower count
+                if page.get("followers_count"):
+                    _GRAPH_EXTRA["facebook"] = int(page["followers_count"])
                 return int(ig["followers_count"])
         print("   instagram (graph): account not found on the linked pages", flush=True)
     except Exception as e:
@@ -164,10 +194,13 @@ def main() -> int:
         "youtube": _youtube_subs(),
         "tiktok": _tiktok_followers(),
         "instagram": _instagram_followers(),
+        "facebook": _facebook_followers(),
+        "kick": _kick_followers(),
     }
 
     out = dict(prev)
-    out.setdefault("youtube", {}); out.setdefault("tiktok", {}); out.setdefault("instagram", {})
+    for k in fetched:
+        out.setdefault(k, {})
     changed = False
     for key, n in fetched.items():
         if n and n > 0:                                   # only overwrite on a good fetch

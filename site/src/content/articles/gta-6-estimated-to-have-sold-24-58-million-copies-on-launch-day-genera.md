@@ -6,6 +6,7 @@ tag: "News"
 tags: ["GTA 6", "Rockstar Games", "Take-Two Interactive", "Sales", "PlayStation 5"]
 game: "gta6"
 cover: "/covers/gta-6-estimated-to-have-sold-24-58-million-copies-on-launch-day-genera.jpg"
+coverCredit: "Grand Theft Auto VI official art"
 date: 2026-11-20
 author: "BOSS KG"
 draft: false
