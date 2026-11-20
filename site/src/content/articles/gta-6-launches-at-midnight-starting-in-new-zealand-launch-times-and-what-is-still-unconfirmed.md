@@ -11,7 +11,7 @@ date: 2026-11-18
 author: "BOSS KG"
 sourceName: "PlayStation Blog"
 sourceUrl: "https://blog.playstation.com/?p=425567"
-featured: true
+featured: false
 draft: false
 ---
 
