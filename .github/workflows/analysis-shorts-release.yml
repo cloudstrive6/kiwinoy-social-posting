@@ -45,6 +45,9 @@ jobs:
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # GTA 6 swear beep (core/bleep.py, Scribe speech-to-text): Bryce's own "KG Actions" key, as in
+      # reels.yml. Without it the fact card fallback posted unchecked (found 2026-11-20).
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       GH_TOKEN: ${{ github.token }}
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
