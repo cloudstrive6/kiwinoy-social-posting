@@ -863,9 +863,19 @@ GAME_LORE["gta6"] = (
     "MODERN, not the 1986 city of GTA Vice City; never claim a cameo from an older GTA. (4) In-game "
     "streams and phone clips are parody, not real footage. (5) Lucia's prison time is BACKSTORY "
     "at the start, not an ending. (6) A police chase is gameplay, not a story beat.\n"
-    "NAMING RULE: name a character ONLY when the clip's VISUALS or SUBTITLES clearly show them "
-    "(a subtitle name, or the two leads in a clear shot). Otherwise say 'the pair', 'a crew', "
-    "'the cops'.\n"
+    "PLAYABLE-CHARACTER RULE (Bryce, 2026-11-20: a card said 'a man on a deck starts a set of "
+    "pull-ups' about Jason): JASON and LUCIA are the ONLY two playable characters. Whoever the "
+    "player is CONTROLLING is one of them: a MAN the player controls is JASON, a WOMAN the player "
+    "controls is LUCIA. NAME THEM, never 'a man', 'a woman', 'the player', 'the character' or "
+    "'he'/'she' alone. Count the person as controlled ONLY when the frames show the GAMEPLAY UI "
+    "(health bar or minimap, wanted stars, or an activity read-out or button prompt such as "
+    "REPS, stamina or 'Press X') AND the camera is following that one person. A HUD-less "
+    "cutscene or cinematic does not count: there, name them only when it is unmistakably them.\n"
+    "NAMING RULE for everyone else: name any other character ONLY when the clip's VISUALS or "
+    "SUBTITLES clearly show them (a subtitle name, or the two leads together in a clear shot). In "
+    "a CUTSCENE with no HUD, name Jason or Lucia only when it is unmistakably them; otherwise say "
+    "'the pair', 'a crew', 'the cops'. Police, workers, crowds and other drivers are NEVER Jason "
+    "or Lucia.\n"
     "DIALOGUE & RELATIONSHIP RULE: never assert who is talking to whom, who betrays whom, who "
     "works for whom, or why, unless subtitles or visuals make it explicit.\n"
     "WHAT EACH ONE WANTS (official profiles):\n"
@@ -882,6 +892,28 @@ GAME_LORE["gta6"] = (
     "officially named the cast). When unsure, hook the visible action: the drive, the heist, "
     "the chase, the city."
 )
+
+
+# WHO THE PLAYER CONTROLS, for the clip OBSERVER and the frame-level hook critic, which see the
+# frames but not the lore bible (Bryce, 2026-11-20: "a controlled man is Jason and a controlled
+# woman is Lucia - make sure the onscreen hook and post/description captioner is also aware").
+PLAYABLE: dict[str, str] = {
+    "gta6": (
+        "WHO IS WHO in Grand Theft Auto VI: JASON DUVAL and LUCIA CAMINOS are the ONLY two playable "
+        "characters. When the frames show the GAMEPLAY UI (the health bar or minimap, wanted "
+        "stars, or an activity read-out or button prompt such as REPS or stamina), the one person "
+        "the camera is following and the player is moving is JASON if it is a man and LUCIA if it "
+        "is a woman. Call them by name. Without that UI (a cutscene, a cinematic, a HUD-less "
+        "drive), name them only when it is unmistakably them or a subtitle names them. Police, "
+        "workers, crowds, bystanders and other drivers are never Jason or Lucia; anyone else "
+        "stays unnamed unless a subtitle names them."
+    ),
+}
+
+
+def playable_note(game: str) -> str:
+    """The who-is-who note for a game key, or ''."""
+    return PLAYABLE.get((game or "").strip().lower(), "")
 
 
 def lore_for(game: str) -> str:

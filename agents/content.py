@@ -568,6 +568,12 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         "- Any on-screen TEXT, subtitles, objective markers, BOSS-BAR NAMES or UI you can "
         "read, with the frame it appears in."
     )
+    _who = _who_note(gname)
+    if _who:   # the one naming exception: the game's playable leads (GTA 6, 2026-11-20)
+        instruction += ("\n\nTHE ONE EXCEPTION to 'never assume who they are', for this game's "
+                        "playable leads only: " + _who + " For each person, say whether the "
+                        "player is visibly controlling them (name the on-screen cue) and, if so, "
+                        "give their name; everyone else stays described by appearance.")
     listing = "\n".join(f"{_stamp(i)}: {p}" for i, p in enumerate(cands))
     claude_prompt = (
         f"Use the Read tool to open these frames first.\n\n{instruction}\n\n"
@@ -1020,7 +1026,7 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
            "the dialogue and action, just drop the unsupported part." if avoid else "")
     )
     try:
-        line = _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])
+        line = _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])
         if line.count('"') % 2:        # a stray quote left by stripping one wrapper quote
             line = line.replace('"', "").strip()
         return line.strip(" ,;:-")[:90]
@@ -1065,6 +1071,25 @@ def swear_rule_game(game: str) -> bool:
     """True when this game uses the star-and-beep rule (config reels.swear_rule.games)."""
     g = (CONFIG.reels.get("swear_rule", {}) or {})
     return bool(game) and str(game).strip().lower() in {str(x).lower() for x in (g.get("games") or [])}
+
+
+def _with_who(prompt: str, gname: str) -> str:
+    """Prompt plus the who-is-who note for games with fixed playable leads (GTA 6): the
+    fallback writers otherwise only see the observation and their 'name nobody without a
+    speaker label' rule (review 2026-11-20)."""
+    w = _who_note(gname)
+    return (prompt + "\n\nNAMING EXCEPTION, overrides any rule above about not naming "
+            "characters: " + w) if w else prompt
+
+
+def _who_note(gname: str) -> str:
+    """core.lore.PLAYABLE note for a game known only by its display name ('Grand Theft Auto VI')."""
+    from core import lore
+    names = CONFIG.reels.get("game_names", {}) or {}
+    for k, v in names.items():
+        if str(v) == str(gname or "") and lore.playable_note(k):
+            return lore.playable_note(k)
+    return lore.playable_note(gname)
 
 
 def _swear_ok_name(gname: str) -> bool:
@@ -1223,7 +1248,7 @@ def _hookify_observation(observation: str, gname: str = "") -> str:
         "- no hashtags, no emojis, no quotes, no preamble — just the line"
     )
     try:
-        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:90]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:90]
     except Exception:
         return ""
 
@@ -1296,7 +1321,7 @@ def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") 
         "No hashtags, no emojis, no quotes, no preamble — just the line."
     )
     try:
-        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:90]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:90]
     except Exception:
         return ""
 
@@ -1326,7 +1351,7 @@ def _angle_caption(observation: str, gname: str, hook: str, dialogue: str = "",
         + "Just the line."
     )
     try:
-        return _strip_md(sanitize(_text(prompt, timeout=90)).strip().splitlines()[0])[:120]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:120]
     except Exception:
         return ""
 
@@ -1379,7 +1404,9 @@ def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
         "Clickbait/curiosity is fine ONLY if TRUE to what's shown/said; a hook about the visible "
         "action, setting, or mood is fine. Be suspicious of props a character wouldn't use "
         "(Spider-Man does not use guns).\n"
-        'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
+        + (f"{_who_note(gname)} So naming the controlled lead is CORRECT, never a fault.\n"
+           if _who_note(gname) else "")
+        + 'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     listing = "\n".join(f"{i + 1}. {p}" for i, p in enumerate(cands))
     try:
