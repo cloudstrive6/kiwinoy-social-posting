@@ -319,7 +319,11 @@ def _relatable_caption(observation: str, angle: str, avoid: str = "") -> str:
         "unless the observer explicitly says so. If the clip is continuous swinging / flying "
         "/ gliding / falling, your caption is about MOVEMENT, air, speed or freedom — NEVER "
         "about stopping, landing, resting, or staying put.\n"
-        "- The FEELING is yours to choose; the physical action must match the clip.\n\n"
+        "- The FEELING is yours to choose; the physical action must match the clip.\n"
+        "- If the observation's TONE line says funny, the caption is the JOKE: the relatable "
+        "self-own or deadpan line a person posts under their own fail ('me trying to look "
+        "cool for exactly one second', 'my plans vs what actually happened'), about the real "
+        "silly thing the observation describes (Bryce, 2026-11-20).\n\n"
         "POV — keep it coherent:\n"
         "- If you start with 'POV:', it must describe the VIEWER'S OWN relatable situation or "
         "feeling (something a person scrolling recognizes from their real life). It must NOT "
@@ -352,7 +356,10 @@ def _verify_caption(caption: str, observation: str) -> tuple[bool, str]:
         "is continuous swinging, flying, gliding, or falling.\n"
         "3. The POV is incoherent — a 'POV:' line that reads as the character narrating their "
         "in-game action instead of a situation/feeling the VIEWER relates to.\n"
-        "4. It names the game or a character, or uses marketing words.\n\n"
+        "4. It names the game or a character, or uses marketing words.\n"
+        "5. It claims a fail, mishap or joke premise ('one job', 'that went wrong') that the "
+        "observation's ACTION sentences do not describe. A 'TONE: funny' line is only a mood "
+        "label, never evidence of what happened.\n\n"
         "A relatable FEELING (needing air, decompressing, escaping for a minute) is FINE as "
         "long as the physical anchor matches the clip. Be strict but reasonable.\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
@@ -382,6 +389,8 @@ def _verify_descriptive(caption: str, observation: str) -> tuple[bool, str]:
         "2. Do NOT excuse a false action just because another clause is true — 'snappy combat' "
         "being real does NOT make an added 'seamless swinging' acceptable.\n"
         "3. It CONTRADICTS what is happening on screen.\n"
+        "4. It claims a fail, mishap or joke premise the observation's ACTION sentences do not "
+        "describe ('TONE: funny' is a mood label, not evidence).\n"
         "Generic energy/vibe words with NO specific action (e.g. 'pure momentum', 'locked in') "
         "are fine. Judge the ACTION/SETTING accuracy only.\n"
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
@@ -461,6 +470,9 @@ Rules:
   do NOT say "swinging"/"web-slinging"/"parkour"/"traversal"; if there is no city skyline, do NOT
   say "NYC"/"the city". When unsure, stay on feeling/energy words rather than naming a move.
 - Final line = the game's proper name "{gname}" (a heart or sparkle emoji ok).
+- If the observation's TONE line says funny, make it a FUNNY caption instead of hype: a dry,
+  deadpan title about the real silly thing (a laughing emoji ok), vibe lines that play the joke
+  straight. Only the silliness the observation shows (Bryce, 2026-11-20).
 - NO hashtags (added separately), no quotes, no preamble. Return ONLY the caption.""" + (
         f"\n- AVOID (a prior draft was wrong): {avoid}" if avoid else "")
     return sanitize(_text(prompt)).strip()
@@ -526,13 +538,15 @@ def _text(prompt: str, timeout: int = 120) -> str:
 
 
 def observe_frame_count(duration: float) -> int:
-    """How many frames the observer should look at: ~1 per 10s of clip, 4..14. Four frames
+    """How many frames the observer should look at: ~1 per 3s of clip, 6..18. Four frames
     for a 150s reel (one every ~37s) meant the writer narrated a video it had barely seen —
     it welded together scenes minutes apart and the critics rightly rejected it (per user
     2026-10-02: 16 of 32 recent rejections were 'the dialogue says X but the footage shows Y')."""
+    # ~1 per 3s, 6..18 (2026-11-20): at 1 per 10s a 2-second gag (an ATV straight into a palm
+    # tree) fell between frames, so funny moments went unseen. 18 matches the moment picker.
     if duration <= 0:
-        return 4
-    return max(4, min(14, round(duration / 10)))
+        return 6
+    return max(6, min(18, round(duration / 3)))
 
 
 def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
@@ -566,7 +580,15 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         "are. Note which frames each one appears in.\n"
         "- The ACTION / what is happening or being done, in sequence.\n"
         "- Any on-screen TEXT, subtitles, objective markers, BOSS-BAR NAMES or UI you can "
-        "read, with the frame it appears in."
+        "read, with the frame it appears in.\n"
+        "- TONE, as the last line: 'TONE: funny' only if something plainly silly visibly "
+        "happens (a ragdoll or tumble that clearly was not meant, a botched jump or landing, "
+        "a car flipping or crashing in a ridiculous way, a bystander's absurd reaction, "
+        "physics chaos, a glitch, a goofy pose or line), and describe that mishap in the "
+        "ACTION sentences above with its frames; otherwise 'TONE: serious' or 'TONE: "
+        "neutral'. A story cutscene, a death or injury, a deliberate stunt and an ordinary "
+        "crash in a chase or fight are NOT funny on their own, and the game's reputation for "
+        "humour never makes a clip funny (Bryce, 2026-11-20)."
     )
     _who = _who_note(gname)
     if _who:   # the one naming exception: the game's playable leads (GTA 6, 2026-11-20)
@@ -853,7 +875,12 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "- Examples of the ENERGY (don't copy): \"This is why Otto can't be trusted\", "
         "\"Nobody talks about this combo\", \"He had one shot to not kill the driver\". "
         "Avoid hollow directives — a bare \"Watch what he does\" puts no weight behind "
-        "the question and scores as filler.\n\n"
+        "the question and scores as filler.\n"
+        "- FUNNY MOMENTS (Bryce, 2026-11-20): when the description's TONE says funny, play "
+        "it for laughs. A dry, deadpan or mock-serious hook about the real silly thing beats "
+        "a dramatic one (energy, don't copy: \"He had one job and it was the landing\", "
+        "\"This NPC has seen enough for one day\", \"That landing was a choice\"). Still only the "
+        "silliness the frames show; never invent a mishap for a joke.\n\n"
         "CAPTION (sits BELOW the video as the post caption):\n"
         "- ONE short clip-title line, 3 to 8 words, accurate to the moment.\n"
         f"- {cap_lang} No hashtags, no emojis, no quotes.\n\n"
@@ -1239,7 +1266,9 @@ def _hookify_observation(observation: str, gname: str = "") -> str:
         "- it must READ LIKE A HOOK, not a label. Listing what is on screen ('Plunging toward "
         "waterfall cliffs, clawing at purple robots mid-air') FAILS. Give the same facts "
         "tension: name the stakes ('No parachute, no plan, just claws'), ask about what is "
-        "shown ('Why is he falling with them?'), or point at it ('Watch the last few seconds')\n"
+        "shown ('Why is he falling with them?'), or point at it ('Watch the last few seconds'). "
+        "If the TONE line says funny, a dry deadpan line about the silly thing it describes "
+        "works too ('That landing was a choice')\n"
         "- it must OPEN A CURIOSITY GAP: the viewer should feel they'll miss something by "
         "scrolling. Hint at what happens; never state the whole moment outright\n"
         "- write it TO the viewer, never ABOUT the video: never say clip, frames, footage, "
@@ -1282,6 +1311,10 @@ def _verify_hooky(hook: str, gname: str = "", min_score: int = 5) -> tuple[bool,
         "something unanswered that only watching settles. 'SPIDER-MAN STOPS A GETAWAY CAR BY "
         "LANDING ON IT' went out on a real post and a viewer replied with an 'ok, obviously' "
         "GIF — that line is a 2/10 and so is anything shaped like it (user, 2026-10-12).\n"
+        "FUNNY CLIPS (Bryce, 2026-11-20, post the silly moments too): a deadpan setup for a "
+        "mishap the viewer has not seen yet ('The ramp looked like a good idea', 'He had one "
+        "job') IS a gap, because the payoff is watching it go wrong; score it like a question. "
+        "A joke only fails if it gives the punchline away so there is nothing left to see.\n"
         "Score 0-3: states the visible action and nothing else. 4-5: a flicker of attitude "
         "but still answers itself. 6-7: opens a real gap — a question, a stake, a 'wait, "
         "why?'. 8-10: that gap plus a reason to keep watching to the end.\n"
@@ -1338,7 +1371,7 @@ def _angle_caption(observation: str, gname: str, hook: str, dialogue: str = "",
         "Write the POST CAPTION. It must say something ELSE about this moment than the hook "
         "does — a different angle on the same clip:\n"
         "- what is at stake, or what this moment costs someone\n"
-        "- an honest reaction to it\n"
+        "- an honest reaction to it (a dry joke, if the TONE line says funny)\n"
         "- a question to the viewer about it\n\n"
         "RULES:\n"
         "- ONE line, 5 to 16 words. Plain English, no Title Case\n"

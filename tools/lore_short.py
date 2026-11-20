@@ -238,6 +238,12 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "dreams about'). This beat is OPINION and is meant to be subjective. Name a DIFFERENT "
         "game only when the parallel is exact and you say what the parallel IS — a name-drop "
         "that only half-fits this moment reads as filler, so prefer this game.\n\n"
+        "FUNNY CLIPS (Bryce, 2026-11-20): when WHAT IS ON SCREEN says the TONE is funny, let "
+        "the card carry the laugh. Beat 2 is still a TRUE detail (from the subtitles, the lore "
+        "bible or a listed fact) that the silly moment makes land harder; beat 3 is a deadpan "
+        "verdict ('He meant to do that.') and the comment is the joke. Never invent an engine, "
+        "physics or AI reason for a gag. If nothing true fits, build the card on a listed fact "
+        "that suits the clip and keep the laugh for the verdict and comment.\n\n"
         f"- \"body\": all four beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
         "it must take ~15 seconds to read, about as long as the clip or longer, so the viewer "
         "stays to finish it. "
@@ -360,8 +366,30 @@ _NAME_SKIP = {"i", "in", "the", "a", "an", "and", "but", "so", "that", "this", "
 
 
 def confirmed_research(research: str) -> str:
-    """The research lines that do NOT hedge; a hedged line supports nothing stated as fact."""
-    return "\n".join(l for l in (research or "").splitlines() if l.strip() and not _HEDGE.search(l))
+    """The research SENTENCES that do not hedge; a hedged sentence supports nothing stated as
+    fact. Sentence level, not line level: 'Nelson used pull-ups as his example (Dazed). It was
+    likely chosen because...' keeps the sourced first half (rebuild test, 2026-11-20)."""
+    keep = []
+    for line in (research or "").splitlines():
+        parts = [p for p in re.split(r"(?<=[.!?])\s+(?=[A-Z\"'(])", line.strip()) if p]
+        hedged = [bool(_HEDGE.search(p)) for p in parts]
+        # A short hedge or a tag ('Unconfirmed.', '(Fan theory, r/GTA6)') speaks for the whole
+        # line, so the line goes (review, 2026-11-20).
+        if any(h and (len(p.split()) <= 6 or p.lstrip().startswith(("(", "Source")))
+               for p, h in zip(parts, hedged)):
+            continue
+        good = []
+        for i, p in enumerate(parts):
+            if hedged[i]:
+                continue
+            # 'Some fans believe A. It is a nod to Tommy.' carries the theory on
+            if i and hedged[i - 1] and re.match(r"(?:it|this|that|they|he|she|which)\b", p, re.I):
+                hedged[i] = True
+                continue
+            good.append(p)
+        if good:
+            keep.append(" ".join(good))
+    return "\n".join(keep)
 
 
 def unsupported_names(text: str, support: str, extra_ok: tuple = ()) -> list[str]:

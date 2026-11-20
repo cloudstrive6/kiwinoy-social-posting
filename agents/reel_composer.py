@@ -577,7 +577,11 @@ def judge_region(src: str, a: float, b: float, lines, cfg: dict, work: Path) -> 
         "set ok=false. If the best moment clearly carries on past the first or last image, set "
         "cut_off to \"start\" or \"end\" (else \"none\"). Score 1-10 for how watchable the moment "
         "is; prefer action, driving with something happening, chases, fights, stunts, striking "
-        "views and story scenes with characters. Return ONLY JSON {\"ok\": true|false, \"score\": "
+        "views and story scenes with characters. FUNNY OR SILLY moments score just as high "
+        "(Bryce, 2026-11-20): a ragdoll or tumble, a botched jump or landing, a car flipping or "
+        "crashing absurdly, a bystander's ridiculous reaction, physics chaos, a glitch, a goofy "
+        "line. Include the setup so the joke lands, and end just after the laugh. If the moment "
+        "you pick is funny, start the reason with 'FUNNY:'. Return ONLY JSON {\"ok\": true|false, \"score\": "
         "1-10, \"start\": seconds, \"end\": seconds, \"cut_off\": \"none|start|end\", "
         "\"reason\": \"one short line\"}.")
     try:
