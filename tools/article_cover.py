@@ -131,23 +131,29 @@ def _game_art(fm: dict) -> tuple[Path | None, str]:
     when the source has no usable image (Bryce, 2026-11-20: a GTA 6 article went up with a plain
     gradient card and 'Image: TweakTown' under it). Matches the article's `game` ('gta-6', 'gta6')
     or its tags against the game-art folders and the config game names."""
-    import random
+    import zlib
     try:
         from core.config import CONFIG
         names = CONFIG.reels.get("game_names", {}) or {}
     except Exception:
         names = {}
-    wants = [_squash(fm.get("game", ""))] + [_squash(t) for t in (fm.get("tags") or [])]
-    wants = [w for w in wants if w]
     folders = sorted(p for p in GAME_ART.iterdir() if p.is_dir()) if GAME_ART.exists() else []
-    for folder in folders:
-        keys = {_squash(folder.name), _squash(names.get(folder.name, ""))}
-        keys |= {k.replace("grandtheftautovi", "gta6").replace("grandtheftauto6", "gta6") for k in keys}
-        if not any(w in keys for w in wants):
-            continue
-        imgs = [p for p in folder.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")]
-        if imgs:
-            return random.choice(imgs), str(names.get(folder.name) or folder.name)
+
+    def keys(folder):
+        k = {_squash(folder.name), _squash(names.get(folder.name, ""))}
+        return k | {x.replace("grandtheftautovi", "gta6").replace("grandtheftauto6", "gta6") for x in k}
+
+    # the article's own `game` first; tags only when it has none that matches (a GTA 6 article
+    # tagged "Fortnite" must not get Fortnite art; review 2026-11-20)
+    for wants in ([_squash(fm.get("game", ""))], [_squash(t) for t in (fm.get("tags") or [])]):
+        wants = [w for w in wants if w]
+        for folder in folders:
+            if not any(w in keys(folder) for w in wants):
+                continue
+            imgs = sorted(p for p in folder.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"))
+            if imgs:                                   # same article -> same image on every rerun
+                pick = imgs[zlib.crc32(str(fm.get("title", "")).encode()) % len(imgs)]
+                return pick, str(names.get(folder.name) or folder.name)
     return None, ""
 
 

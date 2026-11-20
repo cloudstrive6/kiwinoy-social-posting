@@ -177,7 +177,11 @@ def _git_publish(paths: list[Path]) -> None:
         if code == 0:
             break
         print(f"   git push (try {attempt + 1}): {out.strip()[:200]}", flush=True)
-        _run(["git", "pull", "--rebase", "--autostash"])
+        if attempt < 2:
+            pc, pout = _run(["git", "pull", "--rebase", "--autostash"])
+            if pc != 0:                                # never leave the repo mid-rebase
+                print(f"   git pull --rebase failed: {pout.strip()[:200]}", flush=True)
+                _run(["git", "rebase", "--abort"])
     # github.token pushes don't fire the deploy's push trigger, so dispatch it explicitly.
     _run(["gh", "workflow", "run", "deploy-site.yml"])
 
@@ -245,10 +249,13 @@ def same_story_card(title: str, excerpt: str, source_url: str, days: int = 7) ->
     for r in recent:
         if su and su == _norm_url(r.get("url", "")):
             return label(r), True
+    # Only a NEAR-IDENTICAL headline matches on words alone ("Xbox price rise" vs "Xbox price cut"
+    # share half their words but are different stories; review 2026-11-20). Anything less goes to
+    # the Claude same-story check below.
     a = _tok(title)
     for r in recent:
         b = _tok(r.get("topic", ""))
-        if a and b and len(a & b) / len(a | b) >= 0.5:
+        if a and b and len(a & b) >= 4 and len(a & b) / len(a | b) >= 0.7:
             return label(r), True
     if not recent:
         return "", True
@@ -405,7 +412,11 @@ def main() -> int:
                 notify.telegram("📰 Daily blog: no fresh draft today, so nothing was auto-published. "
                                 "Send \"blog <topic>\" to have one written.")
             return 0
-        fresh.sort(key=lambda x: (-x[0].toordinal(), x[1]))   # newest day, then first written
+        # newest day; then drafts written in THIS run (untracked in git) before leftovers, since a
+        # CI checkout gives every older file the same mtime; then the first one written (best pick)
+        code, st = _run(["git", "status", "--porcelain", "--", "site/src/content/articles"])
+        new = {Path(ln[3:].strip().strip('"')).stem for ln in st.splitlines() if ln.startswith("??")}
+        fresh.sort(key=lambda x: (-x[0].toordinal(), x[2].stem not in new, x[1]))
         _, _, p, fm, body = fresh[0]
         print(f"[publish] auto: today's pick is {p.stem}", flush=True)
         pending = [(p, fm, body)]
