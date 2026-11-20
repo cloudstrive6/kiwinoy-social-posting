@@ -1,0 +1,82 @@
+name: KG Fact Bank Top-up
+
+# Keeps every live game's fact bank stocked (Bryce, 2026-11-20: "There should be an automated process
+# for that"). Daily: tools/fact_topup.py counts the unused facts and, below reels.fact_topup.min_unused,
+# researches new ones (Claude Code on the subscription, web search), has a SEPARATE session check every
+# source, and adds only what passes to data/lore/<game>-facts.json. Most days it only counts and stops.
+on:
+  schedule:
+    - cron: "17 10 * * *"     # 23:17 NZDT, quiet hours, well clear of the posting slots
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Top up even if the bank is not low? true/false"
+        required: false
+        default: "false"
+      dry_run:
+        description: "Research and check but change nothing? true/false"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kiwinoy-fact-topup
+  cancel-in-progress: false
+
+jobs:
+  topup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Sync to the latest main
+        run: git fetch origin main && git reset --hard origin/main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Top up the fact banks
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python tools/fact_topup.py $ARGS
+
+      - name: Commit the new facts
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain data/lore)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/lore/*-facts.json data/lore/*-facts-checkreport.md
+            git commit -m "fact-bot: fact bank top-up (researched and independently checked)"
+            ok=""
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then ok=1; break; fi
+              git rebase --abort 2>/dev/null || true
+              sleep 5
+            done
+            if [ -z "$ok" ]; then echo "::error::new facts NOT pushed"; exit 1; fi
+          else
+            echo "no fact bank change"
+          fi
