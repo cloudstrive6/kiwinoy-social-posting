@@ -170,9 +170,14 @@ def _git_publish(paths: list[Path]) -> None:
     code, out = _run(["git", "commit", "-m", "content: publish approved article(s)"])
     if code != 0 and "nothing to commit" not in out:
         print(f"   git commit: {out.strip()[:200]}", flush=True)
-    code, out = _run(["git", "push"])
-    if code != 0:
-        print(f"   git push: {out.strip()[:200]}", flush=True)
+    # Another bot may have pushed first; then the push is rejected and the deploy below builds
+    # WITHOUT the article (2026-11-20: the GTA 6 sales article missed its deploy this way).
+    for attempt in range(3):
+        code, out = _run(["git", "push"])
+        if code == 0:
+            break
+        print(f"   git push (try {attempt + 1}): {out.strip()[:200]}", flush=True)
+        _run(["git", "pull", "--rebase", "--autostash"])
     # github.token pushes don't fire the deploy's push trigger, so dispatch it explicitly.
     _run(["gh", "workflow", "run", "deploy-site.yml"])
 
