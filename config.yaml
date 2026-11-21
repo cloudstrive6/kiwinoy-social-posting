@@ -86,6 +86,10 @@ models:
   writer_openai: gpt-4.1
   writer_anthropic: claude-sonnet-4-6
   claude_model: sonnet           # model used for the free Claude Code calls
+  # Reel clip OBSERVER + on-screen hook / caption WRITERS (agents/content.py). Opus writes the
+  # line viewers see (Bryce, 2026-11-21); the yes/no critics stay on claude_model. About 6 to 9
+  # hooked reels a day, 2 to 8 writer calls each. Empty = claude_model.
+  hook_writer_model: opus
   research: gpt-4.1              # (unused now — image/reel research uses Claude)
   vision_openai: gpt-4.1        # OpenAI vision FALLBACK for the clip observer
   image: gpt-image-1            # IMAGE GENERATOR stays on OpenAI (paid)

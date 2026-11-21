@@ -1073,6 +1073,18 @@ def run_gameplay_reel(
         log(f"Caption forced by override (body: {str(caption_override).strip()!r})")
     (run_dir / "brief.json").write_text(
         json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+    # HOOK TRACE (2026-11-21): what the observer saw, the dialogue, every rejected hook and the
+    # path that won, kept with the run (uploaded as the run artifact) so a bad hook can be traced.
+    _hook_fallback, _hook_path = False, ""
+    if hook and content.LAST_HOOK_TRACE.get("hook") == hook and hook_override is None:
+        _hook_path = str(content.LAST_HOOK_TRACE.get("path", ""))
+        try:
+            (run_dir / "hook_trace.json").write_text(
+                json.dumps(content.LAST_HOOK_TRACE, indent=2, ensure_ascii=False),
+                encoding="utf-8")
+        except Exception:
+            pass
+        _hook_fallback = content.hook_is_fallback()
     # SWEAR RULE (Bryce, 2026-11-20, config reels.swear_rule, GTA 6 only for now): swear words are
     # starred out in the caption ("f**k") and beeped in the audio, word by word. Other games as before.
     if content.swear_rule_game(brief.get("game", "")):
@@ -1238,6 +1250,17 @@ def run_gameplay_reel(
         result["published"] = bool(res)
         result["tiktok_result"] = res
         result["tiktok_via"] = via
+        if res and _hook_fallback and via == "postforme":
+            # The draft's hook came from a LAST-RESORT path (2026-11-21), so Bryce can check or
+            # retype it in the TikTok app before he publishes. Informational: never blocks.
+            try:
+                from core import notify as _nt
+                _nt.telegram(
+                    "TikTok draft: the on-screen hook came from a fallback "
+                    f"({_hook_path}), not the main writer. Check it "
+                    f"before publishing.\nHook: {hook}\nClip: {clip_id}")
+            except Exception:
+                pass
         if res:
             _record_post(pick_platforms, res)                           # ['tiktok']
             if reel_composer.mark_clip_used(clip_id, pick_platforms):   # ['tiktok']

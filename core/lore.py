@@ -829,6 +829,23 @@ GAME_LORE["ff7rebirth"] = (
 )
 
 
+# What "unmistakably them" means in a GTA 6 CUTSCENE (2026-11-21). The critics read the old rule
+# as "never without a HUD" and threw out five hooks in a row on a dock cutscene where a line said
+# "Jason, Lucia! You guys ready to go?" and one woman was on screen, until a last-resort rewrite
+# shipped an invented hook. Shared by the lore brief and the PLAYABLE note below.
+_GTA6_CUTSCENE_NAMING = (
+    "CUTSCENE NAMING: in a cutscene it IS unmistakable when the dialogue or subtitles name "
+    "LUCIA (or JASON) as being there, by talking to them or about them as present (e.g. "
+    "'Jason, Lucia! You guys ready to go?'), AND that person is the only woman (or the only "
+    "man) on screen in those same frames, AND is not the one saying the line (people do not "
+    "call their own name). Then the woman is Lucia (the man is Jason): name her, and a hook or "
+    "caption that does so is CORRECT. If several men (or women) are on screen, or you cannot "
+    "tell who is speaking, the name only tells you Jason (or Lucia) is there, not which one "
+    "they are: do not say which of them does what. A name said about someone absent ('Lucia's "
+    "at home') places no one in the scene."
+)
+
+
 GAME_LORE["gta6"] = (
     "GRAND THEFT AUTO VI (GTA 6, Rockstar Games; PS5 and Xbox Series X|S only, no PC version "
     "announced; launched 19 November 2026). A MATURE open-world CRIME game set in the PRESENT "
@@ -871,6 +888,7 @@ GAME_LORE["gta6"] = (
     "(health bar or minimap, wanted stars, or an activity read-out or button prompt such as "
     "REPS, stamina or 'Press X') AND the camera is following that one person. A HUD-less "
     "cutscene or cinematic does not count: there, name them only when it is unmistakably them.\n"
+    + _GTA6_CUTSCENE_NAMING + "\n"
     "NAMING RULE for everyone else: name any other character ONLY when the clip's VISUALS or "
     "SUBTITLES clearly show them (a subtitle name, or the two leads together in a clear shot). In "
     "a CUTSCENE with no HUD, name Jason or Lucia only when it is unmistakably them; otherwise say "
@@ -906,7 +924,7 @@ PLAYABLE: dict[str, str] = {
         "is a woman. Call them by name. Without that UI (a cutscene, a cinematic, a HUD-less "
         "drive), name them only when it is unmistakably them or a subtitle names them. Police, "
         "workers, crowds, bystanders and other drivers are never Jason or Lucia; anyone else "
-        "stays unnamed unless a subtitle names them."
+        "stays unnamed unless a subtitle names them. " + _GTA6_CUTSCENE_NAMING
     ),
 }
 

@@ -120,13 +120,16 @@ def run(
     model: Optional[str] = None,
     timeout: int = 300,
     allowed_tools: Optional[str] = None,
+    api_fallback_model: Optional[str] = None,
 ) -> str:
     """Run a one-shot headless Claude prompt and return the text result.
 
     Tries the subscription OAuth token first, then the Anthropic API key as a
     fallback. web=True allowlists WebSearch/WebFetch so Claude can research.
     allowed_tools overrides the tool allowlist (e.g. "Read" so Claude can open
-    local images for vision tasks).
+    local images for vision tasks). api_fallback_model, when set, is the model for the
+    PAID API-key attempt only (2026-11-21: the reel hook writers use Opus on the free
+    subscription but must not run Opus at API prices when the subscription fails).
     """
     model = (
         model
@@ -153,8 +156,12 @@ def run(
 
     last_err: Optional[Exception] = None
     for i, (label, env) in enumerate(attempts):
+        _cmd = cmd
+        if api_fallback_model and label.startswith("Anthropic API key") and "--model" in cmd:
+            _cmd = list(cmd)
+            _cmd[_cmd.index("--model") + 1] = str(api_fallback_model)
         try:
-            return _invoke(cmd, prompt, env, timeout)
+            return _invoke(_cmd, prompt, env, timeout)
         except (ClaudeCodeError, subprocess.TimeoutExpired) as e:
             # A TIMEOUT used to escape this loop entirely: the second auth attempt never
             # ran and callers' `except ClaudeCodeError` never fired, so the OpenAI

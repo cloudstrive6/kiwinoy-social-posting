@@ -74,6 +74,14 @@ long-press → Copy → paste when publishing. Setup (env-only, `.env`):
 Captions are lore-accurate: default to generic **"Spider-Man"** unless the black symbiote
 suit / yellow bio-electric Venom makes it unmistakably Peter / Miles (`core/lore.py`).
 
+**Fallback-hook flag (2026-11-21).** When a classic or triptych draft's on-screen hook came
+from a last-resort path rather than the main writer, a second Telegram message says so
+("the on-screen hook came from a fallback ... Check it before publishing"), so you can retype
+it in the TikTok app before you publish. Every hook a model writes, fallbacks included, now
+passes the text and vision accuracy critics; the run artifact keeps `hook_trace.json` (the
+observer's read, the dialogue, each rejected hook and why). Opus writes the hooks
+(`models.hook_writer_model`); the critics stay on `models.claude_model`.
+
 ## Config / toggles
 - `tiktok.via` (config.yaml): `postforme` (current) | `zernio` (auto-public, degraded).
 - `reels.tiktok.extra_hashtags`: appended to the TikTok caption only (e.g. `#gaming`).

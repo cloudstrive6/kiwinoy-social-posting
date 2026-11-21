@@ -523,7 +523,15 @@ def descriptive_fill_caption(video_path=None, game: str = "") -> str:
     return f"{body}\n\n{' '.join(tags)}".strip()
 
 
-def _text(prompt: str, timeout: int = 120) -> str:
+def _writer_model() -> str | None:
+    """Model for the reel OBSERVER and the hook/caption WRITERS (config
+    models.hook_writer_model, Bryce 2026-11-21: Opus writes the line viewers see). The
+    yes/no critics keep the cheaper default (models.claude_model). None = that default."""
+    m = str((CONFIG.models or {}).get("hook_writer_model", "") or "").strip()
+    return m or None
+
+
+def _text(prompt: str, timeout: int = 120, model: str | None = None) -> str:
     """Claude text generation with an OpenAI fallback. Tries the Claude chain
     (Max OAuth -> Anthropic API key); if BOTH are unavailable (expired token, out
     of usage, $0 API credits), falls back to the funded OpenAI writer so we keep
@@ -531,7 +539,8 @@ def _text(prompt: str, timeout: int = 120) -> str:
     from core import claude_code, openai_client
 
     try:
-        return claude_code.run(prompt, timeout=timeout)
+        return claude_code.run(prompt, timeout=timeout, model=model,
+                               api_fallback_model=(CONFIG.models.get("claude_model") if model else None))
     except Exception as e:   # ClaudeCodeError, a timeout, anything — never lose the write
         print(f"[content] Claude unavailable ({e!r}); falling back to OpenAI.", flush=True)
         return openai_client.write(prompt)
@@ -607,7 +616,9 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         f"Frames:\n{listing}"
     )
     try:
-        return sanitize(claude_code.run(claude_prompt, allowed_tools="Read", timeout=180)).strip()
+        return sanitize(claude_code.run(claude_prompt, allowed_tools="Read", timeout=180,
+                                        model=_writer_model(),
+                                        api_fallback_model=CONFIG.models.get("claude_model"))).strip()
     except claude_code.ClaudeCodeError as e:
         print(f"[content] observer: Claude unavailable ({e}); using OpenAI vision.", flush=True)
         return sanitize(openai_client.vision(instruction, cands)).strip()
@@ -925,7 +936,7 @@ def _hook_and_caption(observation: str, game: str, gname: str, taglish: bool,
         "when the dialogue makes the person explicit.\n\n"
         'Return ONLY this JSON: {"hook": "the on-screen hook", "caption": "the caption"}'
     )
-    raw = _text(prompt, timeout=150)
+    raw = _text(prompt, timeout=150, model=_writer_model())
     hook, caption = "", ""
     try:
         d = extract_json(raw)
@@ -1065,7 +1076,7 @@ def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
            "the dialogue and action, just drop the unsupported part." if avoid else "")
     )
     try:
-        line = _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])
+        line = _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90, model=_writer_model())).strip().splitlines()[0])
         if line.count('"') % 2:        # a stray quote left by stripping one wrapper quote
             line = line.replace('"', "").strip()
         return line.strip(" ,;:-")[:90]
@@ -1241,6 +1252,14 @@ def hook_shape_ok(hook: str) -> tuple[bool, str]:
     return True, ""
 
 
+def _has_verb_hint(clause: str) -> bool:
+    """Rough check that a clause has a verb ('kneels', 'is', 'driving'), so a cut never leaves
+    a bare noun phrase like 'A woman in black'. A heuristic: a plural noun can pass it."""
+    words = [w.strip(".,;:!?\"'").lower() for w in clause.split()[1:]]
+    aux = {"is", "are", "was", "were", "has", "have", "had", "gets", "can", "will"}
+    return any(w in aux or re.search(r"(?:[^s]s|ed|ing)$", w) for w in words if len(w) > 2)
+
+
 def _observation_hook(observation: str) -> str:
     """ABSOLUTE last resort before the canned line: restate the OBSERVER'S OWN first clause.
     No model call, so there is nothing to invent — the text is literally the ground truth the
@@ -1256,6 +1275,19 @@ def _observation_hook(observation: str) -> str:
         return ""
     if len(first.split()) > 12:                      # prefer a clause boundary over a hard cut
         head = first.split(",")[0]
+        if not (4 <= len(head.split()) <= 12 and _has_verb_hint(head)):
+            # a joining word is the next best break: "A man in a striped shirt kneels and works
+            # on an ankle monitor..." -> "A man in a striped shirt kneels", not "...on an ankle"
+            # (2026-11-21)
+            # Only a break that leaves 4 to 12 words: "A woman in black and white clothes" must
+            # not become "A woman in black" (review 2026-11-21).
+            head = ""
+            for jm in re.finditer(r"\s+(?:and|while|as|before|after|then|but)\s+", first):
+                if 4 <= len(first[:jm.start()].split()) <= 12:
+                    cand = first[:jm.start()]
+                    if _has_verb_hint(cand):
+                        head = cand
+                        break
         first = head if 4 <= len(head.split()) <= 12 else " ".join(first.split()[:12])
     # never end on a dangling function word ("stands over a")
     while first.split() and first.split()[-1].lower() in {
@@ -1266,12 +1298,17 @@ def _observation_hook(observation: str) -> str:
     return ((first[0].upper() + first[1:])[:90] if first else "")
 
 
-def _hookify_observation(observation: str, gname: str = "") -> str:
-    """Turn the observer's description INTO a hook. A pure rewrite — it may not add a single
-    fact — so it needs no accuracy pass, but unlike the raw restatement it reads like
-    something written for a viewer rather than a stage direction. '' on error."""
+def _hookify_observation(observation: str, gname: str = "", avoid: str = "",
+                         dialogue: str = "") -> str:
+    """Turn the observer's description INTO a hook, reading like something written for a
+    viewer rather than a stage direction. It is meant to add no fact, but a rewrite CAN
+    invent one: on 2026-11-21 it put "Why is he fitting that monitor to a stranger's driveway
+    plan?" on a TikTok draft (no driveway, no stranger's plan). So the caller now runs the
+    same accuracy critics on it as on every other hook. '' on error."""
+    dlg = (f"WHAT IS SAID IN THE CLIP (the strongest evidence of what the moment is about):\n"
+           f"{dialogue.strip()}\n\n" if dialogue.strip() else "")
     prompt = (
-        f"A factual description of a {gname or 'gameplay'} clip:\n{observation}\n\n"
+        f"{dlg}A factual description of a {gname or 'gameplay'} clip:\n{observation}\n\n"
         "Rewrite the single most interesting thing in it as an ON-SCREEN HOOK for the video.\n"
         "- 4 to 9 words, present tense\n"
         "- use ONLY what the description states: no new objects, actions, names or outcomes\n"
@@ -1286,10 +1323,15 @@ def _hookify_observation(observation: str, gname: str = "") -> str:
         "- write it TO the viewer, never ABOUT the video: never say clip, frames, footage, "
         "scene, 'the whole', 'is set in'. 'The whole clip is set in a shipping yard' is WRONG; "
         "'Cornered in a shipping yard at night' is right\n"
+        "- every word must trace to the description or the dialogue above. Do not add a "
+        "place, object, motive, owner or plan they do not state; a plainer true line beats "
+        "a vivid made-up one\n"
         "- no hashtags, no emojis, no quotes, no preamble — just the line"
+        + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix THAT specific problem."
+           if avoid else "")
     )
     try:
-        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:90]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90, model=_writer_model())).strip().splitlines()[0])[:90]
     except Exception:
         return ""
 
@@ -1366,7 +1408,7 @@ def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") 
         "No hashtags, no emojis, no quotes, no preamble — just the line."
     )
     try:
-        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:90]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90, model=_writer_model())).strip().splitlines()[0])[:90]
     except Exception:
         return ""
 
@@ -1396,7 +1438,7 @@ def _angle_caption(observation: str, gname: str, hook: str, dialogue: str = "",
         + "Just the line."
     )
     try:
-        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90)).strip().splitlines()[0])[:120]
+        return _strip_md(sanitize(_text(_with_who(prompt, gname), timeout=90, model=_writer_model())).strip().splitlines()[0])[:120]
     except Exception:
         return ""
 
@@ -1405,19 +1447,70 @@ _HOOK_OPENER = re.compile(
     r"^(why (?:is|are|was|were|does|do|did)|what happens when|how (?:does|did|is|do)|"
     r"watch (?:how|what|as)|when |the moment )", re.I)
 
+# A hook that ASKS something: an interrogative or an inverted auxiliary up front. Stripping
+# these leaves a clause with no verb, so _recast_hook keeps a question whole.
+_QUESTION_START = re.compile(
+    r"^(?:why|how|what|who|whose|which|where|is|are|was|were|does|do|did|can|could|will|"
+    r"would|should|has|have|had)\b", re.I)
+
+# First words that are never a NAME, so they can be lowercased after "Watch closely:" /
+# "Worth a rewind:" (a name such as Lucia keeps its capital).
+_LOWER_OK = re.compile(
+    r"^(?:why|how|what|who|whose|which|where|when|is|are|was|were|does|do|did|can|could|will|"
+    r"would|should|has|have|had|he|she|they|it|we|you|this|that|these|those|there|nobody|"
+    r"someone|everyone|no|one|the|a|an|his|her|their|its|watch|that's|it's|he's|she's)\b", re.I)
+
+# "Why is he fitting X" -> "why he is fitting X": the same question as an embedded clause, so the
+# caption says the hook's point in a different word order instead of repeating it (2026-11-21).
+_SIMPLE_Q = re.compile(
+    r"^((?i:why|how|what|where|who)) ((?i:is|are|was|were|has|have|can|will|would|could|"
+    r"should)) ((?i:he|she|they|it|we|you|this|that)|[A-Z][a-z]+) (.+)$")
+
+
+def _lower_first(text: str) -> str:
+    return (text[0].lower() + text[1:]) if text and _LOWER_OK.match(text) else text
+
+
+# What the LAST hook_and_caption_from_video call saw and tried (observation, dialogue, every
+# candidate hook with its verdict, the path that won). The reel runner saves it as
+# hook_trace.json in the run folder, so a bad hook can be traced (Bryce, 2026-11-21: the
+# observation behind a made-up hook had not been kept anywhere).
+LAST_HOOK_TRACE: dict[str, Any] = {}
+
+
+def _trace_add(stage: str, hook: str, ok: bool, why: str = "", caption: str = "") -> None:
+    row = {"stage": stage, "hook": hook or "", "ok": bool(ok), "why": (why or "")[:600]}
+    if caption:
+        row["caption"] = caption
+    LAST_HOOK_TRACE.setdefault("attempts", []).append(row)
+
 
 def _recast_hook(hook: str) -> str:
     """ABSOLUTE LAST RESORT: the hook's own point, worded differently and from a 'what to
     watch' angle. Never word-for-word the hook (user, 2026-10-09), and it adds no claim the
     hook has not already made — so it cannot fail the accuracy critics."""
-    h = re.sub(r"\s+", " ", (hook or "").strip()).rstrip("?.!â€¦ ")
+    raw = re.sub(r"\s+", " ", (hook or "").strip()).strip('"“” ')
+    h = raw.rstrip("?.!… ")
     if not h:
         return ""
+    # A QUESTION never loses its opener: cutting "Why is" off one left no verb, and "Why is he
+    # fitting that monitor..." became "Worth a rewind: he fitting that monitor..." on a TikTok
+    # draft (2026-11-21). A simple one is turned into a clause ("why he is fitting..."); any
+    # other is pointed at whole.
+    if raw.endswith("?") or re.match(r"(?:why|how) (?:is|are|was|were|does|do|did)\b", h, re.I):
+        sq = _SIMPLE_Q.match(h)
+        if sq:
+            wh, aux, subj, rest = sq.groups()
+            line = f"Worth a rewind to see {wh.lower()} {_lower_first(subj)} {aux.lower()} {rest}."
+            if len(line) <= 120:
+                return line
+        line = f"Watch closely: {_lower_first(h)}?"
+        return line if len(line) <= 120 else line[:116].rsplit(" ", 1)[0] + "...?"
     m = _HOOK_OPENER.match(h)
     core = (h[m.end():] if m else h).strip().rstrip(",;:")
     if not core:
         return ""
-    line = f"Worth a rewind: {core}."      # never lowercase it — core often opens on a NAME
+    line = f"Worth a rewind: {_lower_first(core)}."   # a NAME keeps its capital
     return line if len(line) <= 120 else line[:117].rsplit(" ", 1)[0] + "."
 
 
@@ -1549,7 +1642,11 @@ def hook_and_caption_from_video(
     from core import ffmpeg, frames
 
     hook, line = "", ""
+    observation, dialogue = "", ""
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or "this game"
+    LAST_HOOK_TRACE.clear()
+    LAST_HOOK_TRACE.update({"game": game, "clip": str(video_path), "path": "none",
+                            "attempts": []})
     try:
         with tempfile.TemporaryDirectory() as tmp:
             _dur = ffmpeg.duration(Path(video_path))
@@ -1568,6 +1665,8 @@ def hook_and_caption_from_video(
                 subs = _scan_subtitles(video_path, gname)
                 observation = _with_subs(observation, subs) if observation else observation
                 dialogue = _with_subs(dialogue, subs)
+                LAST_HOOK_TRACE.update({"observation": observation, "dialogue": dialogue,
+                                        "frames": len(cands)})
                 if observation:
                     hook, line = _hook_and_caption(observation, game, gname, taglish, dialogue=dialogue)
                     # ACCURACY GATE (two critics): (1) TEXT lore critic — invented character /
@@ -1600,12 +1699,20 @@ def hook_and_caption_from_video(
                         return True, ""
 
                     ok, issues = _check_hook(hook, line)
-                    if not ok:
+                    _trace_add("written", hook, ok, issues, caption=line)
+                    if ok:
+                        LAST_HOOK_TRACE["path"] = "written"
+                    else:
+                        # Drop the rejected pair NOW: if a later call raised, the except below
+                        # used to ship this hook the critics had just turned down (review 2026-11-21).
+                        hook, line = "", ""
                         print(f"[content] hook rejected ({issues}); regenerating.", flush=True)
                         h2, l2 = _hook_and_caption(observation, game, gname, taglish, avoid=issues, dialogue=dialogue)
                         ok2, i2 = _check_hook(h2, l2)
+                        _trace_add("written retry", h2, ok2, i2, caption=l2)
                         if ok2:
                             hook, line = h2, l2
+                            LAST_HOOK_TRACE["path"] = "written retry"
                         else:
                             # Both attempts failed the accuracy critics. Rather than the canned
                             # line (per user 2026-09-30 — it kept showing up on real posts), ask
@@ -1630,6 +1737,7 @@ def hook_and_caption_from_video(
 
                             h3 = _plain_action_hook(observation, gname, dialogue=dialogue)
                             ok3, i3 = _check_fallback(h3)
+                            _trace_add("plain action", h3, ok3, i3)
                             if h3 and not ok3:                       # one corrective retry
                                 print(f"[content] plain hook rejected ({i3}); retrying tighter.",
                                       flush=True)
@@ -1637,6 +1745,7 @@ def hook_and_caption_from_video(
                                                          dialogue=dialogue)
                                 if h3b:
                                     ok3b, i3b = _check_fallback(h3b)
+                                    _trace_add("plain action retry", h3b, ok3b, i3b)
                                     if ok3b:
                                         h3, ok3 = h3b, True
                                     else:
@@ -1646,6 +1755,7 @@ def hook_and_caption_from_video(
                                 # and caption identical); falls back to the safe default line
                                 # if it can't be written or doesn't pass the critics.
                                 hook = h3
+                                LAST_HOOK_TRACE["path"] = "plain action"
                                 # Judge the caption ON ITS OWN (as a pair with the hook, one
                                 # weak half sank both and the post fell back to "Watch this
                                 # clip" — user, 2026-10-07), and say WHY when it fails.
@@ -1672,29 +1782,62 @@ def hook_and_caption_from_video(
                                       + (f" | caption: {cap3}" if okc3 else
                                          f" | caption: (safe default — {cwhy})"), flush=True)
                             else:
-                                # Still nothing: restate the observer's own words rather than
-                                # the canned line. It cannot be "unsupported" — it IS the
-                                # evidence — so no critic pass is needed.
-                                h4 = _observation_hook(observation)
-                                if h4 and not hook_shape_ok(h4)[0]:
-                                    h4 = ""           # stage-direction prose: not a hook
-                                if h4 and not _verify_hooky(h4, gname)[0]:
-                                    h4 = ""           # true, but reads as a description
-                                if not h4:            # rewrite it INTO a hook instead
+                                # Still nothing. Three last resorts, in order. EVERY line that a
+                                # model wrote faces the same two accuracy critics as the first
+                                # hook: the observation rewrite used to skip them and put "Why is
+                                # he fitting that monitor to a stranger's driveway plan?" on a
+                                # TikTok draft (2026-11-21; no driveway, no stranger's plan).
+                                def _check_last(h: str) -> tuple[bool, str]:
+                                    if not h:
+                                        return False, "empty hook"
+                                    oks, whys = hook_shape_ok(h)
+                                    if not oks:
+                                        return False, whys
+                                    okt, it = _verify_hook(h, "", observation, game,
+                                                           dialogue=dialogue)
+                                    if not okt:
+                                        return False, it or "lore mismatch"
+                                    okv, iv = _verify_hook_vision(h, "", cands, gname,
+                                                                  dialogue=dialogue)
+                                    if not okv:
+                                        return False, iv or "hook not supported by the footage"
+                                    return _verify_hooky(h, gname)
+
+                                h4, path4 = "", ""
+                                # (1) the observer's own first clause, if it already reads as
+                                # a hook. No model wrote it, so it is the evidence itself.
+                                obs = _observation_hook(observation)
+                                obs_shape = bool(obs) and hook_shape_ok(obs)[0]
+                                if obs_shape and _verify_hooky(obs, gname)[0]:
+                                    h4, path4 = obs, "observation"
+                                _trace_add("observation", obs, bool(h4),
+                                           "" if h4 else "not a hook or wrong shape")
+                                # (2) a rewrite of it INTO a hook, gated like every hook.
+                                if not h4:
+                                    why4 = ""
                                     for _try in range(2):
-                                        h4 = _hookify_observation(observation, gname)
-                                        if h4 and hook_shape_ok(h4)[0] and _verify_hooky(
-                                                h4, gname)[0]:
+                                        cand = _hookify_observation(observation, gname,
+                                                                    avoid=why4,
+                                                                    dialogue=dialogue)
+                                        okr, why4 = _check_last(cand)
+                                        _trace_add("observation rewrite", cand, okr, why4)
+                                        if okr:
+                                            h4, path4 = cand, "observation rewrite"
                                             break
-                                        h4 = ""
+                                # (3) the observer's clause even if it reads flat: a dull TRUE
+                                # line beats a vivid FALSE one and beats the canned line.
+                                if not h4 and obs_shape:
+                                    h4, path4 = obs, "observation (flat)"
                                 if h4:
-                                    print(f"[content] plain hook rejected ({i3}); using the "
-                                          f"observation itself: {h4}", flush=True)
+                                    print(f"[content] plain hook rejected ({i3}); last resort "
+                                          f"[{path4}]: {h4}", flush=True)
                                     hook, line = h4, ""
+                                    LAST_HOOK_TRACE["path"] = path4
                                 else:
                                     print(f"[content] plain hook rejected too ({i3}); generic "
                                           "fallback.", flush=True)
                                     hook, line = "You have to see this play", ""
+                                    LAST_HOOK_TRACE["path"] = "canned"
         # A FALLBACK HOOK used to leave the caption empty, which became the filler "Watch
         # this clip" on a real post. Write a caption for it from the same evidence; if that
         # can't be done, leave the body EMPTY — compose_reel_caption then posts the game
@@ -1728,14 +1871,29 @@ def hook_and_caption_from_video(
                       "from a different angle.", flush=True)
     except Exception as e:
         print(f"[content] hook+caption from video failed ({e!r}); using fallbacks.", flush=True)
+        LAST_HOOK_TRACE["error"] = repr(e)[:300]
+        if LAST_HOOK_TRACE.get("path") == "none":   # nothing had passed the gates yet
+            hook, line = "", ""
+            LAST_HOOK_TRACE["path"] = "error"
     # ADVERTISER-SAFETY GATE (per user 2026-10-06): whatever path wrote them, the hook is
     # BURNED ON the video and the caption ships with it, so profanity or graphic wording
     # risks demonetisation / age-restriction. Rewrite, then drop to a safe line if needed.
     # GTA 6 (config reels.swear_rule, 2026-11-20): star the swear words out instead of rewording.
+    _pre_safe = hook
     hook = apply_swear_rule(hook, "hook", game, gname)
+    if hook and hook != _pre_safe and hook != mask_swears(_pre_safe):
+        # A MODEL rewrote the hook (a slur or profanity in it): that new line never met the
+        # accuracy critic, so it meets it here (review 2026-11-21).
+        LAST_HOOK_TRACE["path"] = f"{LAST_HOOK_TRACE.get('path')} + safety rewrite"
+        if observation:
+            oks, whys = _verify_hook(hook, "", observation, game, dialogue=dialogue)
+            _trace_add("safety rewrite", hook, oks, whys)
+            if not oks:
+                hook = ""
     line = apply_swear_rule(line, "caption", game, gname)
     if not hook:
         hook = "Wait for it"
+        LAST_HOOK_TRACE["path"] = "canned"
     # A REEL ALWAYS SHIPS WITH A CAPTION (user, 2026-10-09). Leaving the body empty posted a
     # live TikTok reel with nothing but the game title + hashtags. When every caption writer
     # has been rejected, use the HOOK as the body: it already passed the shape and accuracy
@@ -1747,7 +1905,15 @@ def hook_and_caption_from_video(
         if swear_rule_game(game):            # the recast must not un-star a starred hook word
             line = apply_swear_rule(line, "caption", game, gname)
         print(f"[content] caption recast from the hook: {line}", flush=True)
+        LAST_HOOK_TRACE["caption_path"] = "recast from hook"
+    LAST_HOOK_TRACE.update({"hook": hook, "caption_body": line})
     return hook, compose_reel_caption(line, game, with_game_title)
+
+
+def hook_is_fallback() -> bool:
+    """True when the LAST hook_and_caption_from_video call shipped anything other than a
+    hook the main writer wrote and every gate passed (see LAST_HOOK_TRACE['path'])."""
+    return str(LAST_HOOK_TRACE.get("path", "")) not in ("", "written", "written retry")
 
 
 def compose_reel_caption(body: str, game: str = "", with_game_title: bool = False) -> str:
