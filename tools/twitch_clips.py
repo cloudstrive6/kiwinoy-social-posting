@@ -43,7 +43,7 @@ import requests  # noqa: E402
 
 STATE = ROOT / "data" / "twitch" / "clips_state.json"
 LOGIN = "kiwinoy"
-MAX_PER_RUN = 2           # broadcasts per run (a 5 h one takes about an hour to analyse)
+MAX_PER_RUN = 3           # broadcasts per run (a 5 h one takes about an hour to analyse)
 PICKS = (5, 8)            # clips per broadcast
 WIN = 40                  # candidate window, seconds
 CANDIDATES = 18           # windows shown to Claude
@@ -204,13 +204,17 @@ window of the stream, in order; its text is what the streamer said then (automat
 have errors; the streamer also speaks Tagalog).
 
 Pick the {PICKS[0]} to {PICKS[1]} candidates a new viewer would most want to watch: action, chases,
-crashes, funny or surprising moments, big reactions, story reveals. Reject: menus, map screens,
-loading or black screens, the streamer idle or talking with nothing happening, anything sexual or
-nude, any racial or homophobic slur. If fewer than {PICKS[0]} are good, pick fewer.
+crashes, funny or surprising moments, big reactions, story reveals. The picture must show the
+action itself. Reject: plain driving or walking where the only interest is the radio, a phone
+call or a conversation (2026-11-21 dry run picked a radio bit over night driving), menus, map
+screens, loading or black screens, the streamer idle or talking with nothing happening, anything
+sexual or nude, any racial or homophobic slur. If fewer than {PICKS[0]} are good, pick fewer.
 
 For each pick give the best part of the window: "from" and "to" in seconds inside the window
-(0 to 40, at least 12 s long), and a clip title of at most 70 characters, specific to what happens
-(no clickbait, no emojis, no hashtags, no em-dashes, never "KG" or the streamer's name).
+(0 to 40, at least 12 s long), and a short punchy clip title of at most 60 characters, the way a
+viewer would title it ("Crash Landing In A Burning Field", not "A Car Crash Sets A Field Ablaze
+Beside A Burning Plane Wreck"): specific, no clickbait, no emojis, no hashtags, no em-dashes,
+never "KG" or the streamer's name).
 
 {chr(10).join(lines)}
 
@@ -226,7 +230,7 @@ Answer with JSON only: {{"picks": [{{"candidate": 3, "from": 4, "to": 32, "title
             continue
         a = max(0.0, min(float(p.get("from", 0)), WIN - 12))
         b = max(a + 12, min(float(p.get("to", WIN)), WIN))
-        title = re.sub(r"[—–#]", "", str(p.get("title", "")).strip())[:70] or f"{game} moment"
+        title = re.sub(r"[—–#]", "", str(p.get("title", "")).strip())[:60] or f"{game} moment"
         out.append({"start": cands[i]["start"] + a, "end": cands[i]["start"] + b, "title": title})
     return out
 
