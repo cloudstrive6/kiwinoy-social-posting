@@ -24,5 +24,119 @@
   "created_at": "2026-11-18T09:04:12Z",
   "done": "2026-11-21T07:03:24.727681+00:00",
   "clips": []
+ },
+ "2933412683": {
+  "title": "Grand Theft Auto VI",
+  "created_at": "2026-11-19T06:38:47Z",
+  "done": "2026-11-21T07:09:04.572844+00:00",
+  "clips": [
+   {
+    "id": "RockyDreamyPigPermaSmug-N9jJ_WHreEPpfYAR",
+    "title": "Bank Teller Offers Him A BuckMe Account Instead Of Cash",
+    "offset": 207,
+    "seconds": 25.0,
+    "url": "https://clips.twitch.tv/RockyDreamyPigPermaSmug-N9jJ_WHreEPpfYAR"
+   },
+   {
+    "id": "CredulousDarkWaspKevinTurtle-Lt3QxY9MzwdnSzQQ",
+    "title": "Cops Closing In During A Tense Car Heist",
+    "offset": 2322,
+    "seconds": 32.0,
+    "url": "https://clips.twitch.tv/CredulousDarkWaspKevinTurtle-Lt3QxY9MzwdnSzQQ"
+   },
+   {
+    "id": "AttractiveAlertHerbsResidentSleeper-wclR9bU6GpV46Qc8",
+    "title": "Off Roading Straight Through A Flooded Trail",
+    "offset": 4910,
+    "seconds": 26.0,
+    "url": "https://clips.twitch.tv/AttractiveAlertHerbsResidentSleeper-wclR9bU6GpV46Qc8"
+   },
+   {
+    "id": "SweetEnthusiasticPeafowlCoolStoryBob-96q6yDwWS-YE7G7U",
+    "title": "Parole Officer Frisks His Buddy Right On The Driveway",
+    "offset": 8527,
+    "seconds": 27.0,
+    "url": "https://clips.twitch.tv/SweetEnthusiasticPeafowlCoolStoryBob-96q6yDwWS-YE7G7U"
+   },
+   {
+    "id": "ObservantBlightedBubbleteaChefFrank-TZjUPeKJ2Y0Ii0sR",
+    "title": "Furniture Assembly Turns Into A Full On Brawl",
+    "offset": 12105,
+    "seconds": 31.0,
+    "url": "https://clips.twitch.tv/ObservantBlightedBubbleteaChefFrank-TZjUPeKJ2Y0Ii0sR"
+   }
+  ],
+  "pending": []
+ },
+ "2933186030": {
+  "title": "Grand Theft Auto VI",
+  "created_at": "2026-11-19T04:01:38Z",
+  "done": "2026-11-21T07:09:04.572844+00:00",
+  "clips": [
+   {
+    "id": "TacitHeartlessClintmullinsFeelsBadMan--oCe8kpEo-uCgtfZ",
+    "title": "Found A Burning Plane Wreck In The Middle Of A Field",
+    "offset": 597,
+    "seconds": 31.0,
+    "url": "https://clips.twitch.tv/TacitHeartlessClintmullinsFeelsBadMan--oCe8kpEo-uCgtfZ"
+   },
+   {
+    "id": "SnappyGiftedTubersAsianGlow-HgDjmKvod9tF0lHI",
+    "title": "Searching A Shack Goes Horribly Wrong",
+    "offset": 1197,
+    "seconds": 27.0,
+    "url": "https://clips.twitch.tv/SnappyGiftedTubersAsianGlow-HgDjmKvod9tF0lHI"
+   }
+  ],
+  "pending": []
+ },
+ "2932231026": {
+  "title": "Grand Theft Auto VI",
+  "created_at": "2026-11-18T11:06:50Z",
+  "done": "2026-11-21T07:09:04.572844+00:00",
+  "clips": [
+   {
+    "id": "EnchantingCoySnailTheThing-Mgj4WUZp94ZB11cT",
+    "title": "High Speed Boat Chase Through The Mangroves",
+    "offset": 1009,
+    "seconds": 31.0,
+    "url": "https://clips.twitch.tv/EnchantingCoySnailTheThing-Mgj4WUZp94ZB11cT"
+   },
+   {
+    "id": "CrepuscularNastyDootKlappa-gJamxPGjzV1qDOCg",
+    "title": "Dragging My Wounded Buddy From The Wrecked Plane",
+    "offset": 1711,
+    "seconds": 27.0,
+    "url": "https://clips.twitch.tv/CrepuscularNastyDootKlappa-gJamxPGjzV1qDOCg"
+   },
+   {
+    "id": "AntediluvianArborealWeaselSmoocherZ-iyNJ6-3g73PO7yi0",
+    "title": "We Didn't Start The Turf War, We Ended It",
+    "offset": 9085,
+    "seconds": 27.0,
+    "url": "https://clips.twitch.tv/AntediluvianArborealWeaselSmoocherZ-iyNJ6-3g73PO7yi0"
+   },
+   {
+    "id": "UglyCreativeUdonWTRuck-v-_rWEtoPIVb6d09",
+    "title": "So Excited To See Lucia, I'm Tackling Her",
+    "offset": 13167,
+    "seconds": 25.0,
+    "url": "https://clips.twitch.tv/UglyCreativeUdonWTRuck-v-_rWEtoPIVb6d09"
+   },
+   {
+    "id": "MoldyGiftedEmuWTRuck-J695T_Yl1-dSo3Qn",
+    "title": "Buddy System Briefing Before The Big Jump",
+    "offset": 13809,
+    "seconds": 23.0,
+    "url": "https://clips.twitch.tv/MoldyGiftedEmuWTRuck-J695T_Yl1-dSo3Qn"
+   }
+  ],
+  "pending": [
+   {
+    "start": 13600.0,
+    "end": 13620.0,
+    "title": "Need A Tux With A Smaller Crotch For This Guy"
+   }
+  ]
  }
 }
