@@ -9,7 +9,7 @@ cover: "/covers/gta-6-estimated-to-have-sold-24-58-million-copies-on-launch-day-
 coverCredit: "Grand Theft Auto VI official art"
 date: 2026-11-20
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "TweakTown"
 sourceUrl: "https://www.tweaktown.com/news/114795/gta-6-day-one-sales-estimates-break-24-5-million-with-dollars2-36-billion-earned/index.html"
