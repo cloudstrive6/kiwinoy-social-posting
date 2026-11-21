@@ -19,5 +19,17 @@
   "kick": {
     "count": 26,
     "display": "26"
+  },
+  "twitch": {
+    "count": 50,
+    "display": "50",
+    "source": "manual, twitch.tv/kiwinoy/about",
+    "checked": "2026-11-21"
+  },
+  "threads": {
+    "count": 34,
+    "display": "34",
+    "source": "manual, threads.com/@kiwinoygaming",
+    "checked": "2026-11-21"
   }
 }
