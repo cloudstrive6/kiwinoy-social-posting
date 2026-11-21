@@ -2,13 +2,12 @@
  "game": "spider-man1-reels",
  "narrator": {
   "provider": "elevenlabs",
-  "name": "BOSS KG Narrator A",
-  "voice_id": "Jn6g1Ws0FHFBiECPird2",
-  "model_id": "eleven_multilingual_v2",
+  "name": "BOSS KG Guide C",
+  "voice_id": "BM5OFghW9ETIy6oAH5MH",
+  "model_id": "eleven_v4",
   "stability": 0.5,
   "similarity_boost": 0.75,
-  "style": 0.0,
-  "speed": 0.95,
+  "tempo": 1.0,
   "master": "C"
  },
  "under_narration_db": -24,
