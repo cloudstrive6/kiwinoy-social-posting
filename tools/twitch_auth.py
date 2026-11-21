@@ -4,7 +4,8 @@ Twitch's follower endpoint (GET helix/channels/followers) needs a USER access to
 returns only the total, which is all the site needs. This script:
   1. reads the app's Client Secret from the clipboard (hidden prompt as a fallback), then clears the
      clipboard; the secret is never printed or written to a file;
-  2. opens Twitch's authorize page in the browser (no scopes) and catches the reply on
+  2. opens Twitch's authorize page in the browser (scope channel:manage:clips, for tools/twitch_clips.py)
+     and catches the reply on
      http://localhost:3000/twitch (the redirect URL registered on the "BOSS KG Stats" app);
   3. trades the code for tokens, checks the login is kiwinoy, and checks that the refresh token can be
      used twice (confidential-client refresh tokens do not expire);
@@ -110,7 +111,7 @@ def main() -> int:
     th = threading.Thread(target=srv.handle_request, daemon=True)
     th.start()
     url = "https://id.twitch.tv/oauth2/authorize?" + urllib.parse.urlencode(
-        {"client_id": cid, "redirect_uri": REDIRECT, "response_type": "code", "scope": "",
+        {"client_id": cid, "redirect_uri": REDIRECT, "response_type": "code", "scope": "channel:manage:clips",  # clips from past broadcasts (tools/twitch_clips.py, 2026-11-21)
          "state": state, "force_verify": "true"})
     print("Opening Twitch in your browser: sign in as kiwinoy if asked and click Authorize.")
     webbrowser.open(url)
