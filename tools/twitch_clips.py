@@ -77,8 +77,16 @@ def token() -> tuple[str, str]:
 
 
 def api(method: str, path: str, cid: str, tok: str, **params) -> dict:
-    r = requests.request(method, f"https://api.twitch.tv/helix/{path}", params=params, timeout=60,
-                         headers={"Authorization": f"Bearer {tok}", "Client-Id": cid})
+    import time
+    for attempt in range(6):  # 2026-11-21: clip creation hit HTTP 429 after one clip; wait for the reset
+        r = requests.request(method, f"https://api.twitch.tv/helix/{path}", params=params, timeout=60,
+                             headers={"Authorization": f"Bearer {tok}", "Client-Id": cid})
+        if r.status_code != 429:
+            break
+        reset = r.headers.get("Ratelimit-Reset", "")
+        wait = max(5.0, min(120.0, float(reset) - time.time() + 1)) if reset.isdigit() else 30.0 * (attempt + 1)
+        log(f"rate limited on {path}; waiting {wait:.0f} s")
+        time.sleep(wait)
     if r.status_code >= 400:
         raise RuntimeError(f"{method} {path} HTTP {r.status_code}: {r.text[:200]}")
     return r.json() if r.text else {}
@@ -237,6 +245,37 @@ Answer with JSON only: {{"picks": [{{"candidate": 3, "from": 4, "to": 32, "title
 
 # ------------------------------------------------------------------------------- main
 
+def make_clips(cid: str, tok: str, uid: str, v: dict, picks: list[dict], dry: bool) -> tuple[list, list]:
+    """Create one Twitch clip per pick; returns (made, failed picks to retry next run)."""
+    import time
+    dur = secs(v["duration"])
+    made, failed = [], []
+    for k, p in enumerate(picks):
+        start, end = max(0, p["start"] - LEAD_PAD), min(dur, p["end"] + TAIL_PAD)
+        length = round(min(60.0, max(5.0, end - start)), 1)
+        if dry:
+            log(f"DRY {int(start) // 60}:{int(start) % 60:02d} +{length}s  {p['title']}")
+            continue
+        if k:
+            time.sleep(8)  # space the clip calls out
+        try:
+            r = api("POST", "videos/clips", cid, tok, editor_id=uid, broadcaster_id=uid, vod_id=v["id"],
+                    vod_offset=int(round(start + length)), duration=length, title=p["title"])
+            cl = r["data"][0]
+            made.append({"id": cl["id"], "title": p["title"], "offset": int(start), "seconds": length,
+                         "url": f"https://clips.twitch.tv/{cl['id']}"})
+            log(f"clip {cl['id']} at {int(start) // 60}:{int(start) % 60:02d} +{length}s  {p['title']}")
+        except Exception as e:
+            log(f"clip failed at {int(start)} s (kept for the next run): {e}")
+            failed.append(p)
+    return made, failed
+
+
+def save_state(state: dict) -> None:
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def load_state() -> dict:
     try:
         return json.loads(STATE.read_text(encoding="utf-8"))
@@ -260,7 +299,9 @@ def main() -> int:
     state = load_state()
     now = dt.datetime.now(dt.timezone.utc)
     todo = []
-    for v in sorted(vods, key=lambda v: v["created_at"]):  # oldest first: they expire first
+    # newest first (2026-11-21: oldest-first spent a run on short side streams); runs 3 times a day,
+    # so older broadcasts are still reached well before their 7 days run out
+    for v in sorted(vods, key=lambda v: v["created_at"], reverse=True):
         age = now - dt.datetime.fromisoformat(v["created_at"].replace("Z", "+00:00"))
         if not a.vod and (v["id"] in state or v.get("stream_id") == live_stream or secs(v["duration"]) < 300
                           or age > dt.timedelta(days=6, hours=20)):
@@ -268,6 +309,15 @@ def main() -> int:
         todo.append(v)
     log(f"{len(vods)} broadcasts listed, {len(todo)} to clip" + (f" (live now: {live_stream})" if live_stream else ""))
     made_all = []
+    by_id = {v["id"]: v for v in vods}
+    for vid, rec in list(state.items()):  # clips that failed last time (rate limit): retry them first
+        if rec.get("pending") and not a.dry and vid in by_id:
+            made, failed = make_clips(cid, tok, uid, by_id[vid], rec["pending"], a.dry)
+            rec["clips"] = rec.get("clips", []) + made
+            rec["pending"] = failed
+            save_state(state)
+            if made:
+                made_all.append((by_id[vid], made))
     for v in todo[:MAX_PER_RUN]:
         dur = secs(v["duration"])
         game = v.get("title") or "gameplay"
@@ -282,27 +332,11 @@ def main() -> int:
             cands = candidates(dur, loud, segs, muted)
             log(f"{len(segs)} speech segments, {len(cands)} candidates")
             picks = choose(v["id"], game, v["title"], cands, work) if cands else []
-            made = []
-            for p in picks:
-                start, end = max(0, p["start"] - LEAD_PAD), min(dur, p["end"] + TAIL_PAD)
-                length = round(min(60.0, max(5.0, end - start)), 1)
-                if a.dry:
-                    log(f"DRY {int(start) // 60}:{int(start) % 60:02d} +{length}s  {p['title']}")
-                    continue
-                try:
-                    r = api("POST", "videos/clips", cid, tok, editor_id=uid, broadcaster_id=uid, vod_id=v["id"],
-                            vod_offset=int(round(start + length)), duration=length, title=p["title"])
-                    cl = r["data"][0]
-                    made.append({"id": cl["id"], "title": p["title"], "offset": int(start), "seconds": length,
-                                 "url": f"https://clips.twitch.tv/{cl['id']}"})
-                    log(f"clip {cl['id']} at {int(start) // 60}:{int(start) % 60:02d} +{length}s  {p['title']}")
-                except Exception as e:
-                    log(f"clip failed at {int(start)} s: {e}")
+            made, failed = make_clips(cid, tok, uid, v, picks, a.dry)
             if not a.dry:
                 state[v["id"]] = {"title": v["title"], "created_at": v["created_at"], "done": now.isoformat(),
-                                  "clips": made}
-                STATE.parent.mkdir(parents=True, exist_ok=True)
-                STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+                                  "clips": made, "pending": failed}
+                save_state(state)
                 made_all.append((v, made))
         except Exception as e:
             log(f"broadcast {v['id']} failed: {type(e).__name__}: {str(e)[:300]}")
