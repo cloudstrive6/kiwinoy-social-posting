@@ -2,7 +2,8 @@
 
 Twitch's follower endpoint (GET helix/channels/followers) needs a USER access token; with no scope it
 returns only the total, which is all the site needs. This script:
-  1. asks for the app's Client Secret at a hidden prompt (never printed, never written to a file);
+  1. reads the app's Client Secret from the clipboard (hidden prompt as a fallback), then clears the
+     clipboard; the secret is never printed or written to a file;
   2. opens Twitch's authorize page in the browser (no scopes) and catches the reply on
      http://localhost:3000/twitch (the redirect URL registered on the "BOSS KG Stats" app);
   3. trades the code for tokens, checks the login is kiwinoy, and checks that the refresh token can be
@@ -47,6 +48,27 @@ def get(url: str, headers: dict) -> dict:
         return json.loads(r.read())
 
 
+def clipboard_secret() -> str:
+    """The clipboard's text if it looks like a Twitch secret (30 lowercase letters and digits), then
+    the clipboard is cleared. Never printed."""
+    import re
+    try:
+        import tkinter
+        root = tkinter.Tk()
+        root.withdraw()
+        text = root.clipboard_get().strip()
+        if re.fullmatch(r"[a-z0-9]{20,64}", text):
+            root.clipboard_clear()
+            root.clipboard_append(" ")
+            root.update()
+        else:
+            text = ""
+        root.destroy()
+        return text
+    except Exception:
+        return ""
+
+
 def refresh(cid: str, secret: str, rt: str) -> dict | None:
     try:
         return post("https://id.twitch.tv/oauth2/token", {"client_id": cid, "client_secret": secret,
@@ -60,10 +82,15 @@ def main() -> int:
         print(__doc__)
         return 1
     cid = sys.argv[1].strip()
-    secret = getpass.getpass("Paste the Twitch app's Client Secret (hidden), then Enter: ").strip()
+    # From the clipboard (2026-11-21: a hidden prompt would not take a paste in the app's terminal).
+    input("Copy the Client Secret (New Secret, then the copy button), then press Enter here: ")
+    secret = clipboard_secret()
+    if not secret:
+        secret = getpass.getpass("Clipboard was empty or not a secret. Type or right-click paste it (hidden): ").strip()
     if not secret:
         print("No secret entered.")
         return 1
+    print(f"Secret read ({len(secret)} characters).")
     state = secrets.token_urlsafe(16)
     got: dict = {}
 
