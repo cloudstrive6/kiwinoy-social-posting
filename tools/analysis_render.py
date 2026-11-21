@@ -829,7 +829,8 @@ def main() -> int:
         if only and b["id"] not in only:
             continue
         seg = segs / f"{b['id']}.mkv"
-        sig = beat_signature(b, gfx_specs, timings, dur, bt, bcfg if bt else None)
+        # "|tpad" (2026-11-21): segments cut before the last-frame hold could be a frame short
+        sig = beat_signature(b, gfx_specs, timings, dur, bt, bcfg if bt else None) + "|tpad"
         if b["type"] == "narr" and any(sh.get("at") for sh in b.get("shots") or []):
             sig = hashlib.sha1((sig + json.dumps({k: round(v * FPS) for k, v in
                                                   beat_anchors(b, words_of.get(b["id"])).items()},
