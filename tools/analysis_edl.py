@@ -326,9 +326,16 @@ NARRATOR_V2 = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
 # delivery tags, ellipses and one-word CAPS. v4 takes only stability and similarity (no style, no
 # speed), and reads about 15% slower than the v2 read, so "tempo" speeds each take up with ffmpeg
 # atempo; 1.15 is what Bryce heard when he picked it. Same cost: about 0.4 credit per character.
-NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
-            "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_v4",
-            "stability": 0.5, "similarity_boost": 0.75, "tempo": 1.15, "master": "C"}
+NARRATOR_A_V4 = {"provider": "elevenlabs", "name": "BOSS KG Narrator A",
+                 "voice_id": "Jn6g1Ws0FHFBiECPird2", "model_id": "eleven_v4",
+                 "stability": 0.5, "similarity_boost": 0.75, "tempo": 1.15, "master": "C"}
+# From 2026-11-21 (Bryce's pick on the listening page): "BOSS KG Guide C", a fast, bright British
+# guide-style voice designed from a written brief only (tools/el_voice_brief.py, no reference audio of
+# any creator). It reads about 210 wpm on v4 untouched, so no speed-up (tempo 1.0); set an EDL's
+# "pace" below 1 for long guides. Videos voiced before keep their own block (see main below).
+NARRATOR = {"provider": "elevenlabs", "name": "BOSS KG Guide C",
+            "voice_id": "BM5OFghW9ETIy6oAH5MH", "model_id": "eleven_v4",
+            "stability": 0.5, "similarity_boost": 0.75, "tempo": 1.0, "master": "C"}
 
 # From each script's editor notes: music-risk or banned clips, and clips with HUD or boss bars.
 GAME_NOTES = {
@@ -364,8 +371,9 @@ def main() -> int:
             old = {"chirp": {"voice": prev["voice"], "speaking_rate": prev.get("speaking_rate")}}
         if old:
             narrator = old
-            if old.get("model_id") != NARRATOR["model_id"]:
-                print(f"narrator kept from the existing EDL ({old.get('model_id')}); --new-voice to switch")
+            if (old.get("model_id"), old.get("voice_id")) != (NARRATOR["model_id"], NARRATOR["voice_id"]):
+                print(f"narrator kept from the existing EDL ({old.get('name', 'Chirp')}, "
+                      f"{old.get('model_id')}); --new-voice to switch to {NARRATOR['name']}")
     if not reads_tags(narrator) and any(
             "[" in b.get("tts", "") for b in res["beats"] if b["type"] == "narr"):
         res["problems"].append("delivery tags in a script voiced on a v2 narrator: they are stripped, "

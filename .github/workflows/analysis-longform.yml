@@ -11,8 +11,8 @@ name: Analysis long-form (manual)
 #   voice-setup: ElevenLabs credits and narrator check; deletes the voices named in "voices".
 #   voice-design: voices designed and scored to match a reference voice (tools/el_voice_design.py).
 #   voice-brief: narrator candidates designed from a written brief only (tools/el_voice_brief.py).
-#   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Narrator A"
-#           from 2026-11-13; older EDLs keep Chirp 3 HD Orus).
+#   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Guide C"
+#           for new EDLs from 2026-11-21, "BOSS KG Narrator A" before; older EDLs keep Chirp 3 HD Orus).
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
 #           renders/analysis/<game>/ (kept) with a 7-day review link. Optional "only" renders a few beats
 #           as a small preview instead (test runs).

@@ -587,8 +587,11 @@ reels:
   # energetic, Taglish-capable voice from your ElevenLabs library.
   narration:
     enabled: true
-    voice_id: "okH1aHncYRU2dc9TP3hV"   # user's chosen Taglish reel voice
-    model_id: "eleven_multilingual_v2"  # supports Filipino/Tagalog
+    # Bryce, 2026-11-21: "BOSS KG Guide C" for every voiceover from now on (was the Taglish reel
+    # voice okH1aHncYRU2dc9TP3hV). Only the paused hype and commentary reels use this block; the live
+    # voiceover reels and Shorts take the narrator from tools/analysis_edl.py NARRATOR.
+    voice_id: "BM5OFghW9ETIy6oAH5MH"   # BOSS KG Guide C (British English; reads Taglish with that accent)
+    model_id: "eleven_multilingual_v2"  # supports Filipino/Tagalog; core/elevenlabs.py sends v2 settings, so moving this path to eleven_v4 needs a code change first
     max_words: 34                        # ~12-14s of energetic VO
   # USE YOUR OWN GAMEPLAY FOOTAGE instead of AI-generated stills. Drop video
   # clips into reels/assets/footage/<game>/ (folders listed in `map` below). The

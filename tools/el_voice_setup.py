@@ -10,6 +10,9 @@ workspace and Bryce picked "BOSS KG Narrator A". This step:
 Never prints the key.
 
     EL_DELETE="BOSS KG Narrator B,BOSS KG Narrator C" python tools/el_voice_setup.py
+
+Narrator A stays on the account while published videos may be re-rendered with it (their EDLs
+name it); delete it only when Bryce says so.
 """
 from __future__ import annotations
 
@@ -18,7 +21,7 @@ import os
 import urllib.error
 import urllib.request
 
-NAME = "BOSS KG Narrator A"
+NAME = "BOSS KG Guide C"  # the narrator for new videos since 2026-11-21 (Narrator A before)
 API = "https://api.elevenlabs.io"
 
 

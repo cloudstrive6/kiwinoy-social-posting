@@ -2,7 +2,7 @@
 
 Narrator: if edl.json has a "narrator" block, that voice is used (ElevenLabs; from 2026-11-13 the
 BOSS KG voice is "BOSS KG Narrator A", designed for the channel and picked by Bryce, on
-Multilingual v2). Older EDLs carry "voice" and "speaking_rate" and keep their Chirp 3 HD voice
+Multilingual v2, then Eleven v4 from 2026-11-17; new EDLs from 2026-11-21 use "BOSS KG Guide C"). Older EDLs carry "voice" and "speaking_rate" and keep their Chirp 3 HD voice
 (Wolverine: Orus at 0.85), so a rerun never changes a published video's voice. A video never mixes
 voices: if ElevenLabs fails (for example the monthly credit cap), the run stops with the reason.
 ElevenLabs takes get the previous and next paragraph as context so the delivery flows. Each
