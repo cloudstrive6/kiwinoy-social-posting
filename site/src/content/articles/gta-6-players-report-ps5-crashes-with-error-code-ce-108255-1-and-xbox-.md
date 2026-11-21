@@ -8,7 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-players-report-ps5-crashes-with-error-code-ce-108255-1-and-xbox-.jpg"
 date: 2026-11-21
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gta-6-ps5-crashing-ce-108255-1-error-fix"
 telegramMessageId: 1721
