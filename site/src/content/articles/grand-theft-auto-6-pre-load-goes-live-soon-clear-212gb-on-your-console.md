@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/grand-theft-auto-6-pre-load-date"
+rejected: true
 ---
 
 Rockstar Games has set the stage for the highly anticipated launch of **Grand Theft Auto 6** by revealing key details about its pre-load schedule and file size. If you’re planning to hit the streets of the newest GTA from day one, now’s the time to make room: the digital download will require a **staggering 212GB** free on your console. 

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/call-of-duty-modern-warfare-4-dmz-pve-trailers-discussion"
+rejected: true
 ---
 
 Call of Duty: Modern Warfare 4 is shining a spotlight on its revamped DMZ mode this week, generating a frenzy of speculation after glimpses of a mysterious 'Single Squad Mission' option surfaced during official behind-the-scenes footage. As players dissect every detail, the question of whether DMZ will support a **PvE-only playlist** remains unanswered.

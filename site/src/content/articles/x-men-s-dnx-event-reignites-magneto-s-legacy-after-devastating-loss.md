@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/comics/feature/x-men-dnx-just-revealed-the-importance-of-one-of-marvels-oldest-mutants/"
+rejected: true
 ---
 
 Marvel's newest X-Men crossover, **'DNX,'** is underway, shaking up the mutant landscape with fallout from the dramatic 'Age of Revelation' storyline. In this new arc, fan-favorite **Magneto**—who has spent recent months powerless and on the brink—receives a profound reminder of who he truly is, just as a harrowing new scheme threatens mutantkind.

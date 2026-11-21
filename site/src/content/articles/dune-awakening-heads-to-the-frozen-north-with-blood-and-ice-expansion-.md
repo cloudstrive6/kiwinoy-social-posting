@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/dune-awakening-blood-and-ice-free-expansion"
+rejected: true
 ---
 
 Funcom is bringing a chilling twist to its survival MMO, **Dune: Awakening**, with the upcoming **Blood and Ice expansion landing December 1st**. This free update takes players far from the scorching deserts of Arrakis and into the frostbitten reaches of a brand new map, the Polar Sink. The expansion will be available on **PC, PS5, and Xbox Series X/S**.

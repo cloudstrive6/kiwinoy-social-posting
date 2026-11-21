@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.pushsquare.com/news/2026/10/toy-story-3-complete-editions-ps5-trophy-list-echoes-the-original-with-a-few-new-additions"
+rejected: true
 ---
 
 **Toy Story 3 Complete Edition** is making a grand return, with Digital Eclipse set to release the remastered fan-favorite platformer **on October 15**. Dropping alongside **Toy Story: Retro Roundup**, a compilation of classic Pixar-inspired games, the remaster brings new life to one of the most beloved movie tie-ins in gaming history, and fans have something to look forward to with a brand-new set of Trophies revealed just ahead of launch.

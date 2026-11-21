@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/mcu-report-reveals-wednesday-star-in-talks-for-major-role-fans-know-exactly-who-she-should-play/"
+rejected: true
 ---
 
 Marvel Studios continues to shake up its roster, with new casting developments for upcoming films—and now, rising star **Emma Myers (Wednesday, A Minecraft Movie)** is reportedly being considered for a major new role in the **Marvel Cinematic Universe**. The news surfaced after several notable casting announcements at recent events, including the next Black Panther (David Jonsson) and new X-Men members like **Maya Boyd (Storm)** and **Christopher Abbott (Professor X)**.

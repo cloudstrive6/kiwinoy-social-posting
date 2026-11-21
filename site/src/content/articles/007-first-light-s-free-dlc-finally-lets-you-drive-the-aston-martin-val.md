@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/action/007-first-light-gets-free-dlc-that-will-finally-let-you-drive-james-bonds-aston-martin-properly/"
+rejected: true
 ---
 
 **007: First Light** fans have something big to celebrate—IO Interactive has released a free DLC pack called 'Extended Operations' that finally lets players take the coveted Aston Martin Valhalla out on the open road. While the base game teased players with glimpses of Bond’s legendary ride, actual driving sequences were disappointingly brief. Now, players can finally experience what it's like to command one of the world’s most famous spy cars in an all-new mission. 

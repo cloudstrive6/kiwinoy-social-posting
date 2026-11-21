@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/hideo-kojima-reveals-what-happened-with-sony-in-exclusive-first-interview-since-playstation-ditched-physint"
+rejected: true
 ---
 
 Hideo Kojima was deep in development on **Physint**, a PlayStation project seen as a spiritual successor to his acclaimed Metal Gear Solid series, when Sony unexpectedly ended its support. In his first interview since the dramatic studio shakeup, Kojima explained that the termination of funding left him "stunned" and forced to quickly reassess the future of his studio and staff.

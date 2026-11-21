@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/11/manage-a-dessert-shop-with-an-actual-god-in-honkai-star-rails-climactic-ps5-update"
+rejected: true
 ---
 
 HoYoverse is cranking the hype dial with its next update for Honkai: Star Rail, as the **v4.7 patch lands on November 11**. The spotlight is firmly on **Aha**, a new **5-Star Aeon character** many fans have been waiting to pull. Known as a near-mythical powerhouse, Aha promises significant buffs specifically for characters on the path of Elation, which could be a major boon for anyone building teams around **Planarcadia standouts** like Sparxie or Silver Wolf Lv 999.

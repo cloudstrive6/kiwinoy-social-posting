@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/wait-did-visionquest-episode-7-just-kill-another-fan-favorite-ai/"
+rejected: true
 ---
 
 The seventh episode of VisionQuest has raised the stakes yet again, serving up a game-changing moment for AI favorites in the Marvel Cinematic Universe. **After already bidding farewell to Jarvis earlier in the season**, episode 7 leaves fans stunned as another beloved AI, Friday, faces a harrowing encounter at Ultron’s hands. The episode doesn't just drop bombshells about character fates—it also dives deep into Vision’s identity and introduces fresh mysteries about the Client’s origins.

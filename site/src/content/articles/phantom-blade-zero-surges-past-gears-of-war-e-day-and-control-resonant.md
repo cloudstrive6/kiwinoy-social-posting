@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/phantom-blade-zero-hit-not-out"
+rejected: true
 ---
 
 Chinese action title **Phantom Blade Zero** is making waves before its official release, staking a claim as one of the year's most promising action games. According to newly scrutinized market data, the game has already sold **500,000 copies through Steam pre-orders**, generating an estimated **$24 million in revenue** prior to launch, and is currently outperforming heavyweight competitors like **Gears of War: E-Day** and **Control Resonant** on the platform.

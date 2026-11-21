@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/features/hardware-review-scuf-omega-ps5-controller-no-frills-pro-controller-doesnt-do-much-to-impress"
+rejected: true
 ---
 
 **The SCUF Omega enters the market as an officially licensed pro controller for both PlayStation 5 and PC, offering a highly customizable design for competitive players willing to invest in premium hardware.** With support for both wired and wireless (via dongle or Bluetooth) connectivity, the Omega promises flexibility along with its bold looks—if you’re ready for a starting price of $219.99/£209.99, and up to $229.99/£229.99 depending on personal options.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/yakuza-creators-studio-and-the-game-it-was-working-on-are-now-officially-gone/"
+rejected: true
 ---
 
 **Nagoshi Studio**, the indie venture from Yakuza creator **Toshihiro Nagoshi**, has officially closed its doors, ending a brief but high-profile run in the gaming world. The news comes six months after the studio’s website went dark, with final confirmation emerging from a government notice in Japan. Nagoshi, who founded the studio in 2021 after departing Sega, aimed to make a splash with a new IP—but the journey was cut short before it could properly begin.

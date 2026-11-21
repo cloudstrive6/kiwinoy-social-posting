@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/marvel-finds-new-iceman-actor-for-mcu-x-men-completing-the-original-team-lineup/"
+rejected: true
 ---
 
 Marvel’s X-Men movie has officially found its Iceman, with **Ben Wang** reportedly entering talks to play **Bobby Drake** in the highly anticipated MCU reboot. With this casting, the MCU’s take on the X-Men is set to feature all five founding members — Cyclops, Jean Grey, Beast, Angel, and Iceman — together onscreen for the first time.

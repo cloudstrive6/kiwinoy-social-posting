@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/comics/review/wolverine-paradise-1-has-too-much-meandering-and-sanitization-for-wolverine-review/"
+rejected: true
 ---
 
 Few X-Men characters have captured imaginations quite like **Wolverine**, and Marvel’s newest miniseries, **Wolverine: Paradise #1**, sends Logan on a quest for peace in an unlikely locale—Florida. Ditching the superhero life, this series follows Wolverine as he tries to escape his troubled past and settle down in Miami. But as ever, trouble finds him, and he’s soon swept up into a string of conflicts that draw in familiar faces from the Marvel universe.

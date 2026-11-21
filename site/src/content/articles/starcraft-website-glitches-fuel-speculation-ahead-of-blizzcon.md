@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/starcraft-website-glitches-blizzcon-2026"
+rejected: true
 ---
 
 Something odd is happening on the **official Starcraft website** just days before BlizzCon kicks off, and fans are taking notice. As of this week, visitors are greeted by **visual glitches and distorted backgrounds** as soon as they access the landing page, which currently features Starcraft Remastered. Embedded gameplay videos are also affected, showing the same jittery effects. While the site offers no direct announcement or obvious hints—no flashing 'Starcraft 3' here—the deliberate nature of these glitches has set the Starcraft community abuzz.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/avengers-doomsday-reshoots-reportedly-bringing-back-the-one-character-everyone-wanted-after-4-years/"
+rejected: true
 ---
 
 With fan buzz over Spider-Man: Brand New Day settling down, **MCU fans are now laser-focused on three major upcoming movies: Avengers: Doomsday, Avengers: Secret Wars, and X-Men**. While projects like Ryan Gosling’s Ghost Rider and a possible Shang-Chi sequel have their own followings, these three films are already being seen as potential milestones for the franchise’s future. In particular, **Avengers: Doomsday** is shaping up as the film that may set the tone for everything that follows—especially Secret Wars.

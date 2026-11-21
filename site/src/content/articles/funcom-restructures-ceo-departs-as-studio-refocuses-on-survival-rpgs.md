@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/funcom-is-laying-off-yet-more-developers-as-it-pivots-to-supporting-dune-awakening-and-conan-exiles/"
+rejected: true
 ---
 
 Funcom, the studio best known for **Dune: Awakening and Conan Exiles**, is undergoing a significant **restructuring process** that will see layoffs and the departure of current CEO **Rui Casais** once the reorganization is finished. The company revealed it will pivot fully toward supporting its existing **survival RPGs** rather than pursuing new projects in the immediate future.

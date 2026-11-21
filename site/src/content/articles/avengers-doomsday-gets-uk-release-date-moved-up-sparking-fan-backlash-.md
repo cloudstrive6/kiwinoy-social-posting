@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/disney-confirms-an-earlier-release-date-for-avengers-doomsday-but-only-for-some-viewers/"
+rejected: true
 ---
 
 **Marvel Studios has officially shifted the release date for Avengers: Doomsday in the UK from December 18 to December 16, generating immediate uproar among the international fanbase about early spoilers and leaks.** The date change was confirmed ahead of the still-upcoming Avengers: Endgame Encore re-release, which itself has been affected by leaked footage undermining its rollout.

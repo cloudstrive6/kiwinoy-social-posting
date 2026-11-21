@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/blood-of-dawnwalker-update-1-1-story-mode-pet-animals"
+rejected: true
 ---
 
 A massive new patch is rolling out for **The Blood of Dawnwalker** next week, promising to enhance the experience for both newcomers and seasoned players. **Update 1.1** introduces a wealth of features, including a freshly designed Story mode with enhanced combat assists and the much-requested ability to pet dogs and cats. The update also brings sweeping technical improvements and over a thousand additional fixes.

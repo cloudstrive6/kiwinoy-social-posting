@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/blizzcon-2026-announcements-live-report-starcraft-diablo-overwatch-wow"
+rejected: true
 ---
 
 **BlizzCon 2026** is back this weekend after a two-year hiatus, and it’s shaping up to be one of Blizzard’s most anticipated shows yet. The **opening ceremony kicks off at 6.30pm BST** with a full slate of reveals and updates expected over its hour and fifteen minute runtime. Fans around the world can find local streaming times on the official BlizzCon site, which adjusts the schedule to your region automatically.

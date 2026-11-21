@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/avengers-endgame-encore-reveals-the-beginning-of-doomsday-and-the-stakes-are-even-higher-than-we-thought/"
+rejected: true
 ---
 
 **Avengers: Endgame Encore** may only be about four minutes longer than the original cut, but the rerelease’s new scenes serve a bigger purpose—kicking off the destruction-heavy stakes set to define **December’s Avengers: Doomsday**. The standout new mid-credits scene goes all-in on multiversal chaos, tying together characters and lore from both the Loki Disney+ series and Deadpool & Wolverine while channeling the dread that fans of the comics will recognize from the Secret Wars storylines.

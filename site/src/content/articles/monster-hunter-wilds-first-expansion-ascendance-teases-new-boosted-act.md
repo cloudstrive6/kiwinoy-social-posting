@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/monster-hunter-wilds-ascendance-boost-weapons"
+rejected: true
 ---
 
 **Monster Hunter Wilds** fans can look forward to their first major expansion, **Ascendance, set for 2027**, but Capcom isn’t waiting for the Tokyo Game Show to start dropping new details. This week, the company launched a series of daily videos showcasing the game’s fourteen weapon types, spotlighting a powerful new mechanic that’s set to shake up the hunt: Boosted Actions.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/marvels-wolverine-game-insomniac-x-men-sequel-details/"
+rejected: true
 ---
 
 **Insomniac’s next Marvel project may be assembling sooner than expected.** Fresh details have surfaced about the studio’s long-rumored X-Men video game, after months of speculation following the release of Marvel’s Wolverine. While the team has not officially spoken about this upcoming title, a new staff listing from Insomniac offers concrete hints — and the first tease of what fans can expect when they finally get their hands on the controller.

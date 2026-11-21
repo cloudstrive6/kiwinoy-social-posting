@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/action/this-control-inspired-action-game-set-in-a-planet-scale-alien-mind-has-one-of-the-most-stunning-art-styles-ive-seen-this-year/"
+rejected: true
 ---
 
 In an era where near-photorealistic graphics have become standard, **Etre** stands out by embracing a retro-futuristic visual identity. Developed by LA-based **Studio Lifeforms**, Etre immediately catches the eye thanks to its vibrant, graphic novel-inspired art direction reminiscent of the '70s and '80s. While many games chase realism, Etre’s debut footage reveals a daringly expressive world that’s both distinct and mesmerizing.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/survival-crafting/minecraft-is-getting-its-first-new-dimension-in-15-years-and-it-is-riotously-pink/"
+rejected: true
 ---
 
 For the first time since its original release, **Minecraft** is expanding beyond its classic three dimensions. **Mojang has unveiled The Sift**, a colorful new realm set to arrive in both the Bedrock and Java editions of Minecraft, adding to the Overworld, Nether, and The End as the game's latest dimension.

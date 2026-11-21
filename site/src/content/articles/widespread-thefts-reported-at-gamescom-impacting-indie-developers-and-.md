@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gamescom-2026-exhibitors-equipment-stolen-overnight"
+rejected: true
 ---
 
 **Several exhibitors at Gamescom have suffered thefts of laptops and essential demo equipment from their booths in Cologne, leaving indie developers and studios scrambling to salvage their show presence.** The reported incidents have forced some creators to end their Gamescom appearances early, while others are now facing the risk of leaked builds and lost data. Organizers and affected companies have since addressed the situation, highlighting both the emotional toll and the broader security implications for the event. 

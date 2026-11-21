@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/star-wars-zero-company-estimated-to-have-sold-1-million-with-nearly-70-on-steam"
+rejected: true
 ---
 
 Star Wars Zero Company has made a strong debut, with **estimated sales reaching 1 million copies** since its launch. Developed by Bit Reactor—starring veterans from XCOM's Firaxis team—this Star Wars strategy game is proving popular, particularly on PC, where **about 69.9% of sales are from Steam**. The rest is split with **19.9% on PlayStation** and **10.2% on Xbox/Xbox PC**. Industry analyst Rhys Elliott suggests the title has generated around $50 million so far, a **"respectable" performance in a competitive period for the genre**.

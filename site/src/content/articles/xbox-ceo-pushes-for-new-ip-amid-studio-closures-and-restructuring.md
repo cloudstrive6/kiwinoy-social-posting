@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/hundreds-of-layoffs-and-many-cancelled-projects-later-xbox-ceo-asha-sharma-reportedly-says-we-will-not-survive-without-new-ips/"
+rejected: true
 ---
 
 Xbox is in the middle of a major shakeup, as **CEO Asha Sharma emphasized the urgent need for new, enduring IP to fuel the company's future**. Sharma’s comments, reportedly shared at an internal town hall, touched on ambitions to create global franchises and attract new audiences. But these remarks arrive on the heels of significant layoffs, studio closures, and a reorganization that’s moved teams like Obsidian away from their latest projects and back onto established brands like Fallout.

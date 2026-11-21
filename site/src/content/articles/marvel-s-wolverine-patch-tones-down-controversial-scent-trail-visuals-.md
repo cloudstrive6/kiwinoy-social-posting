@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/insomniac-games-just-patched-wolverines-most-controversial-feature-full-fix-is-coming/"
+rejected: true
 ---
 
 Marvel’s Wolverine might be racking up decent sales since its **September 15** launch, but the news cycle has been dominated by passionate debate—and frequent complaints—about one feature in particular: the game’s omnipresent blue gas scent trails, which guide players through its world. Now, developer **Insomniac Games** has responded with a new patch designed to make those trails less intrusive.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/marvels-ghost-rider-taps-heated-rivalry-star-as-a-new-mcu-villain-but-which-one/"
+rejected: true
 ---
 
 Ryan Gosling’s upcoming debut as Ghost Rider has just taken a fiery new turn: **Connor Storrie is officially in talks to play the film's main villain**. Announced during Marvel Studios’ San Diego Comic-Con panel, the Ghost Rider movie will see Gosling reunite with director Shawn Levy and is slated to hit theaters in **2028**. While plot details remain tightly under wraps, this latest casting news gives fans their first clues about what kind of dark threats the Spirit of Vengeance may face when he arrives in the Marvel Cinematic Universe.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/liquid-swords-developer-of-open-city-crime-sim-samson-has-gone-bankrupt-following-staff-claims-that-they-havent-been-paid-in-two-months/"
+rejected: true
 ---
 
 In a major blow for fans of innovative game design, **Liquid Swords—the Swedish studio behind Samson—has been declared bankrupt just six months after its debut title launched**. The news comes on the heels of persistent financial and development troubles, closing the book on the ambitious crime sim.

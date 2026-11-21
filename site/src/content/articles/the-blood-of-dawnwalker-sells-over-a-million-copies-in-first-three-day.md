@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/blood-of-dawnwalker-1-million-sales-rebel-wolves"
+rejected: true
 ---
 
 **The Blood of Dawnwalker** has made a powerful entrance, selling **over a million copies worldwide in only three days** since release. Rebel Wolves, the team comprised of ex-Witcher developers, shared the milestone on social media over the weekend, thanking fans for their early support in building the game's growing community. The RPG’s launch has quickly become a standout moment for new single-player experiences in 2026, highlighting the excitement around this ambitious debut title.

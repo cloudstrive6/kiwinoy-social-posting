@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/hugh-jackman-kevin-feige-and-x-men-stars-pay-tribute-to-patrick-stewart/"
+rejected: true
 ---
 
 The entertainment world is in shock following the confirmed death of **Sir Patrick Stewart**, the iconic actor whose legacy stretched from the Shakespearean stage to the science fiction frontier—and, for a generation of Marvel fans, defined the live-action portrayal of **Professor Charles Xavier** across the X-Men film franchise.

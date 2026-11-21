@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/nintendo-direct-switch-winter-2026-line-up"
+rejected: true
 ---
 
 Nintendo’s September Direct continues into its second day, with the spotlight now on Switch games arriving this winter. The broadcast kicked off at 3pm UK time, promising a flurry of updates on key franchises and a handful of hotly anticipated launches coming in the next few months.

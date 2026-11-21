@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/diablo-5-announced-blizzcon-2026-spring-2029"
+rejected: true
 ---
 
 Blizzard has officially unveiled **Diablo 5**, confirming the next chapter in its legendary action-RPG franchise will arrive in **spring 2029**. The announcement, made during the opening ceremony of **BlizzCon 2026**, teases a dramatic new direction for the series—this time, evil has already won and Sanctuary is in ruins.

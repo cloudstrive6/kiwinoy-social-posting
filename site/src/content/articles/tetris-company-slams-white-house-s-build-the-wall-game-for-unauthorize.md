@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/the-tetris-company-confirms-it-had-nothing-to-do-with-the-white-houses-racist-rip-off-we-believe-in-the-power-of-connection-and-bringing-people-together-not-dividing-them/"
+rejected: true
 ---
 
 In a recent move that has sparked major backlash, the **White House launched an arcade section on its website** featuring re-skinned versions of popular games, including a Tetris-inspired clone called **'Build the Wall.'** The game, centered on stacking blocks to fend off a 'zombie border siege' at the 'Southern Border,' was met with swift disapproval from both industry figures and the public for its political messaging.

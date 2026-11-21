@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/new-avengers-doomsday-art-has-fans-speculating-about-a-major-plot-detail/"
+rejected: true
 ---
 
 **Avengers: Doomsday** continues to generate buzz and speculation with its tantalizing teasers and new promotional art, ramping up fan theories across the MCU community. With **Robert Downey Jr. confirmed as Doctor Doom** and **Chris Evans returning as Steve Rogers**, the movie is already loaded with mystery—especially as both characters’ returns raise major questions about the fallout of Avengers: Endgame and the nature of their roles in Doomsday’s unfolding plot.

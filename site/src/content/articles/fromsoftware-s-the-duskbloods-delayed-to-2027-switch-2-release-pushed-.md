@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/fromsofts-switch-2-exclusive-the-duskbloods-has-been-delayed-into-2027"
+rejected: true
 ---
 
 FromSoftware’s next ambitious project, **The Duskbloods**, has officially shifted its release window from **2026 to an unspecified date in 2027**. The action game, which blends elements of Bloodborne, Sekiro, and Dark Souls while introducing jetpacks and dinosaurs, is now targeting a later launch exclusively for **Nintendo Switch 2**.

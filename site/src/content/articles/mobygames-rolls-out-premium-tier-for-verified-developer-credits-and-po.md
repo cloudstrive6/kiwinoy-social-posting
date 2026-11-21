@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/mobygames-professional-developer-credits-portfolio"
+rejected: true
 ---
 
 MobyGames, the well-known video game database, is stepping up its offerings with **MobyGames Professional**, a new **premium tier that enables developers to claim their game credits and customize personal portfolio pages**. Available now after a beta phase earlier this year, the full launch is scheduled for this autumn. 

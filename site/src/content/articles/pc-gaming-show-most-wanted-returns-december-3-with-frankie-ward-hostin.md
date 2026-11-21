@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/events-conferences/award-winning-presenter-frankie-ward-returns-to-bring-you-this-years-pc-gaming-show-most-wanted/"
+rejected: true
 ---
 
 The PC Gaming Show: Most Wanted, sponsored by Pot Noodle, is almost here. The showcase airs on **December 3** and will count down the **20 Most Wanted** games, with award-winning presenter **Frankie Ward** returning to host the main show.

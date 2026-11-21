@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/no-law-hands-off-preview-gamescom-cyberpunk-deus-ex-biggest-problem"
+rejected: true
 ---
 
 Sometimes a game clicks instantly, and at Gamescom, **No Law**—the new cyberpunk FPS from Swedish developer **Neon Giant**—did just that. While cyberpunk settings are far from new, No Law promises to shake up the formula, combining smart, immersive sim design with a world that stands out both visually and mechanically. Players step into the shoes of **Grey Harkner**, a retired military man forced back into action, exploring the mysteries and power struggles unfolding in the city of Port Desire.

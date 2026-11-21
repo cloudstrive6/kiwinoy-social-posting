@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/comics/news/the-marvel-winter-break-special-is-bringing-winter-fun-to-the-masses-first-look-exclusive/"
+rejected: true
 ---
 
 Marvel is heading into the holidays with a frosty one-shot. **Marvel Winter Break Special 2026 #1** goes on sale **December 30, 2026**. It collects **four stories** and includes a Spider-Man adventure co-written by hockey player **Carly "CJ"** of the **Women Professional Hockey League**.

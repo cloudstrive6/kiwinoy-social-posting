@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/9-years-after-the-last-chapter-new-blade-runner-2099-trailer-confirms-the-next-story-of-the-franchise-watch/"
+rejected: true
 ---
 
 Blade Runner 2099 has revealed its big final trailer, just weeks before the series premieres on Prime Video. All **eight episodes** will be available on **November 25, 2026**, bringing the sci-fi franchise to television for the first time.

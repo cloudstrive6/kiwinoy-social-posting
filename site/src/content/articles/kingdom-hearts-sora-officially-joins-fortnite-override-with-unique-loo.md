@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/09/heres-your-first-look-at-kingdom-hearts-sora-as-he-joins-fortnite-this-week"
+rejected: true
 ---
 
 The worlds of Fortnite and Kingdom Hearts are finally colliding, as **Sora from Kingdom Hearts officially joins Fortnite Override this week**. Epic Games has lifted the curtain on Sora’s Fortnite appearance, giving the fan-favorite hero a new look that blends the signature Kingdom Hearts aesthetic with Fortnite’s vibrant and playful art direction.

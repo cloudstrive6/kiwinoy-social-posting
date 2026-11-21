@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/phantom-blade-zero-update-patch-notes-november-4/"
+rejected: true
 ---
 
 **Phantom Blade Zero’s** debut at the end of October was met with enthusiasm from both critics and players, and now it’s received its first post-launch update on **PS5 and PC**. Developer S-Game Studio has started to address early feedback with a new patch, giving fans their first taste of the game’s evolving roadmap since release.

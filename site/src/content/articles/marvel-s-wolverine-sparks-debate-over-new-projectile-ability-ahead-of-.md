@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/a-new-wolverine-ps5-projectile-move-has-marvel-fans-divided-but-there-is-comic-precedence/"
+rejected: true
 ---
 
 Marvel’s Wolverine is set to hit PlayStation 5 on **September 15**, and anticipation is at a fever pitch. Insomniac Games is bringing its signature single-player superhero style to Logan, promising fans an original action-adventure packed with exactly the kind of close-quarters ferocity you’d expect. But recent gameplay reveals have introduced a twist that’s splitting the fanbase—an unexpected projectile attack.

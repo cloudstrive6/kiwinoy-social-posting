@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/a-major-marvel-team-needs-to-be-in-avengers-doomsday-because-they-could-help-in-secret-wars/"
+rejected: true
 ---
 
 **Avengers: Doomsday** is primed to rival Endgame as the biggest live-action superhero movie yet, setting the stage for an even larger sequel in Secret Wars. While its title hints at disaster, the film is confirmed to be far more than just another Avengers team-up — with the **X-Men, Fantastic Four, Black Panther’s Wakandans, and the Time Variance Authority** all joining the fight alongside both classic and new Avengers rosters. But the Multiverse Saga’s recent focus on Marvel’s teenage heroes has fans watching for one more pivotal group to join the fray.

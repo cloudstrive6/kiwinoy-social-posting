@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/polyarc-moss-studio-closure-vr-industry-2026"
+rejected: true
 ---
 
 **Polyarc, the Seattle-based studio known for the beloved VR series Moss, has officially closed down after nearly 12 years of game development.** The announcement was made through a farewell post on the studio’s official LinkedIn account, signaling the end of an era for a team that brought immersive storybook adventures to virtual reality and beyond. The message expressed gratitude to both the team and fans, calling the studio’s journey a "joyous rollercoaster" and reflecting pride in their work. 

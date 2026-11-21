@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/cyberpunk-2077-movie-not-retelling"
+rejected: true
 ---
 
 CD Projekt Red has clarified its approach to the long-anticipated live-action **Cyberpunk 2077 movie**, revealing that the film will explore an original story set within the iconic universe. The studio emphasized that a **direct adaptation of the video game's plot is off the table**, ensuring this cinematic project will forge its own narrative path.

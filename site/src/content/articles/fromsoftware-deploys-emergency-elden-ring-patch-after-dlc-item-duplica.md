@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/elden-ring-patch-1-17-1-fix-tarnished-dlc-duplication-glitch"
+rejected: true
 ---
 
 Elden Ring is back in the spotlight with the arrival of its **Tarnished Edition on Switch 2**—and a surprise security scramble soon after. Alongside the debut of the long-anticipated Nintendo port, FromSoftware released a DLC pack on other platforms, bringing special content previously exclusive to the new Switch edition. But it didn’t take long for players to uncover a duplication exploit, giving rise to a wave of free DLC item sharing—even to those who hadn't purchased the add-on.

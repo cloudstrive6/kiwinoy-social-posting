@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/09/one-of-2026s-best-rated-ps5-games-is-out-today-and-you-probably-dont-even-know-it"
+rejected: true
 ---
 
 A surprise hit has landed on PS5 today: **Well Dweller**, a dark fairy-tale Metroidvania crafted by solo developer Kyle Thompson, is now available and already boasts **some of the highest review scores of 2026**. With a **Metacritic rating of 91** and an **Opencritic score of 90** after 16 reviews, Well Dweller has officially joined the ranks of the most acclaimed new releases this year.

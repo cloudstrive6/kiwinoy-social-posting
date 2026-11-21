@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.eurogamer.net/steam-achievement-sets-beta"
+rejected: true
 ---
 
 Valve has unveiled a sweeping update for Steam users with the beta launch of **Steam Achievement Sets**, a feature that lets game developers group achievements into customizable collections. As modern games continue to grow through ongoing DLC, expansions, and seasonal updates, Valve’s move aims to make achievement hunting more rewarding and far less confusing for both completionists and casual players alike.

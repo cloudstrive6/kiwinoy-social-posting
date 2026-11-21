@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/insomniac-denies-generative-ai-marvels-wolverine-bathroom-sign"
+rejected: true
 ---
 
 **Insomniac has responded to fan concerns about the use of AI-generated assets in Marvel’s Wolverine**, after a peculiar restroom sign in the game made waves on social media. The studio’s community director James Stevenson stepped in to dispel the rumors, firmly stating that the asset in question was not produced using AI tools, but was instead the result of a UV map bug. Stevenson assured players that a fix for the sign is on the way and reinforced that there are “no AI generated assets in Marvel’s Wolverine.”

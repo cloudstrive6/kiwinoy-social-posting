@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/the-russo-brothers-name-classic-60s-movie-as-inspiration-for-avengers-doomsday-its-not-a-superhero-film/"
+rejected: true
 ---
 
 With **Avengers: Doomsday** on the horizon, Marvel fans are buzzing about the movie’s production—and whether it can live up to sky-high expectations. The project has recently come into the spotlight again following reports of **late-game reshoots**, as directors **Joe and Anthony Russo** begin shedding light on the creative vision behind the highly anticipated film.

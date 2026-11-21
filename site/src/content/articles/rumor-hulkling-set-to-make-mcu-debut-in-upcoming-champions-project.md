@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/new-mcu-casting-rumor-adds-another-young-avengers-hero-sets-up-marvels-best-romance/"
+rejected: true
 ---
 
 The Marvel Cinematic Universe may be expanding its roster of young heroes even further, as a new rumor suggests **Hulkling is set to debut in the MCU**, potentially through the long-rumored **Champions** project. This development is generating buzz, especially as more members from Marvel's younger teams continue to appear on screen.

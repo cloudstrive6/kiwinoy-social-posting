@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/xbox-elite-series-3-controller-leak-hall-effect-tmr-sticks-haptics"
+rejected: true
 ---
 
 The **unannounced Xbox Elite Series 3 controller** appears to be all but confirmed following another significant leak—this time thanks to details unearthed in Xbox’s own Design Lab website. The datamined info, which recently made its way to Reddit, offers up a clearer look at Microsoft’s next premium controller and the features it may be packing.

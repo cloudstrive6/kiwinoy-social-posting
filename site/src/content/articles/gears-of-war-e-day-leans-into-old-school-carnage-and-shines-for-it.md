@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gears-of-war-eday-review"
+rejected: true
 ---
 
 Gears of War: E-Day hurls itself back to the bloody origins of Sera with an unapologetic focus on what the series does best: frantic firefights, savage melee action, and cover-based mayhem. **Rather than reinventing itself**, E-Day delivers an experience packed with the trademark 'braindead machismo' and visceral thrills that defined the original trilogy, all amid environments that are literally being torn apart—fitting for a game centered on the Locusts' first emergence.

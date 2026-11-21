@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.eurogamer.net/marvel-wolverine-sales-ps5-physical-controversial-reviews"
+rejected: true
 ---
 
 Marvel’s Wolverine has stormed out of the gate, proving the old adage about adamantium resilience true. **In only its first three days, Insomniac Games’ latest superhero outing has moved approximately 1.9 million copies**, shrugging off mixed reviews and meme-fueled debates along the way. This early haul already makes Wolverine one of PlayStation Studios’ biggest launches this year, leaving titles like Saros, Marathon, and Marvel Tokon trailing behind.

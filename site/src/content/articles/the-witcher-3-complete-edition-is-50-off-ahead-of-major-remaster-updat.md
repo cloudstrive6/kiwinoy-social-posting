@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.pushsquare.com/news/2026/09/buy-the-witcher-3-for-50percent-off-on-the-ps-store-now-get-its-ps5-remaster-for-free-next-week"
+rejected: true
 ---
 
 If you've somehow missed out on one of the most celebrated RPGs of all time, now is the perfect time to join Geralt of Rivia's adventure. **The Witcher 3: Complete Edition is currently 50% off on the PlayStation Store**, dropping the price to **$24.99/£17.49** for a limited time. Even better, PlayStation owners who purchase this edition will **automatically receive a free upgrade to the remastered version** launching on **September 29**.

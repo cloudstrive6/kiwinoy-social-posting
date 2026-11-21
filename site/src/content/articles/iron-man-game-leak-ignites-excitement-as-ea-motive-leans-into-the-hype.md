@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/ea-motives-iron-man-game-reveal-didnt-go-as-planned-but-the-leak-has-marvel-fans-more-excited-than-ever"
+rejected: true
 ---
 
 Marvel fans have been hungry for updates on EA Motive Studio's long-awaited Iron Man game, and this week they finally got a taste—albeit in an unexpected way. **A gameplay trailer leaked online, offering the first substantial look at the project** and sparking widespread excitement across social media. Instead of fighting the leak, **EA responded with humor and transparency**, creating an official Twitter/X account and posting a message that quickly raked in millions of views and positive reactions. Their post read, 'Well, that didn't go as planned. But now you know, and we've got a lot more to show you. See you when we're ready,' matching Tony Stark’s own self-aware swagger.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/horror/this-remarkable-mod-transforms-the-most-frightening-horror-game-of-the-decade-into-mirrors-edge/"
+rejected: true
 ---
 
 **Amnesia: The Bunker**, already infamous for its suffocating horror and relentless monster, just got a genre-bending mod that throws expectations out the window. Modder **TiMan** has reimagined the game with all the wall-running, mantling, and bright cityscapes of **EA’s Mirror’s Edge**, swapping out the series’ signature dread for a surprisingly fresh (and disorienting) take on survival-horror action—all as part of Frictional Games’ 2026 modding jam themed ‘What is reality?’

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.ign.com/articles/insomniac-clears-the-air-after-marvels-wolverine-fans-confuse-lady-deathstrike-for-psylocke"
+rejected: true
 ---
 
 Marvel's Wolverine for PS5 is already making waves ahead of launch, but not just for its gritty gameplay or fan-favorite mutant. A short new trailer — released during Sony's recent State of Play — set social media abuzz after viewers mistook a mysterious villain wielding a glowing purple energy sword for a surprise reveal of Psylocke. Discussion quickly erupted across platforms like YouTube, Instagram, and X, sending speculation into overdrive.

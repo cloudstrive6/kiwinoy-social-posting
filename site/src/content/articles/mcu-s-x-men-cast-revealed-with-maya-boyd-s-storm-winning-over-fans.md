@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/the-mcus-storm-actress-just-proved-shes-ready-for-the-role-and-fans-love-the-energy-and-dedication/"
+rejected: true
 ---
 
 The wait is finally over: **Marvel Studios has officially unveiled its main X-Men lineup for the MCU**, confirming months of speculation and rumor. Recent confirmation of Sadie Sink taking on the role of Jean Grey in 'Spider-Man: Brand New Day' stoked the excitement, and now a much larger slate of mutants is set, with **Samara Weaving as Emma Frost**, **Adam Driver as Mister Sinister**, **Kit Connor as Cyclops**, **Inde Navarrette as Rogue**, **Christopher Abbott as Professor X**, and **Maya Boyd as Storm**. 

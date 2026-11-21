@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/steam-personal-calendar-full-release"
+rejected: true
 ---
 
 Steam’s newest feature, **Personal Calendar**, is officially out of beta and now available to all users. After nearly a year in testing, this innovative tool promises more personalized game recommendations by curating upcoming and recently released titles, all tailored to your unique interests—and presenting them in a release-date-driven, month-by-month overview right on the Steam store homepage.

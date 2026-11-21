@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.eurogamer.net/runescape-generative-ai-clone-taken-down"
+rejected: true
 ---
 
 A browser-based clone of **Old School RuneScape** called Elderwood, developed using GPT-6 Astra by former OpenAI employee Rohan Varma, has been pulled offline just days after it appeared. The game, which closely mirrored the look and feel of RuneScape, sparked swift backlash from the community and quickly drew the attention of Jagex, RuneScape’s developer, who issued a takedown notice.

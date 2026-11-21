@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/movies-tv/zach-cregger-had-to-dial-down-the-jokes-in-his-upcoming-resident-evil-film-because-test-screeners-thought-it-was-too-funny/"
+rejected: true
 ---
 
 **Director Zach Cregger has made significant changes to his upcoming Resident Evil movie, dialing back comedic elements after early test screenings.** Known for his unique blend of horror and humor in films like Weapons and Barbarian, Cregger’s initial cut of the survival horror adaptation leaned more into comedy than fans expected—but the feedback was immediate.

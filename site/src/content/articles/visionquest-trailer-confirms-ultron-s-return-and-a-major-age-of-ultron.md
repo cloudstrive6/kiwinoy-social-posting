@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/visionquests-avengers-age-of-ultron-reveal-will-completely-change-a-major-mcu-moment-and-for-the-better/"
+rejected: true
 ---
 
 Marvel fans expecting **VisionQuest** to simply pick up where WandaVision left off are in for a much bigger story. The first trailer for the Disney+ series confirms that the show will tackle not only what happened to White Vision after WandaVision, but also dig into profound questions about his identity, his memories, and his emotional ties to Wanda, Billy, and Tommy. These fan theories were spot on to some extent—especially as Tommy plays a key role and Vision is shown wrestling with who he really is and whether he ever truly had a family.

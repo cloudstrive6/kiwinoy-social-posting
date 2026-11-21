@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/call-of-duty/activision-serves-cease-and-desist-to-infamous-call-of-duty-cheat-maker-and-films-the-whole-thing-we-will-find-you/"
+rejected: true
 ---
 
 In its ongoing crusade against cheaters, **Activision has publicly served a cease-and-desist order to Elocarry**, a well-known creator of cheats for titles including Call of Duty. The move was highly visible, as the publisher posted a video to the official Call of Duty social accounts showing a legal representative delivering the order directly to Elocarry’s front door.

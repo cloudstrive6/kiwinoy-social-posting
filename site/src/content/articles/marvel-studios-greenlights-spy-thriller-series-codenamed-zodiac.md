@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/marvel/news/marvel-greenlights-spy-thriller-series-and-the-codename-might-reveal-an-answer-to-suicide-squad/"
+rejected: true
 ---
 
 Marvel Studios is taking another swing at the spy genre with a newly revealed project codenamed **'Zodiac.'** The series, confirmed to be in development, marks a return to the shadowy espionage corners of the MCU—a space that has been largely missing since S.H.I.E.L.D.'s disbandment in Captain America: The Winter Soldier. With the project officially greenlit, fans are starting to piece together what this mysterious endeavor might mean for the Marvel universe.

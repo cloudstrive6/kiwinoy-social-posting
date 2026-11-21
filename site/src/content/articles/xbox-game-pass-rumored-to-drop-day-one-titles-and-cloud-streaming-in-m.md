@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/xbox-game-pass-big-changes-2027-rumour-microsoft-responds"
+rejected: true
 ---
 
 **A fresh wave of rumors suggests Xbox Game Pass could see another big revamp, with the possible removal of some of its most sought-after features—including access to new games on launch day and the cloud streaming service.** According to an unconfirmed leak posted by ResetEra user Slayven, who previously revealed accurate Game Pass changes, Microsoft is reportedly planning to rework its Game Pass subscription tiers, potentially impacting how players access upcoming games and multiplayer experiences.

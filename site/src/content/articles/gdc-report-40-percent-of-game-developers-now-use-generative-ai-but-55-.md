@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gdc-report-40-percent-developers-generative-ai"
+rejected: true
 ---
 
 Generative AI use among game developers is climbing, even as opposition to it grows. The latest **State of the Game Industry report from the Game Developers Conference (GDC)** estimates that as many as **40 percent** of developers active in the industry now use gen-AI tools in their work, **up four percent** on last year's report.

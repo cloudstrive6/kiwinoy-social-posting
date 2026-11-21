@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.ign.com/articles/insomniac-finally-lets-players-toggle-wolverines-scent-trails-on-and-off"
+rejected: true
 ---
 
 Insomniac has rolled out a major new update for **Marvel’s Wolverine**, finally allowing players to toggle on or off the game’s contentious scent trails and other exploration hints. The update, which went live on **October 6**, introduces a new ‘Hint’ button mapped to the R3 stick on PlayStation 5 controllers, letting players decide in real time if they want the extra guidance or prefer to find their own way. 

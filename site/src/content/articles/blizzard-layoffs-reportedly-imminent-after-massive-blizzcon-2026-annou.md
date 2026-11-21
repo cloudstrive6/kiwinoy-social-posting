@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/blizzard-layoffs-xbox-cuts"
+rejected: true
 ---
 
 Just days after BlizzCon 2026 wowed fans with a string of high-profile game reveals, reports now suggest that **Blizzard layoffs are 'imminent'** under the Xbox umbrella. The word comes via Bloomberg's Jason Schreier, who discussed the situation on a recent episode of the 8-4 podcast, noting that the cuts could arrive any day now. This follows Blizzard's recent highly successful beta for **World of Warcraft: Forever** and comes as Microsoft is preparing a new round of job reductions across its Xbox division.

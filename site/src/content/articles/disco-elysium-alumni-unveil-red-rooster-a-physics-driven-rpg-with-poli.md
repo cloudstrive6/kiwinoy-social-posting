@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/summer-eternal-red-rooster-zaum-disco-like-incendiary-rpg"
+rejected: true
 ---
 
 A team packed with **former Disco Elysium talent** has reemerged under the banner of **Summer Eternal**, finally revealing their long-awaited new project: an "incendiary, physics-driven RPG" called **Red Rooster**. The announcement comes alongside the launch of the **Summer Eternal Anthology**, a hefty, 500-page physical book offering both a deep-dive into modern game development and a detailed look at Red Rooster's creative journey.

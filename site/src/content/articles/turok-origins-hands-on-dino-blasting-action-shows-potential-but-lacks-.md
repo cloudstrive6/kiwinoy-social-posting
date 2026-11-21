@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/previews/turok-origins-wont-rival-the-classics-as-a-bang-average-ps5-shooter"
+rejected: true
 ---
 
 **Turok: Origins** is set to bring prehistoric chaos to PS5 in **Spring 2027**, letting players team up with friends to take on sentient dinosaurs in a sprawling campaign. We spent some hands-on time with the game at Gamescom, and while the premise channels that Saturday morning cartoon energy, our early demo left us mixed on whether the gameplay can live up to its dino-sized promise.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/comics/feature/x-men-the-animated-series-is-crossing-over-with-its-underrated-successor-thanks-to-doomsday/"
+rejected: true
 ---
 
 Marvel is set to celebrate the impending arrival of Avengers: Doomsday, the highly anticipated first part of the Marvel Cinematic Universe’s two-part adaptation of Jonathan Hickman's Secret Wars, with a series of special tie-in comics. One of the biggest highlights is the upcoming "Incursions" series—one-shot issues designed to showcase epic clashes between legendary alternate realities. Among them: a long-awaited crossover battle between the colorful world of X-Men '92 and the fan-favorite cast of X-Men: Evolution.

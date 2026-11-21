@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/avengers-doomsdays-wildest-loki-theory-looks-much-more-likely-after-new-footage/"
+rejected: true
 ---
 
 Brand-new footage from **Avengers: Doomsday** debuted during the 2026 World Series, and immediately set the Marvel fandom abuzz. As fans dove into the latest clips, debates erupted over a couple of intriguing moments—most notably a scene where Scott Lang calls Steve Rogers "Captain America" in front of Sam Wilson, and another charged exchange between Steve and Thor that has viewers raising their eyebrows.

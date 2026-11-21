@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/the-blood-of-dawnwalker-dev-confirms-new-game-plus-is-on-the-way"
+rejected: true
 ---
 
 **The Blood of Dawnwalker** is one of September’s biggest RPG releases, and fans hoping for a good reason to dive in again are in luck: the director has confirmed **a New Game Plus mode is on the way**. While the story already packs plenty to explore, this new feature aims to boost replayability for dedicated players eager to experience every corner of this dark fantasy adventure.

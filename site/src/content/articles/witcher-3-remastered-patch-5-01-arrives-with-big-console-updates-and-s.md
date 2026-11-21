@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/witcher-3-remastered-patch-bloom-console-performance-switch-2"
+rejected: true
 ---
 
 **CD Projekt Red has just pushed out a major update for The Witcher 3 Remastered, delivering a suite of new visual options and key fixes across PC, PlayStation 5, and Xbox Series X/S.** Players can now disable lighting features like Bloom on consoles, addressing feedback about over-bright visuals since the remaster’s launch. The patch also straightens out some quirky bugs and improves performance for returning fans of the beloved RPG.

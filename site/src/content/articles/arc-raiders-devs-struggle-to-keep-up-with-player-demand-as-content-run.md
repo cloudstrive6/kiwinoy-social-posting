@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/third-person-shooter/arc-raiders-executive-producer-admits-its-developers-couldnt-keep-pace-with-the-players-and-their-need-for-content-but-promises-frozen-trail-as-the-answer/"
+rejected: true
 ---
 
 Arc Raiders launched with high expectations, but just months after release, dedicated players have already outpaced the game’s updates. **Embark Studios**, the team behind the sci-fi shooter, admits they underestimated the speed and appetite of their community, who quickly blew through Arc Raiders' expeditions and tasks, leaving many craving more content and progression.

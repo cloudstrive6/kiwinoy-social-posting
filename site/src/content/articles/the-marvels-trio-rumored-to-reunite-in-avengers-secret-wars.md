@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/when-captain-marvel-ms-marvel-will-return-in-the-mcu-payoff-that-post-credits-scene-according-to-new-report/"
+rejected: true
 ---
 
 After a challenging period for the MCU since Avengers: Endgame, some projects have drawn particular criticism—including **2023's The Marvels**. That film brought together **Captain Marvel, Ms. Marvel, and Monica Rambeau**, hinting at a powerful new superhero team-up. Despite the exciting setup, fans haven't seen these characters appear again, and none are currently confirmed for **Avengers: Doomsday**. But new rumors suggest their story might not be over just yet.

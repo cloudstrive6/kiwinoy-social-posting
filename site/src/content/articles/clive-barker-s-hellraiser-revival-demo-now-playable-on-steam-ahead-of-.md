@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/clive-barkers-hellraiser-revival-demo-scarlet-church-trailer"
+rejected: true
 ---
 
 **Clive Barker's Hellraiser: Revival**, the highly anticipated horror game, has released a brand new playable demo on Steam just weeks ahead of its full launch on **October 8, 2026**. Alongside the demo, fans can check out the latest trailer, titled **Scarlet Church**, offering a grisly glimpse into the game’s dark themes and the cult at its center. Viewer discretion is definitely advised—the trailer, even in its censored form, is loaded with gore, violence, and mature content true to the Hellraiser legacy.

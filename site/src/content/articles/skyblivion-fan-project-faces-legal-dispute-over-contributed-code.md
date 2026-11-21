@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/skyblivion-former-volunteer-legal-threats"
+rejected: true
 ---
 
 **Skyblivion**, the ambitious fan remake that brings The Elder Scrolls IV: Oblivion to life in Skyrim’s engine, is grappling with internal strife. The project, developed by volunteers under the TES Renewal Project banner, now faces a potential lawsuit after a contributor who departed the team objected to the use and maintenance of their code within the project.

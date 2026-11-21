@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/undead-labs-xbox-layoffs-state-of-decay-3"
+rejected: true
 ---
 
 Undead Labs has spoken out about the future of **State of Decay 3** after buying back its independence from Xbox last month. The studio's head, Phillip Holt, confirmed that while the separation has prompted some painful layoffs, the team is still on track to deliver the anticipated co-op zombie survival game—and that its decision-making now responds only to its audience, not a corporate parent.

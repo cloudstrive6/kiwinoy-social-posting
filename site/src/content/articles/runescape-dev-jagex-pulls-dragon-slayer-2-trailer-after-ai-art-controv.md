@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/mmo/runescape-dev-apologises-after-runefest-debut-of-an-ai-generated-six-fingered-character-thats-pretty-hard-to-explain-away/"
+rejected: true
 ---
 
 RuneScape developer **Jagex has taken down the trailer for its upcoming Dragon Slayer 2 quest** after eagle-eyed fans noticed something unusual: a player character sporting six fingers and oddly shaped, sneaker-like armour shoes—the latest red flag pointing to the use of generative AI art in official materials. The trailer, showcased during this year's RuneFest in Birmingham, quickly became the center of online discussion as fans flagged these telltale signs across social media.

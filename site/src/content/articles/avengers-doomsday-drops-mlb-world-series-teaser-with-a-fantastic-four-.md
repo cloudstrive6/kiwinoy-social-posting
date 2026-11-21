@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/new-avengers-doomsday-footage-revealed-the-biggest-difference-in-the-fantastic-fours-earth/"
+rejected: true
 ---
 
 Marvel is pulling out all the stops for **Avengers: Doomsday**, dropping an exclusive trailer during the MLB World Series that’s packed with both superpowered surprises and a clever nod to baseball history. The spot shines a light on both real-life baseball legends—**Bryce Harper, Freddie Freeman, Jacob Misiorowski, Junior Camiero, and Randy Arozarena**—and the Fantastic Four, with alternate universe stakes front and center. In this fresh take, viewers meet the team’s Earth 828 counterparts, where fan favorites like **Reed Richards (Pedro Pascal), Ben Grimm (Ebon Moss-Bachrach), and Johnny Storm (Joseph Quinn)** take the field for a Dodgers team that famously never left Brooklyn.

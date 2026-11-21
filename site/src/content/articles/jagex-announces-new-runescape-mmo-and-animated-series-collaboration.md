@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/jagex-runescape-4-mmo-unreal-engine-animated-series-moistcr1tikal"
+rejected: true
 ---
 
 Jagex has unveiled a major expansion for its iconic MMO universe, announcing a **fourth MMO set in the RuneScape series** and a **new animated adaptation** during RuneFest in Birmingham. The new game, tentatively referred to as RS4, marks the next era for RuneScape fans, while the animated project is being developed in collaboration with YouTuber Charlie "MoistCr1TiKaL" White and LA-based Lyrical Media.

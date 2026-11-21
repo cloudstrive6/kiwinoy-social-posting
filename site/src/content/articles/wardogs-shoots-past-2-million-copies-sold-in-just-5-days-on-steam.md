@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/wardogs-sells-2-million-copies-in-5-days-as-early-access-shooter-blows-up-on-steam"
+rejected: true
 ---
 
 Bulkhead’s tactical first-person shooter **Wardogs** has become an instant sensation, moving **over 2 million copies within five days** of its release in Early Access on Steam. Launching on **September 10**, the game immediately became one of Valve’s most-played titles, topping out at 428,666 concurrent players. The game sold **1 million copies in its first day** and **1.25 million by day two**, cementing its status as a breakout hit.

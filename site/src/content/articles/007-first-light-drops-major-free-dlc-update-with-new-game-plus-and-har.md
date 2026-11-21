@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/007-james-bond-first-light-free-dlc"
+rejected: true
 ---
 
 **007 First Light is getting a substantial free DLC update today, bringing a slew of new features and gameplay enhancements to IO Interactive’s critically acclaimed Bond title.** The Extended Operations update answers player requests by introducing New Game Plus, a new difficult 00 mode, a robust photo mode, two new TacSim mission challenges, refined weapon handling, and notable enemy AI tweaks—all at no extra cost.

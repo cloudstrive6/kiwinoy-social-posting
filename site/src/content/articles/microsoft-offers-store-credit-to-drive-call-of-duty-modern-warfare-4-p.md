@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/call-of-duty-modern-warfare-4-pre-order-xbox-5-usd-credit"
+rejected: true
 ---
 
 Microsoft has rolled out a surprise incentive for Call of Duty fans looking to pre-order **Modern Warfare 4**, with a limited-time offer of **store credit** for those who secure their copies on **Xbox Series X/S or PC via the Microsoft Store or Xbox app**. Those who pre-order are eligible for **$5 / £4 / €5** in store credit, directly usable across the Microsoft and Xbox digital storefronts.

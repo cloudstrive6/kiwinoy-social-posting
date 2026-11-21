@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/10/doctor-doom-invisible-woman-join-marvel-cosmic-invasion-in-dlc-pack-next-month"
+rejected: true
 ---
 
 **Marvel Cosmic Invasion** fans, get ready: publisher Dotemu has officially detailed the game's second DLC, with the upcoming add-on titled **The Siege of Castle Doom** set for release on **November 10, 2026**. The new content not only expands the roster with two legendary Marvel characters but promises to shake up gameplay with a mysterious new mode.

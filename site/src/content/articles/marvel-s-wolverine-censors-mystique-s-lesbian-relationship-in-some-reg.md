@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/marvels-wolverine-mystique-lgbtq-censored-middle-east"
+rejected: true
 ---
 
 Reports have emerged that **Marvel's Wolverine** has censored depictions of Mystique's lesbian relationship and marriage to Tyger in certain regions, most notably in the Middle East. Players on Reddit and social media have shared images showing that in these versions of the game, references to the couple are altered or hidden, sparking conversation about regional content modification in major AAA titles.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/marvel-in-talks-with-backrooms-star-for-big-role-in-new-x-men-reboot/"
+rejected: true
 ---
 
 The upcoming **Marvel Cinematic Universe X-Men reboot** continues to build its roster, and now new rumors suggest that **Renate Reinsve**, star of Backrooms, could be the next major addition. Reports indicate the actress has met with Marvel about potentially taking on the part of Moira MacTaggert, a central figure from the X-Men comics whose mutant status was revealed in recent years.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.pcgamer.com/games/sim/thief-designer-randy-smith-evergreen-refused-to-work-for-xbox-because-it-would-be-like-walking-past-some-stakes-with-human-skulls-on-them-and-pretending-its-probably-fine-in-this-direction/"
+rejected: true
 ---
 
 Veteran game designer **Randy Smith**, best known for his role in the creation of the **Thief** series, faced a pivotal moment after years of pitching a unique, nonviolent RPG concept. Describing what he calls a "lowest moment" in his search for backing, Smith was approached by a Microsoft-backed Xbox studio—just as broader industry layoffs were shaking the gaming world.

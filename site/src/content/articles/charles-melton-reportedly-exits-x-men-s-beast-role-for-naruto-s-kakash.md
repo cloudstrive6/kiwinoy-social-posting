@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/x-men-mcu-casting-report-claims-beast-frontrunner-is-officially-out-heres-who-is-left/"
+rejected: true
 ---
 
 **Charles Melton is no longer expected to play Beast in Marvel's new X-Men film, with unconfirmed reports pointing to a major role switch: Melton has apparently joined Lionsgate's live-action Naruto movie as Kakashi Hatake, leaving the iconic mutant spot open for another rising star.** Industry insider Knight Gambit (Caleb Williams) ignited the speculation, suggesting this casting shakeup brings a new face into the X-Men fold and upends earlier expectations around Melton’s Marvel involvement.

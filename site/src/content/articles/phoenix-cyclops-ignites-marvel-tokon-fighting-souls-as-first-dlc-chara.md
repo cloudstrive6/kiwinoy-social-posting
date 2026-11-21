@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/11/phoenix-cyclops-is-available-now-as-marvel-tokon-receives-major-ps5-patch"
+rejected: true
 ---
 
 **The first post-launch DLC fighter, Phoenix Cyclops, has officially entered the arena in Marvel Tokon: Fighting Souls as of November 2, 2026.** Arc System Works isn’t just rolling out a fresh character — a major update is also live, ushering in improvements across online play, game balance, and more. 

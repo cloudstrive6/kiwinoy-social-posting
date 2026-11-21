@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/warhammer-40k-dark-heresy-owlcat-crpg"
+rejected: true
 ---
 
 Owlcat Games has announced that its tactical role-playing sequel **Warhammer 40,000: Dark Heresy** will launch on **28 January 2027** for **PC, PlayStation 5 and Xbox Series S/X**. A **Switch 2** release date will be provided "at a later date", according to a press release.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/rpg/the-spiritual-successor-to-classic-jrpg-wild-arms-has-seemingly-been-cancelled-four-years-after-its-kickstarter-raised-nearly-usd3-million/"
+rejected: true
 ---
 
 The journey of **Armed Fantasia**—the highly anticipated spiritual successor to the classic JRPG series Wild Arms—has come to an abrupt end. **Four years after a Kickstarter campaign raised almost $3 million**, publisher Digital Bros, parent of 505 Games, has revealed it will discontinue development on the title. The announcement arrives as part of a broader decision affecting multiple projects under the company's umbrella.

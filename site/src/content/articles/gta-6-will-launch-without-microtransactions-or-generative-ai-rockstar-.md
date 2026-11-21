@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gta-6-microtransactions-generative-ai-rockstar"
+rejected: true
 ---
 
 **Rockstar Games has officially confirmed that Grand Theft Auto 6 will launch without microtransactions or generative AI integration**. The announcement came during a group interview ahead of the GTA 6: Extended Look event, where the development team addressed mounting questions about the highly anticipated open-world sequel’s design philosophies and monetization plans.

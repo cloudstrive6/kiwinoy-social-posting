@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/comics/list/7-supernatural-mcu-characters-we-have-to-have-in-the-midnight-sons-1-is-long-overdue/"
+rejected: true
 ---
 
 The MCU is preparing to dive into darker territory, as a **Midnight Sons movie is in development**. The groundwork for this supernatural-focused team appears to be building up, especially with the upcoming **Ghost Rider movie featuring Ryan Gosling as Johnny Blaze**. However, Marvel’s exploration of the supernatural is anything but new, with multiple properties introducing mysterious and monstrous characters over the years.

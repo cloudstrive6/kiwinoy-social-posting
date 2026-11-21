@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/action/wolverine-review-roundup-frankly-were-starting-to-feel-a-little-better-about-the-whole-playstation-5-exclusive-thing/"
+rejected: true
 ---
 
 Insomniac's long-awaited **Wolverine** game is finally out, and early impressions make it clear: it's not the smash hit many hoped for. While the game has its strengths—particularly in the portrayal of Logan—it ultimately doesn't reach the greatness expected from one of **Sony's most high-profile PlayStation 5 exclusives**. For fans and for PlayStation, which has faced a run of troubling headlines recently, this lukewarm reception comes at a tough moment.

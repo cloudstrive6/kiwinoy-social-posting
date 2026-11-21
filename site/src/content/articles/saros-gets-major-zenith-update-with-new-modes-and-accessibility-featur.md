@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/saros-update-zenith-ps5-new-game-plus"
+rejected: true
 ---
 
 The PS5 shooter Saros has rolled out its significant Zenith update, introducing several features geared toward making the game both **more accessible for newcomers** and **more replayable for experienced players**. Key additions include a new quickfire boss-rush mode, a New Game Plus option, an array of gameplay modifiers, and a highly-requested slow-motion feature that lets players fine-tune the game speed to their preference.

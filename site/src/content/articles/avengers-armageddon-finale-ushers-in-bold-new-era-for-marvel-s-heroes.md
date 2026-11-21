@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/comics/review/avengers-armageddon-5-is-the-perfect-way-to-kick-start-a-new-era-review/"
+rejected: true
 ---
 
 The conclusion of **Avengers: Armageddon** has landed, and while it wraps up a universe-shaking event, it positions itself as much more than just an ending. In the wake of Red Hulk’s explosive rise as a major villain, Marvel's flagship team faces consequences that reach far beyond a single battle, pushing both characters and the universe in an unexpected direction. This finale isn’t so much the last chapter as the launch point for a radically new era—one where the aftermath will define the future of the Marvel Universe.

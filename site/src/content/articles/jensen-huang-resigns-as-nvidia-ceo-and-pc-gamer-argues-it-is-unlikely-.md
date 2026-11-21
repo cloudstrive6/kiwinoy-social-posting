@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/hardware/graphics-cards/jensen-huang-leaving-nvidia-is-not-a-good-thing-for-pc-gaming-and-ill-tell-you-why/"
+rejected: true
 ---
 
 **Jensen Huang** has resigned from his position as **Nvidia CEO**, ending a run as the leather-jacketed face of a company that has long been central to PC gaming hardware. The news has already drawn a split reaction from PC gamers on social media: some are shocked, some are indifferent, and some appear to be celebrating.

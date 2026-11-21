@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/galaxies-showcase-2026-how-where-to-watch"
+rejected: true
 ---
 
 **The Galaxies Showcase is officially back on October 15**, and this year it’s pulling out all the stops with its most ambitious line-up so far. Featuring **over 40 studios and publishers**, the annual digital event aims to highlight some of the most exciting new projects across the gaming landscape, from blockbuster franchises to innovative indie gems. The stream will be hosted by Jane Douglas, well-known for her work with Outside Xbox, and promises a packed evening of reveals and announcements for dedicated fans and newcomers alike.

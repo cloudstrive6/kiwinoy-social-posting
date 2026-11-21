@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/double-fine-tim-schafer-xbox-greedy"
+rejected: true
 ---
 
 **Double Fine founder Tim Schafer has opened up about the studio's recent move to independence, the shifting landscape at Xbox, and his hopes for the future of the games industry.** The creator behind Day of the Tentacle and Psychonauts recently discussed these topics in a wide-ranging interview, giving fans insight into why Double Fine and Microsoft parted ways and what comes next for the San Francisco-based team.

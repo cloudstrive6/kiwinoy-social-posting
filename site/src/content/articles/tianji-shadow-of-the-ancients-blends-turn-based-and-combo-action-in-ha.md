@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/09/turn-based-rpg-fans-will-want-to-keep-an-eye-on-this-new-ps5-adventure-from-taiwan"
+rejected: true
 ---
 
 A fresh RPG out of Taiwan has just been revealed for PlayStation 5, and it’s turning heads with its striking visuals and inventive combat mechanics. **Tianji: Shadow of the Ancients** from developer **Justdan** is set for a global release next year, and its first trailer already sets it apart in a crowded genre.

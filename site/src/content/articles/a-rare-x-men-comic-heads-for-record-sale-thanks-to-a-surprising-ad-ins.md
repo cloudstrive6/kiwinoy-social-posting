@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/collectibles/news/a-forgotten-x-men-first-appearance-is-suddenly-worth-a-small-fortune-but-theres-a-catch/"
+rejected: true
 ---
 
 For many fans, the X-Men seem like perennial Marvel icons, but their path to superstardom was far from straightforward. **The Shi'Ar Imperial Guard made their debut in X-Men #107 (1977),** but now, decades later, this once-overlooked comic is grabbing the spotlight for reasons that have little to do with the storyline or the characters themselves.

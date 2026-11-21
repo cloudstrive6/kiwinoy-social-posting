@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/fps/nightdive-is-reviving-the-iconic-trapezoid-big-box-for-thief-remastereds-special-edition-but-only-on-console/"
+rejected: true
 ---
 
 The legendary stealth classic Thief is making its return in Thief Remastered, and Nightdive Studios is celebrating with special physical editions. **Preorders for the remaster's physical release are now open**, featuring an homage to Thief’s iconic original '90s big box packaging—the unmistakable trapezoidal shape beloved by collectors. But there’s a catch: **these collector's editions are only available for Switch, Switch 2, and PS5**, with PC players left out of the equation.

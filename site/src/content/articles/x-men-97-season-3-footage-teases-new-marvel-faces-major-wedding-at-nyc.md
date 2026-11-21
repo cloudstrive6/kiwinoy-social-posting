@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/x-men-97-season-3-footage-confirms-more-mutants-and-a-major-marvel-plot-point-will-happen/"
+rejected: true
 ---
 
 X-Men '97 is still riding high after its acclaimed run, and Marvel just dropped fresh details at New York Comic Con that have fans buzzing. **Season 3 footage for X-Men '97 was unveiled, confirming that Marvel's animated revival isn’t slowing down, with new faces and classic mutants joining the roster.** The show's first two seasons set a high bar with near-perfect review scores, and it looks like the next chapter is ready to keep that streak alive.

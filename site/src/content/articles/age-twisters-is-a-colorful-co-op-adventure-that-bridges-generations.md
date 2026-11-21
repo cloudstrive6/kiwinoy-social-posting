@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/age-twisters-preview-gamescom"
+rejected: true
 ---
 
 Age Twisters, the latest title from **Piccolo Studios in Barcelona**, proves its whimsical nature is more than skin-deep. Highlighted at Gamescom, this engaging co-op puzzler gives players control of a grandfather and granddaughter who receive mysterious bracelets allowing them to **'twist' their ages at will**. Swapping between child, teenager, adult, or elder forms, both characters unlock unique abilities to solve accessible and playful puzzles.

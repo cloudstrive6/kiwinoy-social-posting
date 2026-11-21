@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/magic-the-gatherings-new-foundations-decks-back-in-stock"
+rejected: true
 ---
 
 Magic: The Gathering’s **Foundations Commander decks are back in stock at major retailers like Amazon** following weeks of tight supply since their **October 2, 2026** debut alongside the Reality Fracture set. Aimed at new and returning players, these five preconstructed decks offer affordable, easy-to-play entry points into Commander, the game’s most popular multiplayer format. Each deck features a mono-color, creature-themed strategy—think Angels, Dragons, Dinosaurs, Zombies, or artifact synergies.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PushSquare"
 sourceUrl: "https://www.pushsquare.com/news/2026/10/wolverine-ps5-sales-estimates-are-somewhat-soft-but-heres-why-im-not-worried"
+rejected: true
 ---
 
 Insomniac’s hotly anticipated action game **Marvel’s Wolverine** saw a respectable launch on PS5 last month, moving **around 2.16 million copies in September**. That’s enough for the game to claim the number two spot on the month’s PS5 sales charts, trailing only behind the inevitable powerhouse—**EA Sports FC 27**. But while strong, these numbers are drawing extra scrutiny given the hype and the reported scale of the project.

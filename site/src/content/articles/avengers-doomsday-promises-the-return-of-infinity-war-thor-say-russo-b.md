@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/news/avengers-doomsday-will-make-the-thor-character-change-fans-have-been-waiting-8-years-for/"
+rejected: true
 ---
 
 Thor has long been one of the MCU's most malleable heroes, adapting to drastically different tones as various directors have taken him in new directions. Now, with Avengers: Doomsday on the horizon, fans can expect a major course correction—Thor will be returning to the more serious, determined version last seen in Infinity War, according to the Russo brothers.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/paul-bettany-explains-how-visionquest-is-similar-to-wandavision-plus-new-look-at-ultron-and-the-ais/"
+rejected: true
 ---
 
 The third chapter in what’s being called **Wanda’s trilogy of Disney+ shows** is nearly here. **VisionQuest** arrives on October 14, set to continue the psychedelic and emotional journey that started with WandaVision and was followed by Agatha All Along. This time, Vision takes center stage, as the new series aims to unravel what became of the character after the dramatic finale of WandaVision.

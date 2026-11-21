@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/hardware/phantom-blade-zero-devs-say-the-game-needs-300-gb-of-free-space-for-the-pre-load-process-alongside-updated-system-requirements/"
+rejected: true
 ---
 
 The upcoming action RPG **Phantom Blade Zero** from S-Game is turning heads not just with eye-popping visuals, but with its unusually large storage requirements. Ahead of its release on **October 28**, the studio has revealed that while the game's **install size clocks in at a massive 145GB**, players will need **at least 300GB of free space** on their SSDs to complete the preload process.

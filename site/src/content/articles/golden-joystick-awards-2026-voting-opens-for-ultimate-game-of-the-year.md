@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/gaming-industry/events-conferences/the-golden-joystick-awards-ultimate-game-of-the-year-voting-is-a-go-with-games-like-crimson-desert-the-blood-of-dawnwalker-and-big-walk-all-on-the-docket/"
+rejected: true
 ---
 
 The **Golden Joystick Awards** have officially opened voting for their **Ultimate Game of the Year**, marking the 44th consecutive year of one of gaming's most beloved honors. With an impressive list of nominees—including some of the most talked-about releases of the year—fans have until **8 pm ET / 12 am GMT on October 30** to cast their votes and have their say in this hotly contested showdown.

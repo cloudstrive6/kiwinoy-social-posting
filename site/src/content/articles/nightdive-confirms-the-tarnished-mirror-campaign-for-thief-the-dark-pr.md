@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/thief-remastered-tarnished-mirror-campaign-confirmed-nightdive"
+rejected: true
 ---
 
 Nightdive Studios has officially confirmed **The Tarnished Mirror**, a brand new campaign for its upcoming **Thief: The Dark Project Remastered**. This announcement comes shortly after the campaign’s name was leaked through a set of Steam achievements, prompting Nightdive to drop a clever, self-aware teaser acknowledging the widespread speculation.

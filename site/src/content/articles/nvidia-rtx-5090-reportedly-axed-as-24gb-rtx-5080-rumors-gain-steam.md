@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/hardware/graphics-cards/schrodingers-gpu-set-for-an-early-2027-release-as-the-dead-alive-24-gb-rtx-5080-super-box-is-shaken-once-more/"
+rejected: true
 ---
 
 **Nvidia’s next-generation GPU lineup could look very different than expected, with mounting rumors that the flagship RTX 5090 may be dropped and a new high-memory RTX 5080 could be on the horizon.** According to recent industry chatter, the **RTX 5090 is rumored to be axed**, as Nvidia reportedly redirects its GB202 chips toward the professional RTX Pro lineup instead of the gaming-focused GeForce cards. Amid these changes, insiders suggest a 24GB variant of the RTX 5080 could debut as a replacement—potentially arriving as early as the first quarter of 2027.

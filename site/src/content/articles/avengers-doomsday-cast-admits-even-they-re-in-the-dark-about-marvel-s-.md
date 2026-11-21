@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/movies/news/avengers-doomsday-star-confirms-new-marvel-movie-shot-different-storylines-that-didnt-make-the-cut/"
+rejected: true
 ---
 
 Marvel fans are eagerly awaiting **Avengers: Doomsday**, but the film remains shrouded in more mystery than any previous MCU installment. Despite its December release on the horizon, details about the plot and even the cast are still tightly under wraps. Multiple actors involved have admitted they’re just as puzzled as fans about how the ambitious crossover will ultimately take shape.

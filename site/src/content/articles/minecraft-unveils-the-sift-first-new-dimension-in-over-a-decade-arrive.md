@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/minecraft-the-sift-new-dimension-2027"
+rejected: true
 ---
 
 A major chapter opens for Minecraft as Mojang officially reveals **The Sift**, a brand-new dimension joining the Overworld, Nether, and The End. This is the first time a new dimension has been introduced to the iconic sandbox game since The End arrived back in 2011, marking a milestone that fans have been waiting over **14 years** to see. Mojang made the announcement during Minecraft Live following a sneak peek at Minecraft Dungeons 2, where The Sift will make its debut.

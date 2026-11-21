@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/world-of-warcraft-forever-character-surnames-naughty"
+rejected: true
 ---
 
 World of Warcraft: Forever’s beta is already making waves among fans—**drawing in 'crazy' player numbers and sparking buzz for its new character naming features**. The update introduces a two-name system, meaning characters can now have both a forename and a surname, giving players way more room for creativity than ever before. As a result, the beta’s servers have quickly filled with a blend of inspired fantasy names and, predictably, a tidal wave of cheeky and risqué monikers.

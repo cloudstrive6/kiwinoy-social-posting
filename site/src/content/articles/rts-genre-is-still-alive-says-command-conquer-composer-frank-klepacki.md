@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://www.pcgamer.com/games/rts/legendary-composer-frank-klepacki-says-the-rts-genre-isnt-dead-but-he-would-like-to-see-devs-get-a-little-more-creative-with-it/"
+rejected: true
 ---
 
 Real-time strategy fans, take heart: **Frank Klepacki**, the celebrated composer behind iconic games like Eye of the Beholder 2 and Command & Conquer, believes the RTS genre is far from dead. While RTS dominance has faded since its heyday in the '90s, Klepacki maintains that the genre still has plenty of life—and he’s not alone, as a fresh wave of strategy titles and expansions hit the scene.

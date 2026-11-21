@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/third-person-shooter/arc-raiders-last-live-update-until-frozen-trails-releases-today-bringing-players-new-rubber-ducks-and-a-reminder-that-youve-one-month-to-spend-your-expiring-currency/"
+rejected: true
 ---
 
 Arc Raiders is back in the spotlight as **Update 1.45.0 goes live**, delivering a slew of improvements and fresh content to keep players engaged in the run-up to the much-anticipated Frozen Trails expansion. With this update, Embark Studios adds a new Raider Project, kicks off the fifth Expedition, introduces the Hornet Hunter Set, and tweaks the game's currency system—making this a must-play patch for active raiders.

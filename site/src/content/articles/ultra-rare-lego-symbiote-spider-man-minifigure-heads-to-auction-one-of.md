@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/collectibles/news/one-of-the-rarest-lego-spider-man-minifigures-is-headed-to-auction-it-has-a-very-special-comic-con-history/"
+rejected: true
 ---
 
 **A holy grail for LEGO and Marvel collectors is about to hit the auction circuit:** the ultra-rare LEGO Symbiote Suit Spider-Man minifigure, one of the earliest Marvel LEGO event exclusives, is being auctioned by Heritage. Originally handed out as a prize at **San Diego Comic-Con 2012**, this particular figure isn’t just a rare collectors’ piece — it represents a turning point for both LEGO’s and Marvel’s collaborative history. 

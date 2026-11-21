@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/gaming/news/marvels-blade-game-arkane-cancellation-close-report/"
+rejected: true
 ---
 
 Arkane Studios—the acclaimed team behind Dishonored and Deathloop—may be forced to close its doors, putting the much-anticipated Marvel's Blade game in jeopardy. **A new report claims Arkane has until November 13 to find a buyer** or face a complete shutdown, potentially scrapping years of development work on the superhero project.

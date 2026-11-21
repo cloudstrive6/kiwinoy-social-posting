@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "reports"
 sourceUrl: "https://comicbook.com/movies/feature/this-1978-superhero-movie-was-marvels-forgotten-attempt-to-bring-magic-to-television-it-almost-led-to-something-bigger/"
+rejected: true
 ---
 
 Long before Marvel Studios brought the Sorcerer Supreme to the big screen, **Doctor Strange made his first live-action appearance with a CBS television movie in 1978**. Starring Peter Hooten as the titular hero, the project was a bold attempt to introduce Marvel’s supernatural side to audiences more familiar with costumed crusaders and mild-mannered scientists.

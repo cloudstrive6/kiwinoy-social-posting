@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/metro-redux-next-gen-update-50-million-sales-metro-2039"
+rejected: true
 ---
 
 A major upgrade is on the way for **Metro 2033 Redux and Metro Last Light Redux**, with a free next-gen update launching **22nd October for PC** and **29th October for consoles**. This renewal comes as the Metro series marks a significant milestone, with over **50 million copies sold worldwide** since the original Metro 2033 made its debut sixteen years ago.

@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/no-mans-sky-forsaken-update-release-ipad-iphone"
+rejected: true
 ---
 
 **No Man's Sky** continues its ambitious expansion as it officially launches on **iPhone and iPad** today, adding Apple's mobile devices to the game's impressive roster of supported platforms. Developer Hello Games is marking the occasion with the rollout of its latest update, **Forsaken**, bringing seasonally spooky content and major feature enhancements to the sprawling space adventure across all systems.

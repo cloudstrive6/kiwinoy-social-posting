@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/mmo/new-final-fantasy-14-site-update-stabs-the-final-pin-into-my-conspiracy-board-leaving-me-99-9-percent-sure-i-know-what-the-new-physical-ranged-job-is/"
+rejected: true
 ---
 
 **Final Fantasy 14 fans have been eagerly dissecting every hint about the next big job debut, and it looks like the wait for concrete clues is over.** The latest update to the Patch 7.5 teaser site includes a new image of a character sporting what appears to be a crossbow on their back, an image many believe finally confirms the rumors of a crossbow-wielding ranged physical job joining the MMO’s expansive lineup.

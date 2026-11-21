@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/steam-game-submission-review-backlog-ai-slop-approval-delays"
+rejected: true
 ---
 
 More indie developers say they've been forced to delay upcoming releases because of **Steam's growing approvals backlog**, a relatively recent problem that's believed to stem from an influx of AI slop on the platform. Despite Valve's recent attempts to tighten submission rules, one week after the issue first surfaced the situation doesn't appear to have improved.
