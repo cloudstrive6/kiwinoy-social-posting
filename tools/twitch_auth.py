@@ -84,7 +84,8 @@ def main() -> int:
         return 1
     cid = sys.argv[1].strip()
     # From the clipboard (2026-11-21: a hidden prompt would not take a paste in the app's terminal).
-    input("Copy the Client Secret (New Secret, then the copy button), then press Enter here: ")
+    # getpass, not input (2026-11-21): a secret pasted here by mistake must not show on screen
+    getpass.getpass("Copy the Client Secret (New Secret, then the copy button), then press Enter here (do not paste): ")
     secret = clipboard_secret()
     if not secret:
         secret = getpass.getpass("Clipboard was empty or not a secret. Type or right-click paste it (hidden): ").strip()

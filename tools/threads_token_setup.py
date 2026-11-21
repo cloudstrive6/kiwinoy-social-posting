@@ -59,7 +59,8 @@ def get(path: str, params: dict) -> dict:
 
 
 def main() -> int:
-    input("Copy the Threads access token from the User Token Generator, then press Enter here: ")
+    import getpass  # not input(): a token pasted here by mistake must not show on screen
+    getpass.getpass("Copy the Threads access token from the User Token Generator, then press Enter here (do not paste): ")
     tok = clipboard_token()
     if not tok:
         print("The clipboard does not hold a Threads token (it starts with TH). Copy it again and rerun.")
