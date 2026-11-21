@@ -10,6 +10,7 @@ name: Analysis long-form (manual)
 #   audition: narrator auditions (Chirp 3 HD voices on the same excerpt, -14 LUFS).
 #   voice-setup: ElevenLabs credits and narrator check; deletes the voices named in "voices".
 #   voice-design: voices designed and scored to match a reference voice (tools/el_voice_design.py).
+#   voice-brief: narrator candidates designed from a written brief only (tools/el_voice_brief.py).
 #   narrate: full narration from data/analysis/<game>/edl.json (ElevenLabs "BOSS KG Narrator A"
 #           from 2026-11-13; older EDLs keep Chirp 3 HD Orus).
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
@@ -19,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-ab, narrate, render)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render)"
         required: true
         default: "inventory"
       game:
@@ -115,6 +116,11 @@ jobs:
           pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
           pip install --quiet resemblyzer
           python tools/el_voice_design.py
+      - name: ElevenLabs guide-style narrator candidates from a brief (voice-brief, 2026-11-21)
+        if: ${{ github.event.inputs.step == 'voice-brief' }}
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python tools/el_voice_brief.py
       - name: Blind narrator A/B, v2 against v4 (voice-ab, approved 2026-11-17)
         if: ${{ github.event.inputs.step == 'voice-ab' }}
         env:
