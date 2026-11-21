@@ -805,7 +805,9 @@ def resolve_part_lf(part: dict, beats: dict, p: Paths) -> dict:
         nxt = seq[ge + 1]["s"] if ge + 1 < len(seq) else last["start"] + last["seconds"]
         end = min(seq[ge]["e"] + 0.40, nxt - 0.05, last["start"] + last["seconds"])
     else:
-        end = last["start"] + last["seconds"]
+        # 2 frames short of the beat's end (2026-11-21): a cut ending exactly on the boundary took the
+        # next beat's first frame, and the end hold then froze on that unrelated shot (spider-man2-reels r05).
+        end = last["start"] + last["seconds"] - 2 / FPS
         if last["type"] == "narr" and seq:
             end = min(end, seq[-1]["e"] + 0.40)
     words = []
