@@ -346,15 +346,15 @@
      ],
      "picture": [
       {
-       "at": 17.54,
-       "until": 20.44,
+       "at": 20.166,
+       "until": 23.067,
        "clip": 1009,
        "in": 742.8,
        "why": "Wraith's call plays over gameplay HUD: derailment aftermath, Peter crawling up, before Wraith enters"
       },
       {
-       "at": 20.44,
-       "until": 22.96,
+       "at": 23.067,
+       "until": 25.5833,
        "clip": 1009,
        "in": 735.4,
        "why": "Peter's mask in the flames (no Wraith on screen during her own call)"
@@ -362,14 +362,14 @@
      ]
     }
    ],
-   "start": 68.97,
-   "end": 100.27,
+   "start": 72.7,
+   "end": 107.817,
    "flash_holds": {},
-   "seconds": 32.8,
+   "seconds": 36.62,
    "cuts": [
     [
-     68.97,
-     100.27
+     72.7,
+     107.817
     ]
    ],
    "description": "The Flame's last side mission ends with a symbiote in his hands and one name on Wraith's list. Side-story spoilers. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Carnage #Wraith",
@@ -380,67 +380,67 @@
      "cx": 0.5
     },
     {
-     "at": 1.625,
+     "at": 2.125,
      "cx": 0.55
     },
     {
-     "at": 3.375,
+     "at": 4.3417,
      "cx": 0.55
     },
     {
-     "at": 4.592,
+     "at": 5.9417,
      "cx": 0.5
     },
     {
-     "at": 6.592,
+     "at": 8.125,
      "cx": 0.55
     },
     {
-     "at": 8.842,
+     "at": 10.5917,
      "cx": 0.4
     },
     {
-     "at": 11.292,
+     "at": 13.275,
      "cx": 0.45
     },
     {
-     "at": 12.845,
+     "at": 14.825,
      "cx": 0.5
     },
     {
-     "at": 14.642,
+     "at": 16.875,
      "cx": 0.35
     },
     {
-     "at": 16.41,
+     "at": 18.8917,
      "cx": 0.3
     },
     {
-     "at": 17.535,
+     "at": 20.1583,
      "cx": 0.5
     },
     {
-     "at": 20.44,
+     "at": 23.0583,
      "cx": 0.52
     },
     {
-     "at": 22.975,
+     "at": 25.575,
      "cx": 0.55
     },
     {
-     "at": 24.925,
+     "at": 27.8083,
      "cx": 0.4
     },
     {
-     "at": 26.775,
+     "at": 29.9083,
      "cx": 0.5
     },
     {
-     "at": 28.06,
+     "at": 31.325,
      "cx": 0.55
     },
     {
-     "at": 29.36,
+     "at": 32.8083,
      "cx": 0.45
     }
    ],
@@ -472,15 +472,15 @@
      ],
      "picture": [
       {
-       "at": 20.375,
-       "until": 23.64,
+       "at": 19.283,
+       "until": 22.533,
        "clip": 1003,
        "in": 222.13,
        "why": "burst gameplay shows Miles's cape, reticle and a reward banner: Kraven from behind, Miles caged (clean cutscene)"
       },
       {
-       "at": 23.64,
-       "until": 24.45,
+       "at": 22.533,
+       "until": 23.35,
        "clip": 1003,
        "in": 225.4,
        "why": "the cage crate close-up"
@@ -488,14 +488,14 @@
      ]
     }
    ],
-   "start": 100.43,
-   "end": 134.34,
+   "start": 107.9,
+   "end": 139.83,
    "flash_holds": {},
-   "seconds": 35.41,
+   "seconds": 33.43,
    "cuts": [
     [
-     100.43,
-     134.34
+     107.9,
+     139.83
     ]
    ],
    "description": "A file hidden in a Hunter base after the credits has Kraven talking to Sasha Kravinoff about his children.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Kraven #EasterEgg",
@@ -506,51 +506,51 @@
      "cx": 0.4
     },
     {
-     "at": 1.815,
+     "at": 1.5417,
      "cx": 0.24
     },
     {
-     "at": 4.392,
+     "at": 3.7417,
      "cx": 0.62
     },
     {
-     "at": 6.065,
+     "at": 5.175,
      "cx": 0.48
     },
     {
-     "at": 8.625,
+     "at": 7.6917,
      "cx": 0.5
     },
     {
-     "at": 12.475,
+     "at": 11.475,
      "cx": 0.6
     },
     {
-     "at": 16.415,
+     "at": 15.3417,
      "cx": 0.45
     },
     {
-     "at": 18.642,
+     "at": 17.5417,
      "cx": 0.5
     },
     {
-     "at": 20.375,
-     "cx": 0.62
-    },
-    {
-     "at": 23.625,
+     "at": 19.275,
      "cx": 0.5
     },
     {
-     "at": 24.46,
+     "at": 22.525,
+     "cx": 0.5
+    },
+    {
+     "at": 23.3417,
      "cx": 0.24
     },
     {
-     "at": 27.805,
+     "at": 26.375,
      "cx": 0.45
     },
     {
-     "at": 31.625,
+     "at": 29.825,
      "cx": 0.55
     }
    ],
@@ -584,14 +584,14 @@
      ]
     }
    ],
-   "start": 134.62,
-   "end": 164.65,
+   "start": 140.07,
+   "end": 170.247,
    "flash_holds": {},
-   "seconds": 31.53,
+   "seconds": 31.68,
    "cuts": [
     [
-     134.62,
-     164.65
+     140.07,
+     170.247
     ]
    ],
    "description": "The mid-credits scene at the Raft, and what Norman wants from Otto. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #NormanOsborn #DocOck",
@@ -602,35 +602,35 @@
      "cx": 0.28
     },
     {
-     "at": 3.875,
+     "at": 4.125,
      "cx": 0.76
     },
     {
-     "at": 7.395,
+     "at": 7.625,
      "cx": 0.62
     },
     {
-     "at": 12.325,
+     "at": 12.5583,
      "cx": 0.4
     },
     {
-     "at": 14.125,
+     "at": 14.3583,
      "cx": 0.24
     },
     {
-     "at": 17.225,
+     "at": 17.475,
      "cx": 0.62
     },
     {
-     "at": 21.495,
+     "at": 21.7583,
      "cx": 0.4
     },
     {
-     "at": 25.775,
+     "at": 25.9917,
      "cx": 0.62
     },
     {
-     "at": 28.425,
+     "at": 28.5917,
      "cx": 0.55
     }
    ],
@@ -663,14 +663,14 @@
      ]
     }
    ],
-   "start": 164.7,
-   "end": 197.56,
+   "start": 170.33,
+   "end": 203.85,
    "flash_holds": {},
-   "seconds": 34.36,
+   "seconds": 35.02,
    "cuts": [
     [
-     164.7,
-     197.56
+     170.33,
+     203.85
     ]
    ],
    "description": "Harry says it on the Midtown High bleachers and again in the last fight. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #HarryOsborn #Venom",
@@ -681,51 +681,51 @@
      "cx": 0.55
     },
     {
-     "at": 2.825,
+     "at": 2.9583,
      "cx": 0.76
     },
     {
-     "at": 5.475,
+     "at": 5.7083,
      "cx": 0.6
     },
     {
-     "at": 9.375,
+     "at": 9.6083,
      "cx": 0.4
     },
     {
-     "at": 11.265,
+     "at": 11.475,
      "cx": 0.45
     },
     {
-     "at": 13.025,
+     "at": 13.2083,
      "cx": 0.55
     },
     {
-     "at": 16.015,
+     "at": 16.1417,
      "cx": 0.45
     },
     {
-     "at": 17.615,
+     "at": 17.725,
      "cx": 0.55
     },
     {
-     "at": 20.065,
+     "at": 20.175,
      "cx": 0.6
     },
     {
-     "at": 21.565,
+     "at": 21.675,
      "cx": 0.55
     },
     {
-     "at": 23.515,
+     "at": 23.625,
      "cx": 0.55
     },
     {
-     "at": 25.992,
+     "at": 26.2083,
      "cx": 0.6
     },
     {
-     "at": 26.765,
+     "at": 27.0083,
      "cx": 0.4
     }
    ],
@@ -759,22 +759,22 @@
      ],
      "picture": [
       {
-       "at": 10.38,
-       "until": 11.48,
+       "at": 11.083,
+       "until": 12.183,
        "clip": 1007,
        "in": 893.6,
        "why": "boss-fight HUD: high wide of Venom holding Peter"
       },
       {
-       "at": 11.48,
-       "until": 14.13,
+       "at": 12.183,
+       "until": 14.833,
        "clip": 1007,
        "in": 907.85,
        "why": "Venom holding Peter aloft in the rain, silent"
       },
       {
-       "at": 19.09,
-       "until": 23.6,
+       "at": 20.433,
+       "until": 24.933,
        "clip": 1007,
        "in": 897.35,
        "why": "Peter's masked face in Venom's grip, the burst's own speaker"
@@ -782,14 +782,14 @@
      ]
     }
    ],
-   "start": 197.77,
-   "end": 229.77,
+   "start": 203.93,
+   "end": 237.317,
    "flash_holds": {},
-   "seconds": 33.5,
+   "seconds": 34.89,
    "cuts": [
     [
-     197.77,
-     229.77
+     203.93,
+     237.317
     ]
    ],
    "description": "Venom says it out loud in the final fight, and Peter answers him. Spoilers for the ending. Spoilers for the ending.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n🎮 My gear & setup → https://bosskg.com/gear\n\nKG\n\n#SpiderMan2 #PS5 #Venom #MilesMorales",
@@ -800,59 +800,59 @@
      "cx": 0.74
     },
     {
-     "at": 1.575,
+     "at": 1.625,
      "cx": 0.65
     },
     {
-     "at": 3.725,
+     "at": 3.8583,
      "cx": 0.6
     },
     {
-     "at": 5.192,
+     "at": 5.4583,
      "cx": 0.45
     },
     {
-     "at": 7.015,
+     "at": 7.4417,
      "cx": 0.5
     },
     {
-     "at": 8.985,
+     "at": 9.575,
      "cx": 0.5
     },
     {
-     "at": 10.38,
+     "at": 11.075,
      "cx": 0.5
     },
     {
-     "at": 11.48,
+     "at": 12.175,
      "cx": 0.5
     },
     {
-     "at": 14.125,
+     "at": 14.825,
      "cx": 0.55
     },
     {
-     "at": 15.525,
+     "at": 16.3917,
      "cx": 0.5
     },
     {
-     "at": 17.21,
+     "at": 18.2917,
      "cx": 0.45
     },
     {
-     "at": 19.09,
+     "at": 20.425,
      "cx": 0.3
     },
     {
-     "at": 23.605,
+     "at": 24.925,
      "cx": 0.24
     },
     {
-     "at": 26.575,
+     "at": 27.8583,
      "cx": 0.5
     },
     {
-     "at": 30.01,
+     "at": 31.2583,
      "cx": 0.4
     }
    ],

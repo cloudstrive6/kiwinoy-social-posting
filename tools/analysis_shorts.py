@@ -699,20 +699,25 @@ def swap_picture(p: Paths, pt: dict, pics) -> None:
     if t < dur - 1e-3:
         segs.append({"lf": pt["start"] + t, "at": t, "until": dur})
     # keyed on the source render too (2026-11-15: a re-cut from render v7 reused the v6 swap file)
-    src_id = [p.version, p.video.stat().st_size if p.video.exists() else 0]
+    src_id = [p.version, p.video.stat().st_size if p.video.exists() else 0, "frames2"]  # whole-frame trim, half-frame-early seek
     tag = hashlib.sha1(json.dumps([pt["start"], pt["end"], segs, src_id], sort_keys=True).encode()).hexdigest()[:10]
     out = p.out / "clips" / f"swap_{tag}.mkv"
     if not out.exists():
         inputs, chains = ["-ss", f"{pt['start']:.3f}", "-t", f"{dur:.3f}", "-i", str(p.video)], []
         for k, sg in enumerate(segs):
-            n = sg["until"] - sg["at"]
+            # Whole frames (2026-11-21 reel QA): trimming by seconds rounded each piece up a frame
+            # when its length was not a whole number of frames, so pictures after a swap drifted
+            # 1-2 frames late. Each piece now covers frames [round(at*FPS), round(until*FPS)).
+            f0, f1 = round(sg["at"] * FPS), round(sg["until"] * FPS)
+            n = (f1 - f0) / FPS
             if "clip" in sg:
                 src = fetch_clip(p, {"clip": sg["clip"], "in": sg["in"], "out": float(sg["in"]) + n + 0.2,
                                      "crop": sg.get("crop")})
                 inputs += ["-i", str(src)]
             else:
-                inputs += ["-ss", f"{sg['lf']:.3f}", "-t", f"{n + 0.1:.3f}", "-i", str(p.video)]
-            chains.append(f"[{k + 1}:v]trim=duration={n:.4f},setpts=PTS-STARTPTS,fps={FPS},setsar=1,"
+                # seek half a frame early: a seek exactly on a frame time could land a frame either side
+                inputs += ["-ss", f"{pt['start'] + (f0 - 0.5) / FPS:.4f}", "-t", f"{n + 0.1:.3f}", "-i", str(p.video)]
+            chains.append(f"[{k + 1}:v]fps={FPS},trim=end_frame={f1 - f0},setpts=PTS-STARTPTS,setsar=1,"
                           f"format=yuv420p[s{k}]")
         graph = ";".join(chains) + ";" + "".join(f"[s{k}]" for k in range(len(segs))) +             f"concat=n={len(segs)}:v=1:a=0[v]"
         run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", graph, "-map", "[v]", "-map", "0:a",
