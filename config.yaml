@@ -622,6 +622,14 @@ reels:
     blocked_ranges:
       "GTA 6 (2026-11-20 23-46-51) p02.mp4": [[135, 301]]
       "GTA 6 (2026-11-20 23-46-51) p03.mp4": [[0, 105]]
+      # 2026-11-22 footage map of the 2026-11-21 night session (ADULT flags, small margins):
+      "GTA 6 (2026-11-21 21-42-41) p10.mp4": [[190, 230]]   # Lucia in underwear on the bed
+      "GTA 6 (2026-11-21 22-40-04) p11.mp4": [[225, 301]]   # nude statue in inspect mode
+      "GTA 6 (2026-11-21 23-37-28) p14.mp4": [[160, 210]]   # TV cartoon sexual joke, strip club sign
+      "GTA 6 (2026-11-21 23-37-28) p15.mp4": [[45, 75]]     # TV trailer, man in underwear on a bed
+      "GTA 6 (2026-11-22 00-54-20) p01.mp4": [[0, 140]]     # TV ads with sexual innuendo
+      "GTA 6 (2026-11-22 01-00-16) p01.mp4": [[240, 301]]   # Delights strip club, dancer in lingerie
+      "GTA 6 (2026-11-22 01-00-16) p02.mp4": [[0, 301]]     # inside the strip club, near-topless dancer
     enabled: true
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the
