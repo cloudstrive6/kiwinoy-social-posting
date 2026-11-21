@@ -338,7 +338,9 @@ def render_beat(b: dict, dur: float, clips: Clips, gfx_specs: dict, work: Path, 
         graph.append(f"[{bi}:v]format=rgba,{sh}[brd]")
         graph.append(f"[{cur}][brd]overlay=0:0:eof_action=pass:enable='between(t,{max(0.0, off):.3f},{off + secs:.3f})'[obr]")
         cur = "obr"
-    graph.append(f"[{cur}]format=yuv420p[vout]")
+    # tpad (2026-11-21): shots summed by frame rounding can end one frame short of the narration
+    # (spider-man1-reels b001: 552 of 553); hold the last frame, -frames:v below keeps the count exact.
+    graph.append(f"[{cur}]format=yuv420p,tpad=stop_mode=clone:stop_duration=0.1[vout]")
     if narr_wav is not None:
         ni = add_input(["-i", str(narr_wav)])
         graph.append(f"[{ni}:a]aformat=sample_rates=48000:channel_layouts=stereo,"
