@@ -376,6 +376,39 @@ class ReviewFixTests(Base):
         self.assertIn("Auto-published", pub.call_args.args[2])
 
 
+class ExpireTests(Base):
+    """Bryce, 2026-11-21: "Yes, auto-reject old" (drafts older than 7 days)."""
+
+    def test_expire_rejects_only_old_drafts_and_sends_one_summary(self):
+        old = self.dir / f"{P1}.md"                             # has a card (message 111)
+        old.write_text(old.read_text(encoding="utf-8").replace("date: 2026-11-20", "date: 2026-09-01"),
+                       encoding="utf-8")
+        import datetime as dt
+        today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
+        new = self.dir / f"{P2}.md"
+        new.write_text(new.read_text(encoding="utf-8").replace("date: 2026-11-20", f"date: {today}"),
+                       encoding="utf-8")
+        with mock.patch.object(pa, "_git_publish") as gp, \
+                mock.patch.object(sys, "argv", ["publish_article.py", "--expire", "7"]):
+            pa.main()
+        self.assertIs(atg.parse(old)[0].get("rejected"), True)
+        self.assertIs(atg.parse(old)[0].get("draft"), True)     # kept, never shown on the site
+        self.assertIsNone(atg.parse(new)[0].get("rejected"))
+        self.assertFalse(gp.call_args.kwargs["deploy"])
+        self.assertEqual([p.stem for p in gp.call_args.args[0]], [P1])
+        self.assertIn("Auto-rejected", self.tg.of("editMessageText")[0]["text"])   # its card
+        sent = self.tg.of("sendMessage")
+        self.assertEqual(len(sent), 1)
+        self.assertIn("Auto-rejected 1 draft", sent[0]["text"])
+
+    def test_expire_nothing_old_is_silent(self):
+        with mock.patch.object(pa, "_git_publish") as gp, \
+                mock.patch.object(sys, "argv", ["publish_article.py", "--expire", "3650"]):
+            pa.main()
+        gp.assert_not_called()
+        self.assertEqual(self.tg.calls, [])
+
+
 class CardTests(Base):
     def test_send_card_has_buttons_and_records_message_id(self):
         mid = atg.send_card(self.dir / f"{P2}.md")

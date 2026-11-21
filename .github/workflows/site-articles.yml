@@ -68,6 +68,11 @@ jobs:
             for i in 1 2 3; do git push && break; git pull --rebase --autostash || git rebase --abort; done
           fi
 
+      # Stale drafts (dated more than 7 days ago) are rejected automatically (Bryce, 2026-11-21:
+      # "Yes, auto-reject old"). Files stay in git with rejected: true; one Telegram summary.
+      - name: Auto-reject drafts older than 7 days
+        run: python tools/publish_article.py --expire 7 || echo "expire step failed (drafts kept)"
+
       # DAILY AUTO-PUBLISH (Bryce, 2026-11-20: "automatically publish a blog post daily"): the day's
       # top fresh draft goes live with no approval; the others still wait for "approved" on Telegram.
       # Its card goes to Facebook, Threads and IG Story unless the news-card track already posted

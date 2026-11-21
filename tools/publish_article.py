@@ -391,6 +391,37 @@ def _reject(paths: list[Path]) -> None:
         _git_publish(done, message="content: reject draft article(s) from Telegram", deploy=False)
 
 
+def _expire(pending, days: int, dry: bool) -> list[Path]:
+    """Bryce, 2026-11-21 ("Yes, auto-reject old"): drafts dated more than `days` days ago are
+    rejected automatically (news goes stale). Same as a Reject tap: `rejected: true`, draft kept
+    true, file stays in git. Their Telegram cards (if any) say so; one summary message per run."""
+    import datetime as _dt
+    from tools import article_tg as atg
+    cut = _dt.datetime.now(_dt.timezone.utc).date() - _dt.timedelta(days=days)
+    old = []
+    for p, fm, _ in pending:
+        try:
+            d = _dt.date.fromisoformat(str(fm.get("date", ""))[:10])
+        except Exception:
+            continue                                   # no readable date: leave it for a person
+        if d < cut:
+            old.append(p)
+    print(f"[publish] expire: {len(old)} of {len(pending)} pending draft(s) dated before {cut}",
+          flush=True)
+    if dry or not old:
+        return old
+    done = [p for p in old if atg.set_frontmatter(p, "rejected", True)]
+    _git_publish(done, message=f"content: auto-reject {len(done)} draft(s) older than {days} days",
+                 deploy=False)
+    for p in done:
+        atg.mark_card(p, f"⌛ Auto-rejected: older than {days} days, so it was not published.")
+    from core import notify
+    left = len(pending) - len(done)
+    notify.telegram(f"⌛ Auto-rejected {len(done)} draft article(s) older than {days} days (stale "
+                    f"news). {left} draft(s) still waiting; send \"drafts\" to see them.")
+    return done
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--match", default="", help="keyword to pick the pending draft (slug or title)")
@@ -402,10 +433,15 @@ def main() -> int:
                     help="DAILY AUTO-PUBLISH: publish the day's top fresh draft without approval")
     ap.add_argument("--actions", default="",
                     help="Telegram button/reply decisions from the poller: 'a:<slug> r:<slug> ...'")
+    ap.add_argument("--expire", type=int, default=0,
+                    help="reject pending drafts dated more than N days ago (daily, site-articles.yml)")
     a = ap.parse_args()
 
     pending = _pending()
     card_line = "✅ Published: {url}"
+    if a.expire:
+        _expire(pending, a.expire, a.dry)
+        return 0
     if a.actions:
         # Exact slugs from a tap or a reply (tools/telegram_poller.py). Only drafts still pending
         # are acted on, so a double tap or a late reply never publishes or posts twice.

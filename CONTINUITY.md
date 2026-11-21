@@ -153,6 +153,10 @@ python tools/list_accounts.py        # show connected Post for Me accounts + IDs
   the auto-pick reads this run's slugs from `output/new_drafts.txt`), a tap on a draft not on main
   yet keeps its buttons and asks for the tap again, and `_publish` pulls and re-checks the draft
   is still pending just before publishing, so the auto-publish and a tap never both post it.
+- **Stale drafts auto-reject** (Bryce, 2026-11-21): `site-articles.yml` runs
+  `publish_article.py --expire 7` daily, so drafts dated more than 7 days ago get
+  `rejected: true` (files kept), their cards say so, and one Telegram summary is sent.
+  First run 2026-11-21 cleared 134 of 141 pending drafts.
 - Taps answer within the poll interval (up to ~5 min), not instantly, because the bot polls
   `getUpdates` instead of using a webhook. Tests: `python tests/test_telegram_article_approval.py`.
 
