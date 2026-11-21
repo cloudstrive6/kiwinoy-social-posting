@@ -54,16 +54,26 @@ jobs:
 
       # ── "approved <article>" path: publish a draft article + cross-post (Python only, no render deps) ──
       - name: Install publish dependencies
-        if: steps.check.outputs.fire == '1' && (steps.check.outputs.kind == 'approve' || steps.check.outputs.kind == 'drafts' || steps.check.outputs.kind == 'prioritise')
+        if: (steps.check.outputs.fire == '1' && (steps.check.outputs.kind == 'approve' || steps.check.outputs.kind == 'drafts' || steps.check.outputs.kind == 'prioritise')) || steps.check.outputs.articles != ''
         run: pip install -r requirements.txt
 
       # same-story check before an approved article's card (Bryce, 2026-11-20): the news-card ledger
       # lives on B2 (rclone) and Claude judges "same story" when link and headline differ
       - name: Install the same-story check tools
-        if: steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'approve'
+        if: (steps.check.outputs.fire == '1' && steps.check.outputs.kind == 'approve') || contains(steps.check.outputs.articles, 'a:')
         run: |
           curl -fsSL https://rclone.org/install.sh | sudo bash
           npm install -g @anthropic-ai/claude-code
+
+      # ── ✅ / ❌ taps and replies to a draft card (Bryce, 2026-11-21): exact slugs, "a:<slug> r:<slug>" ──
+      - name: Publish or reject the tapped drafts
+        if: steps.check.outputs.articles != ''
+        env:
+          ARTICLES: ${{ steps.check.outputs.articles }}
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          python tools/publish_article.py --actions "$ARTICLES"
 
       # ── "prioritise <game>" path: reorder the 4K60 long-form upload queue ──
       - name: Set long-form queue priority
@@ -147,7 +157,7 @@ jobs:
           fi
 
       - name: Tell the user if it failed
-        if: failure() && steps.check.outputs.fire == '1'
+        if: failure() && (steps.check.outputs.fire == '1' || steps.check.outputs.articles != '')
         run: |
           python -c "from core import notify; notify.telegram('⚠️ Sorry, that command hit an error. Text it again to retry, or ask me in Claude Code.')"
 

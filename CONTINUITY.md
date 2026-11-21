@@ -127,6 +127,35 @@ python tools/list_accounts.py        # show connected Post for Me accounts + IDs
 - **Token hygiene**: `core/postforme.py:_scrub` strips OAuth tokens from anything
   saved to artifacts (a public-repo leak happened once and was purged).
 
+## BOSS KG news articles: Telegram approval (since 2026-11-21)
+
+- Drafts come from `site-articles.yml` (daily), the news-card track (`trends.yml`) and the
+  Telegram "blog <topic>" command. Each draft gets **its own Telegram card with ✅ Approve /
+  ❌ Reject buttons** (`tools/article_tg.py`, `send_card`). The card's message id is saved in the
+  article's frontmatter as `telegramMessageId`; callback_data is `art:a:<id>` / `art:r:<id>`,
+  `<id>` = first 10 hex chars of sha1(slug).
+- `ig-poller.yml` (every ~5 min) reads taps and **replies to a card** ("approved", "yes", "ok",
+  "reject", "no", ...; any case). A reply is matched by the replied-to message id, then the
+  card's buttons, then its "• <title>" line, so it always means that card's article. Decisions
+  go out on the poller's `articles` output (`a:<slug> r:<slug>`) and run
+  `publish_article.py --actions`, separate from the other commands so a tap is never lost.
+- The poller checks the article's real state first: already live or already rejected gets one
+  "Already ..." answer and nothing else (the 2026-11-21 double answer came from replying to a
+  draft the daily auto-publish had already put live). A message about drafts that matches no
+  one article gets one message with buttons for the newest 8 drafts, never alongside a match.
+- Buttons are removed (card edited to "Approved, publishing" / "Rejected") at poll time, so a
+  second tap can't fire; `--actions` also skips anything no longer pending. After publishing,
+  the card shows "✅ Published: <url>"; the daily auto-publish marks its pick "Auto-published".
+- **Reject** sets `rejected: true` and keeps `draft: true`: never on the site, out of the
+  pending list, file kept in git. Typed "approve <words>" / "approve all" / "drafts" still work;
+  "drafts" now ends with a button picker for the newest 8.
+- Races: `site-articles.yml` pushes new drafts right after drafting (step "Push the new drafts";
+  the auto-pick reads this run's slugs from `output/new_drafts.txt`), a tap on a draft not on main
+  yet keeps its buttons and asks for the tap again, and `_publish` pulls and re-checks the draft
+  is still pending just before publishing, so the auto-publish and a tap never both post it.
+- Taps answer within the poll interval (up to ~5 min), not instantly, because the bot polls
+  `getUpdates` instead of using a webhook. Tests: `python tests/test_telegram_article_approval.py`.
+
 ## Troubleshooting — Post for Me accounts (IMPORTANT, hit twice)
 
 **Whenever the user reconnects an account in Post for Me, two things can break:**

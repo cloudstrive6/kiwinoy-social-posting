@@ -202,11 +202,10 @@ def draft_topic(topic: str, source_link: str, source_name: str = "", *,
     print(f"   [blog] drafted {slug}.md  [{art.get('category')}]", flush=True)
     if notify_tg:
         try:
-            from core import notify
-            notify.telegram(f"📝 Also drafted a BOSS KG blog for this trend:\n• {art['title']}\n\n"
-                            "Reply \"approved\" to publish it live + auto-post to FB/Threads/IG Story.")
-        except Exception:
-            pass
+            from tools import article_tg
+            article_tg.send_card(ART_DIR / f"{slug}.md", header="📝 New BOSS KG blog draft")
+        except Exception as e:
+            print(f"   [blog] draft card not sent ({e!r})", flush=True)
     return art["title"]
 
 
@@ -333,22 +332,31 @@ def main() -> int:
             except Exception as e:
                 print(f"   cover step skipped ({e!r})", flush=True)
             print(f"   wrote {slug}.md  [{art.get('category')}]", flush=True)
-            written.append(art["title"])
+            written.append(ART_DIR / f"{slug}.md")
         existing.add(slug)
         existing_keys.append(_tokens(art["title"]))
         made += 1
 
     print(f"[site-article] done — {made} article(s).", flush=True)
+    if written and not a.dry:
+        # this run's drafts, best pick first, for publish_article.py --auto (the workflow pushes
+        # the drafts before it runs, so it can't tell them apart by git status any more)
+        try:
+            out = Path(__file__).resolve().parents[1] / "output" / "new_drafts.txt"
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text("\n".join(p.stem for p in written) + "\n", encoding="utf-8")
+        except Exception as e:
+            print(f"   new-drafts list not written ({e!r})", flush=True)
     if not a.dry and not a.publish:
         try:
             from core import notify
             if written:
-                lst = "\n".join(f"• {t}" for t in written)
-                notify.telegram(
-                    f"📝 {len(written)} new BOSS KG DRAFT article(s):\n{lst}\n\n"
-                    "Reply \"approved\" to publish + auto-post it to Facebook & Threads (with a link "
-                    "CTA). If more than one is pending, reply \"approve <keyword>\" (a word from the "
-                    "title) or \"approve all\".")
+                # ONE card per draft with ✅ Approve / ❌ Reject buttons; a reply to a card always
+                # means that article (Bryce, 2026-11-21; tools/article_tg.py). The daily auto-publish
+                # that runs next edits its pick's card to say it went live.
+                from tools import article_tg
+                for path in written:
+                    article_tg.send_card(path)
             else:
                 # HEARTBEAT: even on a quiet day, confirm the check ran so silence never looks
                 # like a breakage (per user 2026-08-18).

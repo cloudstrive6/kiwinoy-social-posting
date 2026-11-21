@@ -56,6 +56,18 @@ jobs:
       - name: Generate articles
         run: python tools/site_article.py --count "${{ github.event.inputs.count || '3' }}"
 
+      # Push the new drafts (with their Telegram card ids) at once, so a ✅ / ❌ tap in the next
+      # few minutes finds them on main (the poller checks out main; review 2026-11-21).
+      - name: Push the new drafts
+        run: |
+          git config user.name "boss-kg-bot"
+          git config user.email "bot@bosskg.com"
+          if [ -n "$(git status --porcelain site/src/content/articles site/public/covers)" ]; then
+            git add site/src/content/articles site/public/covers
+            git commit -m "content: new draft articles"
+            for i in 1 2 3; do git push && break; git pull --rebase --autostash || git rebase --abort; done
+          fi
+
       # DAILY AUTO-PUBLISH (Bryce, 2026-11-20: "automatically publish a blog post daily"): the day's
       # top fresh draft goes live with no approval; the others still wait for "approved" on Telegram.
       # Its card goes to Facebook, Threads and IG Story unless the news-card track already posted

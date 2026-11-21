@@ -38,19 +38,63 @@ def telegram(text: str) -> bool:
         print("[notify] Telegram not configured (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID) "
               "— skipping.", flush=True)
         return False
+    return send(text) is not None
+
+
+def _call(method: str, payload: dict):
+    """One Bot API call with a JSON body, to the configured chat's bot. Returns the `result`
+    (a dict, True, ...) or None when unconfigured or on any error. Never raises."""
+    tok, chat = _creds()
+    if not (tok and chat):
+        return None
     try:
         import requests
-        r = requests.post(
-            API.format(token=tok, method="sendMessage"),
-            json={"chat_id": chat, "text": text, "disable_web_page_preview": True},
-            timeout=20)
-        if r.status_code >= 400:
-            print(f"[notify] Telegram send failed [{r.status_code}]: {r.text[:200]}", flush=True)
-            return False
-        return True
+        r = requests.post(API.format(token=tok, method=method), json=payload, timeout=20)
+        d = r.json() if r.content else {}
+        if not d.get("ok"):
+            print(f"[notify] Telegram {method} failed [{r.status_code}]: "
+                  f"{str(d.get('description', ''))[:200]}", flush=True)
+            return None
+        return d.get("result")
     except Exception as e:
-        print(f"[notify] Telegram error ({e!r}) — continuing.", flush=True)
-        return False
+        print(f"[notify] Telegram {method} error ({e!r}) - continuing.", flush=True)
+        return None
+
+
+def send(text: str, reply_markup: dict | None = None, reply_to: int | None = None) -> int | None:
+    """Send `text` (optionally with inline buttons, optionally as a reply to one of the chat's
+    messages) and return the new message_id, or None. Never raises."""
+    payload = {"chat_id": _creds()[1], "text": text[:4096], "disable_web_page_preview": True}
+    if reply_markup:
+        payload["reply_markup"] = reply_markup
+    if reply_to:
+        payload["reply_parameters"] = {"message_id": int(reply_to), "allow_sending_without_reply": True}
+    res = _call("sendMessage", payload)
+    return int(res["message_id"]) if isinstance(res, dict) and res.get("message_id") else None
+
+
+def edit(message_id: int, text: str, reply_markup: dict | None = None) -> bool:
+    """Replace a bot message's text. Without `reply_markup` its buttons are removed, so a
+    decided draft can't be tapped again."""
+    payload = {"chat_id": _creds()[1], "message_id": int(message_id), "text": text[:4096],
+               "disable_web_page_preview": True}
+    if reply_markup:
+        payload["reply_markup"] = reply_markup
+    return _call("editMessageText", payload) is not None
+
+
+def edit_markup(message_id: int, reply_markup: dict | None) -> bool:
+    """Replace (or with None, remove) a bot message's inline buttons, keeping its text."""
+    payload = {"chat_id": _creds()[1], "message_id": int(message_id),
+               "reply_markup": reply_markup or {"inline_keyboard": []}}
+    return _call("editMessageReplyMarkup", payload) is not None
+
+
+def answer_callback(callback_query_id: str, text: str = "") -> bool:
+    """Answer a button tap (stops the button's spinner, shows `text` as a small toast). The
+    poller runs every few minutes, so Telegram may already call the tap too old; that's fine."""
+    return _call("answerCallbackQuery", {"callback_query_id": callback_query_id,
+                                         "text": text[:200]}) is not None
 
 
 def telegram_photo(image_path, caption: str = "") -> bool:

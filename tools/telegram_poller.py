@@ -13,8 +13,11 @@ Commands understood:
     "threads draft [format] [game] [Ns]"   -> Threads draft (default format: fill)
     "fb draft [format] [game] [Ns]"        -> Facebook draft (default format: classic)
     "tiktok draft [format] [game]"         -> TikTok in-app draft (default format: classic)
-    "approved" / "approve <keyword>" / "approve all"
-                                           -> publish a DRAFT news article live + cross-post it
+    ✅ Approve / ❌ Reject buttons on a draft card, or a REPLY to the card ("approved", "yes",
+    "reject", "no", ...)                   -> publish (or reject) THAT article; matched by the
+                                              card's message id (tools/article_tg.py), so a
+                                              reply never needs the title. Output: articles=
+    "approve <keyword>" / "approve all"    -> publish a DRAFT news article live + cross-post it
                                               to Facebook & Threads (tools/publish_article.py)
     "create a blog post <topic>" / "blog: <topic>"
                                            -> research + draft a BOSS KG blog article for that
@@ -141,15 +144,95 @@ def _approve_arg(text: str) -> str:
     return re.sub(r"[^\w\- ]", "", kw).strip()[:150]
 
 
-def _replied_title(msg: dict) -> str:
-    """If the approve message is a Telegram REPLY to a bot draft notice, return the article
-    title from that notice (its single '• <title>' line), sanitized like _approve_arg. A notice
-    listing SEVERAL drafts is ambiguous -> '' (publish_article then asks which one)."""
-    rt = ((msg or {}).get("reply_to_message") or {}).get("text") or ""
-    bullets = [ln.strip()[1:].strip() for ln in rt.splitlines() if ln.strip().startswith("•")]
-    if len(bullets) != 1:
-        return ""
-    return re.sub(r"[^\w\- ]", "", bullets[0]).strip()[:150]
+SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,150}$")
+
+
+def _article_decisions(items: list[dict], check: bool) -> list[str]:
+    """Act on Approve / Reject taps and on replies to a draft card (Bryce, 2026-11-21). Each item:
+    dec ('approve'|'reject'), path (the article, or None), sid, cq_id (a tap) or reply_id (a reply),
+    message (the card or notice that was tapped or replied to). The LAST decision per article in
+    this batch wins (a quick change of mind; a double tap is the same decision twice). The article's
+    real state is checked first, so an article that is already live or rejected gets one clear
+    "already ..." answer and nothing else. Returns the tokens for publish_article.py --actions."""
+    from tools import article_tg as atg
+    last: dict[str, dict] = {}
+    for it in items:
+        key = it["path"].stem if it.get("path") else "?" + it.get("sid", "")
+        last.pop(key, None)                               # keep decision order = last tap order
+        last[key] = it
+    tokens = []
+    for it in last.values():
+        p, dec, cq, msg = it.get("path"), it["dec"], it.get("cq_id"), it.get("message") or {}
+        reply_id = it.get("reply_id")
+        if p is None:
+            # Usually the draft was written moments ago and is not pushed yet (review 2026-11-21),
+            # so keep the buttons working and ask for the tap again.
+            note = ("⏳ That draft is still being saved. Tap again (or reply again) in a few "
+                    "minutes. If this keeps happening, the draft was removed.")
+            print(f"[poller] ARTICLE {dec}: draft id {it.get('sid')} not found yet", flush=True)
+            if check:
+                if cq:
+                    if not notify.answer_callback(cq, note[:190]):
+                        notify.send(note)                 # tap too old for a toast
+                elif reply_id:
+                    notify.send(note, reply_to=reply_id)
+            continue
+        fm, _ = atg.parse(p)
+        title = str(fm.get("title", p.stem))
+        st = atg.status(fm)
+        if st != "pending":
+            note = (f"✅ Already live, nothing to do: {atg.live_url(p)}" if st == "live"
+                    else "❌ Already rejected, nothing to do.")
+            print(f"[poller] ARTICLE {dec}: {p.stem} is already {st}", flush=True)
+            if check:
+                if cq:
+                    notify.answer_callback(cq, note)
+                    if atg.drop_buttons_for(msg, atg.short_id(p.stem), note) is False:
+                        notify.send(f"{note}\n• {title}")
+                elif reply_id:
+                    atg.drop_buttons_for(msg, atg.short_id(p.stem), note)
+                    notify.send(f"{note}\n• {title}", reply_to=reply_id)
+            continue
+        if not SLUG_RE.match(p.stem):                     # never pass an odd name to the shell
+            print(f"[poller] ARTICLE {dec}: unsafe slug {p.stem!r}, skipped", flush=True)
+            continue
+        tokens.append(("a:" if dec == "approve" else "r:") + p.stem)
+        line = ("⏳ Approved. Publishing now, I'll confirm here when it's live." if dec == "approve"
+                else "❌ Rejected. It won't be published.")
+        short = (f"🚀 Approved, publishing “{title}” now. I'll confirm here in a minute."
+                 if dec == "approve" else f"❌ Rejected “{title}”. It won't be published.")
+        print(f"[poller] ARTICLE {dec}: {p.stem} (via {'button' if cq else 'reply'})", flush=True)
+        if check:
+            if cq:
+                notify.answer_callback(cq, "Approved, publishing now" if dec == "approve" else "Rejected")
+            single = atg.drop_buttons_for(msg, atg.short_id(p.stem), line)
+            if fm.get("telegramMessageId") and int(fm["telegramMessageId"]) != int(msg.get("message_id") or 0):
+                atg.mark_card(p, line)                    # the article's own card, if elsewhere
+            if reply_id:
+                notify.send(short, reply_to=reply_id)
+            elif single is False:                         # a picker row: say which one it was
+                notify.send(short)
+    return tokens
+
+
+def _picker(cands: list, check: bool) -> None:
+    """A message that is about drafts but matches no single article: show buttons for the drafts
+    it could mean (or the newest pending ones), never a guess."""
+    from tools import article_tg as atg
+    arts = atg.all_articles()
+    pend = [(p, fm) for p, fm in arts if atg.status(fm) == "pending"]
+    want = {p for p in cands}
+    items = [(p, fm) for p, fm in pend if p in want] if want else []
+    if not items:
+        items = sorted(pend, key=lambda t: str(t[1].get("date", "")), reverse=True)
+    print(f"[poller] ARTICLE: unmatched reply -> picker of {len(items)} draft(s)", flush=True)
+    if not check:
+        return
+    if not items:
+        notify.telegram("📭 No draft articles are pending, so there is nothing to approve.")
+        return
+    atg.picker(items, f"🤔 I couldn't tell which draft you meant. Tap one ({min(len(items), 8)} of "
+                      f"{len(items)} pending, newest first):")
 
 
 def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str = "", arg: str = "") -> None:
@@ -157,6 +240,15 @@ def _emit(fire: int, kind: str = "", game: str = "", seconds: int = 0, fmt: str 
     if out:
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"fire={fire}\nkind={kind}\ngame={game}\nseconds={seconds}\nfmt={fmt}\narg={arg}\n")
+
+
+def _emit_articles(tokens: list[str]) -> None:
+    """Article decisions go out on their own output, so a tap is never lost to another command
+    sent in the same few minutes (the other outputs keep the latest command only)."""
+    out = os.environ.get("GITHUB_OUTPUT")
+    if out:
+        with open(out, "a", encoding="utf-8") as fh:
+            fh.write(f"articles={' '.join(tokens)}\n")
 
 
 def main() -> int:
@@ -172,18 +264,50 @@ def main() -> int:
         _emit(0)
         return 0
     max_uid = max(int(u.get("update_id", 0)) for u in updates)
-    kind, cmd, amsg = "", "", {}
+    from tools import article_tg as atg
+    arts = atg.all_articles()
+    decisions: list[dict] = []                           # Approve / Reject taps + replies to a card
+    unmatched: list[list] = []                           # replies about drafts that match no one article
+    kind, cmd = "", ""
     for u in updates:                                    # keep the LATEST matching command (either kind)
+        cq = u.get("callback_query")
+        if cq:                                           # a tap on a draft's ✅ / ❌ button
+            cmsg = cq.get("message") or {}
+            if str((cmsg.get("chat") or {}).get("id")) != chat_id:
+                continue                                 # chat-id gate
+            m = atg.CB_RE.match(str(cq.get("data") or ""))
+            if m:
+                decisions.append({"dec": "approve" if m.group(1) == "a" else "reject",
+                                  "path": atg.find_by_id(m.group(2), arts), "sid": m.group(2),
+                                  "cq_id": cq.get("id"), "message": cmsg})
+            continue
         msg = u.get("message") or u.get("edited_message") or {}
         if str((msg.get("chat") or {}).get("id")) != chat_id:
             continue                                     # chat-id gate: ignore everyone else
         text = (msg.get("text") or "").strip()
+        rt = msg.get("reply_to_message") or {}
+        dec = atg.classify(text) if rt else ""
+        if dec and not (dec == "approve" and _approve_arg(text).lower() == "all"):
+            # A REPLY to a draft card always means THAT article (Bryce, 2026-11-21).
+            p, cands = atg.resolve_reply(rt, arts)
+            if p:
+                decisions.append({"dec": dec, "path": p, "sid": atg.short_id(p.stem),
+                                  "reply_id": msg.get("message_id"), "message": rt})
+                continue
+            ids = atg.card_ids(rt)
+            if len(ids) == 1:                            # a card whose draft isn't on main yet
+                decisions.append({"dec": dec, "path": None, "sid": ids[0],
+                                  "reply_id": msg.get("message_id"), "message": rt})
+                continue
+            if cands or atg.looks_like_draft_notice(rt):
+                unmatched.append(cands)
+                continue
         if DRAFTS_RE.match(text):                        # "drafts" -> list the pending backlog
             kind, cmd = "drafts", text
         elif PRIORITY_RE.match(text):                    # "prioritise <game>" -> long-form queue
             kind, cmd = "prioritise", text
-        elif APPROVE_RE.search(text):                    # "approved" -> publish a draft article
-            kind, cmd, amsg = "approve", text, msg
+        elif APPROVE_RE.search(text):                    # "approve <words>" / "approve all"
+            kind, cmd = "approve", text
         elif BLOG_RE.search(text):                       # "create a blog post <topic>" -> draft article
             kind, cmd = "blog", text
         elif TH_RE.search(text):                         # distinct keywords -> exclusive
@@ -196,6 +320,10 @@ def main() -> int:
             kind, cmd = "ig", text
     if check:                                            # mark ALL updates seen (before firing)
         _tg("getUpdates", offset=max_uid + 1)
+    tokens = _article_decisions(decisions, check) if decisions else []
+    if unmatched and not tokens:
+        _picker(unmatched[-1], check)
+    _emit_articles(tokens)
     if not cmd:
         print("[poller] no draft command in this batch.", flush=True)
         _emit(0)
@@ -211,19 +339,28 @@ def main() -> int:
         if check:
             _emit(1, "drafts")
         return 0
-    if kind == "approve":                                # publish an approved draft article
+    if kind == "approve":                                # "approve <words>" / "approve all" (typed)
         arg = _approve_arg(cmd)
-        # A REPLY to a draft notice targets exactly that article (unless it says "all").
-        replied = _replied_title(amsg)
-        if replied and arg.lower() != "all":
-            arg = replied
-        print(f"[poller] APPROVE: {cmd!r} -> arg={arg!r} (reply={bool(replied)})", flush=True)
+        # Say "publishing" only when the publish step WILL publish something; otherwise it sends
+        # one message with buttons instead (2026-11-21: Bryce got "Got it, publishing" AND
+        # "Which article?" for one reply, because the article had already gone live).
+        from tools import publish_article as pa
+        take_all = arg.lower() == "all"
+        targets = pa._select(pa._pending(), "" if take_all else arg, take_all)
+        print(f"[poller] APPROVE: {cmd!r} -> arg={arg!r}, {len(targets)} matching draft(s)", flush=True)
+        decided = {t[2:] for t in tokens}
+        if not take_all and targets and all(p.stem in decided for (p, _, _) in targets):
+            # the same article was tapped or replied to in this batch: that decision covers it, so
+            # the typed command adds nothing (and would only find no draft left; review 2026-11-21)
+            print("[poller] APPROVE: already decided by a tap or reply in this batch", flush=True)
+            _emit(0)
+            return 0
         if check:
-            what = (f"“{arg}”" if replied else
-                    "every pending draft" if arg.lower() == "all" else
-                    f"the draft matching “{arg}”" if arg else "the pending draft")
-            notify.telegram(f"\U0001F680 Got it — publishing {what} + posting to Facebook, "
-                            "Threads & IG Story. I'll confirm here in a minute…")
+            if targets and (len(targets) == 1 or take_all):
+                what = (f"all {len(targets)} pending drafts" if take_all and len(targets) > 1
+                        else f"“{targets[0][1].get('title', targets[0][0].stem)}”")
+                notify.telegram(f"\U0001F680 Got it, publishing {what} and posting to Facebook, "
+                                "Threads and IG Story. I'll confirm here in a minute.")
             _emit(1, "approve", arg=arg)
         return 0
     if kind == "blog":                                   # draft a site article for a topic

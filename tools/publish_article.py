@@ -40,6 +40,7 @@ import yaml  # noqa: E402
 
 ART_DIR = ROOT / "site" / "src" / "content" / "articles"
 BASE_URL = "https://bosskg.com"
+NEW_DRAFTS = ROOT / "output" / "new_drafts.txt"    # this run's drafts, written by site_article.py
 
 
 def _parse(path: Path) -> tuple[dict, str]:
@@ -56,11 +57,11 @@ def _parse(path: Path) -> tuple[dict, str]:
 
 
 def _pending() -> list[tuple[Path, dict, str]]:
-    """All draft:true articles, newest file first."""
+    """All draft:true articles that were not rejected, newest file first."""
     out = []
     for p in sorted(ART_DIR.glob("*.md"), key=lambda q: q.stat().st_mtime, reverse=True):
         fm, body = _parse(p)
-        if fm.get("draft") is True:
+        if fm.get("draft") is True and fm.get("rejected") is not True:
             out.append((p, fm, body))
     return out
 
@@ -163,11 +164,12 @@ def _run(cmd: list[str]) -> tuple[int, str]:
         return 1, repr(e)
 
 
-def _git_publish(paths: list[Path]) -> None:
+def _git_publish(paths: list[Path], message: str = "content: publish approved article(s)",
+                 deploy: bool = True) -> None:
     """Commit the flipped article(s) + their covers, push, and trigger a deploy. Best-effort."""
     rels = [str(p.relative_to(ROOT)).replace("\\", "/") for p in paths]
     _run(["git", "add", *rels, "site/public/covers"])
-    code, out = _run(["git", "commit", "-m", "content: publish approved article(s)"])
+    code, out = _run(["git", "commit", "-m", message])
     if code != 0 and "nothing to commit" not in out:
         print(f"   git commit: {out.strip()[:200]}", flush=True)
     # Another bot may have pushed first; then the push is rejected and the deploy below builds
@@ -183,7 +185,8 @@ def _git_publish(paths: list[Path]) -> None:
                 print(f"   git pull --rebase failed: {pout.strip()[:200]}", flush=True)
                 _run(["git", "rebase", "--abort"])
     # github.token pushes don't fire the deploy's push trigger, so dispatch it explicitly.
-    _run(["gh", "workflow", "run", "deploy-site.yml"])
+    if deploy:
+        _run(["gh", "workflow", "run", "deploy-site.yml"])
 
 
 def _wait_live(url: str, timeout: int = 300) -> bool:
@@ -332,17 +335,16 @@ def _post(caps: dict, url: str, title: str, slug: str, game: str) -> list[str]:
 
 
 def _notify_pending(pending) -> None:
+    """Nothing matched one draft: ONE message with ✅ / ❌ buttons for the newest drafts (Bryce,
+    2026-11-21), instead of a long list of words to type back."""
     from core import notify
+    from tools import article_tg as atg
     if not pending:
-        notify.telegram("🤔 No draft articles are pending — nothing to publish.")
+        notify.telegram("🤔 No draft articles are pending, so there is nothing to publish.")
         return
-    items = _newest_first(pending)
-    lst = "\n".join(f"• {fm.get('title','?')}  —  reply: approve {_hint(p)}"
-                    for (p, fm, _) in items[:15])
-    more = f"\n…and {len(items) - 15} more." if len(items) > 15 else ""
-    notify.telegram("🤔 Which article? Easiest: REPLY \"approved\" directly to that article's draft "
-                    "message. Or send one of these (or \"approve all\"). Pending, newest first:\n"
-                    f"{lst}{more}")
+    items = [(p, fm) for (p, fm, _) in _newest_first(pending)]
+    atg.picker(items, f"🤔 Which article? Tap one ({min(len(items), 8)} of {len(items)} pending, "
+                      "newest first). Send \"drafts\" for the full list.")
 
 
 def _notify_list(pending) -> None:
@@ -356,8 +358,8 @@ def _notify_list(pending) -> None:
     items = _newest_first(pending)
     lines = [f"{i}. {fm.get('title','?')}  ({str(fm.get('date',''))[:10]})\n    ↳ approve {_hint(p)}"
              for i, (p, fm, _) in enumerate(items, 1)]
-    head = (f"🗂 {len(items)} pending draft article(s), newest first. To publish one: REPLY "
-            "\"approved\" to its draft message, or send the ↳ line.\n\n")
+    head = (f"🗂 {len(items)} pending draft article(s), newest first. To publish one: tap its "
+            "button below, reply \"approved\" to its draft card, or send the ↳ line.\n\n")
     chunk = head
     for ln in lines:
         if len(chunk) + len(ln) + 1 > 3800:
@@ -366,16 +368,27 @@ def _notify_list(pending) -> None:
         chunk += ln + "\n"
     if chunk.strip():
         notify.telegram(chunk.rstrip())
+    from tools import article_tg as atg
+    atg.picker([(p, fm) for (p, fm, _) in items], "👇 The newest 8, with buttons:")
 
 
 def _notify_ambiguous(match: str, hits) -> None:
     """A keyword matched SEVERAL drafts — publish NOTHING and ask which one (only an explicit
     "approve all" may publish more than one)."""
-    from core import notify
-    lst = "\n".join(f"• {fm.get('title','?')}  —  reply: approve {_hint(p)}"
-                    for (p, fm, _) in _newest_first(hits)[:15])
-    notify.telegram(f"✋ “{match}” matches {len(hits)} drafts, so I published NOTHING. Which one? "
-                    f"Reply \"approved\" to its draft message, or send:\n{lst}")
+    from tools import article_tg as atg
+    atg.picker([(p, fm) for (p, fm, _) in _newest_first(hits)],
+               f"✋ “{match}” matches {len(hits)} drafts, so I published nothing. Tap the one you mean:")
+
+
+def _reject(paths: list[Path]) -> None:
+    """Rejected drafts: mark `rejected: true` (draft stays true, so the site never shows them and
+    they leave the pending list) and commit. The file stays in git, so nothing is lost."""
+    from tools import article_tg as atg
+    done = [p for p in paths if atg.set_frontmatter(p, "rejected", True)]
+    for p in done:
+        print(f"[publish] rejected {p.stem}", flush=True)
+    if done:
+        _git_publish(done, message="content: reject draft article(s) from Telegram", deploy=False)
 
 
 def main() -> int:
@@ -387,10 +400,30 @@ def main() -> int:
                     help="READ-ONLY: Telegram the full pending-draft backlog (publishes nothing)")
     ap.add_argument("--auto", action="store_true",
                     help="DAILY AUTO-PUBLISH: publish the day's top fresh draft without approval")
+    ap.add_argument("--actions", default="",
+                    help="Telegram button/reply decisions from the poller: 'a:<slug> r:<slug> ...'")
     a = ap.parse_args()
 
     pending = _pending()
+    card_line = "✅ Published: {url}"
+    if a.actions:
+        # Exact slugs from a tap or a reply (tools/telegram_poller.py). Only drafts still pending
+        # are acted on, so a double tap or a late reply never publishes or posts twice.
+        by_slug = {p.stem: (p, fm, b) for (p, fm, b) in pending}
+        approve, reject = [], []
+        for tok in a.actions.split():
+            d, _, slug = tok.partition(":")
+            if slug not in by_slug:
+                print(f"[publish] {tok}: not a pending draft any more, skipped", flush=True)
+                continue
+            (approve if d == "a" else reject if d == "r" else []).append(by_slug[slug])
+        if reject and not a.dry:
+            _reject([p for (p, _, _) in reject])
+        if not approve:
+            return 0
+        return _publish(approve, a.dry, card_line)
     if a.auto:
+        card_line = "✅ Auto-published as today's daily article: {url}"
         # Bryce, 2026-11-20: "Moving forward, make sure to automatically publish a blog post daily".
         # site-articles.yml drafts the day's articles (best pick first), then runs this: the first
         # draft written today goes live; the rest still wait for "approved" on Telegram. Only drafts
@@ -416,7 +449,17 @@ def main() -> int:
         # CI checkout gives every older file the same mtime; then the first one written (best pick)
         code, st = _run(["git", "status", "--porcelain", "--", "site/src/content/articles"])
         new = {Path(ln[3:].strip().strip('"')).stem for ln in st.splitlines() if ln.startswith("??")}
-        fresh.sort(key=lambda x: (-x[0].toordinal(), x[2].stem not in new, x[1]))
+        # site-articles.yml now pushes the drafts before this step (so a Telegram tap finds them),
+        # so they are no longer untracked: site_article.py lists this run's slugs, best pick first.
+        order = []
+        try:
+            order = [s.strip() for s in NEW_DRAFTS.read_text(encoding="utf-8").splitlines() if s.strip()]
+        except Exception:
+            pass
+        new |= set(order)
+        rank = {s: i for i, s in enumerate(order)}
+        fresh.sort(key=lambda x: (-x[0].toordinal(), x[2].stem not in new,
+                                  rank.get(x[2].stem, len(rank)), x[1]))
         _, _, p, fm, body = fresh[0]
         print(f"[publish] auto: today's pick is {p.stem}", flush=True)
         pending = [(p, fm, body)]
@@ -439,15 +482,37 @@ def main() -> int:
         if not a.dry:
             _notify_ambiguous(a.match, targets)
         return 0
+    return _publish(targets, a.dry, card_line)
 
+
+def _still_pending(path: Path) -> bool:
+    """Pull the latest main, then check the draft is still waiting (not live, not rejected)."""
+    code, out = _run(["git", "pull", "--rebase", "--autostash"])
+    if code != 0:
+        print(f"   git pull before publish failed: {out.strip()[:200]}", flush=True)
+        _run(["git", "rebase", "--abort"])
+    if not path.exists():
+        return False
+    fm, _ = _parse(path)
+    return fm.get("draft") is True and fm.get("rejected") is not True
+
+
+def _publish(targets, dry: bool, card_line: str = "✅ Published: {url}") -> int:
+    """Publish each target draft, post its card (unless the same story was already carded), tell
+    Bryce, and mark the draft's own Telegram card with the result (buttons removed)."""
     for path, fm, body in targets:
         slug = path.stem
         url = f"{BASE_URL}/news/{slug}"
         title = str(fm.get("title", slug))
         print(f"\n[publish] {slug}\n  url: {url}", flush=True)
+        if not dry and not _still_pending(path):
+            # the daily auto-publish and a Telegram tap run in different jobs; whoever is second
+            # must not publish or post again (review 2026-11-21)
+            print("  already published or rejected by another run - skipped", flush=True)
+            continue
         caps = _captions(fm, body, url)
         print(f"  FACEBOOK:\n{caps['facebook']}\n\n  THREADS:\n{caps['threads']}", flush=True)
-        if a.dry:
+        if dry:
             continue
 
         if not _flip_live(path):
@@ -474,6 +539,11 @@ def main() -> int:
             ("" if live else "\n(note: deploy still finishing — link goes live shortly)") +
             ("" if dup else f"\n\n— Facebook —\n{caps['facebook']}\n\n— Threads —\n{caps['threads']}")
         )
+        try:
+            from tools import article_tg as atg
+            atg.mark_card(path, card_line.format(url=url))
+        except Exception as e:
+            print(f"   card edit skipped ({e!r})", flush=True)
     return 0
 
 
