@@ -1,12 +1,12 @@
 """Twitch clips from every past broadcast, no markers needed (Bryce, 2026-11-21: "Do these as automated").
 
 After each stream, for every saved broadcast (Twitch "archive" VOD) not clipped yet:
-  1. download a small 360p copy to this machine's temp folder with yt-dlp (Bryce chose this on
-     2026-11-21; Twitch's official API has no download). The copy is only used to find moments and
-     is deleted with the runner; it is never uploaded anywhere;
-  2. find candidate moments with plain code: loudness peaks, how much is said, excited words and
-     how often the picture cuts, in 40 s windows (muted copyright stretches and the first/last
-     minutes are skipped);
+  1. download the broadcast's AUDIO to this machine's temp folder with yt-dlp (Bryce chose this on
+     2026-11-21; Twitch's official API has no download). Before Affiliate the only video quality is
+     the 1080p60 source (about 17.5 GB for 5 h), so video is fetched only for the candidate windows.
+     Everything downloaded is deleted with the runner and never uploaded anywhere;
+  2. find candidate moments with plain code: loudness peaks, how much is said and excited words,
+     in 40 s windows (muted copyright stretches and the first/last 2 minutes are skipped);
   3. Claude (subscription, core.claude_code.vision) looks at a frame sheet and the words of each
      candidate and picks the 5 to 8 best, with a title, rejecting menus, loading screens, dead air,
      sexual content and slurs;
@@ -91,12 +91,24 @@ def secs(d: str) -> int:
 
 # ------------------------------------------------------------------------------- analysis
 
-def download(vod_id: str, work: Path) -> Path:
-    out = work / f"vod_{vod_id}.mp4"
-    cmd = [sys.executable, "-m", "yt_dlp", "-q", "--no-warnings", "-N", "8",
-           "-f", "360p30/360p/480p30/480p/worst[height>=240]/worst", "-o", str(out),
-           f"https://www.twitch.tv/videos/{vod_id}"]
-    subprocess.run(cmd, check=True, timeout=3 * 3600)
+def ytdlp(args: list[str], timeout: int) -> None:
+    subprocess.run([sys.executable, "-m", "yt_dlp", "-q", "--no-warnings", *args], check=True, timeout=timeout)
+
+
+def download_audio(vod_id: str, work: Path) -> Path:
+    """Audio only (about 770 MB for 5 h). Before Affiliate a channel gets no lower video qualities,
+    so the whole broadcast exists only as 1080p60 source (about 17.5 GB for 5 h); the picture is
+    fetched just for the candidate windows (piece below)."""
+    out = work / f"vod_{vod_id}.m4a"
+    ytdlp(["-N", "8", "-f", "Audio_Only/bestaudio", "-o", str(out), f"https://www.twitch.tv/videos/{vod_id}"], 3 * 3600)
+    return out
+
+
+def piece(vod_id: str, start: float, end: float, work: Path, name: str) -> Path:
+    """One window of the broadcast in video (lowest quality on offer), for its frame sheet."""
+    out = work / f"{name}.mp4"
+    ytdlp(["-f", "360p30/480p30/720p30/720p60/1080p60/best", "--download-sections", f"*{start:.0f}-{end:.0f}",
+           "-o", str(out), f"https://www.twitch.tv/videos/{vod_id}"], 900)
     return out
 
 
@@ -123,14 +135,7 @@ def transcript(wav: Path) -> list[dict]:
     return [{"s": s.start, "e": s.end, "t": s.text.strip()} for s in segs]
 
 
-def cut_times(video: Path) -> list[float]:
-    log_ = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-an", "-vf",
-                           "fps=4,scale=160:-2,select='gt(scene,0.3)',showinfo", "-f", "null", "-"],
-                          capture_output=True, text=True).stderr
-    return [float(t) for t in re.findall(r"pts_time:([\d.]+)", log_)]
-
-
-def candidates(dur: int, loud: list[float], segs: list[dict], cuts: list[float], muted: list[tuple[int, int]]) -> list[dict]:
+def candidates(dur: int, loud: list[float], segs: list[dict], muted: list[tuple[int, int]]) -> list[dict]:
     import numpy as np
     L = np.array(loud)
     wins = []
@@ -142,15 +147,14 @@ def candidates(dur: int, loud: list[float], segs: list[dict], cuts: list[float],
         text = " ".join(g["t"] for g in words)
         wins.append({"start": st, "end": en, "text": text,
                      "loud": float(np.percentile(L[st:en], 90)) if en <= len(L) else -90.0,
-                     "words": len(text.split()), "excited": len(EXCITED.findall(text)),
-                     "cuts": sum(1 for c in cuts if st <= c < en)})
+                     "words": len(text.split()), "excited": len(EXCITED.findall(text))})
     if not wins:
         return []
 
     def z(key):
         v = np.array([w[key] for w in wins], dtype=float)
         return (v - v.mean()) / (v.std() + 1e-6)
-    score = 1.2 * z("loud") + 0.8 * z("words") + 1.0 * z("excited") + 0.6 * z("cuts")
+    score = 1.3 * z("loud") + 0.9 * z("words") + 1.1 * z("excited")
     for w, sc in zip(wins, score):
         w["score"] = float(sc)
     picked = []
@@ -163,11 +167,11 @@ def candidates(dur: int, loud: list[float], segs: list[dict], cuts: list[float],
 
 
 def sheet(video: Path, c: dict, path: Path) -> None:
-    """Six frames across the window in a 3x2 grid with the time on each."""
+    """Six frames across the window in a 3x2 grid. `video` is the window's own piece (starts at 0)."""
     step = WIN / 6
     inputs = []
     for k in range(6):
-        inputs += ["-ss", f"{c['start'] + step * (k + 0.5):.1f}", "-i", str(video)]
+        inputs += ["-ss", f"{step * (k + 0.5):.1f}", "-i", str(video)]
     tiles = "".join(f"[{k}:v]scale=426:-2,trim=end_frame=1,setpts=PTS-STARTPTS[t{k}];" for k in range(6))
     layout = "0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex",
@@ -175,15 +179,23 @@ def sheet(video: Path, c: dict, path: Path) -> None:
                     "-map", "[v]", "-frames:v", "1", str(path)], check=True)
 
 
-def choose(video: Path, game: str, title: str, cands: list[dict], work: Path) -> list[dict]:
+def choose(vod_id: str, game: str, title: str, cands: list[dict], work: Path) -> list[dict]:
     from core import claude_code
     imgs = []
     lines = []
+    keep = []
     for i, c in enumerate(cands):
         p = work / f"cand_{i:02d}.jpg"
-        sheet(video, c, p)
+        try:
+            vid = piece(vod_id, c["start"], c["end"], work, f"cand_{i:02d}")
+            sheet(vid, c, p)
+            vid.unlink(missing_ok=True)
+        except Exception as e:
+            log(f"candidate at {c['start']} s skipped (no picture: {type(e).__name__})")
+            continue
+        keep.append(c)
         imgs.append(p)
-        lines.append(f"Candidate {i + 1} (image {i + 1}): {c['start'] // 60}:{c['start'] % 60:02d} to "
+        lines.append(f"Candidate {len(keep)} (image {len(keep)}): {c['start'] // 60}:{c['start'] % 60:02d} to "
                      f"{c['end'] // 60}:{c['end'] % 60:02d} into the stream. Streamer's words: "
                      f"\"{c['text'][:400] or '(no speech)'}\"")
     prompt = f"""You pick Twitch clips for the gaming streamer BOSS KG (twitch.tv/kiwinoy).
@@ -206,6 +218,7 @@ Answer with JSON only: {{"picks": [{{"candidate": 3, "from": 4, "to": 32, "title
     raw = claude_code.vision(prompt, imgs, timeout=600)
     m = re.search(r"\{.*\}", raw, re.S)
     picks = json.loads(m.group(0)).get("picks", []) if m else []
+    cands = keep
     out = []
     for p in picks[: PICKS[1]]:
         i = int(p.get("candidate", 0)) - 1
@@ -258,13 +271,13 @@ def main() -> int:
         log(f"broadcast {v['id']} \"{v['title']}\" {v['duration']} from {v['created_at']}, {len(muted)} muted stretches")
         work = Path(tempfile.mkdtemp(prefix="twclip_"))
         try:
-            video = download(v["id"], work)
-            loud, wav = audio_features(video, work)
+            audio = download_audio(v["id"], work)
+            loud, wav = audio_features(audio, work)
+            audio.unlink(missing_ok=True)
             segs = transcript(wav)
-            cuts = cut_times(video)
-            cands = candidates(dur, loud, segs, cuts, muted)
-            log(f"{len(segs)} speech segments, {len(cuts)} picture cuts, {len(cands)} candidates")
-            picks = choose(video, game, v["title"], cands, work) if cands else []
+            cands = candidates(dur, loud, segs, muted)
+            log(f"{len(segs)} speech segments, {len(cands)} candidates")
+            picks = choose(v["id"], game, v["title"], cands, work) if cands else []
             made = []
             for p in picks:
                 start, end = max(0, p["start"] - LEAD_PAD), min(dur, p["end"] + TAIL_PAD)
