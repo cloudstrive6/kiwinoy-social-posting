@@ -4,6 +4,7 @@ Writes site/src/data/socials.json, which the site reads at build time. Fetches:
   - YouTube    subscriberCount via the Data API (official, reliable)
   - TikTok     followerCount scraped from the public profile page's rehydration JSON
   - Instagram  follower count via the public web_profile_info endpoint (best-effort)
+  - Twitch     total followers via the official Helix API (user token from tools/twitch_auth.py)
 
 There is NO official follower API for TikTok or Instagram, so those two are scraped and can
 occasionally fail (bot-check / rate-limit from a cloud IP). To make that invisible on the site,
@@ -117,6 +118,37 @@ def _kick_followers() -> int | None:
         return None
 
 
+def _twitch_followers() -> int | None:
+    """Twitch's official API (2026-11-21). helix/channels/followers needs a USER token; with no
+    scope it returns only the total. The token comes from the refresh token tools/twitch_auth.py
+    stored (confidential app "BOSS KG Stats"; its refresh tokens do not expire). Never printed."""
+    import os
+    import requests
+    cid, sec, rt = (os.environ.get(k, "").strip() for k in
+                    ("TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "TWITCH_REFRESH_TOKEN"))
+    if not (cid and sec and rt):
+        print("   twitch: no TWITCH_* secrets (run tools/twitch_auth.py once)", flush=True)
+        return None
+    try:
+        t = requests.post("https://id.twitch.tv/oauth2/token", timeout=25,
+                          data={"client_id": cid, "client_secret": sec, "grant_type": "refresh_token",
+                                "refresh_token": rt})
+        if t.status_code != 200:
+            print(f"   twitch: token refresh HTTP {t.status_code} (rerun tools/twitch_auth.py)", flush=True)
+            return None
+        h = {"Authorization": f"Bearer {t.json()['access_token']}", "Client-Id": cid}
+        u = requests.get("https://api.twitch.tv/helix/users?login=kiwinoy", headers=h, timeout=25).json()["data"][0]
+        r = requests.get(f"https://api.twitch.tv/helix/channels/followers?broadcaster_id={u['id']}",
+                         headers=h, timeout=25)
+        if r.status_code != 200:
+            print(f"   twitch: HTTP {r.status_code}", flush=True)
+            return None
+        return int(r.json().get("total") or 0) or None
+    except Exception as e:
+        print(f"   twitch: {type(e).__name__}", flush=True)
+        return None
+
+
 def _instagram_graph() -> int | None:
     """OFFICIAL count (2026-11-20): the public endpoint below answers GitHub's servers with HTTP 429,
     so the site showed 858 from 2026-10-29 while the real count was 1,206. Post for Me holds the
@@ -196,6 +228,7 @@ def main() -> int:
         "instagram": _instagram_followers(),
         "facebook": _facebook_followers(),
         "kick": _kick_followers(),
+        "twitch": _twitch_followers(),
     }
 
     out = dict(prev)

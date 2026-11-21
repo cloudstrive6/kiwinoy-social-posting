@@ -28,6 +28,10 @@ jobs:
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
       # Instagram count via the official Graph API, using the login Post for Me holds (2026-11-20)
       POSTFORME_API_KEY: ${{ secrets.POSTFORME_API_KEY }}
+      # Twitch total followers, official Helix API (2026-11-21, tools/twitch_auth.py set these)
+      TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+      TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+      TWITCH_REFRESH_TOKEN: ${{ secrets.TWITCH_REFRESH_TOKEN }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
