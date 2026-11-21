@@ -856,7 +856,11 @@ def run_gameplay_reel(
         cache = ROOT / (CONFIG.reels.get("footage", {}) or {}).get(
             "cache_dir", "reels/assets/footage/.cache")
         clip_path, clip_id = None, None
-        for kind, item in reel_composer._candidates(brief["game"]):
+        # A full-recording MOMENT id ('<game>-cutscene__<file>@<s>~<e>', as the ledger and run
+        # logs show it) is re-cut from that recording (2026-11-21 refire of a GTA 6 TikTok draft).
+        if "-cutscene__" in str(clip_override) and "~" in str(clip_override):
+            clip_path, clip_id = reel_composer.cut_stretch_by_id(clip_override, run_dir / "refire")
+        for kind, item in ([] if clip_path else reel_composer._candidates(brief["game"])):
             iname = item["name"] if isinstance(item, dict) else Path(str(item)).name
             if iname == clip_override:
                 clip_path = (Path(item) if kind == "local"

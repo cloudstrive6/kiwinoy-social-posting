@@ -31,6 +31,18 @@ on:
         description: "Force a layout for this run: fill (full vertical), classic or triptych. Blank = normal rotation"
         required: false
         default: ""
+      clip:
+        description: "Refire a SPECIFIC clip: a footage file name, or a full-recording moment id like gta6-cutscene__<file>@124.2~200.2 (from the run log). Blank = pick fresh"
+        required: false
+        default: ""
+      hook:
+        description: "Force the on-screen hook text. Blank = the hook writer and its critics"
+        required: false
+        default: ""
+      caption:
+        description: "Force the caption body (game line and hashtags still added). Blank = written"
+        required: false
+        default: ""
 
 concurrency:
   group: kiwinoy-tiktok
@@ -84,6 +96,11 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Render + publish the TLOU2 TikTok reel
+        env:
+          # Free text goes through env vars, never pasted into the script (no shell injection).
+          IN_CLIP: ${{ github.event.inputs.clip }}
+          IN_HOOK: ${{ github.event.inputs.hook }}
+          IN_CAPTION: ${{ github.event.inputs.caption }}
         run: |
           DRY=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
@@ -93,7 +110,11 @@ jobs:
           case "${{ github.event.inputs.layout }}" in
             fill|classic|triptych) LAYOUT="--layout ${{ github.event.inputs.layout }}" ;;
           esac
-          python run.py --tiktok $DRY $BACKUP $LAYOUT
+          EXTRA=()
+          if [ -n "$IN_CLIP" ]; then EXTRA+=(--clip "$IN_CLIP"); fi
+          if [ -n "$IN_HOOK" ]; then EXTRA+=(--hook "$IN_HOOK"); fi
+          if [ -n "$IN_CAPTION" ]; then EXTRA+=(--caption "$IN_CAPTION"); fi
+          python run.py --tiktok $DRY $BACKUP $LAYOUT "${EXTRA[@]}"
 
       - name: Upload run artifacts (brief, caption, mp4)
         if: always()

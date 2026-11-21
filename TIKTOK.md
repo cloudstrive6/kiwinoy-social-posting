@@ -87,6 +87,10 @@ observer's read, the dialogue, each rejected hook and why). Opus writes the hook
 - `reels.tiktok.extra_hashtags`: appended to the TikTok caption only (e.g. `#gaming`).
 - `reels.tiktok.hi_bitrate`: the CI 1080p encode. `true` = Premiere 2-pass VBR 15/20 Mbps
   (current); `false` = the lighter CRF21 feed encode. (PfM re-encodes the draft either way.)
+- **Refire one draft** (2026-11-21): run `tiktok.yml` by hand with `layout`, `clip` (a footage
+  file name, or a full-recording moment id from the run log such as
+  `gta6-cutscene__GTA 6 (2026-11-20 23-04-58) p05.mp4@124.2~200.2`, re-cut from B2), and
+  optionally `hook` / `caption` to force the text. Each refire is one more pending draft.
 
 ## Cron status
 The **CI TikTok cron** (`tiktok.yml`, **PfM drafts**) runs **3×/day** on cron-job.org,

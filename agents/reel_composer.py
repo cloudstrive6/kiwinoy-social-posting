@@ -694,6 +694,42 @@ def pick_fallback_stretch(game: str, platforms, out_dir: Path,
     return clip, cid
 
 
+_STRETCH_ID = re.compile(r"^(?P<key>[^_]+-cutscene)__(?P<name>.+)@(?P<s>\d+(?:\.\d+)?)~(?P<e>\d+(?:\.\d+)?)$")
+
+
+def cut_stretch_by_id(clip_id: str, out_dir: Path) -> tuple[Optional[Path], Optional[str]]:
+    """RE-CUT one full-recording moment by its ledger id ('<game>-cutscene__<file>@<s>~<e>'),
+    for a refire of a post that came from pick_fallback_stretch (2026-11-21: Bryce re-fired a
+    GTA 6 TikTok draft to fix its hook). Same cut settings as the picker. (None, None) if the id
+    is not that shape or the recording is not in the pool."""
+    m = _STRETCH_ID.match(str(clip_id or "").strip())
+    if not m:
+        return None, None
+    key, name = m.group("key"), m.group("name")
+    s, e = float(m.group("s")), float(m.group("e"))
+    if e <= s:
+        return None, None
+    for kind, item in _candidates(key):
+        iname = Path(str(item)).name if kind == "local" else str(item.get("name", ""))
+        if iname != name:
+            continue
+        src = _source_url(kind, item)
+        if not src:
+            return None, None
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        clip = out_dir / "refire_stretch.mp4"
+        ok = _ff(["-ss", f"{s:.2f}", "-i", src, "-t", f"{e - s:.2f}", "-map", "0:v:0",
+                  "-map", "0:a:0?", "-c:v", "libx264", "-preset", "veryfast", "-crf", "17",
+                  "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags",
+                  "+faststart", str(clip)], 900)
+        if not ok or not clip.exists():
+            print(f"[reel] refire stretch cut FAILED for {clip_id}", flush=True)
+            return None, None
+        return clip, f"{_clip_id(kind, item, key)}@{s:g}~{e:g}"
+    return None, None
+
+
 def is_portrait(path: Path) -> bool:
     from core import ffmpeg as _f
     exe = _f.ffprobe_bin()
