@@ -282,6 +282,40 @@ def presigned_url(key: str, valid_seconds: int = 7 * 24 * 3600) -> Optional[str]
         return None
 
 
+def get_bytes(key: str) -> Optional[bytes]:
+    """A small private object's bytes (for example secrets/threads-token.json), or None."""
+    auth = _authorize()
+    if not auth or not key:
+        return None
+    try:
+        bucket = auth.get("bucketName") or _bucket()
+        r = requests.get(f"{auth['downloadUrl']}/file/{bucket}/{quote(key, safe='/')}",
+                         headers={"Authorization": auth["token"]}, timeout=_TIMEOUT)
+        return r.content if r.status_code == 200 else None
+    except Exception:
+        return None
+
+
+def put_bytes(key: str, data: bytes, content_type: str = "application/json") -> bool:
+    """Upload a small private object (2026-11-21: the renewed Threads token). True on success."""
+    import hashlib
+    auth = _authorize()
+    if not auth or not key:
+        return False
+    try:
+        r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_get_upload_url", headers={"Authorization": auth["token"]},
+                          json={"bucketId": auth["bucketId"]}, timeout=_TIMEOUT)
+        if r.status_code != 200:
+            return False
+        up = r.json()
+        r = requests.post(up["uploadUrl"], data=data, timeout=_TIMEOUT,
+                          headers={"Authorization": up["authorizationToken"], "X-Bz-File-Name": quote(key, safe="/"),
+                                   "Content-Type": content_type, "X-Bz-Content-Sha1": hashlib.sha1(data).hexdigest()})
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
 # ------------------------------------------------ 4K60 LONG-FORM library (per user 2026-09-21)
 # Layout on B2: 4k60fps/<game-folder>/<parts|segments>/<file>. Uploaded by
 # tools/longform_sync.py (rclone keeps the file's modified time as fileInfo

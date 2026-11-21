@@ -5,6 +5,7 @@ Writes site/src/data/socials.json, which the site reads at build time. Fetches:
   - TikTok     followerCount scraped from the public profile page's rehydration JSON
   - Instagram  follower count via the public web_profile_info endpoint (best-effort)
   - Twitch     total followers via the official Helix API (user token from tools/twitch_auth.py)
+  - Threads    followers_count via the official Threads API (token renewed on private B2)
 
 There is NO official follower API for TikTok or Instagram, so those two are scraped and can
 occasionally fail (bot-check / rate-limit from a cloud IP). To make that invisible on the site,
@@ -149,6 +150,56 @@ def _twitch_followers() -> int | None:
         return None
 
 
+THREADS_TOKEN_KEY = "secrets/threads-token.json"   # private B2; the renewed token lives here
+
+
+def _threads_followers() -> int | None:
+    """Threads followers via the official Threads API (2026-11-21): GET me/threads_insights
+    ?metric=followers_count with a token from Meta app "KG Publisher for Threads" (User Token
+    Generator, threads_manage_insights). Tokens last 60 days: the newest is kept on private B2
+    and renewed here once it is 7 days old, so nobody pastes a new one. THREADS_ACCESS_TOKEN
+    (GitHub secret, from tools/threads_token_setup.py) seeds it. Never printed."""
+    import os
+    import requests
+    from core import b2_store
+    stored = None
+    try:
+        raw = b2_store.get_bytes(THREADS_TOKEN_KEY)
+        stored = json.loads(raw) if raw else None
+    except Exception:
+        stored = None
+    tok = (stored or {}).get("access_token") or os.environ.get("THREADS_ACCESS_TOKEN", "").strip()
+    if not tok:
+        print("   threads: no token (run tools/threads_token_setup.py once)", flush=True)
+        return None
+    try:
+        when = dt.datetime.fromisoformat((stored or {}).get("refreshed_at", "2000-01-01T00:00:00+00:00"))
+        if dt.datetime.now(dt.timezone.utc) - when > dt.timedelta(days=7):
+            r = requests.get("https://graph.threads.net/refresh_access_token", timeout=25,
+                             params={"grant_type": "th_refresh_token", "access_token": tok})
+            if r.status_code == 200 and r.json().get("access_token"):
+                tok = r.json()["access_token"]
+                now = dt.datetime.now(dt.timezone.utc)
+                rec = {"access_token": tok, "refreshed_at": now.isoformat(),
+                       "expires_at": (now + dt.timedelta(seconds=int(r.json().get("expires_in", 0)))).isoformat()}
+                ok = b2_store.put_bytes(THREADS_TOKEN_KEY, json.dumps(rec).encode())
+                print(f"   threads: token renewed to {rec['expires_at'][:10]} (saved to B2: {ok})", flush=True)
+            else:
+                print(f"   threads: token renew HTTP {r.status_code}", flush=True)
+        r = requests.get("https://graph.threads.net/v1.0/me/threads_insights", timeout=25,
+                         params={"metric": "followers_count", "access_token": tok})
+        if r.status_code != 200:
+            print(f"   threads: HTTP {r.status_code} (token expired or revoked: rerun tools/threads_token_setup.py)", flush=True)
+            return None
+        for m in r.json().get("data", []):
+            if m.get("name") == "followers_count":
+                return int((m.get("total_value") or {}).get("value") or 0) or None
+        return None
+    except Exception as e:
+        print(f"   threads: {type(e).__name__}", flush=True)
+        return None
+
+
 def _instagram_graph() -> int | None:
     """OFFICIAL count (2026-11-20): the public endpoint below answers GitHub's servers with HTTP 429,
     so the site showed 858 from 2026-10-29 while the real count was 1,206. Post for Me holds the
@@ -229,6 +280,7 @@ def main() -> int:
         "facebook": _facebook_followers(),
         "kick": _kick_followers(),
         "twitch": _twitch_followers(),
+        "threads": _threads_followers(),
     }
 
     out = dict(prev)
