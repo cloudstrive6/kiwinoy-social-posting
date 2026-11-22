@@ -232,9 +232,13 @@ def main() -> int:
             left = int(sub["character_limit"]) - int(sub["character_count"])
             print(f"ElevenLabs: {todo} characters to record, {left} credits left this month "
                   f"({sub.get('tier')})", flush=True)
-            if todo > left:
-                raise SystemExit(f"Not enough ElevenLabs credits: need {todo}, have {left}. "
-                                 "Nothing was recorded. Upgrade the plan or wait for the monthly reset.")
+            # Credits, not characters (2026-11-22): Eleven v4 on Starter measured about 0.4 credit per
+            # character (Wolverine, the bosses video, the Guide C reel packs), so a character count
+            # refused runs the balance could pay for. 0.5 keeps a safety margin.
+            need = int(todo * 0.5) + 1
+            if need > left:
+                raise SystemExit(f"Not enough ElevenLabs credits: need about {need} for {todo} characters, "
+                                 f"have {left}. Nothing was recorded. Upgrade the plan or wait for the reset.")
             left_before = left
     for i, b in enumerate(narr):
         h = take_hash(b)
