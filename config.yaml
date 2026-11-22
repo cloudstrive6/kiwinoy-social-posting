@@ -630,6 +630,14 @@ reels:
       "GTA 6 (2026-11-22 00-54-20) p01.mp4": [[0, 140]]     # TV ads with sexual innuendo
       "GTA 6 (2026-11-22 01-00-16) p01.mp4": [[240, 301]]   # Delights strip club, dancer in lingerie
       "GTA 6 (2026-11-22 01-00-16) p02.mp4": [[0, 301]]     # inside the strip club, near-topless dancer
+      # 2026-11-23 footage map of the 2026-11-23 morning session (ADULT flags, small margins):
+      "GTA 6 (2026-11-23 03-02-57) p02.mp4": [[40, 80]]     # radio innuendo (audio only)
+      "GTA 6 (2026-11-23 03-02-57) p06.mp4": [[45, 74]]     # motel couple's sexual dialogue (checked)
+      "GTA 6 (2026-11-23 03-59-02) p07.mp4": [[28, 47]]     # strip club map card, "private dances"
+      "GTA 6 (2026-11-23 05-04-53) p03.mp4": [[288, 301]]   # radio joke about topless officers
+      "GTA 6 (2026-11-23 05-04-53) p04.mp4": [[0, 6], [203, 219]]   # same joke; swingers bar ad
+      "GTA 6 (2026-11-23 05-04-53) p06.mp4": [[0, 8]]       # crude sexual line from Dunk
+      "GTA 6 (2026-11-23 05-04-53) p10.mp4": [[210, 250]]   # Lucia in underwear in the wardrobe, crude TV line (checked)
     enabled: true
     dir: reels/assets/footage
     # GAMES-ONLY: exclude esports titles from the footage reels (they moved to the
