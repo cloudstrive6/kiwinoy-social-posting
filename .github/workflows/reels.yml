@@ -61,7 +61,7 @@ permissions:
 jobs:
   reel:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120   # fact cards keep trying footage until one passes (2026-11-23)
     env:
       # Research, caption + fact-check run on the Claude subscription token (free);
       # ANTHROPIC_API_KEY is the fallback; OpenAI is only for the image generator.

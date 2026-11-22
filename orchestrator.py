@@ -973,8 +973,19 @@ def run_gameplay_reel(
         # abort the whole run, so one unsupported sentence meant no post on any platform
         # that slot. Try other moments first; only then drop the format (bench 2026-10-08).
         lore_out, _ldir, _tried = None, run_dir / "lore", set()
-        _max_tries = int(lcfg.get("strict_tries", 12)) if lore_strict else 3
+        # KEEP TRYING (Bryce, 2026-11-23: "a slot should always be filled out. If it fails, then
+        # do another try, we have lots of footage"). Every fact-card slot, YouTube and Facebook,
+        # walks on to other moments and footage until a card passes, bounded by TIME rather
+        # than a small count: a refused attempt costs a few minutes of Claude work and the job
+        # has 120 minutes, so try_minutes leaves room to render and post.
+        import time as _time
+        _max_tries = int(lcfg.get("strict_tries", 60))
+        _deadline = _time.monotonic() + 60 * float(lcfg.get("try_minutes", 85))
         for _try in range(_max_tries):
+            if _try and _time.monotonic() > _deadline:
+                log(f"LORE: {_try} moments tried in {lcfg.get('try_minutes', 85)} minutes; "
+                    "stopping the search for this run.")
+                break
             _ldir = run_dir / ("lore" if _try == 0 else f"lore_retry{_try}")
             try:
                 lore_out = _build_lore(Path(clip_path), brief.get("game", ""), _start, _dur,
@@ -986,11 +997,9 @@ def run_gameplay_reel(
                 # window three times and the slot fell through to triptych while claiming
                 # it was trying other moments (user, 2026-10-09).
                 _tried.add(str(clip_id))
-                if lore_strict:                  # walk on to other footage, never re-format
-                    _np, _nid, _ns = _next_lore(_dur, _tried)
-                else:
-                    _np, _nid, _ns = reel_composer.pick_unused_cutscene(
-                        brief["game"], pick_platforms, _dur, exclude=_tried)
+                # Every platform walks on through the footage pools (this game's recordings,
+                # its gameplay footage, then other games) before giving up on the fact card.
+                _np, _nid, _ns = _next_lore(_dur, _tried)
                 if not _np:
                     break
                 clip_path, clip_id, _start = _np, _nid, float(_ns)

@@ -35,7 +35,7 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120   # fact cards keep trying footage until one passes (2026-11-23)
     env:
       # fact card fallback (run.py --youtube-reel): Claude subscription for the card + fact-check,
       # Telegram alerts, the footage/ledger release assets. Same secrets reels.yml uses.

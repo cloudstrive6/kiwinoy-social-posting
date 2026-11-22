@@ -952,6 +952,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                     "-i", str(clip), "-c:v", "libx264", "-crf", "18",
                     "-preset", "medium", "-c:a", "aac", "-b:a", "192k", str(seg)], check=True)
 
+    wrote = False
     if card:
         pass
     elif text:
@@ -1036,6 +1037,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             return _check_card(c, observation, subs, gname, game, research, facts,
                                used_fact=used_fact, suspects=suspects)
 
+        wrote = True
         # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
         # words that go on screen.
         from core import humanize
@@ -1084,6 +1086,21 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         # seconds on one frame per second, then trim. Only the start moves later and only the
         # end moves earlier, so nothing unchecked is added.
         scan = _payoff_scan(seg, dur, card)
+        if scan and scan.get("shown") is False and wrote:
+            # One rewrite about what the clip DOES show before giving up on this moment
+            # (Bryce, 2026-11-23: a slot must always be filled, so do not waste a good moment).
+            log("the headline's subject is not on screen; rewriting once about what the clip shows")
+            c2 = humanize.card(_write_card(
+                observation, subs, game, gname, research=research, facts=facts,
+                avoid="the HEADLINE's subject never appears in this clip; headline something the "
+                      "clip clearly shows"), gname, WORDS_MIN, WORDS_MAX)
+            if c2.get("body") and _judge(c2)[0]:
+                scan2 = _payoff_scan(seg, dur, c2)
+                if not (scan2 and scan2.get("shown") is False):
+                    if c2.get("fact_id") and c2["fact_id"] != card.get("fact_id"):
+                        mark_fact(game, c2["fact_id"])
+                    c2["caption"], c2["title"] = lore_post_text(c2, gname)
+                    card, scan = c2, scan2
         if scan and scan.get("shown") is False:
             raise CardRefused("the headline's subject never appears on screen in this clip")
         pay = float((scan or {}).get("payoff_s", card.get("payoff_at") or 0) or 0)
