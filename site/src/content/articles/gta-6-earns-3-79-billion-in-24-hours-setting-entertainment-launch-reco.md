@@ -8,7 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-earns-3-79-billion-in-24-hours-setting-entertainment-launch-reco.jpg"
 date: 2026-11-21
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/gta-6-is-the-biggest-entertainment-launch-of-all-time-at-379-billion-on-day-one"
