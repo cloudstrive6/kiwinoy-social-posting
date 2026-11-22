@@ -45,7 +45,8 @@ RED = (255, 61, 70)
 
 # ~3.5 words/second is a comfortable silent-reading pace, so 55-70 words ~= 16-20s of reading
 # against an 8s video: the viewer has to loop it, which is the whole point of the format.
-WORDS_MIN, WORDS_MAX = 45, 65
+# Bryce, 2026-11-22: keep cards at 60+ words, so viewers loop the clip to finish reading.
+WORDS_MIN, WORDS_MAX = 60, 72
 # seconds of dialogue either side of the on-screen window, read for CONTEXT only
 CTX_PAD = 10.0
 
@@ -227,9 +228,29 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "Put the fact's id in fact_id. If no fact fits, write a scene card and leave "
            "fact_id empty.\n\n"
            if facts else "")
-        + "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
-        "four beats, in this order, as ONE paragraph:\n"
-        f"  1. CONTEXT: open with 'In {gname}' and the situation, in a few words.\n"
+        + "FIRST DECIDE THE MODE (Bryce, 2026-11-22: what YOU can do in the game is not the same "
+        "thing as what the CHARACTER does in the story):\n"
+        "- \"player\": the clip shows the player in control: HUD, minimap, button prompts, "
+        "menus, tooltips, a toast or notice, free movement, an activity or system (gym, shops, "
+        "food, wanted level, cars, money). The card is about what YOU can do or what the game "
+        "does to you. Speak to the viewer: 'you', 'your'. Never tell it as a story event that "
+        "happened to the character ('the gym shuts on Jason' is wrong; 'the gym locks you out "
+        "after one session' is right).\n"
+        "- \"story\": a scripted scene: cinematic framing, no HUD, mission dialogue, a cutscene. "
+        "The card is about what the CHARACTER does or says in the story. Name the character. "
+        "NEVER write 'you can' or 'you get to' about a scripted story beat, and never sell a "
+        "mission moment as a feature the player chooses.\n"
+        "If a fact from the list is used, its mode follows the fact: a mechanic is player, a "
+        "story or production fact is story.\n\n"
+        "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
+        "a HEADLINE, then four beats, in this order, as ONE paragraph:\n"
+        "  0. HEADLINE (Bryce, 2026-11-22: lead with the surprise): 6 to 8 words, shown big "
+        "above the body. The single most surprising true thing in the card, said plainly "
+        "('The gym locks you out after one session', 'Lucia pawns her necklace for a room'). "
+        "No game name, no 'In GTA 6', no question unless the body answers it, no clickbait, "
+        "no colon, nothing the body does not support.\n"
+        f"  1. CONTEXT: straight into the situation in a few words. NEVER open with 'In {gname}' "
+        "or 'In GTA 6' or any 'In <game>' phrase: the headline already did the job.\n"
         "  2. THE DETAIL: the specific thing worth noticing — what someone SAYS or DOES and "
         "what it MEANS. This is the heart of the card.\n"
         "  3. THE VERDICT: a short punchy reaction to that detail ('That is ice cold.').\n"
@@ -282,16 +303,49 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "screen. Fans check these. Say 'years later' or 'for a long time' instead\n"
         "- the COMMENT line is posted too and is held to the same standard; it may be funny, "
         "but it may not state anything untrue\n"
+        "MATCH THE PICTURE (Bryce, 2026-11-22, after a card gave Danny's line to Lucia and "
+        "described a shrug nobody could see):\n"
+        "- give a spoken line ONLY to the speaker whose label shows with it in the subtitles; "
+        "if no label, say 'someone' or leave the speaker out\n"
+        "- never describe a gesture, look, shrug, smile or expression unless WHAT IS ON SCREEN "
+        "states it\n"
+        "- every number carries its unit and what it counts ('33 percent of the gym bar per "
+        "day', never 'about 33 percent per day')\n"
+        "- no story spoilers beyond what this clip itself shows: never reveal who dies, who "
+        "betrays whom, a twist or an ending, and never NAME a later mission or chapter\n"
+        "- quote or paraphrase only what the subtitles actually say; name a car, item or menu "
+        "option only as it reads on screen or in the fact\n"
+        "- the HEADLINE's subject must be visible in this clip (the notice, menu, action or "
+        "moment itself), not something that only happens later; if the clip never shows it, "
+        "headline what the clip DOES show\n"
+        "- one consistent story: never say two things that contradict each other\n"
+        "- a number or stat the clip does not show on screen must say where it comes from in "
+        "the same sentence ('guides list pull-ups at +5% Strength'); never state an off-screen "
+        "number as if the viewer can see it (test card, 2026-11-22)\n"
+        "PAYOFF TIMING: the frames above carry times ('frame 4 at ~0:09'). Give \"payoff_at\": "
+        "the seconds into the clip where the thing the headline is about is FIRST clearly on "
+        "screen (0 if it is there from the start). Give \"text_evidence\": true only when that "
+        "payoff is small in-game text the viewer must read (a toast, tooltip, menu line or "
+        "notice), else false.\n"
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
-        + ('\nReturn ONLY JSON: {"body": "the paragraph", "highlight": "exact phrase from the '
-           'body", "comment": "the reaction line"'
+        + ('\nReturn ONLY JSON: {"mode": "player or story", "headline": "6 to 8 words", '
+           '"body": "the paragraph", "highlight": "exact phrase from the '
+           'body", "comment": "the reaction line", "payoff_at": 0, "text_evidence": false'
            + (', "fact_id": "id of the fact used, or empty"' if facts else '') + '}')
     )
     try:
         d = extract_json(_text(prompt, timeout=240)) or {}
-        return {"highlight": sanitize(str(d.get("highlight", ""))).strip()[:60],
+        try:
+            payoff = max(0.0, float(d.get("payoff_at", 0) or 0))
+        except (TypeError, ValueError):
+            payoff = 0.0
+        mode = str(d.get("mode", "") or "").strip().lower()
+        return {"mode": mode if mode in ("player", "story") else "",
+                "headline": re.sub(r"\s+", " ", sanitize(str(d.get("headline", "")))).strip()[:70],
+                "highlight": sanitize(str(d.get("highlight", ""))).strip()[:60],
                 "comment": sanitize(str(d.get("comment", ""))).strip()[:90],
                 "body": re.sub(r"\s+", " ", sanitize(str(d.get("body", "")))).strip(),
+                "payoff_at": payoff, "text_evidence": bool(d.get("text_evidence")),
                 "fact_id": str(d.get("fact_id", "") or "").strip()[:40]}
     except Exception as e:
         log(f"card writer failed ({e!r})")
@@ -572,9 +626,33 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
            if suspects else "")
         # The COMMENT ships on the video too, and it was NOT being checked — that is where an
         # invented 'five years' reached a live TikTok post (user, 2026-10-07). Check it all.
+        + f"THE HEADLINE (shown big above the card, check it the same way):\n"
+          f"{card.get('headline', '(none)')}\n\n"
         + f"THE CARD:\n{card.get('body', '')}\n\n"
         + f"THE COMMENT LINE (also posted, check it the same way):\n"
           f"{card.get('comment', '(none)')}\n\n"
+        + f"THE CARD'S MODE: {card.get('mode') or '(not given)'}\n"
+          "MODE CHECK (Bryce, 2026-11-22): 'player' means the clip shows the player in control "
+          "(HUD, prompts, menus, a notice, an activity or system) and the card talks to the "
+          "viewer about what YOU can do. 'story' means a scripted scene and the card names the "
+          "character. Flag as BAD: a 'player' card on a scripted scene, a 'story' card that says "
+          "'you can' or sells a story beat as a choice, or a player mechanic told as something "
+          "that happened to the character.\n"
+          "PICTURE CHECK (Bryce, 2026-11-22): flag as BAD a spoken line credited to anyone but "
+          "the speaker labelled in the subtitles; a gesture, look, shrug or expression the "
+          "on-screen evidence does not state; a number with no unit or no clear meaning ('about "
+          "33 percent per day'); a story spoiler beyond this clip (who dies, betrayals, twists, "
+          "endings); and a headline that claims more than the card supports or opens with "
+          "'In <game>'.\n"
+          "ROUND 2 (review 2026-11-22, slips that got past this check): flag as BAD any quoted or "
+          "paraphrased speech ('calling it an investment') that the subtitles do not contain; "
+          "any name, model or label (a car model, a menu option) that is neither readable in the "
+          "evidence nor in the fact; a card that contradicts itself ('fires after X' and 'has no "
+          "trigger'); a NAMED later mission, chapter or event that comes after this clip in the "
+          "story (a spoiler, even when a walkthrough confirms it); a comparison that gets the "
+          "mechanic backwards ('caps the damage you can take' for MORE health); and a headline "
+          "whose subject the on-screen evidence never shows; and a number or stat that is not "
+          "on screen and is stated without saying where it comes from.\n\n"
         "CHECK THE DIRECTION OF THE ACTION FIRST. Who is doing what, TO WHOM, and who is "
         "awake, standing, holding or reaching — compare that against the on-screen evidence "
         "line by line. A card that swaps the two people round ('Dina holding her' when the "
@@ -683,10 +761,24 @@ def _layout(card: dict, video_h: int, video_w: int) -> dict:
     from PIL import ImageDraw, Image
     d = ImageDraw.Draw(Image.new("RGB", (16, 16)))
     pad, inner = 36, 44
-    f_body = _font(46, "Bold")
-    body_lines = _wrap(d, card["body"], f_body, W - pad * 2 - inner * 2)
-    line_h = 58
-    text_h = inner * 2 + len(body_lines) * line_h
+    # HEADLINE (Bryce, 2026-11-22: lead with the surprise): big Anton above the body, inside
+    # the same card, at most two lines. Cards without one render exactly as before.
+    from PIL import ImageFont
+    f_head = ImageFont.truetype(str(FONT_HEAD), 72) if FONT_HEAD.exists() else _font(66, "ExtraBold")
+    head_lines = (_wrap(d, card["headline"].upper(), f_head, W - pad * 2 - inner * 2)[:2]
+                  if card.get("headline") else [])
+    head_line_h, head_gap = 84, 26
+    head_h = (len(head_lines) * head_line_h + head_gap) if head_lines else 0
+    # FIT THE FRAME (2026-11-22: a 70-word card plus the headline pushed the comment strip off
+    # the bottom). The body steps down from 46 px until card, video and comment fit; the layout
+    # itself stays the same.
+    cmt_est = 18 + 56 + 18 + 2 * 44 + 26
+    for body_px, line_h in ((46, 58), (43, 54), (40, 50), (37, 46)):
+        f_body = _font(body_px, "Bold")
+        body_lines = _wrap(d, card["body"], f_body, W - pad * 2 - inner * 2)
+        if 150 + inner * 2 + head_h + len(body_lines) * line_h + video_h + cmt_est <= H - 30:
+            break
+    text_h = inner * 2 + head_h + len(body_lines) * line_h
     # The comment strip is sized from the ACTUAL wrapped lines — a fixed height clipped the
     # second line outside the card (user, 2026-10-06).
     avatar, cmt_line_h = 56, 44
@@ -694,7 +786,9 @@ def _layout(card: dict, video_h: int, video_w: int) -> dict:
                      if card.get("comment") else [])
     comment_h = (18 + avatar + 18 + len(comment_lines) * cmt_line_h + 26) if comment_lines else 0
     top = 150                                       # leaves room for the Shorts UI
-    return {"pad": pad, "inner": inner, "f_body": f_body, "body_lines": body_lines,
+    return {"pad": pad, "inner": inner, "f_body": f_body, "body_lines": body_lines, "body_px": body_px,
+            "f_head": f_head, "head_lines": head_lines, "head_line_h": head_line_h,
+            "head_h": head_h,
             "video_h": video_h, "video_w": video_w, "avatar": avatar,
             "comment_lines": comment_lines, "cmt_line_h": cmt_line_h,
             "line_h": line_h, "top": top, "text_h": text_h, "video_y": top + text_h,
@@ -716,8 +810,14 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
     d.rectangle([vx0, vy0, vx0 + lay["video_w"], vy1], fill=(0, 0, 0, 0))
 
     hl_idx = _highlight_indices(card["body"], card.get("highlight", ""))
-    f_body, f_hl = lay["f_body"], _font(46, "ExtraBold")
+    f_body, f_hl = lay["f_body"], _font(lay.get("body_px", 46), "ExtraBold")
     y, wi = panel_top + inner, 0
+    for ln in lay.get("head_lines", []):            # the headline, centred, white Anton
+        w = d.textlength(ln, font=lay["f_head"])
+        d.text((int((W - w) / 2), y), ln, font=lay["f_head"], fill=(255, 255, 255, 255))
+        y += lay["head_line_h"]
+    if lay.get("head_lines"):
+        y += lay["head_h"] - len(lay["head_lines"]) * lay["head_line_h"]
     for ln in lay["body_lines"]:                    # centred, like the sample
         w = d.textlength(ln, font=f_body)
         wi = _draw_highlighted(d, int((W - w) / 2), y, ln, hl_idx, f_body, f_hl, wi)
@@ -744,13 +844,95 @@ def _card_png(card: dict, out: Path, video_h: int, lay: dict) -> Path:
                    fill=(236, 236, 240, 255))
 
     react = ROOT / "assets" / "pngtuber" / "kg_idle.png"
-    if react.exists():                              # our own reaction character, under the card
-        r = Image.open(react).convert("RGBA")
-        rh = min(340, max(160, H - panel_bot - 60))
+    room = H - panel_bot - 60
+    if react.exists() and room >= 140:              # our own reaction character, under the card
+        r = Image.open(react).convert("RGBA")       # (skipped when a tall card leaves no room:
+        rh = min(340, room)                         # it covered the comment line, 2026-11-22)
         r = r.resize((round(r.width * rh / r.height), rh), Image.LANCZOS)
         img.alpha_composite(r, (round((W - r.width) / 2), H - rh - 40))
     img.save(out)
     return out
+
+
+def _payoff_scan(seg: Path, dur: float, card: dict) -> dict | None:
+    """One frame per second of the clip on a labelled sheet, read by Claude vision: the first
+    second the headline's subject is clearly on screen, whether it appears at all, and the
+    broken-looking seconds (camera-mode blur or colour-split smear, black, loading, pause or
+    map screen that is not the point of the card). None if the scan fails."""
+    from PIL import Image, ImageDraw
+    from core import claude_code
+    ff = ffmpeg.ffmpeg_bin() or "ffmpeg"
+    n = max(1, int(dur))
+    with tempfile.TemporaryDirectory() as tmp:
+        tiles = []
+        for k in range(n):
+            f = Path(tmp) / f"s{k:02d}.png"
+            subprocess.run([ff, "-y", "-v", "error", "-ss", f"{k + 0.5:.2f}", "-i", str(seg),
+                            "-frames:v", "1", "-vf", "scale=384:216", str(f)], check=False)
+            tiles.append(Image.open(f).convert("RGB") if f.exists() else Image.new("RGB", (384, 216)))
+        cols = 5
+        sheet = Image.new("RGB", (384 * cols, 216 * ((n + cols - 1) // cols)))
+        d = ImageDraw.Draw(sheet)
+        for k, im in enumerate(tiles):
+            x, y = (k % cols) * 384, (k // cols) * 216
+            sheet.paste(im, (x, y))
+            d.rectangle([x, y, x + 44, y + 22], fill=(0, 0, 0))
+            d.text((x + 5, y + 4), f"{k}s", fill=(255, 255, 0))
+        path = Path(tmp) / "sheet.jpg"
+        sheet.save(path, quality=85)
+        try:
+            raw = claude_code.vision(
+                f"This sheet shows one frame per second of a {n}-second gameplay clip; each tile is "
+                "labelled with its second. A text card will sit above this clip:\n"
+                f"HEADLINE: {card.get('headline', '')}\nCARD: {card.get('body', '')}\n\n"
+                "1. payoff_s: the FIRST second where the thing the HEADLINE is about is clearly "
+                "visible (the menu, notice, action or moment itself).\n"
+                "2. shown: false if that thing never appears in any tile.\n"
+                "3. bad_s: seconds that look broken or useless: camera-mode blur or a colour-split "
+                "smear, black or near-black, a loading screen, or a pause/map screen that is not "
+                "what the card is about.\n"
+                'Reply ONLY JSON {"payoff_s": 0, "shown": true, "bad_s": []}.', [path], timeout=240)
+            return extract_json(raw) or None
+        except Exception as e:
+            log(f"payoff scan skipped ({e!r})")
+            return None
+
+
+def _text_box(seg: Path, t: float, card: dict) -> tuple | None:
+    """Where the evidence text sits in the frame at `t`, as a 16:9 crop (x0, y0, w, h in frame
+    fractions, at least 45% wide so the zoom stays sharp at 1080p), or None if Claude cannot
+    find it. One still, read with Claude vision on the subscription."""
+    from core import claude_code
+    ff = ffmpeg.ffmpeg_bin() or "ffmpeg"
+    with tempfile.TemporaryDirectory() as tmp:
+        png = Path(tmp) / "payoff.png"
+        subprocess.run([ff, "-y", "-v", "error", "-ss", f"{t:.2f}", "-i", str(seg), "-frames:v", "1",
+                        str(png)], check=False)
+        if not png.exists():
+            return None
+        try:
+            raw = claude_code.vision(
+                "This is a still from a gameplay clip. Find the in-game TEXT that this card line is "
+                f"about: \"{card.get('headline', '')}\" / \"{card.get('highlight', '')}\". Reply ONLY "
+                'JSON {"found": true, "box": [x0, y0, x1, y1]} with the text\'s box as fractions of '
+                'the image width and height (0 to 1), or {"found": false}.', [png], timeout=180)
+            d = extract_json(raw) or {}
+        except Exception as e:
+            log(f"text zoom skipped ({e!r})")
+            return None
+    if not d.get("found") or len(d.get("box") or []) != 4:
+        return None
+    x0, y0, x1, y1 = (min(1.0, max(0.0, float(v))) for v in d["box"])
+    # Conservative (test 2026-11-22: a loose box zoomed onto a car bonnet and a cut subtitle):
+    # only a small, clear text box, and never tighter than 60% of the frame width.
+    if not (0 < x1 - x0 <= 0.5 and 0 < y1 - y0 <= 0.3):
+        return None
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    w = min(1.0, max(0.6, (x1 - x0) * 1.8))
+    h = w                                 # same fraction of each side keeps the frame's 16:9
+    x = min(1.0 - w, max(0.0, cx - w / 2))
+    y = min(1.0 - h, max(0.0, cy - h / 2))
+    return (x, y, w, h) if w < 0.95 else None
 
 
 def build(clip: Path, game: str, start: float, dur: float, text: str | None, outdir: Path,
@@ -815,7 +997,17 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
                                "the moment MEANS instead.")
-            text = " ".join((c.get("body", ""), c.get("comment", "")))
+            head = c.get("headline", "")
+            nh = len(head.split())
+            if not (5 <= nh <= 9):
+                return False, (f"the headline has {nh} words; write a 6 to 8 word headline with "
+                               "the card's most surprising true point")
+            _in_game = r"\s*in\s+(gta|grand theft auto|" + re.escape(gname.lower()) + r")\b"
+            if any(re.match(_in_game, s.lower()) for s in (head, c.get("body", ""))):
+                return False, "opens with 'In <game>'; lead with the surprise instead"
+            if c.get("mode") not in ("player", "story"):
+                return False, "no mode: say whether this is a player mechanic or a story moment"
+            text = " ".join((head, c.get("body", ""), c.get("comment", "")))
             # The writer may return '[gta6-16]' for 'gta6-16'; an id that still matches
             # nothing would quietly skip the strict fact check, so it is a reject instead.
             fid = str(c.get("fact_id") or "").strip("[] ").lower()
@@ -881,7 +1073,47 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         log(f'caption: {card["caption"]}')
         log(f'title: {card["title"]}')
 
+    # PAYOFF FIRST (Bryce, 2026-11-22: "show the payoff early"): start the clip about a second
+    # before the moment the headline is about. Only the START moves later and the end stays,
+    # so the clip never runs past the stretch that was observed and checked (adult content,
+    # blocked ranges); at least 10 s are kept.
+    zoom = None
+    if not text:
+        # Round 2 (review 2026-11-22: the writer's guess from 6 frames put a menu in the last
+        # 2 s, and a camera-mode smear reached the end): find the payoff second and any broken
+        # seconds on one frame per second, then trim. Only the start moves later and only the
+        # end moves earlier, so nothing unchecked is added.
+        scan = _payoff_scan(seg, dur, card)
+        if scan and scan.get("shown") is False:
+            raise CardRefused("the headline's subject never appears on screen in this clip")
+        pay = float((scan or {}).get("payoff_s", card.get("payoff_at") or 0) or 0)
+        bad = {int(b) for b in (scan or {}).get("bad_s", []) if str(b).lstrip("-").isdigit()}
+        s0 = max(0.0, pay - 1.0)
+        end = dur
+        while int(end) - 1 in bad and end - s0 > 9:      # broken seconds at the tail
+            end = float(int(end) - 1)
+        while int(s0) in bad and end - s0 > 9 and s0 + 1 <= pay:   # and right after the new start
+            s0 += 1.0
+        if end - s0 < 8.0:                                # too short: keep more of the start
+            s0 = max(0.0, end - 8.0) if end >= 8.0 else 0.0
+        hold = (pay - s0) >= (end - s0) - 3.0             # payoff in the last 3 s: hold it
+        if s0 >= 1.0 or end < dur or hold:
+            vf_hold = ["-vf", "tpad=stop_mode=clone:stop_duration=2.5"] if hold else []
+            start, dur = start + s0, end - s0
+            subprocess.run([ff, "-y", "-v", "error", "-ss", f"{start:.2f}", "-t", f"{dur:.2f}",
+                            "-i", str(clip), *vf_hold, "-c:v", "libx264", "-crf", "18",
+                            "-preset", "medium", "-c:a", "aac", "-b:a", "192k", str(seg)], check=True)
+            if hold:
+                dur += 2.5
+            log(f"payoff first: clip {start:.1f}s for {dur:.1f}s (payoff at {pay:.0f}s of the old "
+                f"window, cut {len(bad)} broken seconds" + (", payoff held 2.5 s)" if hold else ")"))
+            pay = pay - s0
+        # Small in-game text as the evidence (a toast, tooltip or menu line): zoom the picture
+        # on it so it can be read on a phone. The layout stays the same.
+        if card.get("text_evidence"):
+            zoom = _text_box(seg, max(0.3, pay + 0.5), card)
     words = len(card["body"].split())
+    log(f'headline: {card.get("headline", "")!r} | mode: {card.get("mode", "")!r}')
     log(f'highlight: {card.get("highlight", "")!r} | comment: {card.get("comment", "")!r}')
     log(f'body ({words} words, ~{words / 3.5:.0f}s to read vs a {dur:.0f}s video): {card["body"]}')
     (outdir / "card.json").write_text(json.dumps(card, indent=2), encoding="utf-8")
@@ -896,9 +1128,14 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     png = _card_png(card, outdir / "card.png", video_h, lay)
     out = outdir / "short.mp4"
     # blurred fill behind + the clip inset under the text + the overlay (text/comment/reaction)
+    fg_crop = ""
+    if zoom:   # fractions of the frame, already 16:9 and inside it
+        x0, y0, zw, zh = zoom
+        fg_crop = f"crop=iw*{zw:.4f}:ih*{zh:.4f}:iw*{x0:.4f}:ih*{y0:.4f},"
+        log(f"zoomed on the on-screen text: {zw:.0%} of the frame width")
     vf = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
           f"gblur=sigma=38,eq=brightness=-0.30[bg];"
-          f"[0:v]scale={video_w}:{video_h}[fg];"
+          f"[0:v]{fg_crop}scale={video_w}:{video_h}[fg];"
           f"[bg][fg]overlay=(W-w)/2:{lay['video_y']}[v1];"
           f"[v1][1:v]overlay=0:0,format=yuv420p[v]")
     subprocess.run([ff, "-y", "-v", "error", "-stream_loop", "-1", "-i", str(seg),

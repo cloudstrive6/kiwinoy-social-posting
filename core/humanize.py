@@ -95,9 +95,11 @@ def card(c: dict, gname: str, words_min: int = 45, words_max: int = 65) -> dict:
         return c
     task = (
         "Rewrite this on-screen card. Rules for the result:\n"
-        f"- body: ONE paragraph, {words_min}-{words_max} words, still opening with "
-        f"'In {gname}', same four beats in the same order (context, the detail, a short "
-        "verdict, a comparison).\n"
+        f"- body: ONE paragraph, {words_min}-{words_max} words, same four beats in the same "
+        "order (context, the detail, a short verdict, a comparison). Never open with "
+        f"'In {gname}' or any 'In <game>' phrase (Bryce, 2026-11-22: the headline leads), keep "
+        "'you' wording if the original speaks to the viewer and character names if it names "
+        "characters.\n"
         "- highlight: 2-6 words copied EXACTLY from your new body, the same pivot the "
         "original highlight marks.\n"
         "- comment: the short reaction line, under 90 characters.\n"
@@ -112,8 +114,9 @@ def card(c: dict, gname: str, words_min: int = 45, words_max: int = 65) -> dict:
         why = "no rewrite"
     elif not (words_min <= n <= words_max):
         why = f"{n} words"
-    elif not body.lower().startswith(f"in {gname}".lower()):
-        why = "lost the 'In <game>' opening"
+    elif body.lower().startswith(f"in {gname}".lower()) or re.match(
+            r"in (gta|grand theft auto)\b", body.lower()):
+        why = "opens with 'In <game>'"
     elif _lost_quotes(c.get("body", ""), body) or _lost_quotes(c.get("comment", ""), com):
         why = "dropped or changed a quoted line"
     elif c.get("highlight") and (not hl or hl.lower() not in body.lower()):
