@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/sports/formula-1-just-found-a-bizarre-financial-supporter-in-horse-girl-gacha-umamusume-pretty-derby/"
+rejected: true
 ---
 
 Formula 1 is about to get a little more horse-y. Cygames' horse girl gacha game **Umamusume: Pretty Derby** has been revealed as a **founding partner** of the Japanese Grand Prix leg of the **2027 F1 World Championship**, and it's bringing a corner renaming along with it.
