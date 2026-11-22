@@ -63,7 +63,7 @@ TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in 
 ]
 
 
-BASE_GAMES = ("spider-man1", "spider-man2", "wolverine")
+BASE_GAMES = ("spider-man1", "spider-man2", "wolverine", "gta6")  # gta6-guide (2026-11-22)
 
 
 def base_game(game: str) -> str:
