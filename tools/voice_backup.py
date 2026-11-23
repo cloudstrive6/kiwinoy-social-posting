@@ -44,12 +44,17 @@ MAX_WER = 0.05
 # flat-topped run at all, so loud is not clipped. The plan's "peak below -1 dBFS" would have refused
 # it. A clipped take (VoxCPM issue #404) shows runs of 3+ identical samples at 0.98 of full scale.
 CLIP_LEVEL, CLIP_RUNS_PER_MIN, CLIP_LONGEST = 0.98, 5.0, 8
-LEN_RANGE, PACE_RANGE, PITCH_ST = (0.6, 1.6), (185.0, 245.0), 2.0
+# Pace is judged on the raw take, before the whole video is paced to WPM (dry run 2026-11-23: Modal takes
+# run about 11% fast, so 185 to 245 wpm became 185 to 270 raw; 290 wpm still re-rolls).
+LEN_RANGE, PACE_RANGE, PITCH_ST = (0.6, 1.6), (185.0, 270.0), 2.0
 LONG = 15                     # words; shorter paragraphs skip the pace and pitch checks
 # Whisper's spelling -> the script's, applied to what was heard before scoring (names Whisper
 # writes differently whatever the voice). Add to it when a clean take fails on a spelling.
 ALIASES = {"buck me": "buckme", "buck-me": "buckme", "a t m s": "atms", "atm's": "atms",
-           "g t a": "gta", "okay": "ok"}
+           "g t a": "gta", "okay": "ok", "'n'": " and "}
+_NUMW = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve "
+                                    "thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split())}
+_NUMW.update({w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if i > 1})
 
 _ONES = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen " \
         "sixteen seventeen eighteen nineteen".split()
@@ -102,12 +107,66 @@ def tokens(text: str) -> list[str]:
     out = []
     for w in t.replace("-", " ").split():
         w = re.sub(r"[^a-z0-9]", "", w)
-        if not w or w == "and":  # "five hundred and thirty-one" against Whisper's "531"
+        if not w or w in ("and", "n"):  # "five hundred and thirty-one" against Whisper's "531"
             continue
         if len(w) > 3 and w.endswith("s"):
             w = w[:-1]
         out.append(w)
+    return _hundreds(out)
+
+
+def _hundreds(ws: list[str]) -> list[str]:
+    """"eighteen hundred" (spoken) and "one thousand eight hundred" (Whisper's $1,800 expanded) read alike."""
+    out, i = [], 0
+    while i < len(ws):
+        n = None
+        if i + 1 < len(ws) and ws[i] in _NUMW and ws[i + 1] == "hundred" and _NUMW[ws[i]] >= 11:
+            n, step = _NUMW[ws[i]], 2
+        elif (i + 2 < len(ws) and ws[i] in _NUMW and ws[i + 1] in _NUMW and ws[i + 2] == "hundred"
+              and _NUMW[ws[i]] >= 20 and 0 < _NUMW[ws[i + 1]] < 10):
+            n, step = _NUMW[ws[i]] + _NUMW[ws[i + 1]], 3
+        if n:
+            out += num_words(n * 100).split()
+            i += step
+            continue
+        out.append(ws[i])
+        i += 1
     return out
+
+
+def _merge_joined(ref: list[str], hyp: list[str]) -> list[str]:
+    """"med kit" heard for "medkit": two heard tokens that make one script word count as that word."""
+    want, out, i = set(ref), [], 0
+    while i < len(hyp):
+        if i + 1 < len(hyp) and hyp[i] + hyp[i + 1] in want and hyp[i] not in want:
+            out.append(hyp[i] + hyp[i + 1])
+            i += 2
+            continue
+        out.append(hyp[i])
+        i += 1
+    return out
+
+
+def word_diff(ref: list[str], hyp: list[str], limit: int = 6) -> str:
+    import difflib
+    sm = difflib.SequenceMatcher(None, ref, hyp, autojunk=False)
+    bits = [f"{' '.join(ref[a:b]) or '-'} -> {' '.join(hyp[c:d]) or '-'}"
+            for op, a, b, c, d in sm.get_opcodes() if op != "equal"]
+    return "; ".join(bits[:limit])
+
+
+def names_prompt(text: str) -> str:
+    """Whisper hint: the paragraph's names only (capitalised words not starting a sentence). The whole
+    paragraph as a prompt made Whisper skip speech (analysis_shorts, 2026-11-13)."""
+    names, prev = [], "."
+    for w in re.findall(r"[A-Za-z][\w'’]*|[.!?]", text):
+        if w in ".!?":
+            prev = w
+            continue
+        if w[0].isupper() and prev not in ".!?" and w not in ("I", "KG") and w not in names:
+            names.append(w)
+        prev = w
+    return ", ".join(names) + "." if names else ""
 
 
 def edits(ref: list[str], hyp: list[str]) -> int:
@@ -158,9 +217,9 @@ def pitch_median(wav: Path) -> float | None:
     return float(f) if f and f > 1.0 else None
 
 
-def heard_words(wav: Path) -> list[dict]:
+def heard_words(wav: Path, text: str = "") -> list[dict]:
     from analysis_shorts import whisper_words
-    return whisper_words(wav, "", model="small.en")
+    return whisper_words(wav, names_prompt(text), model="small.en")
 
 
 def anchor_problems(b: dict, heard: list[dict], secs: float) -> list[str]:
@@ -182,8 +241,8 @@ def qc(b: dict, raw: Path, wav: Path) -> tuple[list[str], dict]:
     """Problems with one take (empty list = pass) and its measurements."""
     text = strip_tags(b["tts"])
     ref = tokens(text)
-    heard = heard_words(wav)
-    hyp = tokens(" ".join(w["w"] for w in heard))
+    heard = heard_words(wav, text)
+    hyp = _merge_joined(ref, tokens(" ".join(w["w"] for w in heard)))
     secs = seconds(wav)
     n = len(text.split())
     errs = edits(ref, hyp)
@@ -191,7 +250,7 @@ def qc(b: dict, raw: Path, wav: Path) -> tuple[list[str], dict]:
          "expected_s": round(n / WPM * 60, 2)}
     bad = []
     if errs > max(1, math.floor(MAX_WER * len(ref))):  # one Whisper slip never fails a short line
-        bad.append(f"{errs} words wrong of {len(ref)} ({m['wer']:.1%})")
+        bad.append(f"{errs} words wrong of {len(ref)} ({m['wer']:.1%}: {word_diff(ref, hyp)})")
     if m["clip_runs_per_min"] > CLIP_RUNS_PER_MIN or m["clip_longest"] >= CLIP_LONGEST:
         bad.append(f"clipping: {m['clip_runs_per_min']} flat runs a minute, longest {m['clip_longest']} samples")
     ratio = secs / max(0.5, m["expected_s"])
