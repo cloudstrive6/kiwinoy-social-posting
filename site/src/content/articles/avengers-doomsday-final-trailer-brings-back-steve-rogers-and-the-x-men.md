@@ -10,7 +10,7 @@ coverAlt: "Doctor Doom on the official Avengers: Doomsday final trailer image"
 coverCredit: "Marvel Studios"
 date: 2026-11-24
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "ABC News"
 sourceUrl: "https://abcnews.com/GMA/Culture/avengers-doomsday-final-trailer-released/story?id=138375955"
 ---
