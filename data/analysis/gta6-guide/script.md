@@ -344,7 +344,7 @@ Here are the five that matter most. Number five. Register the cars you want to k
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p01.mp4 @ 22-32.4 (cable-stayed bridge at sunset)]
 
-[GFX endscreen "MORE GTA 6 GUIDES"]
+[GFX endscreen "GTA 6 STARTER PACK"]
 What is the most cash you have lost to one death so far? Mine is five hundred and thirty-one dollars. Tell me in the comments. See you in Leonida.
 
 ## YouTube chapters (estimated from the cue sheet at 175 wpm; take the real times from the render)
