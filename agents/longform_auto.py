@@ -543,7 +543,8 @@ def write_meta(it: dict, part_no: Optional[int], observation: str, dialogue: str
         if len(t) > 1 and t.lower() not in {h.lower() for h in hashtags}:
             hashtags.append(t)
     hashtags = hashtags[:10]
-    gear = str(CONFIG.reels.get("gear_cta", "") or "").strip()
+    from core.product_cta import promo_cta
+    gear = promo_cta(it.get("base") or it.get("game"), "link")   # our product for this game, else the gear CTA
     description = "\n\n".join(x for x in [summary, kind_line, gear, " ".join(hashtags)] if x)
 
     kw, total = [], 0

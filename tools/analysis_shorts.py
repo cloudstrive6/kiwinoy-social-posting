@@ -827,10 +827,11 @@ def credits_text(p: Paths) -> str:
     return "Music:\n" + "\n".join(music.get("credits", []))
 
 
-def gear_cta() -> str:
+def gear_cta(game: str = "") -> str:
+    """Our product for this game (gta6, gta6-guide -> the Starter Pack), else the gear CTA."""
     try:
-        from core.config import CONFIG
-        return str(CONFIG.reels.get("gear_cta", "") or "").strip()
+        from core.product_cta import promo_cta
+        return promo_cta(game, "link")
     except Exception:
         return ""
 
@@ -842,7 +843,7 @@ def build_description(cfg: dict, s: dict, p: Paths) -> str:
     if s.get("spoilers"):
         parts[-1] += " Spoilers for the ending."
     parts.append(credits_text(p))
-    cta = gear_cta()
+    cta = gear_cta(p.game)
     if cta:
         parts.append(cta)
     parts.append("KG")

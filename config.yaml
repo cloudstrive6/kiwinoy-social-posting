@@ -794,6 +794,20 @@ reels:
   # spammy). NOTE: the gear link must be in your IG/TikTok BIO for this to go anywhere.
   gear_cta_social: "🎮 My gear & setup → Link in bio"
   gear_cta_every: 4                  # append the social CTA to every 4th reel (0 = disable)
+  # Our own products replace the gear CTA on posts about their game (Bryce, 2026-11-24:
+  # "if the game is gta 6 then promote our gta 6 products"). Picked by core/product_cta.py:
+  # a game key matches itself or "<key>-..." (gta6-guide counts as gta6). `link` goes where
+  # gear_cta went (YouTube Shorts and long-form descriptions, analysis Shorts); `social`
+  # goes where gear_cta_social went (IG/TikTok, every gear_cta_every-th reel), so the IG and
+  # TikTok BIO link should point at gta6.bosskg.com while the channels are GTA 6 only.
+  # Other games keep the gear CTA. Wording: always "unofficial", never "official".
+  # A GUIDE OR PRODUCT FOR ANOTHER GAME (Bryce, 2026-11-24: it "should automatically replace the
+  # gear line"): add one entry here keyed by that game's pipeline key, no code change needed.
+  # Several products for one game: make the entry a list of {link, social}; they take turns daily.
+  product_ctas:
+    gta6:
+      link: "📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com"
+      social: "📘 New to GTA 6? Our unofficial Starter Pack → link in bio"
   # Burned-on caption styling for the ffmpeg gameplay/commentary reels (Gameranx
   # style): a bold hook bar up top + synced white subtitles at the bottom.
   caption:

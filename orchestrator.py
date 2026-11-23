@@ -1248,7 +1248,7 @@ def run_gameplay_reel(
                if h and h.lower().lstrip("#") not in caption.lower()]
         if add:
             tt_caption = f"{caption.rstrip()} {' '.join(add)}".strip()
-        _cta = _social_gear_cta(n)                       # every-Nth-reel "link in bio" nudge
+        _cta = _social_gear_cta(n, (brief or {}).get("game") or game)   # every-Nth-reel "link in bio" nudge
         if _cta:
             tt_caption = f"{tt_caption.rstrip()}\n\n{_cta}"
         via = str((CONFIG.raw().get("tiktok", {}) or {}).get("via", "zernio")).lower()
@@ -1547,7 +1547,7 @@ def run_gameplay_reel(
         ig_cap = None
         if layout in ("classic", "triptych") and "#gamingreels" not in caption.lower():
             ig_cap = f"{caption} #gamingreels"
-        _cta = _social_gear_cta(n)                       # every-Nth-reel "link in bio" nudge (IG only)
+        _cta = _social_gear_cta(n, (brief or {}).get("game") or game)   # every-Nth-reel "link in bio" nudge (IG only)
         if _cta:
             ig_cap = f"{(ig_cap or caption).rstrip()}\n\n{_cta}"
         for dur, plats in sorted(groups.items(), reverse=True):
@@ -2761,11 +2761,14 @@ def run_youtube_longform(
 # post fresh footage first) AND a monotonic post counter (so classic<->triptych keeps
 # alternating even after the pool is exhausted and clips start getting reused).
 
-def _social_gear_cta(n: int) -> str:
-    """The IG/TikTok 'link in bio' gear CTA — but only on every Nth reel (rotates, so it's a
+def _social_gear_cta(n: int, game: Optional[str] = None) -> str:
+    """The IG/TikTok 'link in bio' CTA, but only on every Nth reel (rotates, so it's a
     light nudge rather than a CTA on every post). Returns '' when it's not this reel's turn,
-    or when disabled. `n` is the track's own used-clip counter (already computed per reel)."""
-    cta = str((CONFIG.reels.get("gear_cta_social", "") or "")).strip()
+    or when disabled. `n` is the track's own used-clip counter (already computed per reel).
+    A game with its own product (reels.product_ctas, e.g. gta6) promotes that product instead
+    of the gear page (Bryce, 2026-11-24)."""
+    from core.product_cta import promo_cta
+    cta = promo_cta(game, "social")
     every = int(CONFIG.reels.get("gear_cta_every", 0) or 0)
     if not cta or every <= 0:
         return ""
@@ -2816,7 +2819,8 @@ def _short_description(caption: str, game_name: str, game_key: str) -> str:
     last_line = body.splitlines()[-1] if body.splitlines() else ""
     if gname and gname.lower() not in last_line.lower():
         parts.append(gname)
-    cta = str((CONFIG.reels.get("gear_cta", "") or "")).strip()   # e.g. "🎮 My gear & setup → https://bosskg.com/gear"
+    from core.product_cta import promo_cta
+    cta = promo_cta(game_key, "link")   # our product for this game (gta6 -> gta6.bosskg.com), else the gear CTA
     if cta:
         parts.append(cta)
     parts.append(" ".join(htags))
