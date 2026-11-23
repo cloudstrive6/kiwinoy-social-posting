@@ -217,7 +217,7 @@ Every car I sell is completely legal.
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 172-176 (arrival at Coastal Auto Care), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 74-83 (engine menu, Stage 2 $1,800, bank b $9,766; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 153-162.3 (Nitrous Boost $5,000, bank figure down to $5,506; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 118-126 (transmission menu, $1,500 and $600, one part at a time; "crop": "none")]
 
 [GFX tag "TIP 18: PRICE UP MODS FIRST"; counter $506 "LEFT IN THE BANK" on "in under two minutes"]
-Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shop parts come straight out of your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
+Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shop parts come straight out of your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three: those Coastal Auto Care charges showed up on Lucia's ATM statement too.
 
 ### 9:31 Re-hook
 
