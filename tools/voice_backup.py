@@ -46,7 +46,10 @@ MAX_WER = 0.05
 CLIP_LEVEL, CLIP_RUNS_PER_MIN, CLIP_LONGEST = 0.98, 5.0, 8
 # Pace is judged on the raw take, before the whole video is paced to WPM (dry run 2026-11-23: Modal takes
 # run about 11% fast, so 185 to 245 wpm became 185 to 270 raw; 290 wpm still re-rolls).
-LEN_RANGE, PACE_RANGE, PITCH_ST = (0.6, 1.6), (185.0, 270.0), 2.0
+# Pitch: 3 semitones from the video's median (dry run 2026-11-23: 40 good paragraphs spread from -2.1 to
+# +1.8 st, ordinary intonation, so 2 st stopped a fine short line; the fault this guards against, the
+# bosses outro in 2026-11, was about 6 st).
+LEN_RANGE, PACE_RANGE, PITCH_ST = (0.6, 1.6), (185.0, 270.0), 3.0
 LONG = 15                     # words; shorter paragraphs skip the pace and pitch checks
 # Whisper's spelling -> the script's, applied to what was heard before scoring (names Whisper
 # writes differently whatever the voice). Add to it when a clean take fails on a spelling.
