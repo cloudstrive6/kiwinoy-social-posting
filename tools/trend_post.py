@@ -109,7 +109,8 @@ def _load_posted() -> list[dict]:
     try:
         env, remote = _rclone_env()
         r = subprocess.run(["rclone", "cat", f"{remote}:{b2_store._bucket()}/{_LEDGER_KEY}"],
-                           env=env, capture_output=True, text=True, timeout=60)
+                           env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           timeout=60)  # UTF-8: Windows decoded cp1252 and lost the ledger (2026-11-24)
         if r.returncode == 0 and r.stdout.strip():
             data = json.loads(r.stdout)
             recs: list[dict] = []
