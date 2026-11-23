@@ -523,6 +523,16 @@ def descriptive_fill_caption(video_path=None, game: str = "") -> str:
     return f"{body}\n\n{' '.join(tags)}".strip()
 
 
+# Inside hook_and_caption_from_video the critics FAIL CLOSED (review 2026-11-23): a timeout or
+# an unreadable reply used to count as a pass, so an unchecked hook could ship. Elsewhere they
+# keep failing open, as their callers expect.
+_STRICT_CRITICS = False
+
+
+def _critic_down(name: str) -> tuple[bool, str]:
+    return (False, f"{name} unavailable") if _STRICT_CRITICS else (True, "")
+
+
 def _writer_model() -> str | None:
     """Model for the reel OBSERVER and the hook/caption WRITERS (config
     models.hook_writer_model, Bryce 2026-11-21: Opus writes the line viewers see). The
@@ -590,6 +600,10 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         "- The ACTION / what is happening or being done, in sequence.\n"
         "- Any on-screen TEXT, subtitles, objective markers, BOSS-BAR NAMES or UI you can "
         "read, with the frame it appears in.\n"
+        "- SUMMARY, on its own line before TONE: 'SUMMARY: ' then ONE plain sentence of 5 to "
+        "11 words saying who does what, where, as a viewer would put it (e.g. 'SUMMARY: A "
+        "jet ski races through a canal toward a yacht'). Only what the frames show; no frame "
+        "numbers, timestamps, markdown, or words like clip, frame, footage or scene.\n"
         "- TONE, as the last line: 'TONE: funny' only if something plainly silly visibly "
         "happens (a ragdoll or tumble that clearly was not meant, a botched jump or landing, "
         "a car flipping or crashing in a ridiculous way, a bystander's absurd reaction, "
@@ -615,13 +629,23 @@ def _observe_clip(cands: list, gname: str, duration: float = 0.0) -> str:
         f"Use the Read tool to open these frames first.\n\n{instruction}\n\n"
         f"Frames:\n{listing}"
     )
-    try:
-        return sanitize(claude_code.run(claude_prompt, allowed_tools="Read", timeout=180,
-                                        model=_writer_model(),
-                                        api_fallback_model=CONFIG.models.get("claude_model"))).strip()
-    except claude_code.ClaudeCodeError as e:
-        print(f"[content] observer: Claude unavailable ({e}); using OpenAI vision.", flush=True)
-        return sanitize(openai_client.vision(instruction, cands)).strip()
+    # Without an observation every hook path is dead and the canned line ships, and the OpenAI
+    # fallback has had no credit since 2026-07-31, so Claude gets a second try first (2026-11-23).
+    for _try in range(2):
+        try:
+            return sanitize(claude_code.run(claude_prompt, allowed_tools="Read", timeout=180,
+                                            model=_writer_model(),
+                                            api_fallback_model=CONFIG.models.get("claude_model"))).strip()
+        except claude_code.ClaudeCodeError as e:
+            hard = bool(re.search(r"usage|limit|credit|auth|login|401|403", str(e), re.I))
+            print(f"[content] observer: Claude unavailable ({e})"
+                  + ("; retrying once." if not (_try or hard) else "; using OpenAI vision."),
+                  flush=True)
+            if hard:                       # a usage, credit or login error will not clear
+                break
+    # Still raises when this fails too: the fact-card writer (tools/lore_short.py) must refuse a
+    # card it could not look at, never treat an empty read as "nothing adult on screen".
+    return sanitize(openai_client.vision(instruction, cands)).strip()
 
 
 def adult_on_screen(observation: str) -> bool:
@@ -1008,6 +1032,15 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
         "fact that a subtitle can be read that way does not save it (user, 2026-10-09).\n"
         "A hook about the ACTION THAT IS ACTUALLY SHOWN, the setting, or a general gamer feeling is "
         "FINE — but it must match what the observation describes.\n"
+        "JUDGE SUBSTANCE, NOT WORDING (2026-11-23: good hooks were thrown out over word choice and "
+        "the post fell back to a generic line). A fair everyday word for what the observation "
+        "describes is SUPPORTED: smoke or steam from a hood = 'smoking hood'; a bandana over the "
+        "face = 'masked'; driving calmly = 'calm'; a group cheering = 'cheering'. A question, a "
+        "tease, a dry joke or a stake ('one wrong move...') is FINE when everything it takes for "
+        "granted is on screen: a question's PREMISE is a claim ('why is he holding a gun' "
+        "claims a gun; 'why is Jason robbing the store' claims a robbery). Mark BAD only for a claim that is INVENTED, CONTRADICTED, or "
+        "given to the WRONG person (rules 1 to 8). Never mark BAD for being only 'partly' "
+        "supported when every concrete thing in it is on screen or in the dialogue.\n"
         "IMPORTANT: your 'issues' text is fed back to the writer. ONLY say what is wrong. NEVER "
         "suggest who a character might be or propose a different name — that plants a NEW guess "
         "(a Sabretooth hook was once 'fixed' into an equally wrong Omega Red one this way).\n"
@@ -1015,9 +1048,11 @@ def _verify_hook(hook: str, caption: str, observation: str, game: str = "",
     )
     try:
         d = extract_json(_text(prompt, timeout=90))
-        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+        if not isinstance(d, dict) or "ok" not in d:
+            raise ValueError("no verdict")
+        return bool(d.get("ok")), str(d.get("issues", "")).strip()
     except Exception:
-        return True, ""
+        return _critic_down("text critic")
 
 
 def _plain_action_hook(observation: str, gname: str = "", avoid: str = "",
@@ -1257,7 +1292,26 @@ def _has_verb_hint(clause: str) -> bool:
     a bare noun phrase like 'A woman in black'. A heuristic: a plural noun can pass it."""
     words = [w.strip(".,;:!?\"'").lower() for w in clause.split()[1:]]
     aux = {"is", "are", "was", "were", "has", "have", "had", "gets", "can", "will"}
-    return any(w in aux or re.search(r"(?:[^s]s|ed|ing)$", w) for w in words if len(w) > 2)
+    # clothing and look words that end like verbs ('backwards cap and sunglasses')
+    not_verbs = {"sunglasses", "glasses", "shorts", "pants", "jeans", "clothes", "trousers",
+                 "boots", "shoes", "sneakers", "tattoos", "dreadlocks", "braids", "curls",
+                 "lips", "eyes", "arms", "legs", "backwards", "towards", "upwards", "always"}
+    # An '-ed' or '-ing' word before a noun is an adjective ('patterned shirt', 'flashing
+    # lights'); as a verb it ends the clause or leads into an article or a preposition.
+    lead = {"a", "an", "the", "to", "into", "onto", "on", "in", "at", "up", "down", "off",
+            "out", "over", "away", "back", "his", "her", "their", "its", "by", "with", "from",
+            "through", "across", "toward", "towards", "past", "around", "along", "and", ""}
+    for i, w in enumerate(words):
+        if w in aux:
+            return True
+        if len(w) <= 2 or w in not_verbs or "-" in w:
+            continue
+        nxt = words[i + 1] if i + 1 < len(words) else ""
+        if re.search(r"[^s]s$", w) or w.endswith("ing"):
+            return True                    # 'kneels', 'driving fast', 'cops chasing Jason'
+        if w.endswith("ed") and nxt in lead:
+            return True                    # 'parked', 'walked into', not 'patterned shirt'
+    return False
 
 
 def _observation_hook(observation: str) -> str:
@@ -1265,12 +1319,91 @@ def _observation_hook(observation: str) -> str:
     No model call, so there is nothing to invent — the text is literally the ground truth the
     critics judge against. Beats 'You have to see this play', which kept reaching live posts
     when every written attempt was rejected (user, 2026-10-07)."""
-    body = re.sub(r"\s+", " ", (observation or "").strip())
-    # strip ONLY a short lead-in ("These frames show ", "The clip shows ") — an earlier
-    # version swallowed everything up to the first full stop and returned nothing
-    body = re.sub(r"^(?:these frames?|the clip|this clip|the footage|the scene)\s+"
-                  r"(?:show|shows|depicts?|opens with)\s+", "", body, flags=re.I)
-    first = (re.split(r"(?<=[.;])\s+", body)[0] if body else "").strip(" .;:,")
+    # 1) The observer's own SUMMARY line, written for exactly this (2026-11-23). Before it the
+    # first sentence was taken, and the observer writes a markdown list ("1. **Setting:** The
+    # whole clip is on open water...") with a preamble, so this rung returned "1" or a line
+    # about "the whole clip" and never once shipped: the canned line went out instead.
+    hs = _observation_hooks(observation)
+    return hs[0] if hs else ""
+
+
+def _observation_hooks(observation: str, limit: int = 4) -> list[str]:
+    """Ranked on-screen lines taken from the observer's read: its SUMMARY line, then cleaned
+    sentences from the ACTION part. They are model text, so the chain still runs the critics on
+    each before one ships (review 2026-11-23: a SUMMARY can name the wrong lead)."""
+    out: list[str] = []
+
+    def _add(h: str) -> bool:
+        if h and h.lower() not in {x.lower() for x in out}:
+            out.append(h)
+        return len(out) >= limit
+
+    m = re.search(r"(?im)^\W*SUMMARY\W*:\s*(.+)$", observation or "")
+    if m:
+        h = _trim_clause(_clean_obs_text(m.group(1)))
+        if h and hook_shape_ok(h)[0] and _add(h):
+            return out
+    # 2) Else the first cleaned sentence that is about the game, not about the footage, from
+    # the ACTION part of the read first, then the rest.
+    body = re.split(r"(?im)^\W*ON-SCREEN SUBTITLES", observation or "")[0]   # not the subs block
+    lines = [ln for ln in body.splitlines()
+             if ln.strip() and not re.match(r"^\W*(?:TONE|ADULT|SUMMARY)\W*:", ln, re.I)]
+    sents = []                       # (0 for the ACTION part, sentence)
+    for ln in lines:
+        is_action = bool(re.match(r"^\W*(?:\d+[.)]\s*)?\W*action\b", ln, re.I))
+        # quoted dialogue out before splitting: its own '!' and '.' cut sentences mid-quote
+        ln = re.sub(r'"[^"]*"', lambda q: "" if re.search(r"[a-z]", q.group(0)) else q.group(0),
+                    ln.replace("“", '"').replace("”", '"'))   # pairs, left to right
+        for s in re.split(r"(?<=[.;!?])\s+", _clean_obs_text(ln)):
+            is_act = is_action or bool(re.match(r"^(?:the )?action\b", s, re.I))
+            sents.append((0 if is_act else 1, _clean_obs_text(s)))
+    # "The action is ...", "3. **Action:** ..." first: that is where the observer says what
+    # happens; scene-setting, cast lists and filming notes make flat, odd hooks.
+    sents.sort(key=lambda p: p[0])
+    good: list[tuple[int, int, str]] = []      # (action part?, no action verb?, line)
+    for rank, sent in sents:
+        sent = re.sub(r"^(?:the )?action (?:is|:)\s*", "", sent, flags=re.I)
+        if re.search(r"\b(?:camera|shot|angle|close-up|overhead|setting|location|recurring|"
+                     r"background|entire|single|opened|literally|people are|cutscene|cinematic|"
+                     r"hud|health bar|minimap|ui|mood|tone|no mishap)\b", sent, re.I):
+            continue                     # about the filming, the game's UI, cast or mood
+        if re.search(r"\b(?:subtitles?|on-screen text|reads?|caption|objective)\b", sent, re.I):
+            continue                                   # a report of on-screen text, not action
+        sq = sent.replace("“", '"').replace("”", '"')
+        if sq.count('"') % 2 or any(re.search(r"[a-z]", q) for q in re.findall(r'"([^"]*)"', sq)):
+            continue                     # quoted dialogue, or a piece of it ('"POLICE" sign' is fine)
+        h = _trim_clause(sent)
+        if h and (h.count('"') + h.count("“") + h.count("”")) % 2:
+            continue
+        if h and hook_shape_ok(h)[0] and _has_verb_hint(h):
+            # 'The pickup drives past...' before 'The driver is a man in a cap': a line with a
+            # real action verb says what happens; an 'is' line only describes someone
+            bare = re.sub(r"\b(?:is|are|was|were|has|have|had)\b", " ", h, flags=re.I)
+            good.append((rank, 0 if _has_verb_hint(bare) else 1, h))
+    for _, _, h in sorted(good, key=lambda g: (g[0], g[1])):
+        if _add(h):
+            break
+    return out
+
+
+def _clean_obs_text(text: str) -> str:
+    """Observer prose without markdown, list numbers, section labels, frame references or a
+    'These frames show' lead-in, so a sentence of it can stand as on-screen text."""
+    t = re.sub(r"(\*\*|__|`)", "", text or "")
+    t = re.sub(r"^\s*(?:[-*#>]+|\d+[.)])\s*", "", t)                      # list / heading marks
+    t = re.sub(r"^\s*(?:setting|location|characters?|people|action|on-screen text|text|ui|"
+               r"tone|scene|summary)\s*:\s+", "", t, flags=re.I)     # "Setting: ", not "Jason: "
+    t = re.sub(r"\s*\((?=[^)]*(?:frame|\d|~))[^)]*\)", "", t, flags=re.I)  # "(frames 1, 6, ~0:01)"
+    t = re.sub(r"^\s*(?:from|at|around|by)?\s*~?\d+:\d\d(?:\s*(?:to|-)\s*~?\d+:\d\d)?,?\s*", "",
+               t, flags=re.I)                                            # "From 0:01 to 0:42 "
+    t = re.sub(r"^(?:these frames?|the clip|this clip|the footage|the scene)\s+"
+               r"(?:show|shows|depicts?|opens with)\s+", "", t.strip(), flags=re.I)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _trim_clause(first: str) -> str:
+    """One observer sentence cut to an on-screen line of at most 12 words."""
+    first = (first or "").strip(" .;:,")
     if not first:
         return ""
     if len(first.split()) > 12:                      # prefer a clause boundary over a hard cut
@@ -1383,7 +1516,7 @@ def _verify_hooky(hook: str, gname: str = "", min_score: int = 5) -> tuple[bool,
         return False, (f"reads as a description, not a hook ({score}/10): "
                        f"{str(d.get('issues', '')).strip()}")
     except Exception:
-        return True, ""
+        return _critic_down("curiosity check")
 
 
 def _plain_caption(observation: str, gname: str, hook: str, dialogue: str = "") -> str:
@@ -1471,6 +1604,115 @@ def _lower_first(text: str) -> str:
     return (text[0].lower() + text[1:]) if text and _LOWER_OK.match(text) else text
 
 
+def _avoid_from_trace(limit: int = 6) -> str:
+    """Every hook rejected so far in this call, with why, for the next writer. Each fallback
+    used to see only the LAST reason, so it repeated an earlier mistake (2026-11-22: Lucia given
+    a jet ski that Jason rides; 'cops' made from a line of dialogue, twice)."""
+    rows = [r for r in LAST_HOOK_TRACE.get("attempts", []) if not r.get("ok") and r.get("hook")]
+    if not rows:
+        return ""
+    keep = rows if len(rows) <= limit else rows[:2] + rows[-(limit - 2):]   # the first two teach most
+    return "\n".join(f'- "{r["hook"]}": {str(r.get("why", ""))[:260]}' for r in keep)
+
+
+CANDIDATE_COUNT = 8          # hooks written in one call by the candidate batch
+CANDIDATE_BUDGET_S = 600     # stop checking candidates after this long; later rungs remain
+# The whole hook chain stops starting optional rungs this long after it began (review
+# 2026-11-23: worst case was unbounded against the 45-minute TikTok job). One checked candidate
+# can take about 6 minutes when calls time out, hence the 300 to 400 s margins below. The flat
+# observer line always runs, so time running out never means the canned line on its own.
+HOOK_CHAIN_BUDGET_S = 1200
+_CHAIN_T0 = [0.0]
+
+
+def _time_left() -> float:
+    import time
+    if not _CHAIN_T0[0]:
+        return float(HOOK_CHAIN_BUDGET_S)
+    return HOOK_CHAIN_BUDGET_S - (time.monotonic() - _CHAIN_T0[0])
+
+
+def _hook_candidates(observation: str, game: str, gname: str, dialogue: str = "",
+                     n: int = CANDIDATE_COUNT) -> list[str]:
+    """Several DIFFERENT on-screen hooks in one writer call, told every rejection so far.
+    [] on error."""
+    from core import lore
+    brief = lore.lore_for(game)
+    rejected = _avoid_from_trace(limit=8)
+    prompt = (
+        f"Write {n} DIFFERENT on-screen hooks for a {gname} gameplay reel. Each is burned on "
+        "the video's top bar and must make a scroller stop.\n\n"
+        f"WHAT IS ON SCREEN (an observer's factual read):\n{observation}\n\n"
+        + (f"WHAT IS SAID IN THE CLIP:\n{dialogue.strip()}\n\n" if dialogue.strip() else "")
+        + (f"GAME CONTEXT:\n{brief}\n\n" if brief else "")
+        + (f"ALREADY REJECTED BY THE FACT-CHECKER (never repeat these mistakes):\n{rejected}\n\n"
+           if rejected else "")
+        + "RULES:\n"
+        "- 4 to 10 words each. ENGLISH. No hashtags, emojis or quotes.\n"
+        "- Every concrete thing a hook mentions (person, object, action, place) must be in "
+        "the read or the dialogue above. Name Jason or Lucia only as the game context allows. "
+        "Never turn a line of dialogue into an event, and never give a line to a speaker the "
+        "clip does not show saying it.\n"
+        "- Each must open a curiosity gap: a question about what is shown, a stake already "
+        "on screen, a dry deadpan setup, or the turn the dialogue sets up. A line a viewer "
+        "can confirm in two seconds and scroll past is a caption, not a hook. No hollow "
+        "directives ('watch what he does', 'you have to see this').\n"
+        "- Make them truly different: different angles, not rewordings of one idea. Put the "
+        "safest strong one first.\n"
+        f'Return ONLY JSON: {{"hooks": ["...", "..."]}} with {n} items.'
+    )
+    try:
+        d = extract_json(_text(_with_who(prompt, gname), timeout=150, model=_writer_model())) or {}
+        out = []
+        for h in d.get("hooks", []) or []:
+            h = _strip_md(sanitize(str(h))).strip().strip('"')[:90]
+            if h and h.lower() not in {x.lower() for x in out}:
+                out.append(h)
+        return out[:n]
+    except Exception as e:
+        print(f"[content] candidate hooks failed ({e!r}).", flush=True)
+        return []
+
+
+def _check_candidate(h: str, observation: str, game: str, gname: str, dialogue: str,
+                     cands: list) -> tuple[bool, str]:
+    """The full gate for one candidate, cheapest check first: shape, curiosity (one text
+    call), then the text and vision accuracy critics."""
+    oks, whys = hook_shape_ok(h)
+    if not oks:
+        return False, whys
+    okh, whyh = _verify_hooky(h, gname, min_score=6)
+    if not okh:
+        return False, whyh
+    okt, whyt = _verify_hook(h, "", observation, game, dialogue=dialogue)
+    if not okt:
+        return False, whyt or "lore mismatch"
+    okv, whyv = _verify_hook_vision(h, "", cands, gname, dialogue=dialogue)
+    if not okv:
+        return False, whyv or "hook not supported by the footage"
+    return True, ""
+
+
+def _best_candidate(observation: str, game: str, gname: str, dialogue: str,
+                    cands: list) -> tuple[str, bool, str]:
+    """(hook, True, '') for the first candidate that passes every gate, else ('', False, why)."""
+    import time
+    t0 = time.monotonic()
+    hooks = _hook_candidates(observation, game, gname, dialogue)
+    print(f"[content] candidate batch: {len(hooks)} hook(s) to check.", flush=True)
+    why = "no candidates written"
+    for h in hooks:
+        if time.monotonic() - t0 > CANDIDATE_BUDGET_S - 360 or _time_left() < 400:
+            why = "candidate time budget used up"
+            break
+        ok, why = _check_candidate(h, observation, game, gname, dialogue, cands)
+        _trace_add("candidate", h, ok, why)
+        if ok:
+            print(f"[content] candidate passed: {h}", flush=True)
+            return h, True, ""
+    return "", False, why
+
+
 # What the LAST hook_and_caption_from_video call saw and tried (observation, dialogue, every
 # candidate hook with its verdict, the path that won). The reel runner saves it as
 # hook_trace.json in the run folder, so a bad hook can be traced (Bryce, 2026-11-21: the
@@ -1542,6 +1784,10 @@ def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
         "Clickbait/curiosity is fine ONLY if TRUE to what's shown/said; a hook about the visible "
         "action, setting, or mood is fine. Be suspicious of props a character wouldn't use "
         "(Spider-Man does not use guns).\n"
+        "Judge substance, not wording: a fair everyday word for what is visible ('masked' for a "
+        "bandana over the face, 'smoking' for smoke or steam) is supported. A question's premise "
+        "is a claim ('why is he holding a gun' claims a gun). BAD only for an invented, "
+        "contradicted or mis-attributed claim.\n"
         + (f"{_who_note(gname)} So naming the controlled lead is CORRECT, never a fault.\n"
            if _who_note(gname) else "")
         + 'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
@@ -1556,14 +1802,16 @@ def _verify_hook_vision(hook: str, caption: str, cands: list, gname: str = "",
         try:
             raw = openai_client.vision(instruction, cands)
         except Exception:
-            return True, ""            # vision unavailable -> don't block
+            return _critic_down("vision critic")   # fails open outside the hook chain
     except Exception:
-        return True, ""
+        return _critic_down("vision critic")
     try:
         d = extract_json(raw)
-        return bool(d.get("ok", True)), str(d.get("issues", "")).strip()
+        if not isinstance(d, dict) or "ok" not in d:
+            raise ValueError("no verdict")
+        return bool(d.get("ok")), str(d.get("issues", "")).strip()
     except Exception:
-        return True, ""
+        return _critic_down("vision critic")
 
 
 def game_title_line(game: str) -> str:
@@ -1635,7 +1883,21 @@ def hook_and_caption_from_video(
     """REVIEW a gameplay clip and write BOTH the on-screen hook and the caption,
     grounded in what the clip shows + the game's lore. One OBSERVER call shared
     by both, then one psychology-driven WRITER call. Returns (hook, caption);
-    each falls back to a safe line. Caption already includes its hashtags."""
+    each falls back to a safe line. Caption already includes its hashtags.
+    The critics fail CLOSED and the chain runs on a clock while it works (2026-11-23)."""
+    import time
+    global _STRICT_CRITICS
+    prev = _STRICT_CRITICS
+    _STRICT_CRITICS, _CHAIN_T0[0] = True, time.monotonic()
+    try:
+        return _hook_and_caption_from_video(video_path, game, taglish, with_game_title)
+    finally:
+        _STRICT_CRITICS, _CHAIN_T0[0] = prev, 0.0
+
+
+def _hook_and_caption_from_video(
+    video_path, game: str = "", taglish: bool = False, with_game_title: bool = False
+) -> tuple[str, str]:
     import tempfile
     from pathlib import Path
 
@@ -1735,27 +1997,40 @@ def hook_and_caption_from_video(
                                     return False, ia
                                 return _verify_hooky(h, gname)
 
-                            h3 = _plain_action_hook(observation, gname, dialogue=dialogue)
-                            ok3, i3 = _check_fallback(h3)
-                            _trace_add("plain action", h3, ok3, i3)
-                            if h3 and not ok3:                       # one corrective retry
-                                print(f"[content] plain hook rejected ({i3}); retrying tighter.",
-                                      flush=True)
-                                h3b = _plain_action_hook(observation, gname, avoid=i3,
-                                                         dialogue=dialogue)
-                                if h3b:
-                                    ok3b, i3b = _check_fallback(h3b)
-                                    _trace_add("plain action retry", h3b, ok3b, i3b)
-                                    if ok3b:
-                                        h3, ok3 = h3b, True
-                                    else:
-                                        i3 = i3b
+                            # CANDIDATE BATCH (2026-11-23): two of five hooked Instagram reels
+                            # shipped the canned line, because each fallback wrote ONE line that
+                            # repeated the last one's mistake. Now one call writes several
+                            # different hooks that know every rejection so far, and each is
+                            # checked in turn, so one weak idea no longer sinks the reel.
+                            h3, ok3, i3 = _best_candidate(observation, game, gname, dialogue,
+                                                          cands)
+                            src3 = "candidate"
+                            if not ok3 and _time_left() > 400:
+                                src3 = "plain action"
+                                h3 = _plain_action_hook(observation, gname,
+                                                        avoid=_avoid_from_trace(),
+                                                        dialogue=dialogue)
+                                ok3, i3 = _check_fallback(h3)
+                                _trace_add("plain action", h3, ok3, i3)
+                                if h3 and not ok3 and _time_left() > 400:   # one corrective retry
+                                    print(f"[content] plain hook rejected ({i3}); retrying "
+                                          "tighter.", flush=True)
+                                    h3b = _plain_action_hook(observation, gname,
+                                                             avoid=_avoid_from_trace(),
+                                                             dialogue=dialogue)
+                                    if h3b:
+                                        ok3b, i3b = _check_fallback(h3b)
+                                        _trace_add("plain action retry", h3b, ok3b, i3b)
+                                        if ok3b:
+                                            h3, ok3 = h3b, True
+                                        else:
+                                            i3 = i3b
                             if ok3:
                                 # A caption of its OWN (reusing the hook made the post's hook
                                 # and caption identical); falls back to the safe default line
                                 # if it can't be written or doesn't pass the critics.
                                 hook = h3
-                                LAST_HOOK_TRACE["path"] = "plain action"
+                                LAST_HOOK_TRACE["path"] = src3
                                 # Judge the caption ON ITS OWN (as a pair with the hook, one
                                 # weak half sank both and the post fell back to "Watch this
                                 # clip" — user, 2026-10-07), and say WHY when it fails.
@@ -1778,7 +2053,7 @@ def hook_and_caption_from_video(
                                     else:
                                         cwhy = cwhy2
                                 line = cap3 if okc3 else ""
-                                print(f"[content] plain action hook: {h3}"
+                                print(f"[content] {src3} hook: {h3}"
                                       + (f" | caption: {cap3}" if okc3 else
                                          f" | caption: (safe default — {cwhy})"), flush=True)
                             else:
@@ -1803,31 +2078,61 @@ def hook_and_caption_from_video(
                                         return False, iv or "hook not supported by the footage"
                                     return _verify_hooky(h, gname)
 
+                                def _accurate(h: str) -> tuple[bool, str]:
+                                    """Text and vision critics only (no curiosity bar)."""
+                                    okt, it = _verify_hook(h, "", observation, game,
+                                                           dialogue=dialogue)
+                                    if not okt:
+                                        return False, it or "lore mismatch"
+                                    okv, iv = _verify_hook_vision(h, "", cands, gname,
+                                                                  dialogue=dialogue)
+                                    return (True, "") if okv else (
+                                        False, iv or "hook not supported by the footage")
+
                                 h4, path4 = "", ""
-                                # (1) the observer's own first clause, if it already reads as
-                                # a hook. No model wrote it, so it is the evidence itself.
-                                obs = _observation_hook(observation)
-                                obs_shape = bool(obs) and hook_shape_ok(obs)[0]
-                                if obs_shape and _verify_hooky(obs, gname)[0]:
-                                    h4, path4 = obs, "observation"
-                                _trace_add("observation", obs, bool(h4),
-                                           "" if h4 else "not a hook or wrong shape")
+                                # The observer's own lines (its SUMMARY, then ACTION sentences).
+                                # Model text too, so each meets the critics (review 2026-11-23: a
+                                # SUMMARY can name the wrong lead).
+                                obs_lines = _observation_hooks(observation)
+                                checked: dict[str, tuple[bool, str]] = {}
+
+                                def _obs_ok(h: str) -> tuple[bool, str]:
+                                    if h not in checked:
+                                        checked[h] = _accurate(h)
+                                    return checked[h]
+
+                                # (1) an observer line that already reads as a hook
+                                for obs in obs_lines[:2]:
+                                    okh, whyh = _verify_hooky(obs, gname)
+                                    oko, whyo = _obs_ok(obs) if okh else (False, whyh)
+                                    _trace_add("observation", obs, oko, whyo)
+                                    if oko:
+                                        h4, path4 = obs, "observation"
+                                        break
                                 # (2) a rewrite of it INTO a hook, gated like every hook.
                                 if not h4:
                                     why4 = ""
                                     for _try in range(2):
+                                        if _time_left() < 300:
+                                            break
                                         cand = _hookify_observation(observation, gname,
-                                                                    avoid=why4,
+                                                                    avoid=_avoid_from_trace(),
                                                                     dialogue=dialogue)
                                         okr, why4 = _check_last(cand)
                                         _trace_add("observation rewrite", cand, okr, why4)
                                         if okr:
                                             h4, path4 = cand, "observation rewrite"
                                             break
-                                # (3) the observer's clause even if it reads flat: a dull TRUE
-                                # line beats a vivid FALSE one and beats the canned line.
-                                if not h4 and obs_shape:
-                                    h4, path4 = obs, "observation (flat)"
+                                # (3) an observer line even if it reads flat: a dull TRUE line
+                                # beats a vivid FALSE one and beats the canned line. Always runs,
+                                # whatever the clock says: it is the last thing before canned.
+                                if not h4:
+                                    for obs in obs_lines:
+                                        oko, whyo = _obs_ok(obs)
+                                        _trace_add("observation (flat)", obs, oko, whyo)
+                                        if oko:
+                                            h4, path4 = obs, "observation (flat)"
+                                            break
                                 if h4:
                                     print(f"[content] plain hook rejected ({i3}); last resort "
                                           f"[{path4}]: {h4}", flush=True)
@@ -1913,7 +2218,7 @@ def hook_and_caption_from_video(
 def hook_is_fallback() -> bool:
     """True when the LAST hook_and_caption_from_video call shipped anything other than a
     hook the main writer wrote and every gate passed (see LAST_HOOK_TRACE['path'])."""
-    return str(LAST_HOOK_TRACE.get("path", "")) not in ("", "written", "written retry")
+    return str(LAST_HOOK_TRACE.get("path", "")) not in ("", "written", "written retry", "candidate")
 
 
 def compose_reel_caption(body: str, game: str = "", with_game_title: bool = False) -> str:

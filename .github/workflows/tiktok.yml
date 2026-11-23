@@ -56,7 +56,7 @@ permissions:
 jobs:
   tiktok:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60   # the hook chain may use up to 20 min when its first tries fail (2026-11-23)
     env:
       # Caption/hook run on the Claude subscription token (free); ANTHROPIC is the
       # fallback, OpenAI after that. TikTok now publishes via Post for Me DRAFTS
