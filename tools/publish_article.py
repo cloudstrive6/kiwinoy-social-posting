@@ -143,6 +143,10 @@ def _captions(fm: dict, body: str, url: str) -> dict:
         fb = f"{title}\n\n{excerpt}".strip()
     if not th:
         th = (excerpt or title)[:360]
+    # No em or en dashes in anything KG posts (Bryce's standing rule; the 2026-11-24 dry run wrote
+    # "their son — until the Fantastic Four show up").
+    import re as _re
+    fb, th = (_re.sub(r"\s*[—–]\s*", ", ", s).replace(", ,", ",") for s in (fb, th))
     # Strip any stray link/hashtags the model added to Threads (fit_threads also keeps its
     # blank-line paragraphs), then append the CTA + link — budgeting for the CTA + URL so the
     # FINAL post stays within Threads' 500-char limit (the CTA+URL were previously appended
