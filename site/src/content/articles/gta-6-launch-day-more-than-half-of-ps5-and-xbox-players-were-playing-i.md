@@ -8,6 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-launch-day-more-than-half-of-ps5-and-xbox-players-were-playing-i.jpg"
 date: 2026-11-23
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gta-6-launch-day-engagement-circana"

@@ -8,7 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-mamba-gt-locations-where-to-find-all-the-wrecks-for-wyman-s-thir.jpg"
 date: 2026-11-22
 author: "BOSS KG"
-featured: true
+featured: false
 draft: false
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/grand-theft-auto/gta-6-mamba-gt-locations/"
