@@ -161,7 +161,7 @@ def master_takes(narr: list, out: Path, timings: dict, preset: str, pace: float 
                         str(tmp)], check=True)
         tmp.replace(wav)
         t.update(master=preset, master_hash=t.get("hash"), seconds=round(seconds(wav), 3))
-        t.pop("leveled", None)  # a fresh master loses any short-take gain, so it is levelled again
+        t.pop("leveled2", None)  # a fresh master loses any short-take gain, so it is levelled again
         if abs(pace - 1) > 0.001 or "pace" in t:
             t["pace"] = pace
         if tail_fade > 0 or "tail_fade" in t:
@@ -217,8 +217,10 @@ def vox_folder(game: str, out: Path) -> Path:
 def level_short_takes(narr: list, out: Path, timings: dict) -> None:
     """Raise short takes that came out quiet (independent review 2026-11-24 of the guide's v1-vox: the deadpan
     one-liners sat 3 to 6 dB under the narration, because a -16 LUFS loudnorm cannot measure a 2 s clip). A take
-    under 6 s more than 1.5 dB below the median speech level is raised to it, at most 6 dB, peaks kept under
-    -2 dBFS. Applied once per mastered take (backup narrator only, so published Guide C videos never change)."""
+    under 6 s more than 1.5 dB below the median speech level is raised to it, at most 6 dB, with a limiter holding
+    peaks at -2 dBFS (v2 render: a plain peak cap left under 1 dB of room, because master C already peaks near
+    -2.8 dBFS, so nothing moved). Applied once per mastered take (backup narrator only, so published Guide C
+    videos never change)."""
     import re as _re
     import statistics
 
@@ -241,18 +243,20 @@ def level_short_takes(narr: list, out: Path, timings: dict) -> None:
     med = statistics.median(long_means)
     for b in narr:
         t, i = timings.get(b["id"], {}), b["id"]
-        if i not in lv or float(t.get("seconds", 0)) >= 6 or t.get("leveled") == t.get("master_hash"):
+        if i not in lv or float(t.get("seconds", 0)) >= 6 or t.get("leveled2") == t.get("master_hash"):
             continue
-        mean, peak = lv[i]
-        gain = min(6.0, med - mean, -2.0 - peak)
+        mean, _peak = lv[i]
+        gain = min(6.0, med - mean)
         if gain > 1.5:
             wav = out / f"{i}.wav"
             tmp = out / f"{i}.lvl.wav"
-            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-af", f"volume={gain:.2f}dB",
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-af",
+                            f"volume={gain:.2f}dB,alimiter=limit=0.79:attack=2:release=40:level=false",
                             "-ar", "48000", "-ac", "1", str(tmp)], check=True)
             tmp.replace(wav)
             print(f"{i}: short take raised {gain:.1f} dB to the narration median", flush=True)
-        t["leveled"] = t.get("master_hash")
+        t.pop("leveled", None)
+        t["leveled2"] = t.get("master_hash")
         timings[i] = t
 
 
