@@ -38,7 +38,7 @@ Money first, then cops, cars, health, side hustles and saving, with the top five
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-19 12-31-14).mp4 @ 0.2-9 (HUD $531 cash top right on launch night; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-19 12-47-53).mp4 @ 53-60 (the airliner skims the trees and slams into the swamp forest), cutscenes/gta6/GTA 6 (2026-11-19 12-47-53).mp4 @ 102.6-113.4 (gunfight with the deputies in the woods (no blood; gore starts at 126)), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p08.mp4 @ 143-155 (Lucia walks into a shop for a hold-up)]
 
-Tip number one, and it is the most important tip in this whole video. Bank your cash. Whatever you carry is lost when you die. Guides say the same goes for getting busted. I had five hundred and thirty-one dollars on me on launch night. One plane crash and one shootout later, my HUD said zero. Guides also report a small fee from your BuckMe bank app when you go down. So every time you pass an ATM with real money on you, stop and deposit it. Cash in the bank survives. Cash in your pocket is only on loan. Every robbery fills your pocket. So bank it before the next one.
+Tip number one, and it is the most important tip in this whole video. Bank your cash. Whatever you carry is lost when you die. Guides say the same goes for getting busted. I had five hundred and thirty-one dollars on me on launch day. One plane crash and one shootout later, my HUD said zero. Guides also report a small fee from your BuckMe bank app when you go down. So every time you pass an ATM with real money on you, stop and deposit it. Cash in the bank survives. Cash in your pocket is only on loan. Every robbery fills your pocket. So bank it before the next one.
 
 ### Tip 2: Deposit at an ATM, in person
 

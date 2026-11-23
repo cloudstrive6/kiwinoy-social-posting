@@ -3,49 +3,49 @@
   "beat": "b000",
   "match": "thirty-one dollars in one death",
   "sig": "fea99b8be5bbb432",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "12-50-26 at 16 s, full-resolution HUD: $0 with a red -$531 after the respawn; $531 before the death in 12-47-53."
- },
- {
-  "beat": "b004",
-  "match": "on me on launch night",
-  "sig": "e44108c9e6426f3c",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "the clips are dated 2026-11-19, GTA 6's launch day."
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "12-50-26 at 16 s, full-resolution HUD: $0 with a red -$531 after the respawn at Buckskin Swamp; 12-47-53 at 1:43 shows $531 before the death."
  },
  {
   "beat": "b004",
   "match": "my HUD said zero",
-  "sig": "e44108c9e6426f3c",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "12-50-26 at 16 s, full-resolution HUD: $0, -$531."
+  "sig": "e420e9de6f188b99",
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "12-50-26 at 16 s, full-resolution HUD: $0 and -$531 after the death in 12-47-53."
  },
  {
   "beat": "b059",
   "match": "Mine is five hundred",
   "sig": "35318c9eba78dcb8",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "callback to tip 1's death; -$531 on screen in 12-50-26 at 16 s."
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "callback to tip 1's death: the -$531 is on screen in 12-50-26 at 16 s."
+ },
+ {
+  "beat": "b054",
+  "match": "loaded back into Jason's house",
+  "sig": "98c79e63de39b438",
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "21-42-41 p02 3:00-3:28: Jason (short blond hair, beard) dresses from his own wardrobe and saved outfits; 3:48: his black Ganado from the same session's mod shop clips is parked outside the stilt house. data/footage_facts/gta6.md."
  },
  {
   "beat": "b007",
   "match": "landlord was very understanding",
   "sig": "469efd27dce07055",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "deadpan joke kept on purpose; the 'see Linda about what you owe' picture is the punchline."
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "deadpan joke: the picture shows the objective to see Linda about what is owed for the room, the opposite of an understanding landlord; the contrast is the joke, not a claim."
  },
  {
   "beat": "b014",
   "match": "cops here are very polite",
   "sig": "b9516b580701d16d",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "deadpan joke kept on purpose; the picture of the cops tackling Jason is the punchline."
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "deadpan joke: the picture shows the cops tackling and cuffing Jason, the opposite of polite; the contrast is the joke."
  },
  {
   "beat": "b035",
   "match": "car I sell is completely legal",
   "sig": "d25245069c725a60",
-  "by": "Bryce, 2026-11-23, confirmed in chat (\"Yes, both\")",
-  "why": "deadpan joke kept on purpose about selling stolen cars."
+  "by": "Claude, verified from KG's footage on 2026-11-23. Bryce delegated these checks to agents (\"You/agents should be able to know this by reviewing the footages\"); he did not review them himself.",
+  "why": "deadpan joke: the guide is about stealing and selling cars, and the picture shows a car driven in with three wanted stars; the contrast is the joke."
  }
 ]

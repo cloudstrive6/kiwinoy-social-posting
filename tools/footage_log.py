@@ -53,6 +53,9 @@ clip start (a frame labelled 01m04.0s is 64).
 
 Clip: {key} ({seconds:.0f} s)
 
+Verified footage facts for this game (who is who, whose home, whose car); use them to name people and places:
+{facts}
+
 Timed dialogue (faster-whisper; names and numbers may be misspelled):
 {dialogue}
 
@@ -105,7 +108,9 @@ def build(key: str, model: str) -> dict:
     dialogue = (out / "dialogue.txt").read_text(encoding="utf-8").split("\n", 2)[-1].strip()
     sheets = sorted(out.glob("sheet*.jpg")) + sorted(out.glob("hud*.jpg"))
     listing = "\n".join(str(p.resolve()) for p in sheets)
-    prompt = PROMPT.format(key=key, seconds=secs, dialogue=dialogue or "(no speech heard)", sheets=listing)
+    from claims_check import footage_facts
+    prompt = PROMPT.format(key=key, seconds=secs, dialogue=dialogue or "(no speech heard)", sheets=listing,
+                           facts=footage_facts([key]))
     reply = claude_code.run(prompt, model=model, allowed_tools="Read", timeout=900)
     log = parse_json(reply)
     log.update(key=key, seconds=round(secs, 2), dialogue=dialogue, model=model,

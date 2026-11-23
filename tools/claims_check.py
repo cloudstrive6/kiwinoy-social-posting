@@ -83,6 +83,10 @@ Footage shown under it (each range includes {pad:.0f} s of context either side):
 Footage log excerpts (whole-clip logs, may be missing):
 {logs}
 
+Verified footage facts for this game (who is who, whose home, whose car; data/footage_facts/). Use them to
+settle names and ownership instead of calling a claim unclear:
+{facts}
+
 Contact sheets to open:
 {sheets}
 """
@@ -182,6 +186,17 @@ def log_excerpt(key: str, s: float, e: float) -> str:
         f"money: {x.get('money', '')} | quote: {x.get('quote', '')}" for x in ev)
 
 
+def footage_facts(keys) -> str:
+    """data/footage_facts/<game folder>.md for the games these clips come from (2026-11-23: agents, not Bryce,
+    settle who is who; b054 was 'unclear' only because the judge could not tell whose house it was)."""
+    out = []
+    for g in sorted({k.split("/")[1] for k in keys if k.count("/") >= 2}):
+        p = ROOT / "data" / "footage_facts" / f"{g}.md"
+        if p.exists():
+            out.append(p.read_text(encoding="utf-8"))
+    return "\n\n".join(out) or "(none yet)"
+
+
 def judge(game: str, b: dict, clips: dict) -> dict:
     from core import claude_code
     from footage_audit import merged
@@ -197,7 +212,7 @@ def judge(game: str, b: dict, clips: dict) -> dict:
         sheets += [str(p.resolve()) for p in sorted(out.glob("sheet*.jpg")) + sorted(out.glob("hud*.jpg"))]
     prompt = PROMPT.format(beat=b["id"], text=strip_tags(b.get("tts") or b.get("text") or ""), pad=PAD,
                            ranges="\n\n".join(parts) or "(no footage)", logs="\n\n".join(logs) or "(none)",
-                           sheets="\n".join(sheets) or "(none)")
+                           facts=footage_facts([k for k, _, _ in rs]), sheets="\n".join(sheets) or "(none)")
     reply = claude_code.run(prompt, model=MODEL, allowed_tools="Read", timeout=900)
     m = re.search(r"\{.*\}", reply, re.S)
     try:
