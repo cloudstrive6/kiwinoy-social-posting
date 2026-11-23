@@ -15,6 +15,9 @@ footages"). Add a fact only with the clip and time that shows it.
 - **Linda**: the motel manager (objective "SEE LINDA, THE MANAGER").
 - **Brian**: the fence at Brian's Lockup; his payouts show on the bank statement as "Brian".
 
+## Pronunciation (narration)
+- **Lucia** is lu-SEE-yah, never LU-sha (Bryce, 2026-11-24). The voices are sent "Loo-see-ah" (tools/analysis_edl.py, TTS_GAME gta6); captions keep "Lucia".
+
 ## Places
 - **Jason's house**: a stilt house on a canal. Jason wakes there, dresses from his own wardrobe and saved outfits,
   and his black Ganado is parked outside next to a jet ski (`21-42-41 p02.mp4` 2:35 to 3:48).

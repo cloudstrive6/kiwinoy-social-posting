@@ -74,7 +74,7 @@ Reply with JSON only:
               "evidence": "time in the clip plus what is seen or heard (empty for external)",
               "fix": "for false or unclear: a corrected sentence true to the footage, in the same voice"}}]}}
 
-Paragraph {beat}:
+Paragraph {beat} (a hyphenated spelling like "Loo-see-ah" is how a name is pronounced, here Lucia; judge it as the name):
 {text}
 
 Footage shown under it (each range includes {pad:.0f} s of context either side):

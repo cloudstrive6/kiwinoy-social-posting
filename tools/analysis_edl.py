@@ -63,6 +63,11 @@ TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in 
 ]
 
 
+# GTA 6 (Bryce, 2026-11-24): Lucia is lu-SEE-yah, never LU-sha. Measured on the VoxCPM2 backup: "Lucia" came out as
+# one squashed syllable, "Lu-see-yah" split into "Lucy Yarr", "Loo-see-ah" gave three syllables heard as "Lucia".
+TTS_GAME["gta6"] = [(r"\bLucia\b", "Loo-see-ah")]
+
+
 BASE_GAMES = ("spider-man1", "spider-man2", "wolverine", "gta6")  # gta6-guide (2026-11-22)
 
 

@@ -57,7 +57,9 @@ ALIASES = {"buck me": "buckme", "buck-me": "buckme", "a t m s": "atms", "atm's":
            "g t a": "gta", "okay": "ok", "'n'": " and ",
            # "Pay 'n' Spray" said naturally runs together; Whisper writes it these ways (dry run 2026-11-23)
            "pain spray": "pay spray", "paint spray": "pay spray", "pay and spray": "pay spray",
-           "pay-n-spray": "pay spray", "pay n spray": "pay spray"}
+           "pay-n-spray": "pay spray", "pay n spray": "pay spray",
+           # pronunciation spellings in the TTS text read back as the name (GTA 6, 2026-11-24)
+           "loo-see-ah": "lucia", "loo see ah": "lucia"}
 _NUMW = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve "
                                     "thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split())}
 _NUMW.update({w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if i > 1})
