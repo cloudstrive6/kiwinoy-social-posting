@@ -40,6 +40,26 @@ const PRODUCTS = [
     shot: { src: "/products/edittwin-1200.webp", srcset: "/products/edittwin-640.webp 640w, /products/edittwin-1200.webp 1200w",
             alt: "EditTwin: film it, drop it in, get back a reel that looks like you made it" },
   },
+  {
+    // Added 2026-11-24 (KG digital products). No game screenshots or logos (IP decision); unofficial wording only.
+    name: "GTA 6 Starter Pack",
+    badge: "Unofficial game guide",
+    tagline: "Stop losing your money on day one.",
+    blurb:
+      "27 beginner tips for GTA 6, built from our own gameplay and checked against guide sites, " +
+      "plus a money quick reference and a tracker that does the sums for you. An unofficial fan " +
+      "guide, not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.",
+    points: [
+      "A first-hour checklist to keep your cash, cars and stash",
+      "27 tips, each with what to do and what we saw happen",
+      "Money quick reference with numbers read off our own footage",
+      "Tracker for Excel or Google Sheets",
+      "Instant download: PDF and spreadsheet",
+    ],
+    url: "https://gta6.bosskg.com/",
+    cta: "See the Starter Pack",
+    note: "Instant download",
+  },
 ];
 ---
 <Base title="AI and automation systems" description="Tools built by BOSS KG for creators, starting with EditTwin, the AI video editor that cuts, captions and finishes your short-form video on your own machine.">
@@ -52,7 +72,7 @@ const PRODUCTS = [
     <div class="sec" style="margin-top:var(--s6)">
       {PRODUCTS.map((p, i) => (
         <article class="prod" aria-labelledby={`prod-${i}`}>
-          <div class="prod-top">
+          <div class={p.shot ? "prod-top" : "prod-top no-shot"}>
             <div class="prod-copy">
               <span class="chip">{p.badge}</span>
               <h2 id={`prod-${i}`}>{p.mark && <span class={`prod-mark mark-${p.mark}`} aria-hidden="true"></span>}{p.name}</h2>
@@ -83,6 +103,8 @@ const PRODUCTS = [
     .prod { padding: var(--s6); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-l);
       display: grid; gap: var(--s6); }
     .prod-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--s6); align-items: center; }
+    .prod-top.no-shot { grid-template-columns: minmax(0, 1fr); }
+    .prod + .prod { margin-top: var(--s6); }
     .prod-copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s3); min-width: 0; }
     .prod h2 { font-size: 40px; line-height: 1.05; display: flex; align-items: center; gap: var(--s3); margin: 0; }
     .prod-tagline { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }

@@ -32,6 +32,12 @@ const shortRail = vshort.slice(0, 12);
 const empty = !articles.length && !vlong.length && !vshort.length;
 const banner = imgAttrs(g.cover, { sizes: SIZES.cover });
 const crumbs = [{ label: "Home", href: "/" }, { label: "Games", href: "/games/" }, { label: g.title }];
+// Our own paid guides per game (KG digital products, 2026-11-24). Unofficial wording only; no prices here.
+const GUIDES = {
+  "gta-6": { name: "GTA 6 Starter Pack", url: "https://gta6.bosskg.com/",
+    text: "27 beginner tips from our own gameplay, a money quick reference and a progress tracker. Unofficial fan guide." },
+};
+const guide = GUIDES[slug];
 const count = [articles.length && `${articles.length} ${articles.length === 1 ? "story" : "stories"}`, vlong.length + vshort.length && `${vlong.length + vshort.length} videos`].filter(Boolean).join(", ");
 ---
 <Base title={g.title} description={`${g.blurb} News, full 4K gameplay videos and Shorts from BOSS KG.`} image={g.cover} jsonLd={[crumbsLd(crumbs)]}
@@ -49,6 +55,17 @@ const count = [articles.length && `${articles.length} ${articles.length === 1 ? 
             alt={`${g.title} key art`} loading="eager" fetchpriority="high" decoding="async" />
         </div>
       </div>
+    )}
+
+    {guide && (
+      <aside class="game-guide" aria-label={`${guide.name} by BOSS KG`}>
+        <div class="gg-copy">
+          <span class="chip">BOSS KG guide</span>
+          <p class="gg-name">{guide.name}</p>
+          <p class="gg-text">{guide.text}</p>
+        </div>
+        <a class="btn btn-primary" href={guide.url} target="_blank" rel="noopener">Get the pack</a>
+      </aside>
     )}
 
     {leadStory && (
@@ -96,4 +113,13 @@ const count = [articles.length && `${articles.length} ${articles.length === 1 ? 
 
     <NewsletterBox />
   </main>
+  <style>
+    .game-guide { margin-top: var(--s5); padding: var(--s5); background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--red); border-radius: var(--r-l); display: flex; align-items: center; gap: var(--s5); }
+    .gg-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s2); }
+    .gg-name { font-size: 22px; font-weight: 800; color: var(--text); margin: 0; }
+    .gg-text { font-family: var(--f-text); font-size: 16px; line-height: 1.5; color: var(--body); margin: 0; }
+    .game-guide .btn { flex: none; }
+    @media (max-width: 640px) { .game-guide { flex-direction: column; align-items: stretch; } .game-guide .btn { width: 100%; } }
+  </style>
 </Base>
