@@ -694,7 +694,7 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
     )
     try:
         d = extract_json(_text(prompt, timeout=200))
-        return bool(d.get("ok", False)), str(d.get("issues", "")).strip()
+        return d.get("ok") is True, str(d.get("issues", "")).strip()  # "false" as text is not a pass
     except Exception as e:
         # Fail CLOSED (2026-11-23, footage-truth review): a check that could not run used to pass the
         # card, so a crash or an unreadable reply let an unchecked card post. Now the card is rewritten

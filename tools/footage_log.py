@@ -131,19 +131,25 @@ def main() -> int:
     if not claude_code.available_token():
         raise SystemExit("CLAUDE_CODE_OAUTH_TOKEN is not set (the log runs on the subscription, never the paid API)")
     have = {f.get("fileName", "") for f in b2_store._list_names("footage-log/")}
+    failed = json.loads(b2_store.get_bytes("footage-log/_failed.json") or b"{}")
     todo = []
     for g in a.games:
         for c in b2_store.list_cutscenes(g) + b2_store.list_footage(g):
-            if a.redo or log_key(c["key"]) not in have:
+            if (a.redo or log_key(c["key"]) not in have) and failed.get(c["key"], 0) < 2:
                 todo.append(c["key"])
+    skipped = [k for k, n in failed.items() if n >= 2]
+    if skipped:
+        print(f"skipping {len(skipped)} clip(s) that failed twice (footage-log/_failed.json)", flush=True)
     print(f"{len(todo)} clips without a log; doing up to {a.max}", flush=True)
     done = 0
     for key in todo[:a.max]:
         t0 = time.time()
         try:
             log = build(key, a.model)
-        except Exception as e:  # one bad clip never blocks the rest
+        except Exception as e:  # one bad clip never blocks the rest; after 2 fails it stops using the slot
             print(f"FAILED {key}: {e!r}"[:400], flush=True)
+            failed[key] = failed.get(key, 0) + 1
+            b2_store.put_bytes("footage-log/_failed.json", json.dumps(failed, indent=1).encode())
             continue
         ok = b2_store.put_bytes(log_key(key), json.dumps(log, indent=1).encode(), "application/json")
         b2_store.put_bytes(log_key(key)[:-5] + ".md", to_md(key, log).encode(), "text/markdown")
@@ -151,7 +157,7 @@ def main() -> int:
               f"{time.time() - t0:.0f} s", flush=True)
         done += ok
     print(f"done: {done} logged, {max(0, len(todo) - a.max)} left for the next run", flush=True)
-    return 0
+    return 1 if todo and not done else 0  # a run with work and no logs shows red, never a silent green
 
 
 if __name__ == "__main__":

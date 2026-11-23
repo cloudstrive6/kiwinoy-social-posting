@@ -41,7 +41,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 from analysis_edl import strip_tags  # noqa: E402
 
-VERSION = 1   # bump to re-judge every paragraph (prompt or packet change)
+VERSION = 2   # bump to re-judge every paragraph (prompt or packet change); 2: review fixes 2026-11-23
 PAD = 30.0
 MODEL = "opus"
 
@@ -59,6 +59,8 @@ player did, had, earned or saw in this footage. Verdict:
   "false"   the footage contradicts it (who did what, amounts, order of events, what a notice says);
   "unclear" the packet cannot show it either way (for example the amount is not legible, or the moment is
             outside these ranges and the log does not cover it).
+If a range's dialogue says "(audio could not be read)", nothing about speech in that range is known: a claim
+that depends on what was said there is "unclear", never "true" or "false" from silence.
 kind "external": general game knowledge, what guides or the community say, mechanics not shown here, advice,
 opinion, jokes, or channel talk. Verdict "external"; it is not judged.
 
@@ -85,8 +87,13 @@ Contact sheets to open:
 """
 
 
-def gated(edl: dict) -> bool:
-    if edl.get("claims_gate") is False:
+# Guide C videos already published before the gate (2026-11-23): their reels are live in the rotation and
+# were reviewed by Bryce, so a re-render must not wait on a fresh check. Every later Guide C video is gated.
+EXEMPT = {"spider-man1-reels", "spider-man2-reels"}
+
+
+def gated(edl: dict, game: str = "") -> bool:
+    if edl.get("claims_gate") is False or game in EXEMPT:
         return False
     nar = edl.get("narrator") or {}
     return bool(edl.get("claims_gate")) or nar.get("name") == "BOSS KG Guide C"
@@ -96,20 +103,37 @@ def narr_beats(edl: dict) -> list[dict]:
     return [b for b in edl["beats"] if b["type"] == "narr"]
 
 
-def beat_sig(b: dict) -> str:
-    shots = [(sh.get("clip"), sh.get("in"), sh.get("out")) for sh in b.get("shots") or []]
+_CLIPS: dict = {}  # game -> clips.json map, so a signature names the clip FILE, not its index (review)
+
+
+def beat_sig(b: dict, game: str) -> str:
+    clips = _CLIPS.get(game) or load(game)[1]
+    shots = [(clips.get(str(sh.get("clip")), {}).get("key", f"missing:{sh.get('clip')}"), sh.get("in"), sh.get("out"))
+             for sh in b.get("shots") or []]
     return hashlib.sha1(json.dumps([VERSION, strip_tags(b.get("tts") or b.get("text") or ""), shots],
                                    default=str).encode()).hexdigest()[:16]
 
 
-def script_hash(edl: dict) -> str:
-    return hashlib.sha1("|".join(f"{b['id']}:{beat_sig(b)}" for b in narr_beats(edl)).encode()).hexdigest()[:16]
+def script_hash(edl: dict, game: str) -> str:
+    return hashlib.sha1("|".join(f"{b['id']}:{beat_sig(b, game)}" for b in narr_beats(edl)).encode()).hexdigest()[:16]
 
 
 def load(game: str) -> tuple[dict, dict]:
+    """The EDL with edits.json applied exactly as analysis_render applies it, so the check judges the shots
+    that are rendered (review 2026-11-23: two reel EDLs override narration shots there)."""
     d = ROOT / "data/analysis" / game
-    return (json.loads((d / "edl.json").read_text(encoding="utf-8")),
-            json.loads((d / "clips.json").read_text(encoding="utf-8"))["clips"])
+    edl = json.loads((d / "edl.json").read_text(encoding="utf-8"))
+    ep = d / "edits.json"
+    if ep.exists():
+        ed = json.loads(ep.read_text(encoding="utf-8"))
+        over, bover = ed.get("shots", {}), ed.get("beats", {})
+        for b in edl["beats"]:
+            if b["id"] in over:
+                b["shots"] = over[b["id"]]
+            b.update(bover.get(b["id"], {}))
+    clips = json.loads((d / "clips.json").read_text(encoding="utf-8"))["clips"]
+    _CLIPS[game] = clips
+    return edl, clips
 
 
 def overrides(game: str) -> list[dict]:
@@ -175,10 +199,41 @@ def judge(game: str, b: dict, clips: dict) -> dict:
                            sheets="\n".join(sheets) or "(none)")
     reply = claude_code.run(prompt, model=MODEL, allowed_tools="Read", timeout=900)
     m = re.search(r"\{.*\}", reply, re.S)
-    res = json.loads(m.group(0)) if m else {"claims": [], "error": reply[:500]}
-    res.update(beat=b["id"], sig=beat_sig(b), model=MODEL, version=VERSION,
+    try:
+        res = json.loads(m.group(0)) if m else {"claims": [], "error": reply[:500]}
+    except Exception as e:
+        res = {"claims": [], "error": f"unreadable reply ({e!r})"}
+    if not res.get("error"):
+        why = invalid(res, strip_tags(b.get("tts") or b.get("text") or ""))
+        if why:
+            res["error"] = why  # never cached, so the paragraph stays "not checked" and the gate stays shut
+    res.update(beat=b["id"], sig=beat_sig(b, game), model=MODEL, version=VERSION,
                made=time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()))
     return res
+
+
+def _toks(s: str) -> set:
+    return {w for w in re.findall(r"[a-z0-9']+", s.lower()) if len(w) > 2}
+
+
+def invalid(res: dict, text: str) -> str:
+    """Why a judge reply cannot be trusted (review 2026-11-23: an empty list, a wrong kind or a skipped
+    sentence used to pass), or "" when every sentence is judged with a known kind and verdict."""
+    claims = res.get("claims")
+    if not isinstance(claims, list) or not claims:
+        return "the judge returned no claims"
+    for c in claims:
+        if not isinstance(c, dict) or c.get("kind") not in ("footage", "external"):
+            return f"a claim has kind {c.get('kind') if isinstance(c, dict) else c!r}"
+        ok = ("true", "false", "unclear") if c["kind"] == "footage" else ("external",)
+        if c.get("verdict") not in ok:
+            return f"a {c['kind']} claim has verdict {c.get('verdict')!r}"
+    judged = [_toks(c.get("text", "")) for c in claims]
+    for s in re.split(r"(?<=[.!?])\s+", text.strip()):
+        st = _toks(s)
+        if st and not any(len(st & j) >= 0.6 * len(st) for j in judged):
+            return f"sentence not judged: {s[:80]!r}"
+    return ""
 
 
 def problems(game: str, edl: dict) -> list[str]:
@@ -186,7 +241,8 @@ def problems(game: str, edl: dict) -> list[str]:
     ov = overrides(game)
     out = []
     for b in narr_beats(edl):
-        res = cached(game, beat_sig(b))
+        sig = beat_sig(b, game)
+        res = cached(game, sig)
         if res is None:
             out.append(f"{b['id']}: not checked yet")
             continue
@@ -195,7 +251,10 @@ def problems(game: str, edl: dict) -> list[str]:
         for c in res.get("claims", []):
             if c.get("kind") != "footage" or c.get("verdict") == "true":
                 continue
-            if any(o.get("beat") == b["id"] and o.get("match", "\0").lower() in c.get("text", "").lower() for o in ov):
+            # Bryce's confirmation counts only for this exact paragraph version and a specific match
+            # (review 2026-11-23: an empty match waived everything, and a confirmation outlived a rewrite)
+            if any(o.get("beat") == b["id"] and o.get("sig") == sig and len(str(o.get("match", "")).strip()) >= 12
+                   and str(o["match"]).lower() in c.get("text", "").lower() for o in ov):
                 continue
             out.append(f"{b['id']} [{c.get('verdict')}] {c.get('text', '')} | footage: {c.get('evidence', '')} | "
                        f"fix: {c.get('fix', '')}")
@@ -204,12 +263,12 @@ def problems(game: str, edl: dict) -> list[str]:
 
 def gate(game: str, edl: dict | None = None, notify: bool = True) -> None:
     """Stop (SystemExit) when a gated script has false, unclear or unchecked footage claims."""
-    edl = edl or load(game)[0]
-    if not gated(edl):
+    edl = load(game)[0]  # always the rendered version (edits.json applied), whatever the caller holds
+    if not gated(edl, game):
         return
     bad = problems(game, edl)
     if not bad:
-        print(f"claims check: passed for script {script_hash(edl)}", flush=True)
+        print(f"claims check: passed for script {script_hash(edl, game)}", flush=True)
         return
     msg = (f"Claims check stopped {game}: {len(bad)} narration line(s) are false, unclear or not checked "
            f"against the footage. Nothing was voiced or rendered.\n" + "\n".join(f"- {x}" for x in bad[:12]))
@@ -223,10 +282,10 @@ def gate(game: str, edl: dict | None = None, notify: bool = True) -> None:
 
 
 def report(game: str, edl: dict) -> str:
-    lines = [f"# Claims check: {game} (script {script_hash(edl)})", ""]
+    lines = [f"# Claims check: {game} (script {script_hash(edl, game)})", ""]
     counts = {"true": 0, "false": 0, "unclear": 0, "external": 0}
     for b in narr_beats(edl):
-        res = cached(game, beat_sig(b)) or {}
+        res = cached(game, beat_sig(b, game)) or {}
         lines.append(f"## {b['id']}")
         for c in res.get("claims", []):
             v = c.get("verdict", "?")
@@ -253,7 +312,7 @@ def main() -> int:
     a = ap.parse_args()
     edl, clips = load(a.game)
     if a.needs:
-        return 0 if gated(edl) and any(cached(a.game, beat_sig(b)) is None for b in narr_beats(edl)) else 1
+        return 0 if gated(edl, a.game) and any(cached(a.game, beat_sig(b, a.game)) is None for b in narr_beats(edl)) else 1
     if a.gate:
         try:
             gate(a.game, edl, notify=False)
@@ -266,7 +325,7 @@ def main() -> int:
     if not claude_code.available_token():
         raise SystemExit("CLAUDE_CODE_OAUTH_TOKEN is not set (the check runs on the subscription, never the paid API)")
     only = set(filter(None, a.only.split(",")))
-    todo = [b for b in narr_beats(edl) if (not only or b["id"] in only) and cached(a.game, beat_sig(b)) is None]
+    todo = [b for b in narr_beats(edl) if (not only or b["id"] in only) and cached(a.game, beat_sig(b, a.game)) is None]
     print(f"claims check {a.game}: {len(todo)} paragraph(s) to judge", flush=True)
 
     def one(b):
@@ -279,7 +338,7 @@ def main() -> int:
             except Exception as e:
                 res = {"claims": [], "error": repr(e)[:300]}
         if not res.get("error"):
-            store(a.game, beat_sig(b), res)  # failures are not cached, so the next run tries again
+            store(a.game, beat_sig(b, a.game), res)  # failures are not cached, so the next run tries again
         bad = [c for c in res.get("claims", []) if c.get("kind") == "footage" and c.get("verdict") != "true"]
         print(f"{b['id']}: {len(res.get('claims', []))} claims, {len(bad)} to fix"
               f"{' (check failed: ' + res['error'][:80] + ')' if res.get('error') else ''}, {time.time() - t0:.0f} s",

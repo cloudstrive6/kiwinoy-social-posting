@@ -24,6 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
+import threading  # noqa: E402
+
+_WHISPER = threading.Lock()  # the claims check runs ranges in threads; one model, one transcription at a time
 
 
 def dialogue_lines(wav: Path, gap: float = 1.0) -> list[tuple[float, str]]:
@@ -79,15 +82,23 @@ def run_check(key: str, start: float, end: float, name: str, step: float = 2.0, 
             d.text((4, 2), f.stem, fill=(255, 230, 0))
             sheet.paste(im, ((i % 5) * 384, (i // 5) * 216))
         sheet.save(out / f"sheet{n0 // 20 + 1}.jpg", quality=85)
-    lines = []
+    lines, heard_ok = [], False
     if audio:
         wav = out / "audio.wav"
         r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(piece), "-vn", "-ac", "1", "-ar", "16000",
                             str(wav)])
-        if r.returncode == 0 and wav.exists():
-            lines = dialogue_lines(wav)
+        if r.returncode == 0 and wav.exists() and wav.stat().st_size > 32000:
+            try:
+                with _WHISPER:
+                    lines = dialogue_lines(wav)
+                heard_ok = True
+            except Exception as e:
+                print(f"dialogue could not be read: {e!r}", flush=True)
             wav.unlink()
-    txt = "\n".join(f"[{start + t:7.1f} s] {s}" for t, s in lines) or "(no speech heard)"
+    # Silence and unreadable audio are different evidence (review 2026-11-23): the farm-stand error came
+    # from not hearing the dialogue, so missing audio must never read as "nobody spoke".
+    empty = "(no speech heard)" if heard_ok else "(audio could not be read)"
+    txt = "\n".join(f"[{start + t:7.1f} s] {s}" for t, s in lines) or empty
     piece.unlink()
     done.write_text(f"{key} {start}-{end} s\n\n{txt}\n", encoding="utf-8")
     return out

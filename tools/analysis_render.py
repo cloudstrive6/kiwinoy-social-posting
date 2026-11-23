@@ -770,6 +770,17 @@ def main() -> int:
         if not a.version.endswith("-vox"):
             a.version += "-vox"  # every backup draft is visible by name on B2
     timings = json.loads((narr_dir / "timings.json").read_text(encoding="utf-8"))
+    if claims_check.gated(edl, game):  # the checked text must be the voiced text (review 2026-11-23: a local render
+        # could pass the gate on a fixed line and still play the old take)
+        if used.get("voice") == "voxcpm2":
+            import voice_backup
+            want = {b["id"]: voice_backup.take_hash(b) for b in edl["beats"] if b["type"] == "narr"}
+        else:
+            import analysis_narrate
+            want = {b["id"]: analysis_narrate.el_take_hash(b, edl["narrator"]) for b in edl["beats"] if b["type"] == "narr"}
+        stale = [i for i, h in want.items() if timings.get(i, {}).get("hash") != h]
+        if stale:
+            raise SystemExit(f"narration is older than the checked script for {', '.join(stale[:8])}; run narrate first")
     work = out / "work"
     segs = out / "segs"
     work.mkdir(parents=True, exist_ok=True)
