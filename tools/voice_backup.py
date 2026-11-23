@@ -349,6 +349,13 @@ def parity() -> int:
     target = {"wer_max": 0.02, "pitch_hz": 175.8, "pitch_st_max": 1.0, "wpm": 216.0, "wpm_pct_max": 5.0}
     p = m.get("pitch_hz")
     m["pitch_st_off"] = round(12 * math.log2(p / target["pitch_hz"]), 2) if p else None
+    # a real run slows or speeds the whole video to WPM (analysis_narrate.narrate_backup), so parity
+    # judges the pace after that step and keeps the raw pace for the record
+    if m.get("wpm"):
+        raw_dev = m["wpm"] / target["wpm"] - 1
+        m["pace_applied"] = round(min(1.10, max(0.85, WPM / m["wpm"])), 3) if abs(raw_dev) > 0.03 else 1.0
+        m["wpm_raw_pct_off"] = round(raw_dev * 100, 1)
+        m["wpm"] = round(m["wpm"] * m["pace_applied"], 1)
     m["wpm_pct_off"] = round((m["wpm"] / target["wpm"] - 1) * 100, 1) if m.get("wpm") else None
     m["pass"] = (m["wer"] <= target["wer_max"] and m["pitch_st_off"] is not None
                  and abs(m["pitch_st_off"]) <= target["pitch_st_max"]

@@ -229,8 +229,16 @@ def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reaso
         if wav.exists() and not timings[b["id"]].get("tail_trimmed"):
             trim_tail(wav)
             timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
-    if nar.get("master"):  # pace and tempo were tuned for ElevenLabs takes, so they are not applied
-        master_takes(narr, out, timings, str(nar["master"]), 1.0, float(nar.get("tail_fade", 0.0)))
+    # Pace to take 1's 216 wpm (parity test, 2026-11-23: seed 11 on a Modal L4 read the test paragraph at
+    # 241 wpm against 216 locally; same words, same pitch). Measured over the whole video on the
+    # unmastered takes, then the free atempo slow-down that ElevenLabs EDLs use as "pace".
+    said = sum(len(strip_tags(b["tts"]).split()) for b in narr)
+    raw_s = sum(float(timings[b["id"]].get("qc", {}).get("seconds") or timings[b["id"]]["seconds"]) for b in narr)
+    wpm = said / max(1e-6, raw_s / 60)
+    pace = round(min(1.10, max(0.85, voice_backup.WPM / wpm)), 3) if abs(wpm / voice_backup.WPM - 1) > 0.03 else 1.0
+    print(f"backup pace: {wpm:.0f} wpm measured, pace {pace} for {voice_backup.WPM:.0f} wpm", flush=True)
+    if nar.get("master"):  # ElevenLabs "pace" and "tempo" are not applied: the backup gets its own pace
+        master_takes(narr, out, timings, str(nar["master"]), pace, float(nar.get("tail_fade", 0.0)))
     (out / "timings.json").write_text(json.dumps(timings, indent=1), encoding="utf-8")
     used_file(game).write_text(json.dumps({"dir": "narration-vox", "voice": "voxcpm2", "reason": reason}),
                                encoding="utf-8")
