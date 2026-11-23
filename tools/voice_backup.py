@@ -260,6 +260,7 @@ def qc(b: dict, raw: Path, wav: Path) -> tuple[list[str], dict]:
     bad = []
     if errs > max(1, math.floor(MAX_WER * len(ref))):  # one Whisper slip never fails a short line
         bad.append(f"{errs} words wrong of {len(ref)} ({m['wer']:.1%}: {word_diff(ref, hyp)})")
+        print(f"{b['id']} heard: {' '.join(w['w'] for w in heard)}", flush=True)  # to fix scoring, not the voice
     if m["clip_runs_per_min"] > CLIP_RUNS_PER_MIN or m["clip_longest"] >= CLIP_LONGEST:
         bad.append(f"clipping: {m['clip_runs_per_min']} flat runs a minute, longest {m['clip_longest']} samples")
     ratio = secs / max(0.5, m["expected_s"])
