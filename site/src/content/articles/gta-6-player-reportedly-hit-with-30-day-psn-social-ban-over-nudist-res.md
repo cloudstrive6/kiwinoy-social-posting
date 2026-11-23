@@ -8,7 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-player-reportedly-hit-with-30-day-psn-social-ban-over-nudist-res.jpg"
 date: 2026-11-22
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gta-6-psn-ban-nude-photos-nudist-resort"
 telegramMessageId: 1747
