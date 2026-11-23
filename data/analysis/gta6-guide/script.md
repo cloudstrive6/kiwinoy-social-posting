@@ -62,7 +62,7 @@ Our landlord was very understanding about it.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 196-203 (notice: You have some marked bills. Take them to a drop-off to sell for usable cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 272-278 (map tooltip Brian's Lockup, goods to sell, price list; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 82-90 (blue lockup with the marlin mural, Jason carries the duffel in), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 100-106.6 (Jason takes the bag in through the lockup door)]
 
-Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Then Brian pays you. Until someone pays you, that bag is just a heavy backpack.
+Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Until someone pays you, that bag is just a heavy backpack.
 
 ### Tip 5: Stow the stash bag and sell it soon
 
@@ -170,7 +170,7 @@ Tip number fifteen. To keep a stolen car, register it. Registering swaps the pla
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 106.5-110 (Vapid Montagne XL scan card, cost to register $3,400; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 279-284.5 (prompt Keep current / Find another; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 29-39.9 (the registered red Elegy rolls out of Watkins at dusk)]
 
-Guides say later ones cost more the pricier the car. A Vapid Montagne XL showed a cost to register of three thousand four hundred dollars. Moses even asks if you want to keep the car or find another. So use your free one on a car you love, not the first junker you grab. A free registration happens once. Spend it like it matters.
+Guides say later ones cost more the pricier the car. A Vapid Montagne XL showed a cost to register of three thousand four hundred dollars. The game even asks if you want to keep the car or find another. So use your free one on a car you love, not the first junker you grab. A free registration happens once. Spend it like it matters.
 
 ### Tip 16: Get your car delivered
 
@@ -194,7 +194,7 @@ Every car I sell is completely legal.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 172-176 (arrival at Coastal Auto Care), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 74-83 (engine menu, Stage 2 $1,800, bank b $9,766; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 153-162.3 (Nitrous Boost $5,000, bank figure down to $5,506; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 118-126 (transmission menu, $1,500 and $600, one part at a time; "crop": "none")]
 
-Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
+Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shop parts come straight out of your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
 
 ### 9:31 Re-hook
 
@@ -284,7 +284,7 @@ Tip number twenty-six. Save by hand from the pause menu. You do not need a safeh
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p02.mp4 @ 167.5-175 (notice: Unowned vehicles, weapons, or items that weren't stored during your last session were lost; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-19 12-50-26).mp4 @ 17.5-27.5 (tip: Unowned weapons are lost after you die in combat or get arrested; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 110-122 (Jason picks guns off the warehouse floor; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 72.5-81.6 (Stored vehicles: Lucia's '90 Elegy, current personal vehicle; "crop": "none")]
 
-Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning when I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.
+Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning when I loaded back into Jason's house. The game warns that unowned weapons are lost when you die in combat or get arrested. So treat guns you pick up off the floor as temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-19 12-31-14).mp4 @ 12-14.6 (the pet snake in the terrarium)]
 
