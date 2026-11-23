@@ -51,7 +51,10 @@ LONG = 15                     # words; shorter paragraphs skip the pace and pitc
 # Whisper's spelling -> the script's, applied to what was heard before scoring (names Whisper
 # writes differently whatever the voice). Add to it when a clean take fails on a spelling.
 ALIASES = {"buck me": "buckme", "buck-me": "buckme", "a t m s": "atms", "atm's": "atms",
-           "g t a": "gta", "okay": "ok", "'n'": " and "}
+           "g t a": "gta", "okay": "ok", "'n'": " and ",
+           # "Pay 'n' Spray" said naturally runs together; Whisper writes it these ways (dry run 2026-11-23)
+           "pain spray": "pay spray", "paint spray": "pay spray", "pay and spray": "pay spray",
+           "pay-n-spray": "pay spray", "pay n spray": "pay spray"}
 _NUMW = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve "
                                     "thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split())}
 _NUMW.update({w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if i > 1})
@@ -94,9 +97,12 @@ def year_words(n: int) -> str:
 
 def tokens(text: str) -> list[str]:
     """Lower case, aliases applied, numbers as words, punctuation dropped, plurals folded."""
-    t = text.lower().replace("’", "'").replace(",", "")
+    t = text.lower().replace("’", "'")
+    t = re.sub(r"(?<=\d)(?:,\s?|\s)(?=\d{3}\b)", "", t)  # "5, 000" and "5 000" are 5000, not "five zero"
+    t = t.replace(",", "")
     for a, b in ALIASES.items():
         t = re.sub(rf"(?<![a-z0-9]){re.escape(a)}(?![a-z0-9])", b, t)
+    t = re.sub(r"\ba (hundred|thousand|million)\b", r"one \1", t)  # "a hundred" against Whisper's $100
     t = re.sub(r"\$(\d+(?:\.\d+)?)\s*(million|thousand|k)?",
                lambda m: f" {m.group(1)} {(m.group(2) or '').replace('k', 'thousand')} dollars ", t)
     t = re.sub(r"(\d+(?:\.\d+)?)\s*%", r" \1 percent ", t)
@@ -104,6 +110,9 @@ def tokens(text: str) -> list[str]:
     t = re.sub(r"\b(\d+)\.(\d+)\b", lambda m: f" {m.group(1)} point {' '.join(m.group(2))} ", t)
     t = re.sub(r"(?<![\d.])(19\d\d|20\d\d)(?![\d.])(?!\s*dollars)", lambda m: " " + year_words(int(m.group())) + " ", t)
     t = re.sub(r"\d+", lambda m: " " + num_words(int(m.group())) + " ", t)
+    # after numbers become words, so a spoken "four" and a written "4" fold alike
+    t = re.sub(r"(?<=[a-z]{2})our\b", "or", t)  # colour/color, armour/armor: Whisper spells British or US
+    t = re.sub(r"(?<=[a-z]{2}[^aeiou\s])re\b", "er", t)  # centre/center, metre/meter
     out = []
     for w in t.replace("-", " ").split():
         w = re.sub(r"[^a-z0-9]", "", w)
