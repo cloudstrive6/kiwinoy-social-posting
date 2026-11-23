@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
 import { ICON } from "../lib/icons.js";
 
 // BOSS KG digital products: OUR OWN tools, not affiliate gear (that lives on /gear/).
@@ -11,6 +12,7 @@ import { ICON } from "../lib/icons.js";
 //   url      the product's own site           badge    the label at the top of the card
 //   mark     logo id rendered before the name (see .mark-* in the styles below)
 //   shot     product image (1200x630 share card in /products/, with a 640 px variant)
+//   group    which section it sits in: "ai" or "guides" (see GROUPS below; add a group for a new kind)
 //
 // NO PRICES ON THIS PAGE (owner, 2026-10-23): pricing lives on each product's own landing page.
 // Layout rebuilt 2026-11-12 (owner: "looks hideous"): the check icons were unstyled (scoped CSS
@@ -18,6 +20,7 @@ import { ICON } from "../lib/icons.js";
 // product's own image, and the points as a grid of small checked items.
 const PRODUCTS = [
   {
+    group: "ai",
     name: "EditTwin",
     badge: "AI video editor",
     tagline: "The AI video editor that edits like you.",
@@ -42,6 +45,7 @@ const PRODUCTS = [
   },
   {
     // Added 2026-11-24 (KG digital products). No game screenshots or logos (IP decision); unofficial wording only.
+    group: "guides",
     name: "GTA 6 Starter Pack",
     badge: "Unofficial game guide",
     tagline: "Stop losing your money on day one.",
@@ -61,21 +65,34 @@ const PRODUCTS = [
     note: "Instant download",
   },
 ];
+
+// Sections of the page, in order (owner, 2026-11-24: the guide sat under "AI and automation
+// systems", which it is not). A group with no products is not shown.
+const GROUPS = [
+  { id: "ai", title: "AI and automation systems",
+    blurb: "Tools we built for the way we actually work: the same pipeline that runs this channel, packaged so you can use it too." },
+  { id: "guides", title: "Game guides",
+    blurb: "Unofficial guides built from our own gameplay and checked against guide sites, so you start the game ahead." },
+].map((g) => ({ ...g, items: PRODUCTS.map((p, i) => ({ ...p, i })).filter((p) => p.group === g.id) }))
+ .filter((g) => g.items.length);
 ---
-<Base title="AI and automation systems" description="Tools built by BOSS KG for creators, starting with EditTwin, the AI video editor that cuts, captions and finishes your short-form video on your own machine.">
+<Base title="Products" description="Products built by BOSS KG: EditTwin, the AI video editor that cuts, captions and finishes your short-form video on your own machine, and unofficial game guides like the GTA 6 Starter Pack.">
   <main id="main" class="wrap">
     <header class="page-head">
-      <h1>AI and automation systems</h1>
-      <p class="lede">Tools we built for the way we actually work: the same pipeline that runs this channel, packaged so you can use it too. These are our own products, not affiliate links.</p>
+      <h1>Products</h1>
+      <p class="lede">Things we built ourselves: AI tools from the pipeline that runs this channel, and guides from the games we play. These are our own products, not affiliate links.</p>
     </header>
 
-    <div class="sec" style="margin-top:var(--s6)">
-      {PRODUCTS.map((p, i) => (
+    {GROUPS.map((g, gi) => (
+    <section class="sec prod-group" aria-labelledby={`grp-${g.id}`}>
+      <SectionHead id={`grp-${g.id}`} title={g.title} ruled={gi === 0} />
+      <p class="prod-group-blurb">{g.blurb}</p>
+      {g.items.map((p) => { const i = p.i; return (
         <article class="prod" aria-labelledby={`prod-${i}`}>
           <div class={p.shot ? "prod-top" : "prod-top no-shot"}>
             <div class="prod-copy">
               <span class="chip">{p.badge}</span>
-              <h2 id={`prod-${i}`}>{p.mark && <span class={`prod-mark mark-${p.mark}`} aria-hidden="true"></span>}{p.name}</h2>
+              <h3 id={`prod-${i}`}>{p.mark && <span class={`prod-mark mark-${p.mark}`} aria-hidden="true"></span>}{p.name}</h3>
               <p class="prod-tagline">{p.tagline}</p>
               <p class="prod-blurb">{p.blurb}</p>
               <div class="prod-cta">
@@ -93,8 +110,9 @@ const PRODUCTS = [
             {p.points.map((pt) => <li><span class="prod-tick" set:html={ICON.check}></span><span>{pt}</span></li>)}
           </ul>
         </article>
-      ))}
-    </div>
+      ); })}
+    </section>
+    ))}
 
     <p class="prod-more">More tools are on the way. The gear we buy and recommend lives on <a href="/gear/">Gear</a>, and you can <a href="/follow/">follow BOSS KG</a> to hear when a new tool lands.</p>
   </main>
@@ -106,7 +124,11 @@ const PRODUCTS = [
     .prod-top.no-shot { grid-template-columns: minmax(0, 1fr); }
     .prod + .prod { margin-top: var(--s6); }
     .prod-copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s3); min-width: 0; }
-    .prod h2 { font-size: 40px; line-height: 1.05; display: flex; align-items: center; gap: var(--s3); margin: 0; }
+    .prod h3 { font-size: 40px; line-height: 1.05; display: flex; align-items: center; gap: var(--s3); margin: 0; }
+    .prod-group { margin-top: var(--s6); }
+    .prod-group + .prod-group { margin-top: var(--s8); }
+    .prod-group-blurb { font-family: var(--f-text); font-size: 17px; line-height: 1.6; color: var(--muted);
+      max-width: 40em; margin: calc(var(--s2) * -1) 0 var(--s5); }
     .prod-tagline { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
     .prod-blurb { font-family: var(--f-text); font-size: 17px; line-height: 1.6; color: var(--body); max-width: 34em; margin: 0; }
     .prod-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-top: var(--s2); }
@@ -140,7 +162,7 @@ const PRODUCTS = [
     }
     @media (max-width: 640px) {
       .prod { padding: var(--s5); gap: var(--s5); }
-      .prod h2 { font-size: 32px; }
+      .prod h3 { font-size: 32px; }
       .prod-mark { --m: 34px; }
       .prod-points { grid-template-columns: minmax(0, 1fr); }
       .prod-cta, .prod-cta .btn { width: 100%; }
