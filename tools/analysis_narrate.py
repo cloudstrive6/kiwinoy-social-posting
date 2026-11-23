@@ -253,13 +253,18 @@ def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reaso
               f"about ${summary['usd_est']:.2f} of Modal L4 time\n")
     (out / "narration.md").write_text(report, encoding="utf-8")
     print(report, flush=True)
-    if summary["voiced"]:
+    # One note per video, the first time its backup narration is complete (dry run 2026-11-23: the runs
+    # that voiced paragraphs stopped on QC before this point, and the run that finished voiced none).
+    mark = out / "notified.txt"
+    if not mark.exists():
         try:
             sys.path.insert(0, str(ROOT))
             from core.notify import telegram
-            telegram(f"KG {game}: narrated with the VoxCPM2 backup ({reason}). {summary['voiced']} paragraphs, "
-                     f"{summary['rerolls']} re-rolls, about ${summary['usd_est']:.2f} of Modal time. "
-                     f"The draft name ends in -vox.")
+            if telegram(f"KG {game}: narrated with the VoxCPM2 backup ({reason}). {len(narr)} paragraphs, "
+                        f"{total / 60:.1f} min of speech; this run {summary['voiced']} voiced, "
+                        f"{summary['rerolls']} re-rolls, about ${summary['usd_est']:.2f} of Modal time. "
+                        f"The draft name ends in -vox."):
+                mark.write_text(reason, encoding="utf-8")
         except Exception as e:  # the note never stops a run
             print(f"Telegram note skipped: {e!r}", flush=True)
     return 0
