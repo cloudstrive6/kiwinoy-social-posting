@@ -50,8 +50,8 @@ const PRODUCTS = [
     badge: "Unofficial game guide",
     tagline: "Stop losing your money on day one.",
     blurb:
-      "27 beginner tips for GTA 6, built from our own gameplay and checked against guide sites, " +
-      "plus a money quick reference and a tracker that does the sums for you. An unofficial fan " +
+      "27 beginner tips for GTA 6, tested in our own gameplay, plus a money quick reference and " +
+      "a tracker that does the sums for you. An unofficial fan " +
       "guide, not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.",
     points: [
       "A first-hour checklist to keep your cash, cars and stash",
@@ -74,7 +74,8 @@ const GROUPS = [
   { id: "ai", title: "AI tools",
     blurb: "Tools we built for the way we actually work: the same pipeline that runs this channel, packaged so you can use it too." },
   { id: "guides", title: "Game guides",
-    blurb: "Unofficial guides built from our own gameplay and checked against guide sites, so you start the game ahead." },
+    // Not "checked against guide sites" (owner, 2026-11-24): that line sent buyers to the free sites.
+    blurb: "Unofficial guides built from hours of our own gameplay: what actually works, in one place." },
 ].map((g) => ({ ...g, items: PRODUCTS.map((p, i) => ({ ...p, i })).filter((p) => p.group === g.id) }))
  .filter((g) => g.items.length);
 ---
