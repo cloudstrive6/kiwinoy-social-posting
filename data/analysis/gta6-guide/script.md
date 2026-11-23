@@ -52,7 +52,7 @@ Tip number two. You deposit at an ATM, in person. A lot of new players think the
 
 ### Tip 3: Jason and Lucia share one account
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 182-188.5 (Transactions list with the Coastal Auto Care debits; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 144-150 (transmission menu at Coastal Auto Care, bank figure falling from $7,066; paid from the bank, unlike the wing in p07, which was cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 194-200.9 (same statement, scrolled; "crop": "none")]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 182-188.5 (Transactions list with the Coastal Auto Care debits; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 144-150 (transmission menu at Coastal Auto Care, bank figure falling from $7,066; paid from the bank, unlike the wing in p07, which was cash; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 194-200.9 (same statement, scrolled; "crop": "none")]
 
 [GFX tag "TIP 3: ONE SHARED BANK ACCOUNT"]
 Tip number three. Jason and Lucia share one bank account. I spent a pile of Jason's bank money at Coastal Auto Care. Later, Lucia checked her ATM, and those charges were on her statement, with Brian's payments too. So money one of them banks is money the other one can spend.
@@ -140,7 +140,7 @@ Tip number eleven. Small changes throw off the description too. Hats and glasses
 
 ### Tip 12: The Pay 'n' Spray will not save you mid chase
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 124.5-131.5 (tooltip: You can't enter a Pay 'n' Spray when the cops are nearby or in pursuit; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 49.5-55.5 (Moses' services menu, Respray: change the vehicle color to reduce recognition; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 92-100 (respray preview, $100; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 287.6-293.8 (the Elegy in Moses' garage, respray swatches)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 124.5-131.5 (tooltip: You can't enter a Pay 'n' Spray when the cops are nearby or in pursuit; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 49.5-55.5 (Moses' services menu, Respray: change the vehicle color to reduce recognition; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 92-100 (respray preview, $100; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 287.6-293.8 (the Elegy in Moses' garage, respray swatches)]
 
 [GFX tag "TIP 12: NO RESPRAY MID CHASE"]
 Tip number twelve. The Pay 'n' Spray trick from older games does not work here. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray the car. The respray menu says a new color reduces recognition. At Moses' shop, a respray was a hundred dollars. So the order is always the same. Escape first, then paint. Paint hides the car. It does not hide you.
@@ -216,14 +216,14 @@ Every car I sell is completely legal.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 172-176 (arrival at Coastal Auto Care), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 74-83 (engine menu, Stage 2 $1,800, bank b $9,766; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 153-162.3 (Nitrous Boost $5,000, bank figure down to $5,506; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 118-126 (transmission menu, $1,500 and $600, one part at a time; "crop": "none")]
 
-[GFX tag "TIP 18: PRICE UP MODS FIRST"; counter $506 "LEFT IN THE BANK" on "to about five hundred"]
+[GFX tag "TIP 18: PRICE UP MODS FIRST"; counter $506 "LEFT IN THE BANK" on "in under two minutes"]
 Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shop parts come straight out of your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
 
 ### 9:31 Re-hook
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p09.mp4 @ 224.3-228.8 (Tootsie in her red cape at the trailer), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 124.5-129.1 (unowned notice over the terrarium, blur the gore (teaser blur))]
 
-We are past halfway. Next is money that does not need a gun. And I still owe you that third way to lose your stuff.
+We are past halfway. Next, staying alive, then money that does not need a gun. And I still owe you that third way to lose your stuff.
 
 ### 9:40 Chapter: Health and stats
 
@@ -268,7 +268,7 @@ Now that you are healthy, here is money that does not need a gun.
 
 ### Tip 22: Open the pause map often
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 74-81.6 (pause map objectives, optional Search for the Skunk Ape; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 139.5-145.3 (map tooltip Coastal Auto Care, mod shop; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p04.mp4 @ 82-87 (whole map of Leonida; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 278.2-282.4 (Jason drives off after reading the map)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 74-81.6 (pause map objectives, optional Search for the Skunk Ape; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 139.5-145.3 (map tooltip Coastal Auto Care, mod shop; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p04.mp4 @ 82-87 (whole map of Leonida; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 278.2-282.4 (Jason drives off after reading the map)]
 
 [GFX tag "TIP 22: OPEN THE PAUSE MAP"]
 Tip number twenty-two. Open the pause map often. It lists your open missions and your optional side jobs. One of mine was search for the Skunk Ape. Its pins also explain what each place is for, like Brian's Lockup and the mod shop. When the game says map updated, open it and look. A lot of this guide is written right there on that map.
@@ -309,7 +309,7 @@ Last section. You earned it, so now you keep it.
 
 ### Tip 26: Save by hand from the pause menu
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 120-124.6 (pause-menu save list, slots dated 11/21/26; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p10.mp4 @ 94.6-98.9 (OVERWRITE SAVED GAME?; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 104.6-114.3 (Lucia walks out of Moses' garage into the dark lot), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 126.4-128.4 (the new save, Moses (31%) 11/22/26 02:06, readable 126.9 to 127.9 between fades; "crop": "none")]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 120-124.6 (pause-menu save list, slots dated 11/21/26; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p10.mp4 @ 94.6-98.9 (OVERWRITE SAVED GAME?; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 104.6-114.3 (Lucia walks out of Moses' garage into the dark lot), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 126.4-128.4 (the new save, Moses (31%) 11/22/26 02:06, readable 126.9 to 127.9 between fades; "crop": "none")]
 
 [GFX tag "TIP 26: SAVE BY HAND"]
 Tip number twenty-six. Save by hand from the pause menu. You do not need a safehouse or a bed to save. That habit is from older GTA games. I saved at Moses' car lot in the middle of the night. Save after every big payout, and before anything risky. A save takes seconds. A bad death can take the whole evening.
@@ -344,7 +344,7 @@ Here are the five that matter most. Number five. Register the cars you want to k
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p01.mp4 @ 22-32.4 (cable-stayed bridge at sunset)]
 
-[GFX endscreen "GTA 6 STARTER PACK"]
+[GFX endscreen "MORE GTA 6 GUIDES"; caption "GTA 6 STARTER PACK: GTA6.BOSSKG.COM (UNOFFICIAL FAN GUIDE)"]
 What is the most cash you have lost to one death so far? Mine is five hundred and thirty-one dollars. Tell me in the comments. See you in Leonida.
 
 ## YouTube chapters (estimated from the cue sheet at 175 wpm; take the real times from the render)

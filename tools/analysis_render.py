@@ -695,7 +695,7 @@ def qc(path: Path) -> dict:
                                     "-of", "json", str(path)], capture_output=True, text=True).stdout)
     v = next(s for s in pr["streams"] if s["codec_type"] == "video")
     log = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path),
-                          "-vf", "blackdetect=d=0.1:pix_th=0.08,freezedetect=n=-60dB:d=2",
+                          "-vf", "blackdetect=d=0.1:pix_th=0.08,freezedetect=n=-50dB:d=2",  # -50 dB (review 2026-11-24): -60 missed 5 s menu holds
                           "-af", "ebur128=peak=true", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     summary = log[log.rfind("Summary:"):]

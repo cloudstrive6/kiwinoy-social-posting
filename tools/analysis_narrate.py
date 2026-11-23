@@ -161,6 +161,7 @@ def master_takes(narr: list, out: Path, timings: dict, preset: str, pace: float 
                         str(tmp)], check=True)
         tmp.replace(wav)
         t.update(master=preset, master_hash=t.get("hash"), seconds=round(seconds(wav), 3))
+        t.pop("leveled", None)  # a fresh master loses any short-take gain, so it is levelled again
         if abs(pace - 1) > 0.001 or "pace" in t:
             t["pace"] = pace
         if tail_fade > 0 or "tail_fade" in t:
@@ -213,6 +214,48 @@ def vox_folder(game: str, out: Path) -> Path:
     return out
 
 
+def level_short_takes(narr: list, out: Path, timings: dict) -> None:
+    """Raise short takes that came out quiet (independent review 2026-11-24 of the guide's v1-vox: the deadpan
+    one-liners sat 3 to 6 dB under the narration, because a -16 LUFS loudnorm cannot measure a 2 s clip). A take
+    under 6 s more than 1.5 dB below the median speech level is raised to it, at most 6 dB, peaks kept under
+    -2 dBFS. Applied once per mastered take (backup narrator only, so published Guide C videos never change)."""
+    import re as _re
+    import statistics
+
+    def levels(wav: Path) -> tuple[float, float]:
+        r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(wav), "-af",
+                            "silenceremove=stop_periods=-1:stop_threshold=-45dB,volumedetect", "-f", "null", "-"],
+                           capture_output=True, text=True).stderr
+        mean = _re.search(r"mean_volume: (-?[\d.]+) dB", r)
+        peak = _re.search(r"max_volume: (-?[\d.]+) dB", r)
+        return (float(mean.group(1)) if mean else -99.0), (float(peak.group(1)) if peak else 0.0)
+
+    lv = {}
+    for b in narr:
+        wav = out / f"{b['id']}.wav"
+        if wav.exists():
+            lv[b["id"]] = levels(wav)
+    long_means = [lv[i][0] for i in lv if float(timings.get(i, {}).get("seconds", 0)) >= 6]
+    if not long_means:
+        return
+    med = statistics.median(long_means)
+    for b in narr:
+        t, i = timings.get(b["id"], {}), b["id"]
+        if i not in lv or float(t.get("seconds", 0)) >= 6 or t.get("leveled") == t.get("master_hash"):
+            continue
+        mean, peak = lv[i]
+        gain = min(6.0, med - mean, -2.0 - peak)
+        if gain > 1.5:
+            wav = out / f"{i}.wav"
+            tmp = out / f"{i}.lvl.wav"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-af", f"volume={gain:.2f}dB",
+                            "-ar", "48000", "-ac", "1", str(tmp)], check=True)
+            tmp.replace(wav)
+            print(f"{i}: short take raised {gain:.1f} dB to the narration median", flush=True)
+        t["leveled"] = t.get("master_hash")
+        timings[i] = t
+
+
 def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reason: str) -> int:
     """Voice the whole video with the VoxCPM2 backup into narration-vox/ (tools/voice_backup.py),
     then the same tail trim and mastering as Guide C. Never writes to narration/."""
@@ -239,6 +282,7 @@ def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reaso
     print(f"backup pace: {wpm:.0f} wpm measured, pace {pace} for {voice_backup.WPM:.0f} wpm", flush=True)
     if nar.get("master"):  # ElevenLabs "pace" and "tempo" are not applied: the backup gets its own pace
         master_takes(narr, out, timings, str(nar["master"]), pace, float(nar.get("tail_fade", 0.0)))
+    level_short_takes(narr, out, timings)
     (out / "timings.json").write_text(json.dumps(timings, indent=1), encoding="utf-8")
     used_file(game).write_text(json.dumps({"dir": "narration-vox", "voice": "voxcpm2", "reason": reason}),
                                encoding="utf-8")

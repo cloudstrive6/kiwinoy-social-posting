@@ -187,7 +187,8 @@
      "clip": 1014,
      "in": 144.0,
      "out": 150.0,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1023,
@@ -571,7 +572,8 @@
      "clip": 1038,
      "in": 49.5,
      "out": 55.5,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1038,
@@ -888,8 +890,8 @@
   },
   {
    "type": "narr",
-   "text": "We are past halfway. Next is money that does not need a gun. And I still owe you that third way to lose your stuff.",
-   "tts": "We are past halfway. Next is money that does not need a gun. And I still owe you that third way to lose your stuff.",
+   "text": "We are past halfway. Next, staying alive, then money that does not need a gun. And I still owe you that third way to lose your stuff.",
+   "tts": "We are past halfway. Next, staying alive, then money that does not need a gun. And I still owe you that third way to lose your stuff.",
    "shots": [
     {
      "clip": 1027,
@@ -1051,7 +1053,8 @@
      "clip": 1012,
      "in": 139.5,
      "out": 145.3,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1025,
@@ -1214,7 +1217,8 @@
      "clip": 1016,
      "in": 94.6,
      "out": 98.9,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1038,
@@ -1457,7 +1461,7 @@
   },
   {
    "id": "G23",
-   "cue": "tag \"TIP 18: PRICE UP MODS FIRST\"; counter $506 \"LEFT IN THE BANK\" on \"to about five hundred\""
+   "cue": "tag \"TIP 18: PRICE UP MODS FIRST\"; counter $506 \"LEFT IN THE BANK\" on \"in under two minutes\""
   },
   {
    "id": "G24",
@@ -1513,7 +1517,7 @@
   },
   {
    "id": "G37",
-   "cue": "endscreen \"GTA 6 STARTER PACK\""
+   "cue": "endscreen \"MORE GTA 6 GUIDES\"; caption \"GTA 6 STARTER PACK: GTA6.BOSSKG.COM (UNOFFICIAL FAN GUIDE)\""
   }
  ]
 }

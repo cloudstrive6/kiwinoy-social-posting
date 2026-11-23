@@ -1,0 +1,220 @@
+{
+ "note": "Post-review shot changes (independent review 2026-11-24 of v1-vox): blur and dim the game subtitle band on evidence shots that keep their whole frame, so no game subtitles play under narration; anchor three evidence shots to the words they prove.",
+ "shots": {
+  "b004": [
+   {
+    "clip": 1000,
+    "in": 0.2,
+    "out": 9.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1003,
+    "in": 53.0,
+    "out": 60.0
+   },
+   {
+    "clip": 1003,
+    "in": 102.6,
+    "out": 113.4
+   },
+   {
+    "clip": 1032,
+    "in": 143.0,
+    "out": 155.0,
+    "at": "Every robbery fills"
+   }
+  ],
+  "b011": [
+   {
+    "clip": 1026,
+    "in": 46.0,
+    "out": 58.0,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   },
+   {
+    "clip": 1026,
+    "in": 94.5,
+    "out": 100.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1030,
+    "in": 110.0,
+    "out": 118.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1030,
+    "in": 162.0,
+    "out": 168.2
+   }
+  ],
+  "b013": [
+   {
+    "clip": 1020,
+    "in": 106.6,
+    "out": 114.0
+   },
+   {
+    "clip": 1020,
+    "in": 114.45,
+    "out": 116.45,
+    "crop": "none"
+   },
+   {
+    "clip": 1031,
+    "in": 162.0,
+    "out": 167.8,
+    "crop": "none"
+   },
+   {
+    "clip": 1031,
+    "in": 236.0,
+    "out": 240.8
+   },
+   {
+    "clip": 1034,
+    "in": 66.0,
+    "out": 72.5,
+    "crop": "none",
+    "push": true,
+    "at": "The map spelled it out"
+   }
+  ],
+  "b016": [
+   {
+    "clip": 1033,
+    "in": 213.8,
+    "out": 217.4,
+    "crop": "none"
+   },
+   {
+    "clip": 1033,
+    "in": 218.0,
+    "out": 230.0
+   },
+   {
+    "clip": 1034,
+    "in": 55.5,
+    "out": 64.6,
+    "crop": "none"
+   },
+   {
+    "clip": 1034,
+    "in": 64.8,
+    "out": 71.6,
+    "crop": "none",
+    "at": "the map still shows"
+   },
+   {
+    "clip": 1034,
+    "in": 96.0,
+    "out": 103.1
+   }
+  ],
+  "b027": [
+   {
+    "clip": 1035,
+    "in": 121.0,
+    "out": 129.7,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   }
+  ],
+  "b029": [
+   {
+    "clip": 1036,
+    "in": 196.0,
+    "out": 202.2,
+    "crop": "none",
+    "push": true
+   },
+   {
+    "clip": 1035,
+    "in": 135.0,
+    "out": 141.0,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   }
+  ],
+  "b030": [
+   {
+    "clip": 1036,
+    "in": 4.0,
+    "out": 10.0,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   },
+   {
+    "clip": 1036,
+    "in": 11.0,
+    "out": 14.1
+   }
+  ],
+  "b032": [
+   {
+    "clip": 1035,
+    "in": 106.5,
+    "out": 110.0,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   },
+   {
+    "clip": 1035,
+    "in": 279.0,
+    "out": 284.5,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.855,
+      0.85,
+      0.935
+     ]
+    ]
+   },
+   {
+    "clip": 1036,
+    "in": 29.0,
+    "out": 39.9
+   }
+  ]
+ }
+}

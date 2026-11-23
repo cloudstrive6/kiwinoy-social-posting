@@ -1,6 +1,8 @@
 {
  "note": "Graphics for the GTA 6 beginners guide (2026-11-23), house style of the Spider-Man 2 and bosses videos: a chapter card per section, a TIP tag at each tip, counters only for figures the claims check verified (timed to the spoken number), one slam, the title lower third, an end screen.",
- "beat_tail": {},
+ "beat_tail": {
+  "b059": 13
+ },
  "G01": [
   {
    "kind": "lower",
@@ -266,7 +268,7 @@
    "value": "$506",
    "label": "LEFT IN THE BANK",
    "dur": 3.6,
-   "at_frac": 0.598
+   "at_frac": 0.647
   }
  ],
  "G24": [
@@ -396,9 +398,16 @@
  "G37": [
   {
    "kind": "endscreen",
-   "next": "GTA 6 STARTER PACK",
-   "sub": "GTA6.BOSSKG.COM",
+   "next": "MORE GTA 6 GUIDES",
+   "sub": "COMING SOON",
    "last": 20
+  },
+  {
+   "kind": "caption",
+   "text": "GTA 6 STARTER PACK: GTA6.BOSSKG.COM (UNOFFICIAL FAN GUIDE)",
+   "pos": "bottom",
+   "at": -20,
+   "dur": 20
   }
  ],
  "thumbnails": [
@@ -412,12 +421,14 @@
    "clip": 1003,
    "at": 40.0,
    "words": "BANK YOUR CASH",
+   "crop": "hud",
    "accent": "red"
   },
   {
    "clip": 1017,
-   "at": 181.5,
+   "at": 190.5,
    "words": "DON'T GET BUSTED",
+   "crop": "sub",
    "accent": "red"
   }
  ]
