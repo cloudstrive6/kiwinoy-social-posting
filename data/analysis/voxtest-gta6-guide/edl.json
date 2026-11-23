@@ -1,0 +1,1275 @@
+{
+ "game": "gta6-guide",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Guide C",
+  "voice_id": "BM5OFghW9ETIy6oAH5MH",
+  "model_id": "eleven_v4",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "tempo": 1.0,
+  "master": "C"
+ },
+ "under_narration_db": -24,
+ "source": "script.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "New to GTA 6? You should not rob a store until you know why I lost five hundred and thirty-one dollars in one death.",
+   "tts": "New to GTA 6? You should not rob a store until you know why I lost five hundred and thirty-one dollars in one death.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 139.0,
+     "out": 143.4
+    },
+    {
+     "clip": 1004,
+     "in": 13.0,
+     "out": 17.3,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "chapter": "New to GTA 6? Start here",
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "This is how a new player keeps their cash, keeps their cars and stays off the police radar. Here is the first problem. The cash in your pocket is gone when you die. Here is the second. The cops remember your face and your outfit.",
+   "tts": "This is how a new player keeps their cash, keeps their cars and stays off the police radar. Here is the first problem. The cash in your pocket is gone when you die. Here is the second. The cops remember your face and your outfit.",
+   "shots": [
+    {
+     "clip": 1034,
+     "in": 12.0,
+     "out": 20.0
+    },
+    {
+     "clip": 1004,
+     "in": 7.2,
+     "out": 12.8
+    },
+    {
+     "clip": 1021,
+     "in": 31.0,
+     "out": 33.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "And there is a third way to lose your stuff, without dying at all. I saw that warning three times in one night, and I will show you near the end.",
+   "tts": "And there is a third way to lose your stuff, without dying at all. I saw that warning three times in one night, and I will show you near the end.",
+   "shots": [
+    {
+     "clip": 1016,
+     "in": 137.5,
+     "out": 145.0,
+     "blur": true
+    },
+    {
+     "clip": 1015,
+     "in": 30.0,
+     "out": 33.6
+    }
+   ],
+   "gfx": [],
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "Money first, then cops, cars, health, side hustles and saving, with the top five at the end.",
+   "tts": "Money first, then cops, cars, health, side hustles and saving, with the top five at the end.",
+   "shots": [
+    {
+     "clip": 1021,
+     "in": 236.0,
+     "out": 238.1
+    },
+    {
+     "clip": 1036,
+     "in": 0.2,
+     "out": 2.3
+    },
+    {
+     "clip": 1027,
+     "in": 163.0,
+     "out": 165.1
+    }
+   ],
+   "gfx": [],
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number one, and it is the most important tip in this whole video. Bank your cash. Whatever you carry is lost when you die. Guides say the same goes for getting busted. I had five hundred and thirty-one dollars on me on launch night. One plane crash and one shootout later, my HUD said zero. Guides also report a small fee from your BuckMe bank app when you go down. So every time you pass an ATM with real money on you, stop and deposit it. Cash in the bank survives. Cash in your pocket is only on loan. Every robbery fills your pocket. So bank it before the next one.",
+   "tts": "Tip number one, and it is the most important tip in this whole video. Bank your cash. Whatever you carry is lost when you die. Guides say the same goes for getting busted. I had five hundred and thirty-one dollars on me on launch night. One plane crash and one shootout later, my HUD said zero. Guides also report a small fee from your BuckMe bank app when you go down. So every time you pass an ATM with real money on you, stop and deposit it. Cash in the bank survives. Cash in your pocket is only on loan. Every robbery fills your pocket. So bank it before the next one.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 0.2,
+     "out": 9.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1003,
+     "in": 53.0,
+     "out": 60.0
+    },
+    {
+     "clip": 1003,
+     "in": 102.6,
+     "out": 113.4
+    },
+    {
+     "clip": 1032,
+     "in": 143.0,
+     "out": 155.0
+    }
+   ],
+   "gfx": [],
+   "chapter": "Money",
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number two. You deposit at an ATM, in person. A lot of new players think the phone app can bank their cash. It cannot. Guides agree your phone will not move pocket cash into the bank. ATMs sit in places you already visit. Lucia's motel has one in the lobby. The convenience store has one by the magazines. Find the ATM before you find the action.",
+   "tts": "Tip number two. You deposit at an ATM, in person. A lot of new players think the phone app can bank their cash. It cannot. Guides agree your phone will not move pocket cash into the bank. ATMs sit in places you already visit. Lucia's motel has one in the lobby. The convenience store has one by the magazines. Find the ATM before you find the action.",
+   "shots": [
+    {
+     "clip": 1023,
+     "in": 172.0,
+     "out": 175.5
+    },
+    {
+     "clip": 1020,
+     "in": 168.0,
+     "out": 176.5
+    },
+    {
+     "clip": 1023,
+     "in": 175.5,
+     "out": 181.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1029,
+     "in": 137.5,
+     "out": 144.0
+    }
+   ],
+   "gfx": [],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number three. Jason and Lucia share one bank account. Shop charges come out of that account too. I spent a pile of Jason's money at a mod shop. Then Lucia checked her ATM, and the same charges were on her statement. So money one of them banks is money the other one can spend.",
+   "tts": "Tip number three. Jason and Lucia share one bank account. Shop charges come out of that account too. I spent a pile of Jason's money at a mod shop. Then Lucia checked her ATM, and the same charges were on her statement. So money one of them banks is money the other one can spend.",
+   "shots": [
+    {
+     "clip": 1023,
+     "in": 182.0,
+     "out": 188.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1013,
+     "in": 20.0,
+     "out": 26.0
+    },
+    {
+     "clip": 1023,
+     "in": 194.0,
+     "out": 200.9,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b006"
+  },
+  {
+   "type": "narr",
+   "text": "Our landlord was very understanding about it.",
+   "tts": "Our landlord was very understanding about it.",
+   "shots": [
+    {
+     "clip": 1023,
+     "in": 20.0,
+     "out": 22.9
+    }
+   ],
+   "gfx": [],
+   "id": "b007"
+  },
+  {
+   "type": "game",
+   "clip": 1023,
+   "in": 230.2,
+   "out": 233.5,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 230.2-233.5 s: \"Linda: I want rent plus 10% for the trouble.\" (words 230.40-233.26; next line 234.04); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b008"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. A few minutes later, Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
+   "tts": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. A few minutes later, Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 196.0,
+     "out": 203.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1011,
+     "in": 272.0,
+     "out": 278.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1009,
+     "in": 82.0,
+     "out": 90.0
+    },
+    {
+     "clip": 1009,
+     "in": 100.0,
+     "out": 106.6
+    }
+   ],
+   "gfx": [],
+   "id": "b009"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number five. Stow that stash bag in your vehicle, and sell it soon. At your car, you can stow the bag or keep it on your back. Guides warn that a bag on your back will most likely be lost if you go down. So loot, stow, and drive straight to the drop-off. Do not go sightseeing with a bag of jewelry. And once Brian pays, the money lands straight in your bank account. A death cannot touch it there.",
+   "tts": "Tip number five. Stow that stash bag in your vehicle, and sell it soon. At your car, you can stow the bag or keep it on your back. Guides warn that a bag on your back will most likely be lost if you go down. So loot, stow, and drive straight to the drop-off. Do not go sightseeing with a bag of jewelry. And once Brian pays, the money lands straight in your bank account. A death cannot touch it there.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 106.0,
+     "out": 116.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1009,
+     "in": 20.0,
+     "out": 30.0
+    },
+    {
+     "clip": 1010,
+     "in": 36.0,
+     "out": 44.3,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number six. For early cash, hold up small stores, but expect them to shut. I held up Tucker's farm stand and walked off with about a hundred dollars. Tucker's even has an ATM right by the till. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. A pawn shop robbery got me about two hundred. Small stores pay small money. So rob one, bank it, and keep moving.",
+   "tts": "Tip number six. For early cash, hold up small stores, but expect them to shut. I held up Tucker's farm stand and walked off with about a hundred dollars. Tucker's even has an ATM right by the till. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. A pawn shop robbery got me about two hundred. Small stores pay small money. So rob one, bank it, and keep moving.",
+   "shots": [
+    {
+     "clip": 1026,
+     "in": 46.0,
+     "out": 58.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1026,
+     "in": 94.5,
+     "out": 100.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1030,
+     "in": 110.0,
+     "out": 118.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1030,
+     "in": 162.0,
+     "out": 168.2
+    }
+   ],
+   "gfx": [],
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "Robbing stores brings the cops, so section two is how the police work in GTA 6.",
+   "tts": "Robbing stores brings the cops, so section two is how the police work in GTA 6.",
+   "shots": [
+    {
+     "clip": 1021,
+     "in": 200.0,
+     "out": 206.0
+    }
+   ],
+   "gfx": [],
+   "chapter": "The cops",
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. Mine said appearance known, outfit known. Check that line every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "tts": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. Mine said appearance known, outfit known. Check that line every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "shots": [
+    {
+     "clip": 1020,
+     "in": 106.6,
+     "out": 114.0
+    },
+    {
+     "clip": 1020,
+     "in": 114.45,
+     "out": 116.45,
+     "crop": "none"
+    },
+    {
+     "clip": 1031,
+     "in": 162.0,
+     "out": 167.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1031,
+     "in": 236.0,
+     "out": 240.8
+    }
+   ],
+   "gfx": [],
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "Luckily, the cops here are very polite about it.",
+   "tts": "Luckily, the cops here are very polite about it.",
+   "shots": [
+    {
+     "clip": 1017,
+     "in": 170.0,
+     "out": 173.6
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "game",
+   "clip": 1017,
+   "in": 182.75,
+   "out": 184.55,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p11.mp4 @ 182.75-184.55 s: \"officer: Okay, you are under arrest!\" (words 182.86-184.32; 'God ... damn it' ends 182.52, next 'You can't' 184.84); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eight. To lose the cops, break line of sight, then leave the red zone. The red area on your map is where they are searching. Get out of it, and do not drive back in. Here is a myth to drop. Stars gone does not mean you are safe. Look at my screen here. The stars are gone from my HUD. But the map still shows the search zone, and it still knows my outfit. Guides agree the hot area stays while the heat fades. If police spot you there, the stars come back. So keep heading away from that zone. Leave like you have somewhere better to be.",
+   "tts": "Tip number eight. To lose the cops, break line of sight, then leave the red zone. The red area on your map is where they are searching. Get out of it, and do not drive back in. Here is a myth to drop. Stars gone does not mean you are safe. Look at my screen here. The stars are gone from my HUD. But the map still shows the search zone, and it still knows my outfit. Guides agree the hot area stays while the heat fades. If police spot you there, the stars come back. So keep heading away from that zone. Leave like you have somewhere better to be.",
+   "shots": [
+    {
+     "clip": 1033,
+     "in": 213.8,
+     "out": 217.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1033,
+     "in": 218.0,
+     "out": 230.0
+    },
+    {
+     "clip": 1034,
+     "in": 55.5,
+     "out": 64.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1034,
+     "in": 64.8,
+     "out": 71.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1034,
+     "in": 96.0,
+     "out": 103.1
+    }
+   ],
+   "gfx": [],
+   "id": "b016"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through a whole junkyard like this, with the stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
+   "tts": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through a whole junkyard like this, with the stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
+   "shots": [
+    {
+     "clip": 1030,
+     "in": 275.0,
+     "out": 283.0
+    },
+    {
+     "clip": 1031,
+     "in": 110.0,
+     "out": 117.0
+    },
+    {
+     "clip": 1019,
+     "in": 75.0,
+     "out": 83.5
+    }
+   ],
+   "gfx": [],
+   "id": "b017"
+  },
+  {
+   "type": "narr",
+   "text": "I kept a very low profile that night.",
+   "tts": "I kept a very low profile that night.",
+   "shots": [
+    {
+     "clip": 1019,
+     "in": 83.6,
+     "out": 86.8
+    }
+   ],
+   "gfx": [],
+   "id": "b018"
+  },
+  {
+   "type": "game",
+   "clip": 1020,
+   "in": 184.65,
+   "out": 187.45,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 184.65-187.45 s: \"Andy (phone): Lucia, there's police everywhere!\" (words 184.84-187.22; next 'Just' 187.74); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia hid in a junkyard and slipped away in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "tts": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia hid in a junkyard and slipped away in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "shots": [
+    {
+     "clip": 1031,
+     "in": 176.0,
+     "out": 186.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1031,
+     "in": 187.5,
+     "out": 193.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1031,
+     "in": 212.0,
+     "out": 220.0
+    },
+    {
+     "clip": 1031,
+     "in": 257.5,
+     "out": 265.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eleven. Small changes throw off the description too. Hats and glasses sit on the items wheel, so you can swap them in a second. Guides also say splitting up Jason and Lucia helps, because the police note your partner as well. A cap costs a lot less than getting busted.",
+   "tts": "Tip number eleven. Small changes throw off the description too. Hats and glasses sit on the items wheel, so you can swap them in a second. Guides also say splitting up Jason and Lucia helps, because the police note your partner as well. A cap costs a lot less than getting busted.",
+   "shots": [
+    {
+     "clip": 1030,
+     "in": 242.8,
+     "out": 248.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1002,
+     "in": 72.0,
+     "out": 77.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1030,
+     "in": 138.0,
+     "out": 145.3
+    }
+   ],
+   "gfx": [],
+   "id": "b021"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twelve. The Pay 'n' Spray trick from older games does not work here. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray the car. The respray menu says a new color reduces recognition. At Moses' shop, a respray was a hundred dollars. So the order is always the same. Escape first, then paint. Paint hides the car. It does not hide you.",
+   "tts": "Tip number twelve. The Pay 'n' Spray trick from older games does not work here. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray the car. The respray menu says a new color reduces recognition. At Moses' shop, a respray was a hundred dollars. So the order is always the same. Escape first, then paint. Paint hides the car. It does not hide you.",
+   "shots": [
+    {
+     "clip": 1031,
+     "in": 124.5,
+     "out": 131.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 49.5,
+     "out": 55.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 92.0,
+     "out": 100.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1035,
+     "in": 287.6,
+     "out": 293.8
+    }
+   ],
+   "gfx": [],
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "A respray only helps a car worth keeping. So section three is how to steal one and keep it.",
+   "tts": "A respray only helps a car worth keeping. So section three is how to steal one and keep it.",
+   "shots": [
+    {
+     "clip": 1034,
+     "in": 36.0,
+     "out": 43.0
+    }
+   ],
+   "gfx": [],
+   "chapter": "Cars",
+   "id": "b023"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. One motel car park had a Vapid Montagne. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
+   "tts": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. One motel car park had a Vapid Montagne. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
+   "shots": [
+    {
+     "clip": 1021,
+     "in": 33.0,
+     "out": 39.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1037,
+     "in": 110.0,
+     "out": 115.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1021,
+     "in": 47.0,
+     "out": 54.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1035,
+     "in": 177.5,
+     "out": 186.2
+    }
+   ],
+   "gfx": [],
+   "id": "b024"
+  },
+  {
+   "type": "narr",
+   "text": "It took me years to learn this.",
+   "tts": "It took me years to learn this.",
+   "shots": [
+    {
+     "clip": 1035,
+     "in": 172.0,
+     "out": 175.0
+    }
+   ],
+   "gfx": [],
+   "id": "b025"
+  },
+  {
+   "type": "game",
+   "clip": 1035,
+   "in": 189.12,
+   "out": 190.55,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 189.12-190.55 s: \"Lucia: Guess I'm a natural.\" (words 189.16-190.34 (tight pass: 'Wow, I guess I'm a natural'); 'Wow' ends 189.16); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b026"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number fourteen. Early on, steal cars with no tracker. Your first car guy, Moses Watkins, says it flat. He does not do trackers.",
+   "tts": "Tip number fourteen. Early on, steal cars with no tracker. Your first car guy, Moses Watkins, says it flat. He does not do trackers.",
+   "shots": [
+    {
+     "clip": 1035,
+     "in": 121.0,
+     "out": 129.7,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b027"
+  },
+  {
+   "type": "game",
+   "clip": 1035,
+   "in": 73.6,
+   "out": 75.85,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 73.6-75.85 s: \"Moses: One thing I don't do is trackers.\" (words 73.82-75.64; next 'You boost' 76.30); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "His map card says he buys low key untracked vehicles. Guides say tracked cars open up later in the story, through another contact. Until then, tracker none is the phrase you are hunting for.",
+   "tts": "His map card says he buys low key untracked vehicles. Guides say tracked cars open up later in the story, through another contact. Until then, tracker none is the phrase you are hunting for.",
+   "shots": [
+    {
+     "clip": 1036,
+     "in": 196.0,
+     "out": 202.2,
+     "crop": "none"
+    },
+    {
+     "clip": 1035,
+     "in": 135.0,
+     "out": 141.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b029"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number fifteen. To keep a stolen car, register it. Registering swaps the plates and makes the car yours. Moses does your first one free.",
+   "tts": "Tip number fifteen. To keep a stolen car, register it. Registering swaps the plates and makes the car yours. Moses does your first one free.",
+   "shots": [
+    {
+     "clip": 1036,
+     "in": 4.0,
+     "out": 10.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1036,
+     "in": 11.0,
+     "out": 14.1
+    }
+   ],
+   "gfx": [],
+   "id": "b030"
+  },
+  {
+   "type": "game",
+   "clip": 1035,
+   "in": 255.6,
+   "out": 259.8,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 255.6-259.8 s: \"Moses: Just this once, I'll get your ride registered for you on the house.\" (words 255.80-259.58; next 'Call it' 260.98); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b031"
+  },
+  {
+   "type": "narr",
+   "text": "Guides say later ones cost more the pricier the car. A Vapid Montagne XL showed a cost to register of three thousand four hundred dollars. Moses even asks if you want to keep the car or find another. So use your free one on a car you love, not the first junker you grab. A free registration happens once. Spend it like it matters.",
+   "tts": "Guides say later ones cost more the pricier the car. A Vapid Montagne XL showed a cost to register of three thousand four hundred dollars. Moses even asks if you want to keep the car or find another. So use your free one on a car you love, not the first junker you grab. A free registration happens once. Spend it like it matters.",
+   "shots": [
+    {
+     "clip": 1035,
+     "in": 103.0,
+     "out": 109.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1035,
+     "in": 279.0,
+     "out": 284.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1036,
+     "in": 29.0,
+     "out": 39.9
+    }
+   ],
+   "gfx": [],
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number sixteen. Once a car is registered, it can come to you. The Scooter Bros app delivers it for a hundred dollars a trip. A one time Premium upgrade in the app unlocks three free deliveries a day. A hundred dollars beats a long walk back from the swamp.",
+   "tts": "Tip number sixteen. Once a car is registered, it can come to you. The Scooter Bros app delivers it for a hundred dollars a trip. A one time Premium upgrade in the app unlocks three free deliveries a day. A hundred dollars beats a long walk back from the swamp.",
+   "shots": [
+    {
+     "clip": 1036,
+     "in": 49.0,
+     "out": 59.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1037,
+     "in": 2.0,
+     "out": 9.6,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b033"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. That money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
+   "tts": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. That money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
+   "shots": [
+    {
+     "clip": 1038,
+     "in": 2.0,
+     "out": 8.0
+    },
+    {
+     "clip": 1038,
+     "in": 21.0,
+     "out": 27.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 56.5,
+     "out": 62.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1036,
+     "in": 229.5,
+     "out": 235.3,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b034"
+  },
+  {
+   "type": "narr",
+   "text": "Every car I sell is completely legal.",
+   "tts": "Every car I sell is completely legal.",
+   "shots": [
+    {
+     "clip": 1034,
+     "in": 232.0,
+     "out": 234.9
+    }
+   ],
+   "gfx": [],
+   "id": "b035"
+  },
+  {
+   "type": "game",
+   "clip": 1034,
+   "in": 273.95,
+   "out": 276.95,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4 @ 273.95-276.95 s: \"Moses: Is that your ride? Lucia: Kinda.\" (words 274.14-276.74; next 'They'll' 277.44); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five thousand five hundred. That took about a minute and a half. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
+   "tts": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five thousand five hundred. That took about a minute and a half. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
+   "shots": [
+    {
+     "clip": 1012,
+     "in": 172.0,
+     "out": 176.0
+    },
+    {
+     "clip": 1014,
+     "in": 74.0,
+     "out": 83.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1014,
+     "in": 153.0,
+     "out": 162.3,
+     "crop": "none"
+    },
+    {
+     "clip": 1014,
+     "in": 118.0,
+     "out": 126.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
+  },
+  {
+   "type": "narr",
+   "text": "We are past halfway. Next is money that does not need a gun. And I still owe you that third way to lose your stuff.",
+   "tts": "We are past halfway. Next is money that does not need a gun. And I still owe you that third way to lose your stuff.",
+   "shots": [
+    {
+     "clip": 1027,
+     "in": 224.3,
+     "out": 228.8
+    },
+    {
+     "clip": 1011,
+     "in": 124.5,
+     "out": 129.1,
+     "blur": true
+    }
+   ],
+   "gfx": [],
+   "id": "b038"
+  },
+  {
+   "type": "narr",
+   "text": "A fast car will not save you in a gunfight, so section four is your health and your stats.",
+   "tts": "A fast car will not save you in a gunfight, so section four is your health and your stats.",
+   "shots": [
+    {
+     "clip": 1003,
+     "in": 113.5,
+     "out": 120.5
+    }
+   ],
+   "gfx": [],
+   "chapter": "Health and stats",
+   "id": "b039"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number nineteen. Eat and drink to heal. Guides agree that food, drinks and Zombix all restore health. Lucia ordered a full meal at Taco Bomb. Jason grilled fish on a dock. When you see an Eat prompt after a fight, take it. In Leonida, a taco is a medkit.",
+   "tts": "Tip number nineteen. Eat and drink to heal. Guides agree that food, drinks and Zombix all restore health. Lucia ordered a full meal at Taco Bomb. Jason grilled fish on a dock. When you see an Eat prompt after a fight, take it. In Leonida, a taco is a medkit.",
+   "shots": [
+    {
+     "clip": 1024,
+     "in": 196.0,
+     "out": 206.0
+    },
+    {
+     "clip": 1005,
+     "in": 233.0,
+     "out": 240.6
+    }
+   ],
+   "gfx": [],
+   "id": "b040"
+  },
+  {
+   "type": "narr",
+   "text": "My friends always keep their priorities straight in a crisis.",
+   "tts": "My friends always keep their priorities straight in a crisis.",
+   "shots": [
+    {
+     "clip": 1018,
+     "in": 203.0,
+     "out": 206.9
+    }
+   ],
+   "gfx": [],
+   "id": "b041"
+  },
+  {
+   "type": "game",
+   "clip": 1018,
+   "in": 277.8,
+   "out": 279.72,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p02.mp4 @ 277.8-279.72 s: \"Cal: Do me a favor and pick me up some snacks.\" (words 278.00-279.66 (tight pass); next word cause at 279.86, profanity only from 281.2); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b042"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty. Save your adrenaline for emergencies. The tooltip says adrenaline boosts your health, stamina and focus all at once, for a short time. That makes it your panic button. Use it when your health is low and you cannot get to cover. Do not waste a panic button on a jog.",
+   "tts": "Tip number twenty. Save your adrenaline for emergencies. The tooltip says adrenaline boosts your health, stamina and focus all at once, for a short time. That makes it your panic button. Use it when your health is low and you cannot get to cover. Do not waste a panic button on a jog.",
+   "shots": [
+    {
+     "clip": 1024,
+     "in": 60.5,
+     "out": 68.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1022,
+     "in": 150.0,
+     "out": 160.7
+    }
+   ],
+   "gfx": [],
+   "id": "b043"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-one. Work out, finish the full set, then rest. Every workout has a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
+   "tts": "Tip number twenty-one. Work out, finish the full set, then rest. Every workout has a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 152.0,
+     "out": 163.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1011,
+     "in": 226.0,
+     "out": 233.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1001,
+     "in": 31.5,
+     "out": 38.2,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b044"
+  },
+  {
+   "type": "narr",
+   "text": "Now that you are healthy, here is money that does not need a gun.",
+   "tts": "Now that you are healthy, here is money that does not need a gun.",
+   "shots": [
+    {
+     "clip": 1026,
+     "in": 130.0,
+     "out": 135.3
+    }
+   ],
+   "gfx": [],
+   "chapter": "Side hustles",
+   "id": "b045"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-two. Open the pause map often. It lists your open missions and your optional side jobs. One of mine was search for the Skunk Ape. Its pins also explain what each place is for, like Brian's Lockup and the mod shop. When the game says map updated, open it and look. A lot of this guide is written right there on that map.",
+   "tts": "Tip number twenty-two. Open the pause map often. It lists your open missions and your optional side jobs. One of mine was search for the Skunk Ape. Its pins also explain what each place is for, like Brian's Lockup and the mod shop. When the game says map updated, open it and look. A lot of this guide is written right there on that map.",
+   "shots": [
+    {
+     "clip": 1023,
+     "in": 74.0,
+     "out": 81.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1012,
+     "in": 139.5,
+     "out": 145.3,
+     "crop": "none"
+    },
+    {
+     "clip": 1025,
+     "in": 82.0,
+     "out": 87.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1011,
+     "in": 278.2,
+     "out": 282.4
+    }
+   ],
+   "gfx": [],
+   "id": "b046"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-three. Search everything when you clear a place. Offices, lockers and safes hide loot, guns and collectible cards. In one warehouse office, Jason's stash bag kept getting more valuable as he searched. He found loot in a safe on top of a filing cabinet. He found a trading card in the same office. If it has a drawer, open it.",
+   "tts": "Tip number twenty-three. Search everything when you clear a place. Offices, lockers and safes hide loot, guns and collectible cards. In one warehouse office, Jason's stash bag kept getting more valuable as he searched. He found loot in a safe on top of a filing cabinet. He found a trading card in the same office. If it has a drawer, open it.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 150.0,
+     "out": 160.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1010,
+     "in": 184.0,
+     "out": 190.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1007,
+     "in": 243.0,
+     "out": 248.8,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b047"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-four. Sell collectible cards at pawn shops. A tooltip tells you this when you pick one up. Guides agree that selling a card does not cost you collection progress. Guides count eighteen sets and four hundred and eighty cards. They put each one at about twenty dollars to over a thousand. In Leonida, cardboard is real income.",
+   "tts": "Tip number twenty-four. Sell collectible cards at pawn shops. A tooltip tells you this when you pick one up. Guides agree that selling a card does not cost you collection progress. Guides count eighteen sets and four hundred and eighty cards. They put each one at about twenty dollars to over a thousand. In Leonida, cardboard is real income.",
+   "shots": [
+    {
+     "clip": 1020,
+     "in": 51.0,
+     "out": 54.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1020,
+     "in": 126.2,
+     "out": 129.9,
+     "crop": "none"
+    },
+    {
+     "clip": 1032,
+     "in": 85.5,
+     "out": 88.0
+    },
+    {
+     "clip": 1032,
+     "in": 98.6,
+     "out": 109.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b048"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-five. Help strangers who flag you down. A farmer stopped Lucia because his pageant cow, Tootsie, needed catching. Calm her, load her in the trailer, and he pays you. When someone waves at you from the road, pull over.",
+   "tts": "Tip number twenty-five. Help strangers who flag you down. A farmer stopped Lucia because his pageant cow, Tootsie, needed catching. Calm her, load her in the trailer, and he pays you. When someone waves at you from the road, pull over.",
+   "shots": [
+    {
+     "clip": 1027,
+     "in": 76.0,
+     "out": 81.0
+    },
+    {
+     "clip": 1027,
+     "in": 158.0,
+     "out": 163.0
+    },
+    {
+     "clip": 1027,
+     "in": 244.0,
+     "out": 248.6
+    }
+   ],
+   "gfx": [],
+   "id": "b049"
+  },
+  {
+   "type": "narr",
+   "text": "I came to Leonida for big heists.",
+   "tts": "I came to Leonida for big heists.",
+   "shots": [
+    {
+     "clip": 1027,
+     "in": 149.5,
+     "out": 152.4
+    }
+   ],
+   "gfx": [],
+   "id": "b050"
+  },
+  {
+   "type": "game",
+   "clip": 1027,
+   "in": 267.2,
+   "out": 268.95,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p09.mp4 @ 267.2-268.95 s: \"Farmer: Here's a little thank you.\" (words 267.42-268.72 (tight Whisper pass); next line 270.12); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b051"
+  },
+  {
+   "type": "narr",
+   "text": "Last section. You earned it, so now you keep it.",
+   "tts": "Last section. You earned it, so now you keep it.",
+   "shots": [
+    {
+     "clip": 1014,
+     "in": 245.0,
+     "out": 248.9
+    }
+   ],
+   "gfx": [],
+   "chapter": "Keep what you earn",
+   "id": "b052"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-six. Save by hand from the pause menu. You do not need a safehouse or a bed to save. That habit is from older GTA games. I saved at Moses' car lot in the middle of the night. Save after every big payout, and before anything risky. A save takes seconds. A bad death can take the whole evening.",
+   "tts": "Tip number twenty-six. Save by hand from the pause menu. You do not need a safehouse or a bed to save. That habit is from older GTA games. I saved at Moses' car lot in the middle of the night. Save after every big payout, and before anything risky. A save takes seconds. A bad death can take the whole evening.",
+   "shots": [
+    {
+     "clip": 1038,
+     "in": 120.0,
+     "out": 124.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1016,
+     "in": 94.6,
+     "out": 98.9,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 104.6,
+     "out": 114.3
+    },
+    {
+     "clip": 1038,
+     "in": 126.4,
+     "out": 128.4,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b053"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning three times in one night, every time I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
+   "tts": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning three times in one night, every time I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 167.5,
+     "out": 175.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1004,
+     "in": 17.5,
+     "out": 27.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1007,
+     "in": 110.0,
+     "out": 122.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 72.5,
+     "out": 81.6,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b054"
+  },
+  {
+   "type": "narr",
+   "text": "My house is very secure, though.",
+   "tts": "My house is very secure, though.",
+   "shots": [
+    {
+     "clip": 1000,
+     "in": 12.0,
+     "out": 14.6
+    }
+   ],
+   "gfx": [],
+   "id": "b055"
+  },
+  {
+   "type": "game",
+   "clip": 1011,
+   "in": 116.6,
+   "out": 121.05,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 116.6-121.05 s: \"Jason: All right, there you go Dolores, watch over the house while I'm gone.\" (words 116.82-120.84; Jason at the snake terrarium); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b056"
+  },
+  {
+   "type": "narr",
+   "text": "If this saved you even one stash bag, subscribe. There are more GTA 6 guides coming.",
+   "tts": "If this saved you even one stash bag, subscribe. There are more GTA 6 guides coming.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 22.0,
+     "out": 28.0
+    }
+   ],
+   "gfx": [],
+   "id": "b057"
+  },
+  {
+   "type": "narr",
+   "text": "Here are the five that matter most. Number five. Register the cars you want to keep, and spend your free one wisely. Number four. The Pay 'n' Spray will not take you during a chase. Lose them, then respray. Number three. Stars gone does not mean safe. Stay out of the red zone. Number two. Own it or store it, or it is gone when you load back in. And number one, the most important tip in this video. Bank your cash at an ATM, every time.",
+   "tts": "Here are the five that matter most. Number five. Register the cars you want to keep, and spend your free one wisely. Number four. The Pay 'n' Spray will not take you during a chase. Lose them, then respray. Number three. Stars gone does not mean safe. Stay out of the red zone. Number two. Own it or store it, or it is gone when you load back in. And number one, the most important tip in this video. Bank your cash at an ATM, every time.",
+   "shots": [
+    {
+     "clip": 1038,
+     "in": 39.2,
+     "out": 47.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1038,
+     "in": 85.0,
+     "out": 90.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1033,
+     "in": 244.8,
+     "out": 249.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1008,
+     "in": 236.0,
+     "out": 241.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1028,
+     "in": 124.0,
+     "out": 130.2
+    }
+   ],
+   "gfx": [],
+   "chapter": "Top five recap",
+   "id": "b058"
+  },
+  {
+   "type": "narr",
+   "text": "What is the most cash you have lost to one death so far? Mine is five hundred and thirty-one dollars. Tell me in the comments. See you in Leonida.",
+   "tts": "What is the most cash you have lost to one death so far? Mine is five hundred and thirty-one dollars. Tell me in the comments. See you in Leonida.",
+   "shots": [
+    {
+     "clip": 1037,
+     "in": 22.0,
+     "out": 32.4
+    }
+   ],
+   "gfx": [],
+   "id": "b059"
+  }
+ ],
+ "gfx_cues": []
+}
