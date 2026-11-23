@@ -584,7 +584,8 @@
     {
      "clip": 1035,
      "in": 287.6,
-     "out": 293.8
+     "out": 293.8,
+     "push": true
     }
    ],
    "gfx": [
@@ -723,7 +724,8 @@
      "clip": 1036,
      "in": 4.0,
      "out": 10.0,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1036,

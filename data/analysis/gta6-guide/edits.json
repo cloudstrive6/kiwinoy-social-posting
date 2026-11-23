@@ -1,5 +1,5 @@
 {
- "note": "Post-review shot changes (independent review 2026-11-24 of v1-vox): blur and dim the game subtitle band on evidence shots that keep their whole frame, so no game subtitles play under narration; anchor three evidence shots to the words they prove.",
+ "note": "Post-review shot changes (independent review 2026-11-24 of v1-vox): blur and dim the game subtitle band on evidence shots that keep their whole frame, so no game subtitles play under narration; anchor three evidence shots to the words they prove. Re-check of v3 (2026-11-24): the band stops before the scan panel (x 0.74) and covers only the centred subtitle on the Register menu shot (x 0.36 to 0.68) so their proof text stays readable; push in on the free Register menu.",
  "shots": {
   "b004": [
    {
@@ -131,7 +131,7 @@
      [
       0.15,
       0.855,
-      0.85,
+      0.74,
       0.935
      ]
     ]
@@ -154,7 +154,7 @@
      [
       0.15,
       0.855,
-      0.85,
+      0.74,
       0.935
      ]
     ]
@@ -168,12 +168,13 @@
     "crop": "none",
     "mask": [
      [
-      0.15,
+      0.36,
       0.855,
-      0.85,
+      0.68,
       0.935
      ]
-    ]
+    ],
+    "push": true
    },
    {
     "clip": 1036,
@@ -191,7 +192,7 @@
      [
       0.15,
       0.855,
-      0.85,
+      0.74,
       0.935
      ]
     ]
@@ -205,7 +206,7 @@
      [
       0.15,
       0.855,
-      0.85,
+      0.74,
       0.935
      ]
     ]

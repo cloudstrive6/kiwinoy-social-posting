@@ -140,7 +140,7 @@ Tip number eleven. Small changes throw off the description too. Hats and glasses
 
 ### Tip 12: The Pay 'n' Spray will not save you mid chase
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 124.5-131.5 (tooltip: You can't enter a Pay 'n' Spray when the cops are nearby or in pursuit; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 49.5-55.5 (Moses' services menu, Respray: change the vehicle color to reduce recognition; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 92-100 (respray preview, $100; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 287.6-293.8 (the Elegy in Moses' garage, respray swatches)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 124.5-131.5 (tooltip: You can't enter a Pay 'n' Spray when the cops are nearby or in pursuit; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 49.5-55.5 (Moses' services menu, Respray: change the vehicle color to reduce recognition; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 92-100 (respray preview, $100; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 287.6-293.8 (the Elegy in Moses' garage, respray swatches; push in, a still menu would read as a freeze)]
 
 [GFX tag "TIP 12: NO RESPRAY MID CHASE"]
 Tip number twelve. The Pay 'n' Spray trick from older games does not work here. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray the car. The respray menu says a new color reduces recognition. At Moses' shop, a respray was a hundred dollars. So the order is always the same. Escape first, then paint. Paint hides the car. It does not hide you.
@@ -180,7 +180,7 @@ His map card says he buys low key untracked vehicles. Guides say tracked cars op
 
 ### Tip 15: Register a car to keep it
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 4-10 (Register screen: FREE, Swap plates and register this vehicle as yours, 0/1 stored vehicles; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 11-14.1 (the red Elegy in Moses' garage, wide)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 4-10 (Register screen: FREE, Swap plates and register this vehicle as yours, 0/1 stored vehicles; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 11-14.1 (the red Elegy in Moses' garage, wide)]
 
 [GFX tag "TIP 15: REGISTER IT TO KEEP IT"]
 Tip number fifteen. To keep a stolen car, register it. Registering swaps the plates and makes the car yours. Moses does your first one free.
