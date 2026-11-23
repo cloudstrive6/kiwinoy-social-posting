@@ -19,7 +19,8 @@ name: Analysis long-form (manual)
 #   voice-backup-deploy: puts the Guide C reference files (B2 voice-refs/guide-c/) on the Modal Volume
 #           kg-voxcpm2, deploys modal_apps/voxcpm2_narrator.py and downloads the VoxCPM2 weights (2026-11-23).
 #   voice-backup-parity: the 179-word test paragraph through the Modal backup, scored against take 1.
-# "narrator" (narrate and render, 2026-11-23): elevenlabs (default) stops when credits are short; voxcpm2
+# "narrator" (narrate and render, 2026-11-23): auto (default since Bryce signed off the dry run, 2026-11-23);
+#   elevenlabs stops when credits are short; voxcpm2
 #   forces the VoxCPM2 Guide C clone on Modal; auto uses it for a whole video only when credits are short
 #   and the video has no Guide C take yet. Backup takes live in narration-vox/, drafts end in -vox.
 on:
@@ -50,9 +51,9 @@ on:
         required: false
         default: ""
       narrator:
-        description: "narrate and render: elevenlabs (default), voxcpm2 (force the Modal backup) or auto (backup only when credits are short and no Guide C take exists yet)"
+        description: "narrate and render: auto (default: the Modal backup only when credits are short and the video has no Guide C take or draft), elevenlabs (never the backup) or voxcpm2 (force the backup)"
         required: false
-        default: "elevenlabs"
+        default: "auto"
 
 permissions:
   contents: read

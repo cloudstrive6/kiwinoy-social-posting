@@ -274,10 +274,11 @@ def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
     nar = edl.get("narrator")
-    # Backup narrator (Bryce, 2026-11-23): elevenlabs (default) stops when credits are short;
+    # Backup narrator (Bryce, 2026-11-23): auto is the default since he signed off the dry-run draft (2026-11-23);
+    # elevenlabs stops when credits are short;
     # voxcpm2 forces the VoxCPM2 Guide C clone on Modal (tests); auto switches a whole video to it only
     # when credits are short and the video has no Guide C take yet, so a video never mixes voices.
-    mode = (os.environ.get("KG_NARRATOR") or "elevenlabs").strip().lower()
+    mode = (os.environ.get("KG_NARRATOR") or "auto").strip().lower()
     if mode not in ("elevenlabs", "voxcpm2", "auto"):
         raise SystemExit(f"KG_NARRATOR must be elevenlabs, voxcpm2 or auto, not {mode!r}")
     guide_c = bool(nar and nar.get("name") == "BOSS KG Guide C")
