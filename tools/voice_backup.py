@@ -98,7 +98,8 @@ def year_words(n: int) -> str:
 def tokens(text: str) -> list[str]:
     """Lower case, aliases applied, numbers as words, punctuation dropped, plurals folded."""
     t = text.lower().replace("’", "'")
-    t = re.sub(r"(?<=\d)(?:,\s?|\s)(?=\d{3}\b)", "", t)  # "5, 000" and "5 000" are 5000, not "five zero"
+    # "5,000", "5, 000", "5 ,000" (dry run 2026-11-23: "$1 ,800") and "5 000" are all 5000, not "five zero"
+    t = re.sub(r"(?<=\d)(?:\s?,\s?|\s)(?=\d{3}\b)", "", t)
     t = t.replace(",", "")
     for a, b in ALIASES.items():
         t = re.sub(rf"(?<![a-z0-9]){re.escape(a)}(?![a-z0-9])", b, t)
