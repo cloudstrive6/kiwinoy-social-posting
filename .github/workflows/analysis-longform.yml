@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render, voice-backup-deploy, voice-backup-parity, claims)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render, voice-backup-deploy, voice-backup-parity, voice-backup-say, claims)"
         required: true
         default: "inventory"
       game:
@@ -239,6 +239,16 @@ jobs:
           npm install -g @anthropic-ai/claude-code
           pip install --quiet "faster-whisper==1.1.1"
           python tools/claims_check.py "$GAME" --only "$ONLY"
+      - name: Pronunciation test on the VoxCPM2 backup (voice-backup-say, 2026-11-24)
+        if: ${{ github.event.inputs.step == 'voice-backup-say' }}
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          SAY_TEXTS: ${{ github.event.inputs.voices }}
+          SAY_WORD: ${{ github.event.inputs.only }}
+        run: |
+          pip install --quiet "faster-whisper==1.1.1" "modal==1.6.4"
+          python tools/voice_backup.py say
       - name: Deploy the VoxCPM2 backup narrator to Modal (voice-backup-deploy, 2026-11-23)
         if: ${{ github.event.inputs.step == 'voice-backup-deploy' }}
         env:

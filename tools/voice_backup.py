@@ -440,7 +440,46 @@ def parity() -> int:
     return 0 if m["pass"] else 2
 
 
+def say(texts: list[str], word: str) -> int:
+    """Pronunciation test (2026-11-24, Bryce: Lucia is lu-SEE-yah, not LU-sha): voice each text on Modal with
+    take 1's settings and measure the target word: its length and its syllables (peaks in the loudness
+    envelope inside Whisper's word span). Writes output/voice-backup/say_<n>.wav and say.json."""
+    import numpy as np
+    out = ROOT / "output" / "voice-backup"
+    out.mkdir(parents=True, exist_ok=True)
+    res = list(_remote().narrate_one.starmap([(f"say{i}", t, SEEDS[0]) for i, t in enumerate(texts)],
+                                             order_outputs=True))
+    report = []
+    for i, (t, r) in enumerate(zip(texts, res)):
+        raw, wav = out / f"say_{i}.raw.wav", out / f"say_{i}.wav"
+        raw.write_bytes(r["wav"])
+        _clean(raw, wav)
+        words = heard_words(wav)
+        heard = " ".join(w["w"] for w in words)
+        k = next((j for j, w in enumerate(words) if re.sub(r"[^a-z]", "", w["w"].lower()).startswith(word[:2].lower())), None)
+        m = {"text": t, "heard": heard}
+        if k is not None:
+            s, e = words[k]["s"], words[k]["e"]
+            pcm = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{s:.3f}", "-to", f"{e:.3f}", "-i", str(wav), "-f",
+                                  "f32le", "-ac", "1", "-ar", "16000", "-"], capture_output=True).stdout
+            x = np.frombuffer(pcm, dtype=np.float32)
+            hop = 160
+            env = np.sqrt(np.convolve((x[: len(x) // hop * hop].reshape(-1, hop) ** 2).mean(1), np.ones(5) / 5, "same") + 1e-12)
+            db = 20 * np.log10(env)
+            peaks = [j for j in range(1, len(db) - 1) if db[j] > db[j - 1] and db[j] >= db[j + 1] and db[j] > db.max() - 10]
+            merged = [p for n, p in enumerate(peaks) if n == 0 or p - peaks[n - 1] > 8]   # peaks 80 ms apart
+            m.update(word_heard=words[k]["w"], word_s=round(e - s, 3), syllables=len(merged))
+        report.append(m)
+        print(json.dumps(m), flush=True)
+    (out / "say.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
+    return 0
+
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["parity"]:
         raise SystemExit(parity())
+    if sys.argv[1:2] == ["say"]:
+        import os
+        raise SystemExit(say([t.strip() for t in os.environ.get("SAY_TEXTS", "").split("|") if t.strip()],
+                             os.environ.get("SAY_WORD", "Lu")))
     print(__doc__)
