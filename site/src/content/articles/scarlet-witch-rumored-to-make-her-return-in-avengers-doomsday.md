@@ -1,7 +1,7 @@
 ---
 title: "Scarlet Witch Rumored to Make Her Return in Avengers: Doomsday"
 excerpt: "Reports suggest Elizabeth Olsen could reprise her role as Wanda Maximoff in the pivotal MCU film Avengers: Doomsday, along with the long-awaited returns of other fan-favorite characters. But how much will this movie reshape Marvel's future?"
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["Avengers", "Scarlet Witch", "Elizabeth Olsen", "Doctor Doom", "MCU Rumors"]
 game: "mcu"

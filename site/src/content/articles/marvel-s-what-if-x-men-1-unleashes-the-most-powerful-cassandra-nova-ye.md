@@ -1,7 +1,7 @@
 ---
 title: "Marvel's What If...? X-Men #1 Unleashes the Most Powerful Cassandra Nova Yet"
 excerpt: "Cassandra Nova, one of the X-Men’s deadliest foes, gains godlike powers in Marvel's new What If...? X-Men #1—raising major questions about her potential role in the MCU."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["x-men", "mcu", "cassandra nova", "comics", "what if"]
 game: "mcu"

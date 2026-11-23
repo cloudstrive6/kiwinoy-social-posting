@@ -1,7 +1,7 @@
 ---
 title: "X-Men '92 vs. X-Men: Evolution Crossover Comic Launches for Avengers: Doomsday"
 excerpt: "Marvel is bringing together iconic animated X-Men teams in a special Incursions one-shot, tying into the upcoming Avengers: Doomsday MCU event film."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["x-men", "marvel comics", "avengers doomsday", "secret wars", "marvel studios"]
 game: "mcu"

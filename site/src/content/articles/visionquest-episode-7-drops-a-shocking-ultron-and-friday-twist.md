@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Episode 7 Drops a Shocking Ultron and Friday Twist"
 excerpt: "VisionQuest episode 7 delivers another wave of AI drama, with Ultron's fate-altering move against Friday leaving fans questioning her survival and Ultron's true intentions."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["VisionQuest", "Ultron", "Friday", "Disney+", "MCU"]
 game: "mcu"

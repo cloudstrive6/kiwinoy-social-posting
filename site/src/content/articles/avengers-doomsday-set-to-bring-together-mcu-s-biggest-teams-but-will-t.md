@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Set to Bring Together MCU’s Biggest Teams — But Will the Young Avengers Finally Assemble?"
 excerpt: "Avengers: Doomsday is shaping up to be one of the Marvel Cinematic Universe’s most ambitious crossovers, with confirmed appearances from legacy teams and new faces alike. But lingering rumors point to the possible debut of a much-anticipated team of young heroes."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers Doomsday", "Young Avengers", "MCU", "Secret Wars", "Kathryn Newton"]
 game: "mcu"

@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Drops MLB World Series Teaser With a Fantastic Four Twist"
 excerpt: "Marvel ramps up excitement for Avengers: Doomsday with a new trailer during the MLB World Series, spotlighting a quirky alternate history featuring the Fantastic Four and the Brooklyn Dodgers."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers: Doomsday", "Fantastic Four", "MLB", "Marvel Cinematic Universe", "Earth 828"]
 game: "mcu"

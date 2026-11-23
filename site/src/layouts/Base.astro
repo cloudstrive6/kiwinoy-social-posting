@@ -22,7 +22,7 @@ export interface Props {
 }
 const {
   title,
-  description = "The drop-first source for video games, the MCU and the biggest moments in gaming.",
+  description = "The drop-first source for video games, Marvel and the biggest moments in gaming.",
   image = "/og-default.png",
   type = "website",
   publishedTime,
@@ -53,9 +53,9 @@ const ogImage = image.startsWith("http") ? image : new URL(image, site).href;
 const canonical = new URL(Astro.url.pathname, site).href;
 const path = Astro.url.pathname.replace(/\/?$/, "/");
 const nav = [
-  { label: "News", href: "/", match: (p) => p === "/" || p.startsWith("/news/") || p.startsWith("/tag/") || (p.startsWith("/category/") && !p.startsWith("/category/mcu/")) },
+  { label: "News", href: "/", match: (p) => p === "/" || p.startsWith("/news/") || p.startsWith("/tag/") || (p.startsWith("/category/") && !p.startsWith("/category/marvel/")) },
   { label: "Games", href: "/games/", match: (p) => p.startsWith("/games/") },
-  { label: "MCU", href: "/category/mcu/", match: (p) => p.startsWith("/category/mcu/") },
+  { label: "Marvel", href: "/category/marvel/", match: (p) => p.startsWith("/category/marvel/") },
   { label: "Videos", href: "/videos/", match: (p) => p.startsWith("/videos/") || p.startsWith("/watch/") },
   { label: "Gear", href: "/gear/", match: (p) => p.startsWith("/gear/") },
   { label: "Follow", href: "/follow/", match: (p) => p.startsWith("/follow/") },
@@ -206,7 +206,7 @@ const year = new Date().getFullYear();
       <div class="wrap foot">
         <div class="foot-about">
           <a class="brand" href="/" aria-label="BOSS KG home"><Logo /></a>
-          <p>The drop-first source for video games, the MCU and the biggest moments in gaming.</p>
+          <p>The drop-first source for video games, Marvel and the biggest moments in gaming.</p>
           <div class="socrow">
             <a href="https://www.youtube.com/@Kiwinoy" aria-label="BOSS KG on YouTube" rel="noopener" set:html={ICON.youtube}></a>
             <a href="https://www.tiktok.com/@kiwinoygamer" aria-label="BOSS KG on TikTok" rel="noopener" set:html={ICON.tiktok}></a>
@@ -219,7 +219,7 @@ const year = new Date().getFullYear();
           <ul class="foot-links">
             <li><a href="/category/news/">All news</a></li>
             <li><a href="/category/marvel-games/">Marvel games</a></li>
-            <li><a href="/category/mcu/">MCU</a></li>
+            <li><a href="/category/marvel/">Marvel</a></li>
             <li><a href="/games/">Games</a></li>
             <li><a href="/videos/">Videos</a></li>
           </ul>

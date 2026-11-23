@@ -1,7 +1,7 @@
 ---
 title: "Why the X-Men's MCU Debut Must Avoid the Trap of Nostalgia"
 excerpt: "The X-Men are finally making their long-awaited debut in the MCU, promising to bring fresh energy to Marvel's roster. But to truly succeed, Marvel Studios will have to learn from the team's comic history and avoid the nostalgia pitfalls that have plagued the franchise before."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["X-Men", "MCU", "Marvel Studios", "comics", "nostalgia"]
 game: "mcu"

@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Cast Admits Even They’re in the Dark About Marvel’s Biggest Movie Yet"
 excerpt: "Avengers: Doomsday is shaping up to be Marvel’s most ambitious movie, but even its stars are unclear about the film’s final direction. Major cast members reveal that much of the story, and even filmed scenes, are still shifting as the film heads toward release."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers", "MCU Phase 5", "Marvel movies", "casting"]
 game: "mcu"

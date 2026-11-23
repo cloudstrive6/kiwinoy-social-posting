@@ -1,7 +1,7 @@
 ---
 title: "X-Men '97 Season 3 Footage Teases New Marvel Faces & Major Wedding at NYCC"
 excerpt: "X-Men '97 continues to shine as Marvel’s animated standout, with new Season 3 footage revealing major character appearances and an anticipated wedding. Marvel previewed exciting new additions at NYCC, cementing this series as a fan favorite."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["X-Men 97", "Marvel Animation", "NYCC", "Marvel Studios"]
 game: "mcu"

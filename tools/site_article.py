@@ -121,7 +121,9 @@ def _write_article(pick: dict, today: str, source_text: str | None = None) -> di
         "- Markdown is allowed for '## ' headings, '**bold**', and that one closing '*italic*' line "
         "ONLY. No hashtags or emojis. Engaging but honest; never clickbait or invented hype.\n\n"
         'Return ONLY JSON: {"title":"accurate headline","excerpt":"1-2 sentence summary",'
-        '"category":"one of: Marvel Games | MCU | PlayStation | Gaming","game":"short key like '
+        '"category":"one of: Marvel Games | Marvel | PlayStation | Gaming (Marvel = Marvel '
+        'movies, shows, animation, comics and Marvel people such as James Gunn; Marvel Games = '
+        'Marvel video games)","game":"short key like '
         'spider-man2, wolverine, mcu, final-fantasy-7, halo (or \'mcu\')","tag":"News | Rumor | '
         'Preview | Hot","tags":["2-5 topical tags"],"body":"para 1\\n\\npara 2\\n\\n..."}')
     try:

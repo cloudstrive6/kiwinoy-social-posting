@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Leaves Hulk and Other Major Heroes Off the Roster"
 excerpt: "The upcoming Avengers: Doomsday movie is assembling heroes from across the Marvel multiverse, but some familiar faces—like Spider-Man, Captain Marvel, and the Hulk—are notably absent. Banner's fate following recent MCU events sheds light on his unexplained absence."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers", "MCU", "Hulk", "Spider-Man", "X-Men"]
 game: "mcu"

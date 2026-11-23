@@ -1,7 +1,7 @@
 ---
 title: "Rumor: Hulkling Set to Make MCU Debut in Upcoming 'Champions' Project"
 excerpt: "A new rumor suggests that Hulkling will soon join the Marvel Cinematic Universe, possibly debuting in a forthcoming 'Champions' title. This could set up one of Marvel's most celebrated romances alongside Wiccan, who has already appeared in the MCU."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["Hulkling", "Champions", "Wiccan", "MCU", "Young Avengers"]
 game: "mcu"

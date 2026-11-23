@@ -1,7 +1,7 @@
 ---
 title: "Ben Wang Joins MCU’s X-Men as Iceman, Completing the Original Team"
 excerpt: "Marvel Studios’ X-Men reboot has locked in its Iceman: Ben Wang is reportedly coming aboard to play Bobby Drake, rounding out the iconic original five roster for the upcoming MCU film."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["MCU", "X-Men", "Casting", "Movies"]
 game: "mcu"

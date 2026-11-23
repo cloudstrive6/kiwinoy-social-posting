@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Trailer Reveals James Spader's Ultron Returning to the MCU"
 excerpt: "Marvel's D23 trailer for the Disney+ series VisionQuest confirms James Spader is back as Ultron — appearing in human form inside Vision's mind, his first MCU appearance since Age of Ultron."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["VisionQuest", "Ultron", "MCU", "Vision", "Disney+"]
 game: "mcu"

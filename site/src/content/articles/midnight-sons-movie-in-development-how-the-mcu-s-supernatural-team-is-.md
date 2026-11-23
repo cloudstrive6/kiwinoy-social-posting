@@ -1,7 +1,7 @@
 ---
 title: "Midnight Sons Movie in Development: How the MCU’s Supernatural Team is Coming Together"
 excerpt: "Marvel Studios is officially developing a Midnight Sons movie, with the team’s supernatural roots being set up across both films and Disney+ projects. Key characters like Wong, Ghost Rider, Man-Thing, Elsa Bloodstone, and Werewolf by Night are all poised to play a role."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["midnight sons", "ghost rider", "disney plus", "supernatural", "mcu"]
 game: "mcu"

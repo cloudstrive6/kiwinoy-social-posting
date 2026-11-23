@@ -1,7 +1,7 @@
 ---
 title: "Daredevil: Born Again Confirmed to End With Season 3 on Disney+"
 excerpt: "Daredevil: Born Again will conclude with its upcoming third season, which is currently in post-production and targeting a 2027 premiere on Disney+."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Daredevil", "Born Again", "Charlie Cox", "Disney+", "Marvel Television"]
 game: "mcu"

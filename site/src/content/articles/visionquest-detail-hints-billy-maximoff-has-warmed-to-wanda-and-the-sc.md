@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Detail Hints Billy Maximoff Has Warmed to Wanda and the Scarlet Witch Legacy"
 excerpt: "A blink-and-you-miss-it detail on Billy's jacket in VisionQuest shows the scarlet witch's crown, which fans read as a sign he may be softening toward Wanda. The detail arrives as the series also confirms Wanda is alive and in Doctor Doom's hands."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["VisionQuest", "Billy Maximoff", "Wanda Maximoff", "Scarlet Witch", "Avengers: Doomsday"]
 game: "mcu"

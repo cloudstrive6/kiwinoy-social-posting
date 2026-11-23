@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Takes Cues from Classic Western, Say Russo Brothers"
 excerpt: "Marvel’s upcoming movie Avengers: Doomsday is getting attention for late-stage reshoots and a surprising cinematic inspiration. Directors Joe and Anthony Russo reveal that Sergio Leone’s Once Upon a Time in the West served as a major influence for their superhero epic."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers Doomsday", "Russo Brothers", "Marvel Cinematic Universe", "Movies", "Production"]
 game: "mcu"

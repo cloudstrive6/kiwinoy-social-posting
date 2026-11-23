@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Promises The Return of 'Infinity War' Thor, Say Russo Brothers"
 excerpt: "After years of tonal shifts, the Russo brothers reveal that Avengers: Doomsday will reintroduce the serious, battle-hardened Thor seen in Infinity War, moving away from the controversial comedic takes of recent films."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Thor", "Avengers Doomsday", "Russo Brothers", "MCU", "Chris Hemsworth"]
 game: "mcu"

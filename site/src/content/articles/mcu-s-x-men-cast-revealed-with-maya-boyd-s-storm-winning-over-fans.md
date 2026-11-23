@@ -1,7 +1,7 @@
 ---
 title: "MCU’s X-Men Cast Revealed, with Maya Boyd’s Storm Winning Over Fans"
 excerpt: "Marvel Studios confirmed Sadie Sink as Jean Grey, alongside major casting reveals for the MCU X-Men lineup. Maya Boyd, cast as Storm, draws praise for her dedication after sharing her massive comic haul on social media."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["MCU", "X-Men", "Casting", "Marvel"]
 game: "mcu"

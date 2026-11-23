@@ -1,7 +1,7 @@
 ---
 title: "Iman Vellani Wants Fewer Team-Ups in the MCU to Bring Back the Magic"
 excerpt: "Iman Vellani, star of Ms. Marvel, says she’d like Marvel to focus less on constant superhero team-ups and more on solo adventures, sparking debate among fans ahead of the next Avengers films. Her comments shed light on a growing divide over the future direction of the MCU."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Iman Vellani", "MCU", "Avengers", "Team-Ups", "Ms. Marvel"]
 game: "mcu"

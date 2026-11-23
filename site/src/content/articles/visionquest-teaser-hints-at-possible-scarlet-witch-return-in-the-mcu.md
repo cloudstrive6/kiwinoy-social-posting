@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Teaser Hints at Possible Scarlet Witch Return in the MCU"
 excerpt: "A new teaser for Disney+'s VisionQuest has fueled speculation that Wanda Maximoff could return to the MCU, as fans eagerly anticipate Avengers: Doomsday. Glimpses in the trailer suggest more than just flashbacks, leaving fans to question Wanda's fate."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Wanda Maximoff", "Scarlet Witch", "VisionQuest", "Avengers: Doomsday", "MCU"]
 game: "mcu"

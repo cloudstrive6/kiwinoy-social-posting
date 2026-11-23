@@ -1,7 +1,7 @@
 ---
 title: "Marvel Winter Break Special 2026 #1 Brings Hockey Star CJ, Spider-Man on Ice and a Stilt-Man Win"
 excerpt: "Marvel's Winter Break Special arrives December 30 with four stories, including a Spider-Man tale co-written by Women Professional Hockey League player Carly \"CJ\". Exclusive pages show off a superhero New Year's Eve party and an X-Men ice rivalry."
-category: "MCU"
+category: "Marvel"
 tag: "Preview"
 tags: ["Marvel Comics", "Marvel Winter Break Special", "Spider-Man", "X-Men", "Stilt-Man"]
 game: "mcu"

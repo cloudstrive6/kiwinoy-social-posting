@@ -1,7 +1,7 @@
 ---
 title: "Looking Back at the Forgotten 1978 Doctor Strange TV Movie"
 excerpt: "Before the MCU turned him into a household name, Doctor Strange made his live-action debut in an ambitious yet ultimately short-lived 1978 TV movie. Here's how Marvel's first magical foray on CBS became a fascinating missed opportunity."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Doctor Strange", "Marvel history", "TV", "retro", "supernatural"]
 game: "mcu"

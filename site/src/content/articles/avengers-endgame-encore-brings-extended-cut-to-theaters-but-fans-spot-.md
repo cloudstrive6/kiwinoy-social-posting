@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Endgame Encore Brings Extended Cut to Theaters—But Fans Spot Poster Oddity"
 excerpt: "Marvel is set to re-release Avengers: Endgame as an extended cut titled Endgame Encore, but a new poster has stirred up discussion after eagle-eyed fans noticed a surprising detail about Thor's appearance."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers", "Endgame Encore", "Marvel Studios", "MCU", "Posters"]
 game: "mcu"

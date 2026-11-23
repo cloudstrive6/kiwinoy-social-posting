@@ -1,7 +1,7 @@
 ---
 title: "James Gunn and Peter Safran Step Down as DC Studios Co-Heads; Ex-Marvel Exec Jeremy Latcham Takes Over"
 excerpt: "James Gunn and Peter Safran are leaving their roles as co-heads of DC Studios in one of the first major executive shakeups since Skydance acquired Warner Bros. Former Marvel executive Jeremy Latcham will take over."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["DC Studios", "James Gunn", "Peter Safran", "Jeremy Latcham", "Superman"]
 game: "mcu"

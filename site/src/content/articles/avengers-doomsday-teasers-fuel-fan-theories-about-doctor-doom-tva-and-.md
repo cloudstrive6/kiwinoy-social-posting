@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Teasers Fuel Fan Theories About Doctor Doom, TVA, and Multiverse Mysteries"
 excerpt: "New promotional art and trailer teases for Avengers: Doomsday have sparked intense speculation as iconic actors return and potential links to the TVA emerge. With Robert Downey Jr. as Doctor Doom and Chris Evans reprising Steve Rogers, fans are eager to unravel what’s next for the MCU."
-category: "MCU"
+category: "Marvel"
 tag: "Preview"
 tags: ["Avengers", "MCU", "Doctor Doom", "TVA", "Rumors"]
 game: "mcu"

@@ -1,7 +1,7 @@
 ---
 title: "Sir Patrick Stewart, Legendary Professor X, Passes Away"
 excerpt: "The world is mourning the death of Sir Patrick Stewart, celebrated for his unforgettable role as Professor Charles Xavier in the X-Men movies and a towering presence on stage and screen. Tributes from co-stars, Marvel leaders, and collaborators underline the enormous impact Stewart had on entertainment and generations of fans."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["patrick stewart", "x-men", "marvel", "mcu", "logan"]
 game: "mcu"

@@ -1,7 +1,7 @@
 ---
 title: "The Marvels Trio Rumored to Reunite in Avengers: Secret Wars"
 excerpt: "Following their absence in recent MCU projects, Captain Marvel, Ms. Marvel, and Monica Rambeau are reportedly set to reunite in Avengers: Secret Wars, with Monica likely to appear even sooner."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["Marvel", "MCU", "Avengers", "The Marvels", "Secret Wars"]
 game: "mcu"

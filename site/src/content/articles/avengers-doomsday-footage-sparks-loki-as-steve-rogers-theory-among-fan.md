@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Footage Sparks Loki-as-Steve Rogers Theory Among Fans"
 excerpt: "New footage from Avengers: Doomsday shown during the 2026 World Series is fueling speculation that 'Steve Rogers' in the promos could actually be Loki in disguise, with fans dissecting key scenes for clues."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["Avengers", "Loki", "Captain America", "MCU", "Rumors"]
 game: "mcu"

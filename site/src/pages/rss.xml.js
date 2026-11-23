@@ -35,7 +35,7 @@ export async function GET(context) {
   return rss({
     title: "BOSS KG: Gaming and Marvel News",
     description:
-      "The drop-first source for video games, the MCU, and the biggest moments in gaming.",
+      "The drop-first source for video games, Marvel, and the biggest moments in gaming.",
     site: context.site,
     items,
     customData: "<language>en-us</language>",

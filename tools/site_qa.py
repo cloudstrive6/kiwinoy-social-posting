@@ -44,7 +44,7 @@ DEFAULT_URL = "https://bosskg.netlify.app"
 # pages we always expect to exist (relative paths)
 KNOWN = ["/", "/about", "/contact", "/advertise", "/privacy", "/terms",
          "/editorial-standards", "/follow", "/videos",
-         "/category/marvel-games", "/category/mcu", "/category/playstation", "/category/news"]
+         "/category/marvel-games", "/category/marvel", "/category/playstation", "/category/news"]
 
 _CHROME_CANDIDATES = [
     "/c/Program Files/Google/Chrome/Application/chrome.exe",

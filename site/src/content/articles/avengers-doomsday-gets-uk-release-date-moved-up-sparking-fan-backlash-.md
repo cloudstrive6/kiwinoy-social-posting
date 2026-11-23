@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Gets UK Release Date Moved Up, Sparking Fan Backlash Over Spoilers"
 excerpt: "Marvel’s next blockbuster, Avengers: Doomsday, will now premiere two days earlier in the UK, leaving global fans worried about spoilers and leaks."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["MCU", "Avengers", "Doomsday", "Release Date", "Spoilers"]
 game: "mcu"

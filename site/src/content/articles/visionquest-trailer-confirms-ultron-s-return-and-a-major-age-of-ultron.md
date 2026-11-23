@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Trailer Confirms Ultron’s Return—and a Major Age of Ultron Retcon"
 excerpt: "The new VisionQuest trailer reveals that Ultron is back in a surprising way, as the Disney+ series reimagines the ending of Avengers: Age of Ultron and reshapes Vision’s legacy."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["VisionQuest", "Ultron", "MCU", "Disney+", "WandaVision"]
 game: "mcu"

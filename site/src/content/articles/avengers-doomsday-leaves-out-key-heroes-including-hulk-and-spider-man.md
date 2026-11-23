@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday Leaves Out Key Heroes Including Hulk and Spider-Man"
 excerpt: "Marvel’s next big crossover, Avengers: Doomsday, is gathering a record number of heroes by blending the classic Avengers lineup with Fox’s X-Men, but some major names like Spider-Man, Captain Marvel, and Hulk are conspicuously absent from the cast."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers", "MCU", "Hulk", "Spider-Man", "X-Men"]
 game: "mcu"

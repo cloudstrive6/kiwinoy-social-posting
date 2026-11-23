@@ -18,10 +18,15 @@ export const SECTIONS = {
       ["spider-man2", "spider-man", "spider-man1", "miles", "wolverine"].includes((d.game || "").toLowerCase()) ||
       /wolverine|spider|marvel games/i.test(d.category || ""),
   },
-  mcu: {
-    title: "MCU",
-    blurb: "Movies, shows and the wider Marvel Cinematic Universe.",
-    match: (d) => (d.game || "").toLowerCase() === "mcu" || /mcu/i.test(d.category || ""),
+  // Was "MCU" until 2026-11-24 (Bryce): it also carries Marvel animation, comics, legacy films
+  // and Marvel people such as James Gunn. /category/mcu/ redirects here (public/_redirects).
+  marvel: {
+    title: "Marvel",
+    blurb: "Movies, shows, animation and comics from across Marvel.",
+    match: (d) =>
+      (d.game || "").toLowerCase() === "mcu" ||
+      /\bmcu\b/i.test(d.category || "") ||
+      /^\s*marvel\s*(\||$)/i.test(d.category || ""),   // "Marvel", never "Marvel Games"
   },
   playstation: {
     title: "PlayStation",
@@ -39,7 +44,7 @@ export const SECTIONS = {
 // ("Gaming", "Hardware") map to an existing page, never to a 404.
 export function sectionFor(d) {
   if (/hardware/i.test(d.category || "")) return { slug: null, label: "Gear", href: "/gear/" };
-  for (const slug of ["marvel-games", "mcu", "playstation"]) {
+  for (const slug of ["marvel-games", "marvel", "playstation"]) {
     if (SECTIONS[slug].match(d)) return { slug, label: SECTIONS[slug].title, href: `/category/${slug}/` };
   }
   return { slug: "news", label: "News", href: "/category/news/" };

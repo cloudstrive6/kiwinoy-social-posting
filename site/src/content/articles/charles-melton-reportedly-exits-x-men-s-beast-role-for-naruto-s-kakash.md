@@ -1,7 +1,7 @@
 ---
 title: "Charles Melton Reportedly Exits X-Men's Beast Role for Naruto's Kakashi"
 excerpt: "The live-action X-Men reboot may see Peter Claffey take on the role of Beast after Charles Melton reportedly shifts focus to play Kakashi Hatake in the upcoming Naruto movie."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["casting", "X-Men", "Naruto", "mcu", "Live-Action"]
 game: "mcu"

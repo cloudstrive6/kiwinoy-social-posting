@@ -1,7 +1,7 @@
 ---
 title: "Ryan Gosling's Ghost Rider Movie Casts Its Main Villain"
 excerpt: "Ryan Gosling's hotly anticipated turn as Ghost Rider just landed another key player, with Connor Storrie set to play the film's lead antagonist. The villain's identity remains shrouded in mystery, keeping fans speculating about Marvel's next big supernatural showdown."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Ghost Rider", "Ryan Gosling", "Connor Storrie", "Marvel Studios"]
 game: "mcu"

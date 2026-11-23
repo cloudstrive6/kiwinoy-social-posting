@@ -1,7 +1,7 @@
 ---
 title: "Rogue and Captain Marvel Finally Resolve Decades-Old Rift in Latest Comic"
 excerpt: "After years of tension stemming from Rogue's attack on Carol Danvers, the new Captain Marvel comic delivers a heartfelt resolution between the two iconic Marvel characters."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Marvel", "Comics", "Captain Marvel", "X-Men", "Rogue"]
 game: "mcu"

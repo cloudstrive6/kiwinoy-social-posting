@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Doomsday's second trailer drops at D23 — Doom takes on the X-Men, the Fantastic Four, and an army of Sentinels"
 excerpt: "Marvel unveiled the second Avengers: Doomsday trailer at D23, and it puts Robert Downey Jr.'s Doctor Doom front and center against the MCU's biggest roster yet."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 game: "mcu"
 tags: ["Avengers: Doomsday", "MCU", "Trailer", "Marvel Studios", "Doctor Doom"]

@@ -1,7 +1,7 @@
 ---
 title: "Your Friendly Neighborhood Spider-Man Animated Series Eyeing Multiple Future Seasons"
 excerpt: "Fans of the animated show can breathe a sigh of relief—Your Friendly Neighborhood Spider-Man is actively in development for Season 3, with talks of a potential fourth, even as Marvel TV navigates some uncertainty."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Marvel", "Spider-Man", "Animation", "Disney+", "TV"]
 game: "mcu"

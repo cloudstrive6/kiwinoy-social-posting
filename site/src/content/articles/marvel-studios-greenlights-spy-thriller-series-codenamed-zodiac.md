@@ -1,7 +1,7 @@
 ---
 title: "Marvel Studios Greenlights Spy Thriller Series Codenamed 'Zodiac'"
 excerpt: "Marvel is headed back into the world of espionage with a newly confirmed spy thriller series, codenamed 'Zodiac.' While details are still under wraps, the title hints at deep comic roots and potential connections to VisionQuest and S.H.I.E.L.D."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Zodiac", "MCU", "Marvel Studios", "S.H.I.E.L.D.", "VisionQuest"]
 game: "mcu"

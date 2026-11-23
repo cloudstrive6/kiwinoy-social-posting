@@ -1,7 +1,7 @@
 ---
 title: "Is Billy Maximoff Secretly in VisionQuest? MCU Fans Spot a Familiar Face"
 excerpt: "Fans believe Billy Maximoff might have already appeared in VisionQuest, after spotting a mysterious figure near Tommy in the latest episodes. Theories are swirling about Joe Locke’s return and what it could mean for the Wanda-centric trilogy’s conclusion."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["VisionQuest", "Billy Maximoff", "Tommy Maximoff", "MCU", "Agatha All Along"]
 game: "mcu"

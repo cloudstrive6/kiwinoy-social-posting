@@ -1,7 +1,7 @@
 ---
 title: "VisionQuest Trailer Sets Up a Surreal Sequel to WandaVision on Disney+"
 excerpt: "The final chapter in Wanda Maximoff and Vision’s saga lands this October, as VisionQuest promises to dive deep into Vision’s fractured identity, picking up right where WandaVision left off."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["VisionQuest", "WandaVision", "Disney+", "MCU", "Paul Bettany"]
 game: "mcu"

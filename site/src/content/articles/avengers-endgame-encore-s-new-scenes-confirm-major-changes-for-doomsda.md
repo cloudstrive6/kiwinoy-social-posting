@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Endgame Encore's New Scenes Confirm Major Changes for Doomsday and Loki Characters"
 excerpt: "Avengers: Endgame Encore has arrived, bringing four new scenes that not only tease Avengers: Doomsday but also shake up fan-favorite character arcs, including Mobius and Loki."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["MCU", "Avengers", "Loki", "Doctor Doom", "Endgame Encore"]
 game: "mcu"

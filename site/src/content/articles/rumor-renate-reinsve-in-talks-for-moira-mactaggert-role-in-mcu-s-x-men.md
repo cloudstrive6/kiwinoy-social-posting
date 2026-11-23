@@ -1,7 +1,7 @@
 ---
 title: "Rumor: Renate Reinsve in Talks for Moira MacTaggert Role in MCU’s X-Men Reboot"
 excerpt: "Backrooms star Renate Reinsve is reportedly meeting with Marvel to discuss the role of Moira MacTaggert in the upcoming X-Men movie, despite earlier statements that she wasn't interested in joining the franchise."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["X-Men", "Casting", "MCU", "Renate Reinsve"]
 game: "mcu"

@@ -1,6 +1,6 @@
 ---
 // Home: lead story (the featured trend, else the newest; site_featured.py logic unchanged) with a
-// side rail, then sectioned rails (Marvel games, MCU, Shorts, gaming, videos, gear), one partner
+// side rail, then sectioned rails (Marvel games, Marvel, Shorts, gaming, videos, gear), one partner
 // offer at a time between them, and Latest as a compact list.
 import Base from "../layouts/Base.astro";
 import StoryCard from "../components/StoryCard.astro";
@@ -33,8 +33,8 @@ const take = (list, n) => {
 };
 const side = take(all, 4);
 const marvel = take(all.filter((a) => SECTIONS["marvel-games"].match(a.data)), 4);
-const mcu = take(all.filter((a) => SECTIONS.mcu.match(a.data)), 4);
-const gaming = take(all.filter((a) => !SECTIONS["marvel-games"].match(a.data) && !SECTIONS.mcu.match(a.data)), 6);
+const mcu = take(all.filter((a) => SECTIONS.marvel.match(a.data)), 4);
+const gaming = take(all.filter((a) => !SECTIONS["marvel-games"].match(a.data) && !SECTIONS.marvel.match(a.data)), 6);
 const latest = take(all, 6);
 
 const lead = leadEntry ? toStory(leadEntry) : null;
@@ -101,7 +101,7 @@ const ld = [
 
     {mcu.length > 1 && (
       <section class="sec" aria-labelledby="hMcu">
-        <SectionHead id="hMcu" title="MCU" href="/category/mcu/" more="All MCU" />
+        <SectionHead id="hMcu" title="Marvel" href="/category/marvel/" more="All Marvel" />
         <div class="grid">{mcu.map((s) => <StoryCard s={s} />)}</div>
       </section>
     )}

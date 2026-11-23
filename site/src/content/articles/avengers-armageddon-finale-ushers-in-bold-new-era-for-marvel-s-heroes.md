@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Armageddon Finale Ushers in Bold New Era for Marvel's Heroes"
 excerpt: "The final issue of Avengers: Armageddon turns the page on the Marvel Universe, shifting its focus from cosmic spectacle to intimate, human stakes—and setting up seismic changes for everyone's favorite heroes."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Avengers", "Marvel Comics", "Spider-Man", "Captain Marvel"]
 game: "mcu"

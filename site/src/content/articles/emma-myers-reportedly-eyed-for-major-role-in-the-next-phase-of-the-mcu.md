@@ -1,7 +1,7 @@
 ---
 title: "Emma Myers Reportedly Eyed for Major Role in the Next Phase of the MCU"
 excerpt: "Wednesday star Emma Myers is rumored to join the Marvel Cinematic Universe, with fans already speculating on several iconic characters she could portray. This comes as Marvel continues to announce high-profile castings for upcoming films, including new X-Men and Black Panther projects."
-category: "MCU"
+category: "Marvel"
 tag: "Rumor"
 tags: ["Emma Myers", "Casting", "Marvel Cinematic Universe", "Gwenpool", "X-Men"]
 game: "mcu"

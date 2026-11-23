@@ -1,7 +1,7 @@
 ---
 title: "Avengers: Endgame Encore's New Scenes Set the Stage for Doomsday and the MCU's Next Crisis"
 excerpt: "Avengers: Endgame Encore adds just four minutes of new footage, but its mid-credits scene teases the catastrophic multiversal events leading into Avengers: Doomsday. Familiar TVA faces, mounting incursions, and X-Men world clashes push the MCU deeper into Secret Wars territory."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["MCU", "Avengers", "Doomsday", "Secret Wars", "TVA"]
 game: "mcu"

@@ -1,0 +1,5 @@
+# Netlify redirects (copied into dist/ at build).
+# 2026-11-24: the "MCU" section became "Marvel" (Bryce). Old links, search results and shares keep working.
+/category/mcu          /category/marvel/          301
+/category/mcu/         /category/marvel/          301
+/category/mcu/*        /category/marvel/:splat    301

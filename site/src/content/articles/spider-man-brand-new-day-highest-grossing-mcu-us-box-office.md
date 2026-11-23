@@ -1,7 +1,7 @@
 ---
 title: "'Spider-Man: Brand New Day' dethrones 'Avengers: Endgame' as the highest-grossing MCU film in U.S. history"
 excerpt: "Tom Holland's latest has passed Avengers: Endgame's $858M domestic total to become the biggest MCU movie ever at the U.S. box office — though Endgame still holds the worldwide crown."
-category: "MCU"
+category: "Marvel"
 tag: "Hot"
 game: "mcu"
 tags: ["Spider-Man: Brand New Day", "Box Office", "MCU", "Avengers: Endgame", "Tom Holland"]

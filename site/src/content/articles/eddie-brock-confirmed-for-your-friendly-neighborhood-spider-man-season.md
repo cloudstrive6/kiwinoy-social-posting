@@ -1,7 +1,7 @@
 ---
 title: "Eddie Brock Confirmed for 'Your Friendly Neighborhood Spider-Man' Season 2, Teased by Josh Keaton"
 excerpt: "Josh Keaton is officially playing Eddie Brock in the sophomore season of Marvel's 'Your Friendly Neighborhood Spider-Man,' hinting at a possible Venom debut. The show’s new trailer also promises a pivotal symbiote storyline and more classic villains."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["Spider-Man", "MCU", "Venom", "Animated Series"]
 game: "mcu"

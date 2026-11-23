@@ -1,7 +1,7 @@
 ---
 title: "A Rare X-Men Comic Heads for Record Sale Thanks to a Surprising Ad Insert"
 excerpt: "A copy of X-Men #107, introducing the Shi'Ar Imperial Guard, is poised to smash price records due to an unusual Mark Jewelers ad—and not just for its Marvel milestone."
-category: "MCU"
+category: "Marvel"
 tag: "News"
 tags: ["X-Men", "comics", "Marvel", "collectibles"]
 game: "mcu"
