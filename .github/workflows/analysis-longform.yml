@@ -16,11 +16,17 @@ name: Analysis long-form (manual)
 #   render: narration (cached) plus the full edit, QC and thumbnails; the draft goes to B2
 #           renders/analysis/<game>/ (kept) with a 7-day review link. Optional "only" renders a few beats
 #           as a small preview instead (test runs).
+#   voice-backup-deploy: puts the Guide C reference files (B2 voice-refs/guide-c/) on the Modal Volume
+#           kg-voxcpm2, deploys modal_apps/voxcpm2_narrator.py and downloads the VoxCPM2 weights (2026-11-23).
+#   voice-backup-parity: the 179-word test paragraph through the Modal backup, scored against take 1.
+# "narrator" (narrate and render, 2026-11-23): elevenlabs (default) stops when credits are short; voxcpm2
+#   forces the VoxCPM2 Guide C clone on Modal; auto uses it for a whole video only when credits are short
+#   and the video has no Guide C take yet. Backup takes live in narration-vox/, drafts end in -vox.
 on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render, voice-backup-deploy, voice-backup-parity)"
         required: true
         default: "inventory"
       game:
@@ -43,6 +49,10 @@ on:
         description: "audition: space-separated Chirp 3 HD voice names (blank = Orus Enceladus Algenib); voice-setup: comma list of ElevenLabs voice names to delete"
         required: false
         default: ""
+      narrator:
+        description: "narrate and render: elevenlabs (default), voxcpm2 (force the Modal backup) or auto (backup only when credits are short and no Guide C take exists yet)"
+        required: false
+        default: "elevenlabs"
 
 permissions:
   contents: read
@@ -137,13 +147,40 @@ jobs:
           path: output/analysis/${{ github.event.inputs.game }}/narration
           key: narration-${{ github.event.inputs.game }}-${{ hashFiles(format('data/analysis/{0}/edl.json', github.event.inputs.game)) }}
           restore-keys: narration-${{ github.event.inputs.game }}-
-      - name: Narration (ElevenLabs BOSS KG voice; Chirp 3 HD for older EDLs)
+      # Backup takes have their own folder and cache, so they never replace paid Guide C takes. Restored
+      # in every mode, so a default (elevenlabs) run sees a backup-voiced video and stops instead of
+      # re-recording it. "|" cannot be in a game name, so gta6-guide never restores gta6-guide-x's cache.
+      - name: Restore backup narration (VoxCPM2)
+        if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/narration-vox
+          key: narration-vox|${{ github.event.inputs.game }}|none
+          restore-keys: narration-vox|${{ github.event.inputs.game }}|
+      - name: Narration (ElevenLabs BOSS KG voice; Chirp 3 HD for older EDLs; VoxCPM2 backup on Modal)
         if: ${{ github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render' }}
         env:
           GAME: ${{ github.event.inputs.game }}
+          KG_NARRATOR: ${{ github.event.inputs.narrator }}
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-        run: python tools/analysis_narrate.py "$GAME"
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$KG_NARRATOR" ] && [ "$KG_NARRATOR" != "elevenlabs" ]; then
+            # the backup's per-paragraph QC (Whisper) and its Modal client
+            pip install --quiet "faster-whisper==1.1.1" "modal==1.6.4"
+          fi
+          python tools/analysis_narrate.py "$GAME"
+      # keyed on the takes' own record, so an unchanged narration is not saved again (cache size)
+      - name: Save backup narration (even if a later step fails)
+        if: ${{ always() && (github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render') && hashFiles(format('output/analysis/{0}/narration-vox/timings.json', github.event.inputs.game)) != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: output/analysis/${{ github.event.inputs.game }}/narration-vox
+          key: narration-vox|${{ github.event.inputs.game }}|${{ hashFiles(format('output/analysis/{0}/narration-vox/timings.json', github.event.inputs.game)) }}
       - name: Save narration (even if a later step fails)
         if: ${{ always() && (github.event.inputs.step == 'narrate' || github.event.inputs.step == 'render') }}
         uses: actions/cache/save@v4
@@ -178,6 +215,39 @@ jobs:
         with:
           path: output/analysis/${{ github.event.inputs.game }}/segs
           key: segs-${{ github.event.inputs.game }}-${{ github.run_id }}
+      - name: Deploy the VoxCPM2 backup narrator to Modal (voice-backup-deploy, 2026-11-23)
+        if: ${{ github.event.inputs.step == 'voice-backup-deploy' }}
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          pip install --quiet "modal==1.6.4"
+          mkdir -p refs
+          python - <<'PY'
+          from pathlib import Path
+          from core import b2_store
+          for name in ("guide-C_12s.wav", "guide-C_12s.txt", "guide-C_full.wav"):
+              data = b2_store.get_bytes(f"voice-refs/guide-c/{name}")
+              if not data:
+                  raise SystemExit(f"B2 voice-refs/guide-c/{name} is missing")
+              Path("refs", name).write_bytes(data)
+              print(name, len(data), "bytes")
+          PY
+          modal volume create kg-voxcpm2 || true
+          for f in guide-C_12s.wav guide-C_12s.txt guide-C_full.wav; do
+            modal volume put --force kg-voxcpm2 "refs/$f" "/refs/$f"
+          done
+          rm -rf refs
+          modal deploy modal_apps/voxcpm2_narrator.py
+          modal run modal_apps/voxcpm2_narrator.py::warm
+      - name: VoxCPM2 backup parity test (voice-backup-parity, 2026-11-23)
+        if: ${{ github.event.inputs.step == 'voice-backup-parity' }}
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          pip install --quiet "faster-whisper==1.1.1" "modal==1.6.4"
+          python tools/voice_backup.py parity
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -185,8 +255,10 @@ jobs:
           path: |
             output/inventory/
             output/analysis/
+            output/voice-backup/
             !output/analysis/*/segs/
             !output/analysis/*/work/
             !output/analysis/*/*-analysis-*.mp4
             !output/analysis/*/narration/*.wav
+            !output/analysis/*/narration-vox/*.wav
           retention-days: 14

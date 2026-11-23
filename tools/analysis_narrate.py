@@ -175,10 +175,131 @@ def seconds(path: Path) -> float:
     return float(out.stdout.strip() or 0)
 
 
+def used_file(game: str) -> Path:
+    """Which narration folder the render reads (2026-11-23): narration/ for Guide C, narration-vox/
+    for the VoxCPM2 backup. Written by every narrate run."""
+    return ROOT / "output" / "analysis" / game / "narrator-used.json"
+
+
+def el_take_hash(b: dict, nar: dict) -> str:
+    """The cache hash of an ElevenLabs take (one definition, used by main and by the backup checks)."""
+    tag = f"el|{nar['name']}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}|{nar.get('speed')}"
+    if nar.get("tempo"):  # only new EDLs carry it, so older videos keep their cached takes
+        tag += f"|tempo{nar['tempo']}"
+    said = b["tts"] if reads_tags(nar) else strip_tags(b["tts"])
+    extra = f"|take{b['take']}" if b.get("take") else ""
+    return hashlib.sha1(f"{tag}|{float(nar.get('speed', 1.0))}|{said}{extra}".encode()).hexdigest()[:12]
+
+
+def guide_c_render_on_b2(game: str) -> bool | None:
+    """True if B2 renders/analysis/<game>/ holds a draft voiced by ElevenLabs (a name without -vox),
+    None if B2 cannot be read. A lasting record: the Actions cache of paid takes expires after 7 days
+    unused, so "no Guide C take in the cache" alone could re-voice a finished video (review 2026-11-23)."""
+    sys.path.insert(0, str(ROOT))
+    from core import b2_store
+    if not b2_store.enabled():
+        return None
+    names = [f.get("fileName", "") for f in b2_store._list_names(f"renders/analysis/{game}/")]
+    return any(n.endswith(".mp4") and f"/{game}-analysis-" in n and "-vox" not in n for n in names)
+
+
+def vox_folder(game: str, out: Path) -> Path:
+    """narration-vox/ for this game. A folder restored from another video's cache is cleared first."""
+    import shutil
+    mark = out / "game.txt"
+    if out.exists() and (not mark.exists() or mark.read_text(encoding="utf-8").strip() != game):
+        print(f"{out} belongs to another video; clearing it", flush=True)
+        shutil.rmtree(out)
+    return out
+
+
+def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reason: str) -> int:
+    """Voice the whole video with the VoxCPM2 backup into narration-vox/ (tools/voice_backup.py),
+    then the same tail trim and mastering as Guide C. Never writes to narration/."""
+    import voice_backup
+    if nar.get("name") != "BOSS KG Guide C":
+        raise SystemExit("The VoxCPM2 backup clones BOSS KG Guide C only; this EDL uses another voice.")
+    print(f"Narrator: VoxCPM2 backup (Guide C clone on Modal), because {reason}", flush=True)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "game.txt").write_text(game, encoding="utf-8")
+    summary = voice_backup.narrate(narr, out)
+    timings = json.loads((out / "timings.json").read_text(encoding="utf-8"))
+    for b in narr:
+        wav = out / f"{b['id']}.wav"
+        if wav.exists() and not timings[b["id"]].get("tail_trimmed"):
+            trim_tail(wav)
+            timings[b["id"]].update(seconds=round(seconds(wav), 3), tail_trimmed=True)
+    if nar.get("master"):  # pace and tempo were tuned for ElevenLabs takes, so they are not applied
+        master_takes(narr, out, timings, str(nar["master"]), 1.0, float(nar.get("tail_fade", 0.0)))
+    (out / "timings.json").write_text(json.dumps(timings, indent=1), encoding="utf-8")
+    used_file(game).write_text(json.dumps({"dir": "narration-vox", "voice": "voxcpm2", "reason": reason}),
+                               encoding="utf-8")
+    words = sum(len(b["text"].split()) for b in narr)
+    total = sum(timings[b["id"]]["seconds"] for b in narr)
+    report = (f"# Narration: {game}, VoxCPM2 backup (Guide C clone)\n\n"
+              f"- why: {reason}\n"
+              f"- {len(narr)} paragraphs, {words} words, {total:.0f} s of speech ({total / 60:.1f} min), "
+              f"{words / max(1e-6, total / 60):.0f} wpm\n"
+              f"- this run: {summary['voiced']} voiced, {summary['rerolls']} re-rolls, {summary['gpu_s']:.0f} GPU s, "
+              f"{summary['wall_s']:.0f} s wall, cold start {summary['cold_start_s']:.0f} s, "
+              f"about ${summary['usd_est']:.2f} of Modal L4 time\n")
+    (out / "narration.md").write_text(report, encoding="utf-8")
+    print(report, flush=True)
+    if summary["voiced"]:
+        try:
+            sys.path.insert(0, str(ROOT))
+            from core.notify import telegram
+            telegram(f"KG {game}: narrated with the VoxCPM2 backup ({reason}). {summary['voiced']} paragraphs, "
+                     f"{summary['rerolls']} re-rolls, about ${summary['usd_est']:.2f} of Modal time. "
+                     f"The draft name ends in -vox.")
+        except Exception as e:  # the note never stops a run
+            print(f"Telegram note skipped: {e!r}", flush=True)
+    return 0
+
+
 def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
     nar = edl.get("narrator")
+    # Backup narrator (Bryce, 2026-11-23): elevenlabs (default) stops when credits are short;
+    # voxcpm2 forces the VoxCPM2 Guide C clone on Modal (tests); auto switches a whole video to it only
+    # when credits are short and the video has no Guide C take yet, so a video never mixes voices.
+    mode = (os.environ.get("KG_NARRATOR") or "elevenlabs").strip().lower()
+    if mode not in ("elevenlabs", "voxcpm2", "auto"):
+        raise SystemExit(f"KG_NARRATOR must be elevenlabs, voxcpm2 or auto, not {mode!r}")
+    guide_c = bool(nar and nar.get("name") == "BOSS KG Guide C")
+    if mode == "voxcpm2" and not guide_c:
+        raise SystemExit("The VoxCPM2 backup clones BOSS KG Guide C only; this EDL uses another voice.")
+    if mode == "auto" and not guide_c:
+        mode = "elevenlabs"  # older voices (Narrator A, Chirp) have no backup: run as before
+    out = ROOT / "output" / "analysis" / game / "narration"
+    vox_out = vox_folder(game, out.parent / "narration-vox")
+    narr = [b for b in edl["beats"] if b["type"] == "narr"]
+    gc_timings = (json.loads((out / "timings.json").read_text(encoding="utf-8"))
+                  if (out / "timings.json").exists() else {})
+    # takes of THIS script only (hash match), so a cache restored from another video counts for nothing
+    guide_c_takes = [b["id"] for b in narr if nar and (out / f"{b['id']}.wav").exists()
+                     and gc_timings.get(b["id"], {}).get("hash") == el_take_hash(b, nar)]
+    vox_takes = []
+    if guide_c and (vox_out / "timings.json").exists():
+        import voice_backup
+        vt = json.loads((vox_out / "timings.json").read_text(encoding="utf-8"))
+        vox_takes = [b["id"] for b in narr if (vox_out / f"{b['id']}.wav").exists()
+                     and vt.get(b["id"], {}).get("hash") == voice_backup.take_hash(b)]
+    backup, reason = False, ""
+    if mode == "voxcpm2":
+        backup, reason = True, "forced (narrator: voxcpm2)"
+    elif mode == "auto" and not guide_c_takes and vox_takes:
+        backup, reason = True, "this video was already voiced with the backup"  # sticky: one voice per video
+    elif mode == "elevenlabs" and vox_takes and not guide_c_takes:
+        raise SystemExit("This video was voiced with the VoxCPM2 backup. Run with narrator auto (keeps the "
+                         "backup voice) or voxcpm2; to re-voice it with Guide C, delete its narration-vox "
+                         "cache first. Nothing was recorded, so no credits were spent.")
+    if backup and guide_c_takes:
+        print(f"note: {len(guide_c_takes)} Guide C takes exist for this video; they are kept as they are",
+              flush=True)
+    if backup:
+        return narrate_backup(game, edl, narr, nar, vox_out, reason)
     if nar:  # ElevenLabs; the voice is found by name, so the same EDL works on any KG account
         voice, rate = nar["name"], float(nar.get("speed", 1.0))
         key0 = os.environ.get("ELEVENLABS_API_KEY", "")
@@ -191,9 +312,7 @@ def main() -> int:
             if not found:
                 raise SystemExit(f"ElevenLabs voice '{voice}' is not on this account; run step voice-setup first.")
             nar = dict(nar, voice_id=found[0])
-        tag = f"el|{voice}|{nar.get('model_id')}|{nar.get('stability')}|{nar.get('style')}|{nar.get('speed')}"
-        if nar.get("tempo"):  # only new EDLs carry it, so older videos keep their cached takes
-            tag += f"|tempo{nar['tempo']}"
+        tag = ""  # the ElevenLabs take hash is el_take_hash()
         key = os.environ.get("ELEVENLABS_API_KEY", "")
         need = "ELEVENLABS_API_KEY"
     else:  # Chirp 3 HD (videos made before 2026-11-13)
@@ -204,16 +323,16 @@ def main() -> int:
     if not key:
         print(f"{need} is not set")
         return 1
-    out = ROOT / "output" / "analysis" / game / "narration"
     out.mkdir(parents=True, exist_ok=True)
     tpath = out / "timings.json"
-    timings = json.loads(tpath.read_text(encoding="utf-8")) if tpath.exists() else {}
-    narr = [b for b in edl["beats"] if b["type"] == "narr"]
+    timings = gc_timings
 
     def said(b: dict) -> str:  # the text the model is sent (tags only for models that perform them)
         return b["tts"] if reads_tags(nar) else strip_tags(b["tts"])
     def take_hash(b: dict) -> str:  # "take": n on a beat re-rolls that paragraph alone (2026-11-18: the bosses
         # outro came out about 6 semitones above the paragraph before it; v4 takes vary, so a re-roll fixes it)
+        if nar:
+            return el_take_hash(b, nar)
         extra = f"|take{b['take']}" if b.get("take") else ""
         return hashlib.sha1(f"{tag}|{rate}|{said(b)}{extra}".encode()).hexdigest()[:12]
     words = 0
@@ -236,7 +355,19 @@ def main() -> int:
             # character (Wolverine, the bosses video, the Guide C reel packs), so a character count
             # refused runs the balance could pay for. 0.5 keeps a safety margin.
             need = int(todo * 0.5) + 1
+            if need > left and mode == "auto" and not guide_c_takes:
+                on_b2 = guide_c_render_on_b2(game)
+                if on_b2 is not False:
+                    raise SystemExit(f"Not enough ElevenLabs credits (need about {need}, have {left}), and "
+                                     + ("B2 already holds a Guide C draft of this video" if on_b2 else
+                                        "B2 could not be checked for an earlier Guide C draft")
+                                     + ", so the backup is not used (a video never mixes voices). Nothing was recorded.")
+                return narrate_backup(game, edl, narr, nar, vox_out,
+                                      f"ElevenLabs credits short: needed about {need}, had {left}")
             if need > left:
+                if mode == "auto":
+                    print(f"auto: not switching to the backup, because {len(guide_c_takes)} paragraphs "
+                          f"already have Guide C takes (a video never mixes voices)", flush=True)
                 raise SystemExit(f"Not enough ElevenLabs credits: need about {need} for {todo} characters, "
                                  f"have {left}. Nothing was recorded. Upgrade the plan or wait for the reset.")
             left_before = left
@@ -274,6 +405,7 @@ def main() -> int:
         master_takes(narr, out, timings, str(nar["master"]), float(nar.get("pace", 1.0)),
                      float(nar.get("tail_fade", 0.0)))
     tpath.write_text(json.dumps(timings, indent=1), encoding="utf-8")
+    used_file(game).write_text(json.dumps({"dir": "narration", "voice": voice}), encoding="utf-8")
     if nar and todo:  # what this run really cost (about 0.4 credit per character on Starter)
         req = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": key})
         with urllib.request.urlopen(req, timeout=60) as r:

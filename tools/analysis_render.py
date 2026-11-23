@@ -759,7 +759,14 @@ def main() -> int:
     gfx_specs = gfx.load_specs(d / "gfx.json")
     tails = gfx_specs.get("beat_tail", {})
     out = ROOT / "output/analysis" / game
-    narr_dir = out / "narration"
+    # narration/ (Guide C) or narration-vox/ (the VoxCPM2 backup, 2026-11-23), as the narrate run wrote
+    used = out / "narrator-used.json"
+    used = json.loads(used.read_text(encoding="utf-8")) if used.exists() else {}
+    narr_dir = out / used.get("dir", "narration")
+    if used.get("voice") == "voxcpm2":
+        print(f"narration: VoxCPM2 backup ({used.get('reason', '')})", flush=True)
+        if not a.version.endswith("-vox"):
+            a.version += "-vox"  # every backup draft is visible by name on B2
     timings = json.loads((narr_dir / "timings.json").read_text(encoding="utf-8"))
     work = out / "work"
     segs = out / "segs"
