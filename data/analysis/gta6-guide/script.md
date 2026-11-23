@@ -26,7 +26,7 @@ This is how a new player keeps their cash, keeps their cars and stays off the po
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p10.mp4 @ 137.5-145 (the unowned-items notice in the night kitchen, blur the gore (teaser blur, notice unreadable)), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p09.mp4 @ 30-33.6 (dusk drive, cinematic camera)]
 
-And there is a third way to lose your stuff, without dying at all. I saw that warning three times in one night, and I will show you near the end.
+And there is a third way to lose your stuff, without dying at all. I got that warning after loading a save, and I will show you near the end.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p07.mp4 @ 236-238.1 (night chase on the causeway, sparks), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 0.2-2.3 (respray colour swatches on the Elegy), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p09.mp4 @ 163-165.1 (Lucia and Tootsie the cow in the orchard)]
 
@@ -48,9 +48,9 @@ Tip number two. You deposit at an ATM, in person. A lot of new players think the
 
 ### Tip 3: Jason and Lucia share one account
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 182-188.5 (Transactions list with the Coastal Auto Care debits; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p07.mp4 @ 20-26 (Jason's Ganado in the mod shop, body parts menu), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 194-200.9 (same statement, scrolled; "crop": "none")]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 182-188.5 (Transactions list with the Coastal Auto Care debits; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 144-150 (transmission menu at Coastal Auto Care, bank figure falling from $7,066; paid from the bank, unlike the wing in p07, which was cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 194-200.9 (same statement, scrolled; "crop": "none")]
 
-Tip number three. Jason and Lucia share one bank account. Shop charges come out of that account too. I spent a pile of Jason's money at a mod shop. Then Lucia checked her ATM, and the same charges were on her statement. So money one of them banks is money the other one can spend.
+Tip number three. Jason and Lucia share one bank account. I spent a pile of Jason's bank money at Coastal Auto Care. Later, Lucia checked her ATM, and those charges were on her statement, with Brian's payments too. So money one of them banks is money the other one can spend.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4 @ 20-22.9 (Lucia crosses the motel lot)]
 
@@ -62,7 +62,7 @@ Our landlord was very understanding about it.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 196-203 (notice: You have some marked bills. Take them to a drop-off to sell for usable cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 272-278 (map tooltip Brian's Lockup, goods to sell, price list; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 82-90 (blue lockup with the marlin mural, Jason carries the duffel in), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 100-106.6 (Jason takes the bag in through the lockup door)]
 
-Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. A few minutes later, Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.
+Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Then Brian pays you. Until someone pays you, that bag is just a heavy backpack.
 
 ### Tip 5: Stow the stash bag and sell it soon
 
@@ -72,9 +72,9 @@ Tip number five. Stow that stash bag in your vehicle, and sell it soon. At your 
 
 ### Tip 6: Rob small stores for early cash
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p05.mp4 @ 46-58 (Tucker's farm stand hold-up, cash rising; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p05.mp4 @ 94.5-100 (notice: Tucker's Citrus Farms is currently closed due to a robbery; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4 @ 110-118 (tooltips: mugging people, robbing with your partner; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4 @ 162-168.2 (Avery Pawn counter, gun drawn (before the clerk frame at 202))]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p05.mp4 @ 46-58 (Lucia stops a robber at Tucker's farm stand and takes the clerk's offered cash, wallet $149 to $247; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p05.mp4 @ 94.5-100 (notice: Tucker's Citrus Farms is currently closed due to a robbery; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4 @ 110-118 (tooltips: mugging people, robbing with your partner; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4 @ 162-168.2 (Avery Pawn counter, gun drawn (before the clerk frame at 202))]
 
-Tip number six. For early cash, hold up small stores, but expect them to shut. I held up Tucker's farm stand and walked off with about a hundred dollars. Tucker's even has an ATM right by the till. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. A pawn shop robbery got me about two hundred. Small stores pay small money. So rob one, bank it, and keep moving.
+Tip number six. Small stores pay small money, and the game shuts them after. At Tucker's farm stand, someone else was already holding the place up. I stopped him. The clerk told me to take whatever I wanted, and I walked off with about a hundred dollars. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. I robbed a pawn shop myself, and it turned into a shootout. So rob small, bank it, and keep moving.
 
 ### 3:38 Chapter: The cops
 
@@ -86,7 +86,7 @@ Robbing stores brings the cops, so section two is how the police work in GTA 6.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 106.6-114 (Lucia sneaks through the yards, stars up), cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 114.45-116.45 (map: The cops are actively looking for you in this area, Appearance known, Outfit known (starts on the map fade-in); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 162-167.8 (HUD stars with the outfit (hanger) and face icons; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 236-240.8 (Lucia tries on a new top in the clothing store)]
 
-Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. Mine said appearance known, outfit known. Check that line every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.
+Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p11.mp4 @ 170-173.6 (Jason in the yellow shirt and Lucia in the wig walk down the stairs)]
 
@@ -104,7 +104,7 @@ Tip number eight. To lose the cops, break line of sight, then leave the red zone
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4 @ 275-283 (Lucia with the long gun behind a container, stars up), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 110-117 (sneaking along the junkyard fence), cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p04.mp4 @ 75-83.5 (crouched in the bushes by the bar deck)]
 
-Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through a whole junkyard like this, with the stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.
+Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through the bushes beside a waterfront restaurant like this, with four stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p04.mp4 @ 83.6-86.8 (Lucia crouched in the bushes by the bar deck)]
 
@@ -116,7 +116,7 @@ I kept a very low profile that night.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 176-186.5 (tow truck escape, stars still up (gone at 188); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 187.5-193 (stars gone, HUD shows money only; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 212-220 (into the clothing store, Buy a new outfit), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 257.5-265.5 (Denim cutoffs $12; "crop": "none")]
 
-Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia hid in a junkyard and slipped away in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.
+Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia slipped away in a tow truck, with the stars still flashing. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.
 
 ### Tip 11: Hats, glasses and splitting up
 
@@ -138,9 +138,9 @@ A respray only helps a car worth keeping. So section three is how to steal one a
 
 ### Tip 13: Check a car before you steal it
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p07.mp4 @ 33-39.5 (WAiNK panel: access key cloner, alarmed, tracker standard; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p01.mp4 @ 110-115 (tooltip: Focus to check a vehicle's security and if there's anything valuable in the trunk; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p07.mp4 @ 47-54.4 (scans across the motel car park: Declasse Impaler, then Vapid Montagne: locked, alarmed, tracker none; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 177.5-186.2 (Slim Jim into the Montagne XL, ends before 'And she's in' (186.3))]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p07.mp4 @ 33-39.5 (WAiNK panel: access key cloner, alarmed, tracker standard; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p01.mp4 @ 110-115 (tooltip: Focus to check a vehicle's security and if there's anything valuable in the trunk; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 103-106.5 (Moses's yard: Lucia scans the Vapid Montagne XL, panel locked, alarmed, tracker none; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 177.5-186.2 (Slim Jim into the Montagne XL, ends before 'And she's in' (186.3))]
 
-Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. One motel car park had a Vapid Montagne. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.
+Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. At Moses's yard, I scanned a Vapid Montagne XL. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 172-175 (Lucia walks to the brown Montagne XL)]
 
@@ -152,7 +152,7 @@ It took me years to learn this.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 121-129.7 (phone scan of Moses' Riata in the yard, tracker standard (no Moses face); "crop": "none")]
 
-Tip number fourteen. Early on, steal cars with no tracker. Your first car guy, Moses Watkins, says it flat. He does not do trackers.
+Tip number fourteen. Early on, steal cars with no tracker. My car guy, Moses, says it flat. He does not do trackers.
 
 [GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 73.6-75.85 s: "Moses: One thing I don't do is trackers." (words 73.82-75.64; next 'You boost' 76.30); gameplay HUD, crop sides]
 
@@ -168,7 +168,7 @@ Tip number fifteen. To keep a stolen car, register it. Registering swaps the pla
 
 [GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 255.6-259.8 s: "Moses: Just this once, I'll get your ride registered for you on the house." (words 255.80-259.58; next 'Call it' 260.98); "crop": "none"]
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 103-109 (Vapid Montagne XL scan card, cost to register $3,400; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 279-284.5 (prompt Keep current / Find another; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 29-39.9 (the registered red Elegy rolls out of Watkins at dusk)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 106.5-110 (Vapid Montagne XL scan card, cost to register $3,400; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p11.mp4 @ 279-284.5 (prompt Keep current / Find another; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 29-39.9 (the registered red Elegy rolls out of Watkins at dusk)]
 
 Guides say later ones cost more the pricier the car. A Vapid Montagne XL showed a cost to register of three thousand four hundred dollars. Moses even asks if you want to keep the car or find another. So use your free one on a car you love, not the first junker you grab. A free registration happens once. Spend it like it matters.
 
@@ -182,7 +182,7 @@ Tip number sixteen. Once a car is registered, it can come to you. The Scooter Br
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 2-8 (pulling into Watkins Auto Parts at night), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 21-27 (Hold then press to sell a vehicle to Moses, Sell Bogan (+$350); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 56.5-62.5 (Sell +$350 on the bank icon, then Sell for $350?; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4 @ 229.5-235.3 (tooltip: Moses won't take in any vehicles stolen close by; "crop": "none")]
 
-Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. That money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.
+Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. Guides say that money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4 @ 232-234.9 (the white Elegy pulls into Watkins Auto Parts)]
 
@@ -194,7 +194,7 @@ Every car I sell is completely legal.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p06.mp4 @ 172-176 (arrival at Coastal Auto Care), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 74-83 (engine menu, Stage 2 $1,800, bank b $9,766; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 153-162.3 (Nitrous Boost $5,000, bank figure down to $5,506; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p08.mp4 @ 118-126 (transmission menu, $1,500 and $600, one part at a time; "crop": "none")]
 
-Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five thousand five hundred. That took about a minute and a half. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
+Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.
 
 ### 9:31 Re-hook
 
@@ -230,7 +230,7 @@ Tip number twenty. Save your adrenaline for emergencies. The tooltip says adrena
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-14-10) p03.mp4 @ 152-163 (pull-ups, REPS 12/15 then 13/15; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 226-233 (punching bag, Workout Complete toast (reads level 3/4); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-19 12-31-51).mp4 @ 31.5-38.2 (toast: Strength Workout, you need time to recover; "crop": "none")]
 
-Tip number twenty-one. Work out, finish the full set, then rest. Every workout has a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.
+Tip number twenty-one. Work out, finish the full set, then rest. The strength workouts have a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.
 
 ### 10:54 Chapter: Side hustles
 
@@ -284,7 +284,7 @@ Tip number twenty-six. Save by hand from the pause menu. You do not need a safeh
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p02.mp4 @ 167.5-175 (notice: Unowned vehicles, weapons, or items that weren't stored during your last session were lost; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-19 12-50-26).mp4 @ 17.5-27.5 (tip: Unowned weapons are lost after you die in combat or get arrested; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 110-122 (Jason picks guns off the warehouse floor; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4 @ 72.5-81.6 (Stored vehicles: Lucia's '90 Elegy, current personal vehicle; "crop": "none")]
 
-Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning three times in one night, every time I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.
+Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning when I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-19 12-31-14).mp4 @ 12-14.6 (the pet snake in the terrarium)]
 

@@ -61,8 +61,8 @@
   },
   {
    "type": "narr",
-   "text": "And there is a third way to lose your stuff, without dying at all. I saw that warning three times in one night, and I will show you near the end.",
-   "tts": "And there is a third way to lose your stuff, without dying at all. I saw that warning three times in one night, and I will show you near the end.",
+   "text": "And there is a third way to lose your stuff, without dying at all. I got that warning after loading a save, and I will show you near the end.",
+   "tts": "And there is a third way to lose your stuff, without dying at all. I got that warning after loading a save, and I will show you near the end.",
    "shots": [
     {
      "clip": 1016,
@@ -166,8 +166,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number three. Jason and Lucia share one bank account. Shop charges come out of that account too. I spent a pile of Jason's money at a mod shop. Then Lucia checked her ATM, and the same charges were on her statement. So money one of them banks is money the other one can spend.",
-   "tts": "Tip number three. Jason and Lucia share one bank account. Shop charges come out of that account too. I spent a pile of Jason's money at a mod shop. Then Lucia checked her ATM, and the same charges were on her statement. So money one of them banks is money the other one can spend.",
+   "text": "Tip number three. Jason and Lucia share one bank account. I spent a pile of Jason's bank money at Coastal Auto Care. Later, Lucia checked her ATM, and those charges were on her statement, with Brian's payments too. So money one of them banks is money the other one can spend.",
+   "tts": "Tip number three. Jason and Lucia share one bank account. I spent a pile of Jason's bank money at Coastal Auto Care. Later, Lucia checked her ATM, and those charges were on her statement, with Brian's payments too. So money one of them banks is money the other one can spend.",
    "shots": [
     {
      "clip": 1023,
@@ -176,9 +176,10 @@
      "crop": "none"
     },
     {
-     "clip": 1013,
-     "in": 20.0,
-     "out": 26.0
+     "clip": 1014,
+     "in": 144.0,
+     "out": 150.0,
+     "crop": "none"
     },
     {
      "clip": 1023,
@@ -215,8 +216,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. A few minutes later, Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
-   "tts": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. A few minutes later, Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
+   "text": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Then Brian pays you. Until someone pays you, that bag is just a heavy backpack.",
+   "tts": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Then Brian pays you. Until someone pays you, that bag is just a heavy backpack.",
    "shots": [
     {
      "clip": 1007,
@@ -272,8 +273,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number six. For early cash, hold up small stores, but expect them to shut. I held up Tucker's farm stand and walked off with about a hundred dollars. Tucker's even has an ATM right by the till. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. A pawn shop robbery got me about two hundred. Small stores pay small money. So rob one, bank it, and keep moving.",
-   "tts": "Tip number six. For early cash, hold up small stores, but expect them to shut. I held up Tucker's farm stand and walked off with about a hundred dollars. Tucker's even has an ATM right by the till. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. A pawn shop robbery got me about two hundred. Small stores pay small money. So rob one, bank it, and keep moving.",
+   "text": "Tip number six. Small stores pay small money, and the game shuts them after. At Tucker's farm stand, someone else was already holding the place up. I stopped him. The clerk told me to take whatever I wanted, and I walked off with about a hundred dollars. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. I robbed a pawn shop myself, and it turned into a shootout. So rob small, bank it, and keep moving.",
+   "tts": "Tip number six. Small stores pay small money, and the game shuts them after. At Tucker's farm stand, someone else was already holding the place up. I stopped him. The clerk told me to take whatever I wanted, and I walked off with about a hundred dollars. Right after, the game told me Tucker's Citrus Farms was closed due to a robbery. The game also tells you that you can mug people, and rob places with your partner. I robbed a pawn shop myself, and it turned into a shootout. So rob small, bank it, and keep moving.",
    "shots": [
     {
      "clip": 1026,
@@ -319,8 +320,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. Mine said appearance known, outfit known. Check that line every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
-   "tts": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. Mine said appearance known, outfit known. Check that line every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "text": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "tts": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
    "shots": [
     {
      "clip": 1020,
@@ -410,8 +411,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through a whole junkyard like this, with the stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
-   "tts": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through a whole junkyard like this, with the stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
+   "text": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through the bushes beside a waterfront restaurant like this, with four stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
+   "tts": "Tip number nine. When you cannot outrun them, hide. Crouch in bushes, or behind a shipping container or a dumpster. Then stay hidden until the search moves past. Lucia crept through the bushes beside a waterfront restaurant like this, with four stars still up. One catch. Guides say that if police dogs show up, you should keep moving, or they will hunt you down. Out of sight is the goal.",
    "shots": [
     {
      "clip": 1030,
@@ -457,8 +458,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia hid in a junkyard and slipped away in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
-   "tts": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia hid in a junkyard and slipped away in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "text": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia slipped away in a tow truck, with the stars still flashing. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "tts": "Tip number ten. Change your outfit, but only once you are out of sight. Guides say a new outfit clears the outfit known line on your map. But that only works once you have broken line of sight. Lucia slipped away in a tow truck, with the stars still flashing. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. That is a cheap disguise. Three separate guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
    "shots": [
     {
      "clip": 1031,
@@ -562,8 +563,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. One motel car park had a Vapid Montagne. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
-   "tts": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. One motel car park had a Vapid Montagne. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
+   "text": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. At Moses's yard, I scanned a Vapid Montagne XL. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
+   "tts": "Tip number thirteen. Check a car before you steal it. Scan a parked car with the WAiNK app, and a panel shows its lock, its alarm and its tracker. The game also says Focus shows if there is anything valuable in the trunk. At Moses's yard, I scanned a Vapid Montagne XL. Locked, alarmed, tracker none. No tracker is what matters. That is the one you want. Locked cars open with a Slim Jim, and Moses teaches you how.",
    "shots": [
     {
      "clip": 1021,
@@ -578,9 +579,9 @@
      "crop": "none"
     },
     {
-     "clip": 1021,
-     "in": 47.0,
-     "out": 54.4,
+     "clip": 1035,
+     "in": 103.0,
+     "out": 106.5,
      "crop": "none"
     },
     {
@@ -617,8 +618,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number fourteen. Early on, steal cars with no tracker. Your first car guy, Moses Watkins, says it flat. He does not do trackers.",
-   "tts": "Tip number fourteen. Early on, steal cars with no tracker. Your first car guy, Moses Watkins, says it flat. He does not do trackers.",
+   "text": "Tip number fourteen. Early on, steal cars with no tracker. My car guy, Moses, says it flat. He does not do trackers.",
+   "tts": "Tip number fourteen. Early on, steal cars with no tracker. My car guy, Moses, says it flat. He does not do trackers.",
    "shots": [
     {
      "clip": 1035,
@@ -696,8 +697,8 @@
    "shots": [
     {
      "clip": 1035,
-     "in": 103.0,
-     "out": 109.0,
+     "in": 106.5,
+     "out": 110.0,
      "crop": "none"
     },
     {
@@ -738,8 +739,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. That money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
-   "tts": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. That money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
+   "text": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. Guides say that money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
+   "tts": "Tip number seventeen. Sell your spare untracked cars to Moses. Pull into his shop, hold the button, and sell. Moses offered me three hundred and fifty dollars for a Bravado Bogan. Guides say that money goes straight into your bank, so no ATM run is needed. But read his rule first. Moses will not take a car you stole close by. So grab one across town, then drive it in.",
    "shots": [
     {
      "clip": 1038,
@@ -793,8 +794,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five thousand five hundred. That took about a minute and a half. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
-   "tts": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five thousand five hundred. That took about a minute and a half. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
+   "text": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
+   "tts": "Tip number eighteen. Mod shops are expensive, so price things up before you buy. At Coastal Auto Care, engine stage two is eighteen hundred dollars. Nitrous is five thousand. Mod shops take the money straight from your bank. My bank balance fell from about nine thousand eight hundred to about five hundred in under two minutes. Open every menu, check the price, and buy one part at a time. And remember tip number three. Lucia saw every one of those charges.",
    "shots": [
     {
      "clip": 1012,
@@ -922,8 +923,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number twenty-one. Work out, finish the full set, then rest. Every workout has a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
-   "tts": "Tip number twenty-one. Work out, finish the full set, then rest. Every workout has a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
+   "text": "Tip number twenty-one. Work out, finish the full set, then rest. The strength workouts have a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
+   "tts": "Tip number twenty-one. Work out, finish the full set, then rest. The strength workouts have a rep counter, like thirteen out of fifteen pull-ups. See it through to the end. Jason's level went up the moment his session said workout complete. His workout reached level three of four. After a session, the game tells you that you need time to recover. So train, go do a job, and come back later.",
    "shots": [
     {
      "clip": 1006,
@@ -1149,8 +1150,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning three times in one night, every time I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
-   "tts": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning three times in one night, every time I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
+   "text": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning when I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
+   "tts": "Tip number twenty-seven. This is the third way to lose your stuff that I promised you. Anything you do not own, or did not store, is gone when you load back in. The game says it plainly. Unowned vehicles, weapons or items you did not store during your last session were lost. I saw that warning when I loaded back into Jason's house. Guns you pick up off the floor are temporary. Guides say guns you buy are yours to keep. Cars work the same way. If a car is not registered, it is not yours. Own it, store it, or say goodbye to it.",
    "shots": [
     {
      "clip": 1008,
