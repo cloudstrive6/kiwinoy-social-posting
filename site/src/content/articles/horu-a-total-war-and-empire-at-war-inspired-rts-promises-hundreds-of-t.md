@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "PCGamer"
 sourceUrl: "https://www.pcgamer.com/games/rts/this-rts-inspired-by-star-wars-empire-at-war-promises-colossal-space-encounters-and-planetary-battles-with-hundreds-of-thousands-of-units/"
+rejected: true
 ---
 
 A new space strategy game is aiming for scale on an apocalyptic level. **Horu**, an in-development real-time strategy game, has revealed a trailer promising **"hundreds of thousands of units"** on screen at once, with clouds of spaceships trading laser fire and oceans of infantry being obliterated by artillery.

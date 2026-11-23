@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/blade-runner-2099-triple-a-talks"
+rejected: true
 ---
 
 A new **Blade Runner** video game may be on the horizon, and it could be a big one. **Andrew Kosove** and **Broderick Johnson**, executive producers on the upcoming **Blade Runner 2099** TV miniseries and co-CEOs of **Alcon Entertainment**, which owns the Blade Runner IP, say they have considered adapting the franchise into a game. Should it happen, they say it would target **"triple-A"** scope.
