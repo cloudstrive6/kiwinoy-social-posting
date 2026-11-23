@@ -756,6 +756,8 @@ def main() -> int:
     game = a.game
     d = ROOT / "data/analysis" / game
     edl = json.loads((d / "edl.json").read_text(encoding="utf-8"))
+    import claims_check  # no render of a script whose footage claims are false or unchecked (2026-11-23)
+    claims_check.gate(game, edl)
     gfx_specs = gfx.load_specs(d / "gfx.json")
     tails = gfx_specs.get("beat_tail", {})
     out = ROOT / "output/analysis" / game

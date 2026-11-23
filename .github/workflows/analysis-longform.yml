@@ -19,6 +19,9 @@ name: Analysis long-form (manual)
 #   voice-backup-deploy: puts the Guide C reference files (B2 voice-refs/guide-c/) on the Modal Volume
 #           kg-voxcpm2, deploys modal_apps/voxcpm2_narrator.py and downloads the VoxCPM2 weights (2026-11-23).
 #   voice-backup-parity: the 179-word test paragraph through the Modal backup, scored against take 1.
+#   claims: every narration claim about the footage judged against that footage (tools/claims_check.py,
+#           Claude on the subscription; report in the artifact). narrate and render run it themselves when a
+#           Guide C script has unchecked paragraphs, and stop before any credits on a false or unclear claim.
 # "narrator" (narrate and render, 2026-11-23): auto (default since Bryce signed off the dry run, 2026-11-23);
 #   elevenlabs stops when credits are short; voxcpm2
 #   forces the VoxCPM2 Guide C clone on Modal; auto uses it for a whole video only when credits are short
@@ -27,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render, voice-backup-deploy, voice-backup-parity)"
+        description: "Step to run (inventory, frames, transcribe, audition, voice-setup, voice-design, voice-brief, voice-ab, narrate, render, voice-backup-deploy, voice-backup-parity, claims)"
         required: true
         default: "inventory"
       game:
@@ -169,7 +172,15 @@ jobs:
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
+          if python tools/claims_check.py "$GAME" --needs; then
+            # unchecked paragraphs: judge them against the footage first (2026-11-23); the gate in
+            # analysis_narrate.py then stops before any credits if a footage claim is false or unclear
+            npm install -g @anthropic-ai/claude-code
+            pip install --quiet "faster-whisper==1.1.1"
+            python tools/claims_check.py "$GAME" || true
+          fi
           if [ -n "$KG_NARRATOR" ] && [ "$KG_NARRATOR" != "elevenlabs" ]; then
             # the backup's per-paragraph QC (Whisper) and its Modal client
             pip install --quiet "faster-whisper==1.1.1" "modal==1.6.4"
@@ -216,6 +227,18 @@ jobs:
         with:
           path: output/analysis/${{ github.event.inputs.game }}/segs
           key: segs-${{ github.event.inputs.game }}-${{ github.run_id }}
+      - name: Claims check against the footage (claims, 2026-11-23)
+        if: ${{ github.event.inputs.step == 'claims' }}
+        env:
+          GAME: ${{ github.event.inputs.game }}
+          ONLY: ${{ github.event.inputs.only }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          pip install --quiet "faster-whisper==1.1.1"
+          python tools/claims_check.py "$GAME" --only "$ONLY"
       - name: Deploy the VoxCPM2 backup narrator to Modal (voice-backup-deploy, 2026-11-23)
         if: ${{ github.event.inputs.step == 'voice-backup-deploy' }}
         env:

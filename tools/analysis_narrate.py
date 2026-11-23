@@ -273,6 +273,8 @@ def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reaso
 def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
+    import claims_check  # every footage claim checked against the footage before credits are spent (2026-11-23)
+    claims_check.gate(game, edl)
     nar = edl.get("narrator")
     # Backup narrator (Bryce, 2026-11-23): auto is the default since he signed off the dry-run draft (2026-11-23);
     # elevenlabs stops when credits are short;

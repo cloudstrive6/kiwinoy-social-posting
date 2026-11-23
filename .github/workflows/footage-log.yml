@@ -1,0 +1,52 @@
+name: Footage log (what happens in every clip)
+
+# 2026-11-23, Bryce: "You need to watch/analyze more the scenes and really know each of the
+# videos/footage/scenes/gameplay well", and it must hold when his PC is off. Every clip in B2
+# cutscenes/<game>/ and footage/<game>/ gets a scene-by-scene log (timed dialogue, frames every 2 s,
+# who did what, notices, wallet changes) written by Claude on the subscription token, saved to B2
+# footage-log/. Writers and tools/claims_check.py read it. Read-only on footage; never posts.
+
+on:
+  schedule:
+    - cron: "41 */3 * * *"     # every 3 hours; a few clips per run until every clip has a log
+  workflow_dispatch:
+    inputs:
+      games:
+        description: "space-separated game keys to log"
+        required: false
+        default: "gta6"
+      max:
+        description: "clips this run"
+        required: false
+        default: "6"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kiwinoy-footage-log
+  cancel-in-progress: false
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GAMES: ${{ github.event.inputs.games || 'gta6' }}
+      MAX: ${{ github.event.inputs.max || '6' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install
+        run: |
+          pip install -r requirements.txt
+          pip install --quiet "faster-whisper==1.1.1"
+          npm install -g @anthropic-ai/claude-code
+      - name: Log clips without a log
+        run: python tools/footage_log.py $GAMES --max "$MAX"
