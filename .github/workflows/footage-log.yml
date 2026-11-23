@@ -45,6 +45,7 @@ jobs:
           cache: "pip"
       - name: Install
         run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg
           pip install -r requirements.txt
           pip install --quiet "faster-whisper==1.1.1"
           npm install -g @anthropic-ai/claude-code
