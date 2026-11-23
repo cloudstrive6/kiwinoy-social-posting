@@ -693,7 +693,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         'Return ONLY JSON: {"ok": true or false, "issues": "one short reason if BAD, else empty"}'
     )
     try:
-        d = extract_json(_text(prompt, timeout=200))
+        # Subscription only (Bryce, 2026-11-23: "yes subscription only"): never the paid Anthropic API or
+        # OpenAI. If the subscription cannot run the check, the card is refused below, not posted unchecked.
+        from core import claude_code
+        d = extract_json(claude_code.run(prompt, timeout=200, paid_fallback=False))
         return d.get("ok") is True, str(d.get("issues", "")).strip()  # "false" as text is not a pass
     except Exception as e:
         # Fail CLOSED (2026-11-23, footage-truth review): a check that could not run used to pass the

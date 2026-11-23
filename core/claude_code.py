@@ -121,6 +121,7 @@ def run(
     timeout: int = 300,
     allowed_tools: Optional[str] = None,
     api_fallback_model: Optional[str] = None,
+    paid_fallback: bool = True,
 ) -> str:
     """Run a one-shot headless Claude prompt and return the text result.
 
@@ -148,7 +149,7 @@ def run(
     attempts: list[tuple[str, dict]] = []
     if _oauth_token():
         attempts.append(("subscription token", _oauth_env()))
-    if _anthropic_key():
+    if _anthropic_key() and paid_fallback:  # paid_fallback=False: subscription only (fact checks, 2026-11-23)
         attempts.append(("Anthropic API key (fallback)", _apikey_env()))
     if not attempts:
         # Dev convenience: rely on an existing local `claude` login.
