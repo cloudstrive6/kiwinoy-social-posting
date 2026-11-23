@@ -27,6 +27,12 @@ footages"). Add a fact only with the clip and time that shows it.
 - Jason and Lucia share one bank account: Lucia's ATM statement lists Jason's Coastal Auto Care charges and Brian's
   payouts (`23-37-28 p01.mp4` about 3:10).
 
+## On-screen text worth quoting
+- Pause map during a search: "The cops are actively looking for you in this area. APPEARANCE KNOWN / OUTFIT
+  KNOWN" (`01-00-16 p10.mp4` 1:09; HUD four stars with the person and hanger icons).
+- Brian's text after a stash sale: "Paid you for those bags you stashed at the lockup. Little less but that's how
+  it's gotta be." with +$9,840 into the bank (`21-42-41 p04.mp4` 0:40; bank $10,812).
+
 ## Dates
 - KG's first GTA 6 recordings are dated 2026-11-19 (launch day); the file times are 24-hour local times (for
   example 12-47-53 is 12:47 pm).

@@ -65,10 +65,10 @@ Our landlord was very understanding about it.
 
 ### Tip 4: Stolen goods are not money yet
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 196-203 (notice: You have some marked bills. Take them to a drop-off to sell for usable cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 272-278 (map tooltip Brian's Lockup, goods to sell, price list; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 82-90 (blue lockup with the marlin mural, Jason carries the duffel in), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 100-106.6 (Jason takes the bag in through the lockup door)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p01.mp4 @ 196-203 (notice: You have some marked bills. Take them to a drop-off to sell for usable cash; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p05.mp4 @ 272-278 (map tooltip Brian's Lockup, goods to sell, price list; "crop": "none"; push in, a still menu would read as a freeze), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 82-90 (blue lockup with the marlin mural, Jason carries the duffel in), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p03.mp4 @ 100-106.6 (Jason takes the bag in through the lockup door), cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p04.mp4 @ 37-44 (Brian's text: "Paid you for those bags you stashed at the lockup", bank +$9,840; "crop": "none")]
 
 [GFX tag "TIP 4: STOLEN GOODS ARE NOT MONEY YET"; counter $8,160 "SELL OFFER FOR MY STASH" on "eight thousand one hundred"]
-Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Until someone pays you, that bag is just a heavy backpack.
+Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Then Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.
 
 ### Tip 5: Stow the stash bag and sell it soon
 
@@ -93,10 +93,10 @@ Robbing stores brings the cops, so section two is how the police work in GTA 6.
 
 ### Tip 7: The police remember what you look like
 
-[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 106.6-114 (Lucia sneaks through the yards, stars up), cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 114.45-116.45 (map: The cops are actively looking for you in this area, Appearance known, Outfit known (starts on the map fade-in); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 162-167.8 (HUD stars with the outfit (hanger) and face icons; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 236-240.8 (Lucia tries on a new top in the clothing store)]
+[CLIPS cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 106.6-114 (Lucia sneaks through the yards, stars up), cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p06.mp4 @ 114.45-116.45 (map: The cops are actively looking for you in this area, Appearance known, Outfit known (starts on the map fade-in); "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 162-167.8 (HUD stars with the outfit (hanger) and face icons; "crop": "none"), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4 @ 236-240.8 (Lucia tries on a new top in the clothing store), cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4 @ 66-72.5 (pause map: The cops are actively looking for you in this area, APPEARANCE KNOWN, OUTFIT KNOWN; "crop": "none"; push in)]
 
 [GFX tag "TIP 7: THEY REMEMBER YOUR LOOK"; slam "YOUR OUTFIT IS EVIDENCE." on "your outfit is evidence"]
-Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.
+Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. The map spelled it out: appearance known, outfit known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.
 
 [CLIPS cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p11.mp4 @ 170-173.6 (Jason in the yellow shirt and Lucia in the wig walk down the stairs)]
 

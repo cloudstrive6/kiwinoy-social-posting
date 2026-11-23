@@ -226,8 +226,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Until someone pays you, that bag is just a heavy backpack.",
-   "tts": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Until someone pays you, that bag is just a heavy backpack.",
+   "text": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Then Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
+   "tts": "Tip number four. Stolen goods are not money yet. When you loot narcotics, jewelry or marked bills, they go into a stash bag. The game tells you straight. Take them to a drop-off to sell for usable cash. Early on, that drop-off is Brian's Lockup. Look for the blue building with the marlin mural. Carry the bag inside. Inside, the sell prompt offered eight thousand one hundred and sixty dollars for my stash. Then Brian texts you that he paid. Until someone pays you, that bag is just a heavy backpack.",
    "shots": [
     {
      "clip": 1007,
@@ -251,6 +251,12 @@
      "clip": 1009,
      "in": 100.0,
      "out": 106.6
+    },
+    {
+     "clip": 1010,
+     "in": 37.0,
+     "out": 44.0,
+     "crop": "none"
     }
    ],
    "gfx": [
@@ -339,8 +345,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
-   "tts": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. Guides say those mean outfit known and appearance known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "text": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. The map spelled it out: appearance known, outfit known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
+   "tts": "Tip number seven. The police remember what you look like. Open the map after a crime and read the search area. When my stars went up, two red icons showed under them, a clothes hanger and a person. The map spelled it out: appearance known, outfit known. Check them every time the stars go up. So hiding is only half the job. You also have to stop looking like you. In Leonida, your outfit is evidence.",
    "shots": [
     {
      "clip": 1020,
@@ -363,6 +369,13 @@
      "clip": 1031,
      "in": 236.0,
      "out": 240.8
+    },
+    {
+     "clip": 1034,
+     "in": 66.0,
+     "out": 72.5,
+     "crop": "none",
+     "push": true
     }
    ],
    "gfx": [
