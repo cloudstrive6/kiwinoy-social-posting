@@ -30,7 +30,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G01"
+   ],
    "chapter": "New to GTA 6? Start here",
    "id": "b000"
   },
@@ -56,7 +58,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G02"
+   ],
    "id": "b001"
   },
   {
@@ -130,7 +134,9 @@
      "out": 155.0
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G03"
+   ],
    "chapter": "Money",
    "id": "b004"
   },
@@ -146,7 +152,7 @@
     },
     {
      "clip": 1020,
-     "in": 168.0,
+     "in": 168.5,
      "out": 176.5
     },
     {
@@ -161,7 +167,9 @@
      "out": 144.0
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G04"
+   ],
    "id": "b005"
   },
   {
@@ -188,7 +196,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G05"
+   ],
    "id": "b006"
   },
   {
@@ -229,7 +239,8 @@
      "clip": 1011,
      "in": 272.0,
      "out": 278.0,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1009,
@@ -242,7 +253,9 @@
      "out": 106.6
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G06"
+   ],
    "id": "b009"
   },
   {
@@ -268,7 +281,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G07"
+   ],
    "id": "b010"
   },
   {
@@ -300,7 +315,9 @@
      "out": 168.2
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G08"
+   ],
    "id": "b011"
   },
   {
@@ -314,7 +331,9 @@
      "out": 206.0
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G09"
+   ],
    "chapter": "The cops",
    "id": "b012"
   },
@@ -346,7 +365,9 @@
      "out": 240.8
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G10"
+   ],
    "id": "b013"
   },
   {
@@ -406,7 +427,9 @@
      "out": 103.1
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G11"
+   ],
    "id": "b016"
   },
   {
@@ -430,7 +453,9 @@
      "out": 83.5
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G12"
+   ],
    "id": "b017"
   },
   {
@@ -485,7 +510,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G13"
+   ],
    "id": "b020"
   },
   {
@@ -511,7 +538,9 @@
      "out": 145.3
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G14"
+   ],
    "id": "b021"
   },
   {
@@ -543,7 +572,9 @@
      "out": 293.8
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G15"
+   ],
    "id": "b022"
   },
   {
@@ -557,7 +588,9 @@
      "out": 43.0
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G16"
+   ],
    "chapter": "Cars",
    "id": "b023"
   },
@@ -590,7 +623,9 @@
      "out": 186.2
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G17"
+   ],
    "id": "b024"
   },
   {
@@ -628,7 +663,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G18"
+   ],
    "id": "b027"
   },
   {
@@ -649,7 +686,8 @@
      "clip": 1036,
      "in": 196.0,
      "out": 202.2,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1035,
@@ -678,7 +716,9 @@
      "out": 14.1
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G19"
+   ],
    "id": "b030"
   },
   {
@@ -713,7 +753,9 @@
      "out": 39.9
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G20"
+   ],
    "id": "b032"
   },
   {
@@ -734,7 +776,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G21"
+   ],
    "id": "b033"
   },
   {
@@ -757,7 +801,8 @@
      "clip": 1038,
      "in": 56.5,
      "out": 62.5,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1036,
@@ -766,7 +811,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G22"
+   ],
    "id": "b034"
   },
   {
@@ -821,7 +868,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G23"
+   ],
    "id": "b037"
   },
   {
@@ -855,7 +904,9 @@
      "out": 120.5
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G24"
+   ],
    "chapter": "Health and stats",
    "id": "b039"
   },
@@ -875,7 +926,9 @@
      "out": 240.6
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G25"
+   ],
    "id": "b040"
   },
   {
@@ -918,7 +971,9 @@
      "out": 160.7
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G26"
+   ],
    "id": "b043"
   },
   {
@@ -945,7 +1000,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G27"
+   ],
    "id": "b044"
   },
   {
@@ -959,7 +1016,9 @@
      "out": 135.3
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G28"
+   ],
    "chapter": "Side hustles",
    "id": "b045"
   },
@@ -972,7 +1031,8 @@
      "clip": 1023,
      "in": 74.0,
      "out": 81.6,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1012,
@@ -992,7 +1052,9 @@
      "out": 282.4
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G29"
+   ],
    "id": "b046"
   },
   {
@@ -1019,7 +1081,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G30"
+   ],
    "id": "b047"
   },
   {
@@ -1035,7 +1099,7 @@
     },
     {
      "clip": 1020,
-     "in": 126.2,
+     "in": 126.5,
      "out": 129.9,
      "crop": "none"
     },
@@ -1051,7 +1115,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G31"
+   ],
    "id": "b048"
   },
   {
@@ -1075,7 +1141,9 @@
      "out": 248.6
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G32"
+   ],
    "id": "b049"
   },
   {
@@ -1112,7 +1180,9 @@
      "out": 248.9
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G33"
+   ],
    "chapter": "Keep what you earn",
    "id": "b052"
   },
@@ -1145,7 +1215,9 @@
      "crop": "none"
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G34"
+   ],
    "id": "b053"
   },
   {
@@ -1175,10 +1247,13 @@
      "clip": 1038,
      "in": 72.5,
      "out": 81.6,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G35"
+   ],
    "id": "b054"
   },
   {
@@ -1227,13 +1302,15 @@
      "clip": 1038,
      "in": 39.2,
      "out": 47.5,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1038,
      "in": 85.0,
      "out": 90.5,
-     "crop": "none"
+     "crop": "none",
+     "push": true
     },
     {
      "clip": 1033,
@@ -1253,7 +1330,9 @@
      "out": 130.2
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G36"
+   ],
    "chapter": "Top five recap",
    "id": "b058"
   },
@@ -1268,9 +1347,160 @@
      "out": 32.4
     }
    ],
-   "gfx": [],
+   "gfx": [
+    "G37"
+   ],
    "id": "b059"
   }
  ],
- "gfx_cues": []
+ "gfx_cues": [
+  {
+   "id": "G01",
+   "cue": "lower \"GTA 6: THE BEGINNER'S GUIDE\"; counter $531 \"LOST IN ONE DEATH\" on \"five hundred and thirty-one\""
+  },
+  {
+   "id": "G02",
+   "cue": "caption \"27 TIPS FROM MY FIRST WEEK IN LEONIDA\""
+  },
+  {
+   "id": "G03",
+   "cue": "chapter 1 \"MONEY\"; tag \"TIP 1: BANK YOUR CASH\"; counter $0 \"WALLET AFTER ONE DEATH\" on \"my HUD said zero\""
+  },
+  {
+   "id": "G04",
+   "cue": "tag \"TIP 2: DEPOSIT AT AN ATM, IN PERSON\""
+  },
+  {
+   "id": "G05",
+   "cue": "tag \"TIP 3: ONE SHARED BANK ACCOUNT\""
+  },
+  {
+   "id": "G06",
+   "cue": "tag \"TIP 4: STOLEN GOODS ARE NOT MONEY YET\"; counter $8,160 \"SELL OFFER FOR MY STASH\" on \"eight thousand one hundred\""
+  },
+  {
+   "id": "G07",
+   "cue": "tag \"TIP 5: STOW THE BAG, SELL IT SOON\""
+  },
+  {
+   "id": "G08",
+   "cue": "tag \"TIP 6: SMALL STORES, SMALL MONEY\"; counter $98 \"THE CLERK'S REWARD AT TUCKER'S\" on \"about a hundred dollars\""
+  },
+  {
+   "id": "G09",
+   "cue": "chapter 2 \"THE COPS\""
+  },
+  {
+   "id": "G10",
+   "cue": "tag \"TIP 7: THEY REMEMBER YOUR LOOK\"; slam \"YOUR OUTFIT IS EVIDENCE.\" on \"your outfit is evidence\""
+  },
+  {
+   "id": "G11",
+   "cue": "tag \"TIP 8: BREAK LINE OF SIGHT\""
+  },
+  {
+   "id": "G12",
+   "cue": "tag \"TIP 9: HIDE UNTIL IT PASSES\""
+  },
+  {
+   "id": "G13",
+   "cue": "tag \"TIP 10: CHANGE CLOTHES OUT OF SIGHT\"; counter $12 \"DENIM CUTOFFS\" on \"twelve dollars\""
+  },
+  {
+   "id": "G14",
+   "cue": "tag \"TIP 11: HATS, GLASSES, SPLIT UP\""
+  },
+  {
+   "id": "G15",
+   "cue": "tag \"TIP 12: NO RESPRAY MID CHASE\""
+  },
+  {
+   "id": "G16",
+   "cue": "chapter 3 \"CARS\""
+  },
+  {
+   "id": "G17",
+   "cue": "tag \"TIP 13: SCAN BEFORE YOU STEAL\""
+  },
+  {
+   "id": "G18",
+   "cue": "tag \"TIP 14: NO TRACKER, EARLY ON\""
+  },
+  {
+   "id": "G19",
+   "cue": "tag \"TIP 15: REGISTER IT TO KEEP IT\""
+  },
+  {
+   "id": "G20",
+   "cue": "counter $3,400 \"COST TO REGISTER\" on \"three thousand four hundred\""
+  },
+  {
+   "id": "G21",
+   "cue": "tag \"TIP 16: GET YOUR CAR DELIVERED\""
+  },
+  {
+   "id": "G22",
+   "cue": "tag \"TIP 17: SELL SPARES TO MOSES\"; counter $350 \"MOSES'S OFFER FOR A BOGAN\" on \"three hundred and fifty\""
+  },
+  {
+   "id": "G23",
+   "cue": "tag \"TIP 18: PRICE UP MODS FIRST\"; counter $506 \"LEFT IN THE BANK\" on \"to about five hundred\""
+  },
+  {
+   "id": "G24",
+   "cue": "chapter 4 \"HEALTH AND STATS\""
+  },
+  {
+   "id": "G25",
+   "cue": "tag \"TIP 19: EAT AND DRINK TO HEAL\""
+  },
+  {
+   "id": "G26",
+   "cue": "tag \"TIP 20: SAVE ADRENALINE\""
+  },
+  {
+   "id": "G27",
+   "cue": "tag \"TIP 21: FINISH THE FULL WORKOUT\"; counter 13/15 \"PULL-UPS\" on \"thirteen out of fifteen\""
+  },
+  {
+   "id": "G28",
+   "cue": "chapter 5 \"SIDE HUSTLES\""
+  },
+  {
+   "id": "G29",
+   "cue": "tag \"TIP 22: OPEN THE PAUSE MAP\""
+  },
+  {
+   "id": "G30",
+   "cue": "tag \"TIP 23: SEARCH EVERYTHING\""
+  },
+  {
+   "id": "G31",
+   "cue": "tag \"TIP 24: SELL CARDS AT PAWN SHOPS\""
+  },
+  {
+   "id": "G32",
+   "cue": "tag \"TIP 25: HELP STRANGERS\""
+  },
+  {
+   "id": "G33",
+   "cue": "chapter 6 \"KEEP WHAT YOU EARN\""
+  },
+  {
+   "id": "G34",
+   "cue": "tag \"TIP 26: SAVE BY HAND\""
+  },
+  {
+   "id": "G35",
+   "cue": "tag \"TIP 27: OWN IT OR STORE IT\""
+  },
+  {
+   "id": "G36",
+   "cue": "chapter 7 \"TOP FIVE RECAP\""
+  },
+  {
+   "id": "G37",
+   "cue": "endscreen \"MORE GTA 6 GUIDES\""
+  }
+ ]
 }

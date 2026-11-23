@@ -1,0 +1,62 @@
+{
+ "note": "Music bed for the GTA 6 beginners guide (2026-11-23), epic cinematic orchestra chosen per chapter by the agent (Bryce's rule, 2026-11-12), from the three tracks on private B2: Last Dawn (theme) for the cold open, cars, side hustles and the top five; Red (home) for money, health and keeping what you earn; Epic and Dramatic Trailer Music (tension) for the cops. Never the game's own score.",
+ "tracks_note": "B2 keys in the private bucket (licensed tracks stay out of the public repo).",
+ "tracks": {
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "home": "music/analysis/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -23,
+ "under_game_db": -30,
+ "xfade": 2.5,
+ "sections": [
+  {
+   "from": "b000",
+   "track": "theme",
+   "offset": 0,
+   "gain_db": -22
+  },
+  {
+   "from": "b004",
+   "track": "home",
+   "offset": 0
+  },
+  {
+   "from": "b012",
+   "track": "tension",
+   "offset": 0,
+   "gain_db": -25
+  },
+  {
+   "from": "b023",
+   "track": "theme",
+   "offset": 40
+  },
+  {
+   "from": "b039",
+   "track": "home",
+   "offset": 30
+  },
+  {
+   "from": "b045",
+   "track": "theme",
+   "offset": 78,
+   "gain_db": -22
+  },
+  {
+   "from": "b052",
+   "track": "home",
+   "offset": 60
+  },
+  {
+   "from": "b058",
+   "track": "theme",
+   "offset": 120,
+   "gain_db": -22
+  }
+ ]
+}

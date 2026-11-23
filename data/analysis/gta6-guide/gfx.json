@@ -1,0 +1,424 @@
+{
+ "note": "Graphics for the GTA 6 beginners guide (2026-11-23), house style of the Spider-Man 2 and bosses videos: a chapter card per section, a TIP tag at each tip, counters only for figures the claims check verified (timed to the spoken number), one slam, the title lower third, an end screen.",
+ "beat_tail": {},
+ "G01": [
+  {
+   "kind": "lower",
+   "text": "GTA 6: THE BEGINNER'S GUIDE",
+   "at": 1.2,
+   "dur": 5.0
+  },
+  {
+   "kind": "counter",
+   "value": "$531",
+   "label": "LOST IN ONE DEATH",
+   "dur": 3.6,
+   "at_frac": 0.558
+  }
+ ],
+ "G02": [
+  {
+   "kind": "caption",
+   "text": "27 TIPS FROM MY FIRST WEEK IN LEONIDA",
+   "pos": "bottom",
+   "at_frac": 0.35,
+   "dur": 4.5
+  }
+ ],
+ "G03": [
+  {
+   "kind": "chapter",
+   "num": 1,
+   "title": "MONEY",
+   "at": 0.3,
+   "dur": 4.2
+  },
+  {
+   "kind": "tag",
+   "text": "TIP 1: BANK YOUR CASH",
+   "slot": 0,
+   "at": 4.8,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$0",
+   "label": "WALLET AFTER ONE DEATH",
+   "dur": 3.6,
+   "at_frac": 0.462
+  }
+ ],
+ "G04": [
+  {
+   "kind": "tag",
+   "text": "TIP 2: DEPOSIT AT AN ATM, IN PERSON",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G05": [
+  {
+   "kind": "tag",
+   "text": "TIP 3: ONE SHARED BANK ACCOUNT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G06": [
+  {
+   "kind": "tag",
+   "text": "TIP 4: STOLEN GOODS ARE NOT MONEY YET",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$8,160",
+   "label": "SELL OFFER FOR MY STASH",
+   "dur": 3.6,
+   "at_frac": 0.729
+  }
+ ],
+ "G07": [
+  {
+   "kind": "tag",
+   "text": "TIP 5: STOW THE BAG, SELL IT SOON",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G08": [
+  {
+   "kind": "tag",
+   "text": "TIP 6: SMALL STORES, SMALL MONEY",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$98",
+   "label": "THE CLERK'S REWARD AT TUCKER'S",
+   "dur": 3.6,
+   "at_frac": 0.424
+  }
+ ],
+ "G09": [
+  {
+   "kind": "chapter",
+   "num": 2,
+   "title": "THE COPS",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G10": [
+  {
+   "kind": "tag",
+   "text": "TIP 7: THEY REMEMBER YOUR LOOK",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "slam",
+   "text": "YOUR OUTFIT IS EVIDENCE.",
+   "dur": 2.6,
+   "at_frac": 0.92
+  }
+ ],
+ "G11": [
+  {
+   "kind": "tag",
+   "text": "TIP 8: BREAK LINE OF SIGHT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G12": [
+  {
+   "kind": "tag",
+   "text": "TIP 9: HIDE UNTIL IT PASSES",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G13": [
+  {
+   "kind": "tag",
+   "text": "TIP 10: CHANGE CLOTHES OUT OF SIGHT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$12",
+   "label": "DENIM CUTOFFS",
+   "dur": 3.6,
+   "at_frac": 0.665
+  }
+ ],
+ "G14": [
+  {
+   "kind": "tag",
+   "text": "TIP 11: HATS, GLASSES, SPLIT UP",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G15": [
+  {
+   "kind": "tag",
+   "text": "TIP 12: NO RESPRAY MID CHASE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G16": [
+  {
+   "kind": "chapter",
+   "num": 3,
+   "title": "CARS",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G17": [
+  {
+   "kind": "tag",
+   "text": "TIP 13: SCAN BEFORE YOU STEAL",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G18": [
+  {
+   "kind": "tag",
+   "text": "TIP 14: NO TRACKER, EARLY ON",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G19": [
+  {
+   "kind": "tag",
+   "text": "TIP 15: REGISTER IT TO KEEP IT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G20": [
+  {
+   "kind": "counter",
+   "value": "$3,400",
+   "label": "COST TO REGISTER",
+   "dur": 3.6,
+   "at_frac": 0.286
+  }
+ ],
+ "G21": [
+  {
+   "kind": "tag",
+   "text": "TIP 16: GET YOUR CAR DELIVERED",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G22": [
+  {
+   "kind": "tag",
+   "text": "TIP 17: SELL SPARES TO MOSES",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$350",
+   "label": "MOSES'S OFFER FOR A BOGAN",
+   "dur": 3.6,
+   "at_frac": 0.323
+  }
+ ],
+ "G23": [
+  {
+   "kind": "tag",
+   "text": "TIP 18: PRICE UP MODS FIRST",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$506",
+   "label": "LEFT IN THE BANK",
+   "dur": 3.6,
+   "at_frac": 0.598
+  }
+ ],
+ "G24": [
+  {
+   "kind": "chapter",
+   "num": 4,
+   "title": "HEALTH AND STATS",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G25": [
+  {
+   "kind": "tag",
+   "text": "TIP 19: EAT AND DRINK TO HEAL",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G26": [
+  {
+   "kind": "tag",
+   "text": "TIP 20: SAVE ADRENALINE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G27": [
+  {
+   "kind": "tag",
+   "text": "TIP 21: FINISH THE FULL WORKOUT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "13/15",
+   "label": "PULL-UPS",
+   "dur": 3.6,
+   "at_frac": 0.266
+  }
+ ],
+ "G28": [
+  {
+   "kind": "chapter",
+   "num": 5,
+   "title": "SIDE HUSTLES",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G29": [
+  {
+   "kind": "tag",
+   "text": "TIP 22: OPEN THE PAUSE MAP",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G30": [
+  {
+   "kind": "tag",
+   "text": "TIP 23: SEARCH EVERYTHING",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G31": [
+  {
+   "kind": "tag",
+   "text": "TIP 24: SELL CARDS AT PAWN SHOPS",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G32": [
+  {
+   "kind": "tag",
+   "text": "TIP 25: HELP STRANGERS",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G33": [
+  {
+   "kind": "chapter",
+   "num": 6,
+   "title": "KEEP WHAT YOU EARN",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G34": [
+  {
+   "kind": "tag",
+   "text": "TIP 26: SAVE BY HAND",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G35": [
+  {
+   "kind": "tag",
+   "text": "TIP 27: OWN IT OR STORE IT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G36": [
+  {
+   "kind": "chapter",
+   "num": 7,
+   "title": "TOP FIVE RECAP",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G37": [
+  {
+   "kind": "endscreen",
+   "next": "MORE GTA 6 GUIDES",
+   "sub": "COMING SOON",
+   "last": 20
+  }
+ ],
+ "thumbnails": [
+  {
+   "clip": 1004,
+   "at": 16.0,
+   "words": "LOST $531",
+   "accent": "red"
+  },
+  {
+   "clip": 1003,
+   "at": 40.0,
+   "words": "BANK YOUR CASH",
+   "accent": "red"
+  },
+  {
+   "clip": 1017,
+   "at": 181.5,
+   "words": "DON'T GET BUSTED",
+   "accent": "red"
+  }
+ ]
+}
