@@ -6,6 +6,7 @@ from 3 stills per clip and never heard the dialogue.
 For one stretch of a B2 clip this writes, under output/footage-check/<name>/:
   frames/<mm>m<ss.s>s.jpg   one frame every --step seconds (HUD kept), 640 px wide
   sheet<n>.jpg              20 frames per labelled contact sheet
+  hud<n>.jpg                the top-right HUD (wallet, wanted stars) at full resolution, same times
   dialogue.txt              every spoken line with its time (faster-whisper small.en on CPU)
 so a writer, a reviewer or the claims check (tools/claims_check.py) can see what really happened. Read-only
 on B2, CPU only (Bryce streams on the GPU). Used locally and on GitHub Actions.
@@ -52,7 +53,8 @@ def run_check(key: str, start: float, end: float, name: str, step: float = 2.0, 
     from core import b2_store
     out = ROOT / "output" / "footage-check" / name
     done = out / "dialogue.txt"
-    if done.exists() and done.read_text(encoding="utf-8").startswith(f"{key} {start}-{end} s"):
+    if (done.exists() and (out / "hud1.jpg").exists()
+            and done.read_text(encoding="utf-8").startswith(f"{key} {start}-{end} s")):
         return out
     if out.exists():
         shutil.rmtree(out)
@@ -82,6 +84,26 @@ def run_check(key: str, start: float, end: float, name: str, step: float = 2.0, 
             d.text((4, 2), f.stem, fill=(255, 230, 0))
             sheet.paste(im, ((i % 5) * 384, (i // 5) * 216))
         sheet.save(out / f"sheet{n0 // 20 + 1}.jpg", quality=85)
+    # HUD strips at full resolution (2026-11-23): at 640 px the wallet and wanted stars cannot be read, and
+    # money claims are common. The top-right corner of the source, same times, 20 per labelled sheet.
+    hud = out / "hud"
+    hud.mkdir(exist_ok=True)
+    r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-reconnect", "1", "-ss", f"{start}", "-i", url, "-t",
+                        f"{end - start}", "-an", "-vf", f"fps=1/{step},crop=iw*0.22:ih*0.14:iw*0.78:0,scale=420:-2",
+                        str(hud / "h%04d.jpg")])
+    hs = sorted(hud.glob("h*.jpg")) if r.returncode == 0 else []
+    for n0 in range(0, len(hs), 20):
+        part = hs[n0:n0 + 20]
+        ims = [Image.open(f) for f in part]
+        w, h = ims[0].size
+        sheet = Image.new("RGB", (w * 5, h * (-(-len(ims) // 5))))
+        for i, im in enumerate(ims):
+            t = start + (n0 + i) * step
+            d = ImageDraw.Draw(im)
+            d.rectangle((0, 0, 92, 16), fill=(0, 0, 0))
+            d.text((4, 2), f"{int(t // 60):02d}m{t % 60:05.1f}s", fill=(255, 230, 0))
+            sheet.paste(im, ((i % 5) * w, (i // 5) * h))
+        sheet.save(out / f"hud{n0 // 20 + 1}.jpg", quality=90)
     lines, heard_ok = [], False
     if audio:
         wav = out / "audio.wav"

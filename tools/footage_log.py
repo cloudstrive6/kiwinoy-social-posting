@@ -33,7 +33,7 @@ a false claim in a video (2026-11-23: a store robbery the player STOPPED was wri
 COMMITTED, because nobody listened to the clerk).
 
 Open every contact sheet with the Read tool (each frame is labelled with its time, mm:ss.s from the clip
-start), then read the timed dialogue below. Write the log as JSON only, no other text:
+start; hud sheets show the top-right corner at full resolution, for the wallet and wanted stars), then read the timed dialogue below. Write the log as JSON only, no other text:
 
 {{"summary": "two or three sentences: where, who is played, what happens",
   "events": [{{"start": seconds, "end": seconds,
@@ -103,7 +103,7 @@ def build(key: str, model: str) -> dict:
     name = "log/" + re.sub(r"[^A-Za-z0-9._-]+", "_", key)
     out = run_check(key, 0.0, secs, name)
     dialogue = (out / "dialogue.txt").read_text(encoding="utf-8").split("\n", 2)[-1].strip()
-    sheets = sorted(out.glob("sheet*.jpg"))
+    sheets = sorted(out.glob("sheet*.jpg")) + sorted(out.glob("hud*.jpg"))
     listing = "\n".join(str(p.resolve()) for p in sheets)
     prompt = PROMPT.format(key=key, seconds=secs, dialogue=dialogue or "(no speech heard)", sheets=listing)
     reply = claude_code.run(prompt, model=model, allowed_tools="Read", timeout=900)

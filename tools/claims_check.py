@@ -41,7 +41,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 from analysis_edl import strip_tags  # noqa: E402
 
-VERSION = 2   # bump to re-judge every paragraph (prompt or packet change); 2: review fixes 2026-11-23
+VERSION = 3   # bump to re-judge every paragraph (prompt or packet change); 2: review fixes, 3: HUD sheets
 PAD = 30.0
 MODEL = "opus"
 
@@ -50,7 +50,8 @@ voiced. The narrator speaks as the player ("I held up ...", "I had $531 on me").
 (2026-11-23: the script said the player robbed a farm stand; the footage shows the player STOPPED a robbery in
 progress and the clerk offered the cash as a reward).
 
-Open every contact sheet with the Read tool (frames are labelled with their time in the clip), read the timed
+Open every contact sheet with the Read tool (frames are labelled with their time in the clip; hud sheets are the
+top-right corner at full resolution, for the wallet and wanted stars), read the timed
 dialogue and the footage log, then judge EVERY sentence of the narration.
 
 kind "footage": the sentence says what happens, what is shown, what is said, what is on screen, or what the
@@ -193,7 +194,7 @@ def judge(game: str, b: dict, clips: dict) -> dict:
         out = run_check(key, round(s, 1), round(e, 1), f"{game}/{b['id']}-{i + 1}")
         parts.append((out / "dialogue.txt").read_text(encoding="utf-8"))
         logs.append(log_excerpt(key, s, e))
-        sheets += [str(p.resolve()) for p in sorted(out.glob("sheet*.jpg"))]
+        sheets += [str(p.resolve()) for p in sorted(out.glob("sheet*.jpg")) + sorted(out.glob("hud*.jpg"))]
     prompt = PROMPT.format(beat=b["id"], text=strip_tags(b.get("tts") or b.get("text") or ""), pad=PAD,
                            ranges="\n\n".join(parts) or "(no footage)", logs="\n\n".join(logs) or "(none)",
                            sheets="\n".join(sheets) or "(none)")
