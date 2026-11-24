@@ -46,7 +46,7 @@ RED = (255, 61, 70)
 # ~3.5 words/second is a comfortable silent-reading pace, so 55-70 words ~= 16-20s of reading
 # against an 8s video: the viewer has to loop it, which is the whole point of the format.
 # Bryce, 2026-11-22: keep cards at 60+ words, so viewers loop the clip to finish reading.
-WORDS_MIN, WORDS_MAX = 60, 72
+WORDS_MIN, WORDS_MAX = 40, 72  # Bryce, 2026-11-24: 40 to 72, a card ends when its facts do (was 60+)
 # seconds of dialogue either side of the on-screen window, read for CONTEXT only
 CTX_PAD = 10.0
 
@@ -132,9 +132,20 @@ def fact_bank(game: str) -> list[dict]:
         return []
 
 
-def pick_facts(game: str) -> list[dict]:
-    """Up to FACTS_SHOWN unused facts, highest wow first (random among equals); the bank starts
-    over once every fact has been used."""
+_STOP = set("that this with from your their there have what when where which while about into over them they "
+             "then than were been will would could should just also only some more most very game player".split())
+
+
+def _words(s: str) -> set:
+    return {w for w in re.findall(r"[a-z]{4,}", (s or "").lower()) if w not in _STOP}
+
+
+def pick_facts(game: str, context: str = "") -> list[dict]:
+    """Up to FACTS_SHOWN unused facts. With a clip context (what is on screen plus the subtitles),
+    the first slots go to the facts whose text and 'pairs with' tag share the most words with it,
+    the rest to the highest wow (2026-11-24: the writer was offered trailer view counts for a robbery
+    clip, found nothing relevant, and stretched the clip into invented claims). The bank starts over
+    once every fact has been used."""
     bank = fact_bank(game)
     if not bank:
         return []
@@ -146,7 +157,14 @@ def pick_facts(game: str) -> list[dict]:
     fresh = [x for x in bank if f"fact:{game}:{x.get('id')}" not in used] or bank
     random.shuffle(fresh)
     fresh.sort(key=lambda x: -float(x.get("wow", 3)))
-    return fresh[:FACTS_SHOWN]
+    ctx = _words(context)
+    if not ctx:
+        return fresh[:FACTS_SHOWN]
+    scored = sorted(fresh, key=lambda x: -(len(ctx & _words(f"{x.get('fact', '')} {x.get('pairs_with', '')}"))
+                                            + 0.1 * float(x.get("wow", 3))))
+    relevant = [x for x in scored if ctx & _words(f"{x.get('fact', '')} {x.get('pairs_with', '')}")][:5]
+    rest = [x for x in fresh if x not in relevant]
+    return (relevant + rest)[:FACTS_SHOWN]
 
 
 def _domain(url: str) -> str:
@@ -178,6 +196,65 @@ def mark_fact(game: str, fact_id: str) -> None:
         log(f"could not record used fact {fact_id} ({e!r})")
 
 
+# AI-slop patterns (Bryce, 2026-11-24, after "AI generated garbage that doesn't even completely understand what
+# it is talking about" on a GTA 6 card). Taken from the last fact cards: every one ended on a stock reaction and a
+# stock comparison, and some narrated the HUD. A hit sends the card back to be rewritten.
+SLOP = [
+    (r"(?:^|[.!?]\s+)That(?:'s| is| was) (?!why\b|how\b|because\b|what\b|where\b|when\b|the reason\b|enough\b)(?:a |an |one |the )?(?:\w+ ){0,3}\w+[.!]", "a stock reaction line ('That is ...')"),
+    (r"\bevery (?:gamer|player|streamer|fan|racing game player|souls player)\b", "an 'every gamer' comparison"),
+    (r"\bclassic (?:gta|grand theft auto|drive|open.world)", "a 'classic GTA' comparison"),
+    (r"\bthe kind of\b.*\b(?:dreams? about|knows?|loves?)\b", "a 'the kind of ... every X dreams about' line"),
+    (r"\bnot included\b", "a quip ('... not included')"),
+    (r"\b(?:ice cold|chef's kiss|hits different|peak gta|wild)\b", "a hype or reaction word"),
+    (r"\b(?:spiral|long memory|with no door|in paperback form|closing time)\b", "a metaphor that restates the fact"),
+    (r"\bit (?:plays|reads|feels) like\b", "an 'it plays like' comparison"),
+    (r"\b(?:wishes|wished) (?:this|that) existed\b", "a 'wishes this existed' line"),
+    (r"\b(?:ticks down|ticks up|on your minimap|the menu lands on|the camera (?:pans|cuts))\b", "screen play-by-play"),
+    (r"\bthe lore\b|\blore bible\b|\bthe bible\b", "an uncheckable source ('the lore', 'the lore bible'); name the in-game or Rockstar source, or drop the claim"),
+]
+
+
+def slop_problems(text: str) -> list[str]:
+    return [why for pat, why in SLOP if re.search(pat, text or "", re.I)]
+
+
+def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tuple[int, str, list]:
+    """A real-fan read of the card (subscription only). (score 1 to 10, notes). 10 = a player learns
+    something real and would share it; 1 = AI slop that misreads the game."""
+    from core import claude_code
+    prompt = (
+        f"You are a hardcore {gname} player who comments on gaming Shorts and has no patience for AI "
+        "slop. A channel wants to post this text card over a gameplay clip.\n\n"
+        f"What the clip shows:\n{observation}\n\n" + (f"{subtitles}\n\n" if subtitles else "")
+        + f"HEADLINE: {card.get('headline', '')}\nBODY: {card.get('body', '')}\n"
+        f"COMMENT: {card.get('comment', '')}\n\n"
+        "Score it 1 to 10. 10: you learned a real, specific thing about the game (a mechanic with "
+        "its number, a cost, a hidden rule, a trick, a line that means more than it sounds) and "
+        "would send it to a friend. 1: AI slop, meaning filler reactions, stock comparisons, "
+        "metaphors that restate the obvious, describing what is already on screen, or getting the "
+        "game wrong. House rules you must NOT mark down: a number that is not on screen has to "
+        "name its source ('guides list', 'Kotaku reports'), so sourced attribution is correct, not "
+        "hedging; the comment line may be a dry joke as long as it states nothing untrue. A claim about how "
+        "the game works (what causes, clears, raises or lowers something, what you must do) that the clip "
+        "does not show and no named source backs is WRONG even if it sounds plausible; so is anything "
+        "the clip summary says happens outside the Short. Name every "
+        "sentence that is filler or wrong, and say what a real fan would want this card to say "
+        "instead. Reply with JSON only: "
+        '{"score": <1-10>, "filler": ["..."], "wrong": ["..."], "better": "..."}')
+    try:
+        d = extract_json(claude_code.run(prompt, timeout=200, paid_fallback=False))
+        notes = "; ".join([f"filler: {x}" for x in d.get("filler", [])] + [f"wrong: {x}" for x in d.get("wrong", [])])
+        if d.get("better"):
+            notes += f"; a fan wants: {d['better']}"
+        wrong = [str(x) for x in d.get("wrong", []) if str(x).strip()]
+        return int(d.get("score") or 0), notes[:600], wrong
+    except Exception as e:
+        return 0, f"the fan critic could not run ({e!r})"[:200], []
+
+
+FAN_MIN = 7   # a card under this is rewritten (twice, with the critic's notes), then refused
+
+
 def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: str = "",
                 research: str = "", facts: str = "") -> dict:
     """The card: a short EYEBROW line + the long body text, grounded in this clip."""
@@ -189,11 +266,10 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         + (f"{subtitles}\n\n" if subtitles else "")
         + (f"GAME LORE (for context — never contradict it):\n{bible}\n\n" if bible else "")
         + (f"WHAT PLAYERS AND WRITERS SAY ABOUT THIS SCENE (researched online — Reddit, "
-           f"wikis, interviews):\n{research}\n\nIf one of these findings is genuinely "
-           "surprising, MAKE IT THE CARD. A detail players argue about, cut content, a line "
-           "the devs explained — that is far better than anything you can infer from the "
-           "frames. Attribute a fan reading as one ('fans still argue', 'players noticed'), "
-           "never as fact, and use a finding only if it fits THIS moment.\n"
+           f"wikis, interviews):\n{research}\n\nTHIS RESEARCH IS CONTEXT ONLY (Bryce, 2026-11-24: "
+           "cards must not invent or relay unchecked claims). Use it to understand who is who and "
+           "what is happening. NEVER state a research finding in the card unless the same thing is "
+           "in the VERIFIED GAME FACTS below or plainly on screen.\n"
            "BUT THE FOOTAGE OUTRANKS THE RESEARCH, ALWAYS. The research may have found a "
            "DIFFERENT scene that sounds like this one. If any finding disagrees with WHAT IS "
            "ON SCREEN above — who is doing what to whom, who is awake, where they are — the "
@@ -210,8 +286,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "the KIND of moment on screen (its 'pairs with' note, or the place or activity you "
            "can see). This is the 'did you know' card, and viewers love a fact they never knew. "
            "Then beat 1 ties the fact to what is on screen in a few words, beat 2 IS the fact, "
-           "told in your own words with every number and name exactly as given, beat 3 the "
-           "verdict and beat 4 the comparison. Never claim the clip itself shows the fact's "
+           "told in your own words with every number and name exactly as given, and beat 3 is "
+           "what it means for a player (a cost, a risk, a use, a tip). Never claim the clip itself shows the fact's "
            "subject unless the frames do (a fact about a trailer scene is not this clip). "
            "ADD NOTHING TO THE FACT: no claim the fact does not make, no superlative ('most', "
            "'first', 'only', 'biggest') unless the fact says it, no invented process or motive "
@@ -242,8 +318,18 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "mission moment as a feature the player chooses.\n"
         "If a fact from the list is used, its mode follows the fact: a mechanic is player, a "
         "story or production fact is story.\n\n"
-        "Write a card about THIS moment. Follow the PROVEN SHAPE of this format exactly — "
-        "a HEADLINE, then four beats, in this order, as ONE paragraph:\n"
+        "WRITE FOR A PLAYER WHO KNOWS THE GAME (Bryce, 2026-11-24, after a viewer called a card "
+        "'AI generated garbage that doesn't even completely understand what it is talking about'). "
+        "The card is only worth posting if a GTA player learns something they would screenshot and "
+        "send a friend: a real mechanic with its number, a cost, a hidden rule, a trick, a "
+        "consequence, a line that means more than it sounds. Every sentence must carry a NEW piece "
+        "of checkable information or a concrete use of it. NO FILLER SENTENCES: no reaction "
+        "lines ('That is ice cold.', 'That is confident.', 'Dignity not included.'), no 'every "
+        "gamer knows' or 'classic GTA' comparisons, no metaphors that restate the fact ('a vault "
+        "with no door', 'a notification with a long memory'), no hype. If you only have one fact, "
+        "add the second from the listed facts or the lore, or explain the practical consequence; "
+        "never pad.\n\n"
+        "Write a card about THIS moment, a HEADLINE then three beats, as ONE paragraph:\n"
         "  0. HEADLINE (Bryce, 2026-11-22: lead with the surprise): 6 to 8 words, shown big "
         "above the body. The single most surprising true thing in the card, said plainly "
         "('The gym locks you out after one session', 'Lucia pawns her necklace for a room'). "
@@ -251,21 +337,16 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "no colon, nothing the body does not support.\n"
         f"  1. CONTEXT: straight into the situation in a few words. NEVER open with 'In {gname}' "
         "or 'In GTA 6' or any 'In <game>' phrase: the headline already did the job.\n"
-        "  2. THE DETAIL: the specific thing worth noticing — what someone SAYS or DOES and "
+        "  2. THE DETAIL: the specific thing worth knowing, with its number, name or rule, and "
         "what it MEANS. This is the heart of the card.\n"
-        "  3. THE VERDICT: a short punchy reaction to that detail ('That is ice cold.').\n"
-        "  4. THE COMPARISON: tie it to something the audience knows — another moment in THIS "
-        "game's story, or a universal gamer experience ('the kind of parry every Souls player "
-        "dreams about'). This beat is OPINION and is meant to be subjective. Name a DIFFERENT "
-        "game only when the parallel is exact and you say what the parallel IS — a name-drop "
-        "that only half-fits this moment reads as filler, so prefer this game.\n\n"
-        "FUNNY CLIPS (Bryce, 2026-11-20): when WHAT IS ON SCREEN says the TONE is funny, let "
-        "the card carry the laugh. Beat 2 is still a TRUE detail (from the subtitles, the lore "
-        "bible or a listed fact) that the silly moment makes land harder; beat 3 is a deadpan "
-        "verdict ('He meant to do that.') and the comment is the joke. Never invent an engine, "
-        "physics or AI reason for a gag. If nothing true fits, build the card on a listed fact "
-        "that suits the clip and keep the laugh for the verdict and comment.\n\n"
-        f"- \"body\": all four beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
+        "  3. WHAT TO DO WITH IT: the practical consequence or tip for a player (what it costs, "
+        "what to do first, what to avoid, what it sets up), or for a story moment what the line "
+        "reveals about the character. Information, never a reaction. The card ends on this.\n\n"
+        "FUNNY CLIPS (Bryce, 2026-11-20): when WHAT IS ON SCREEN says the TONE is funny, the "
+        "COMMENT line carries the joke. The body still teaches something true (from the "
+        "subtitles, the lore bible or a listed fact). Never invent an engine, physics or AI "
+        "reason for a gag.\n\n"
+        f"- \"body\": all three beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
         "it must take ~15 seconds to read, about as long as the clip or longer, so the viewer "
         "stays to finish it. "
         "Plain spoken English, present tense, no hype words, no emojis, no hashtags.\n"
@@ -327,8 +408,25 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "screen (0 if it is there from the start). Give \"text_evidence\": true only when that "
         "payoff is small in-game text the viewer must read (a toast, tooltip, menu line or "
         "notice), else false.\n"
+        + "\nFACTS FIRST (2026-11-24, the fan critic's top complaints were screen description, "
+        "sentences that restate the one before, and soft metaphors): before writing, list in "
+        "\"facts\" the 2 to 4 specific, checkable things you have for this card. Each ends with its "
+        "source tag in brackets, and ONLY these tags exist: (screen) for an on-screen number, notice, "
+        "menu or tooltip, (subtitles) for a spoken line, (fact gta6-NN) for a VERIFIED GAME FACT by its "
+        "id, (bible) for the lore bible. The bible is for YOUR checking only: the card itself never "
+        "says 'the lore', 'the lore bible' or 'the bible' (a viewer cannot look it up, and fans call it "
+        "out, 2026-11-24); a bible fact on the card must name where it comes from in the game or from "
+        "Rockstar (a trailer, a mission, an in-game notice) as the bible entry says, or stay off the card. "
+        "Nothing else is a source: not research, not 'guides', not "
+        "your own knowledge of the game, not a website. Build the card on ONE verified game fact "
+        "whenever the clip has fewer than two strong on-screen or spoken facts. A thing the viewer "
+        "can plainly see is NOT a fact for this list unless you add what it means or what it costs. "
+        "Then write the body so that EVERY sentence carries a different item from that list or a "
+        "concrete use of one. The first sentence states a fact, never a description of the shot. "
+        "No sentence may repeat the previous one in other words. If you run out of facts, STOP: "
+        "40 words of real information beats 70 with padding (Bryce, 2026-11-24).\n"
         + (f"\nA PREVIOUS attempt was rejected: {avoid}\nFix exactly that.\n" if avoid else "")
-        + ('\nReturn ONLY JSON: {"mode": "player or story", "headline": "6 to 8 words", '
+        + ('\nReturn ONLY JSON: {"facts": ["fact (source)", "..."], "mode": "player or story", "headline": "6 to 8 words", '
            '"body": "the paragraph", "highlight": "exact phrase from the '
            'body", "comment": "the reaction line", "payoff_at": 0, "text_evidence": false'
            + (', "fact_id": "id of the fact used, or empty"' if facts else '') + '}')
@@ -346,10 +444,50 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
                 "comment": sanitize(str(d.get("comment", ""))).strip()[:90],
                 "body": re.sub(r"\s+", " ", sanitize(str(d.get("body", "")))).strip(),
                 "payoff_at": payoff, "text_evidence": bool(d.get("text_evidence")),
-                "fact_id": str(d.get("fact_id", "") or "").strip()[:40]}
+                "fact_id": str(d.get("fact_id", "") or "").strip()[:40],
+                "facts": [str(x)[:300] for x in (d.get("facts") or []) if str(x).strip()][:6]}
     except Exception as e:
         log(f"card writer failed ({e!r})")
         return {}
+
+
+_SOURCE_TAG = re.compile(r"\((screen|subtitles?|bible|fact\s+([a-z0-9]+-\d+))\)\s*$", re.I)
+
+
+def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
+    """Every listed fact must carry an allowed source tag; a (fact id) tag must be a real bank id
+    (Bryce, 2026-11-24: no invented sources, prices or rules on a card)."""
+    facts = card.get("facts") or []
+    if len(facts) < 2:
+        return ["the card lists fewer than 2 sourced facts"]
+    bad = []
+    for f in facts:
+        m = _SOURCE_TAG.search(f.strip())
+        if not m:
+            bad.append(f"'{f[:70]}' has no allowed source (screen, subtitles, fact id, bible)")
+        elif m.group(2) and m.group(2).lower() not in fact_ids:
+            bad.append(f"'{f[:70]}' cites a fact id that is not in the bank")
+    return bad
+
+
+_QUOTE = re.compile("[“\"]([^”\"]{6,}?)[”\"]|(?<![A-Za-z0-9])[‘']([^\n]{6,}?)[’'](?![A-Za-z0-9])")
+
+
+def _norm(t: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9$ ]+", " ", t.lower())).strip()
+
+
+def quote_problems(text: str, heard: str) -> list[str]:
+    """A line in quote marks must be word for word what is said or shown in the Short (2026-11-24:
+    a card quoted 'take whatever you came for' for 'Just take whatever you came in for')."""
+    hay = _norm(heard)
+    bad = []
+    for m in _QUOTE.finditer(text or ""):
+        raw = (m.group(1) or m.group(2) or "").strip()
+        q = _norm(raw)
+        if len(q.split()) >= 3 and q not in hay:
+            bad.append(raw)
+    return bad
 
 
 # Wording that only ever appears when the writer has narrated the footage instead of
@@ -597,8 +735,8 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + (f"VERIFIED GAME FACTS (sourced; a card built on one of these is SUPPORTED as long as "
            f"it keeps every number, date and name exactly as written here, and does not claim "
            f"the clip itself shows something only the fact describes):\n{facts}\n\n"
-           "A FACT CARD may contain NOTHING beyond the fact and what is visibly on screen, apart "
-           "from the closing verdict and comparison. Flag as BAD any added claim around the fact: "
+           "A FACT CARD may contain NOTHING beyond the fact, what is visibly on screen, and the "
+           "practical consequence that follows directly from them. Flag as BAD any added claim around the fact: "
            "a superlative the fact does not make ('most', 'first', 'only', 'biggest'), an invented "
            "process or motive ('Rockstar documented', 'studied', 'visited', 'on purpose'), or a "
            "broader generalisation stated as fact. This is how an unsourced 'Rockstar's most "
@@ -672,11 +810,9 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         "detail, a developer/design intention, a camera or animation claim you cannot verify, "
         "a character who is not shown or named, a misquoted or mis-attributed line, or an "
         "event outside this clip presented as happening in it.\n"
-        "The card deliberately ENDS with a verdict and a comparison ('that is ice cold', 'the "
-        "kind of parry every Souls player dreams about'). Those are OPINION — do NOT flag "
-        "them for being subjective. DO flag a comparison that implies something untrue about "
-        "this clip (likening it to a famous death when nobody dies here), or that name-drops "
-        "another game's character without a parallel that actually holds. "
+        "The card ENDS on a practical consequence or tip (2026-11-24: reaction lines and 'every "
+        "gamer knows' comparisons were dropped as AI filler). Flag as BAD a tip or consequence "
+        "the evidence does not support (a mechanic, cost or rule no source gives). "
         "Do not flag ordinary re-telling of what is shown, or established series lore. "
         "Flag only something stated as fact that is not true.\n"
         "ALWAYS flag an invented NUMBER or DURATION — a year, a count, 'five years later', "
@@ -941,10 +1077,58 @@ def _text_box(seg: Path, t: float, card: dict) -> tuple | None:
     return (x, y, w, h) if w < 0.95 else None
 
 
+_LOG_CACHE: dict = {}
+
+
+LOG_OUTSIDE = "BEFORE OR AFTER THE SHORT"
+
+
+def footage_log_events(name: str, game: str, start: float, dur: float, pad: float = 45.0) -> str | None:
+    """The footage log's account of this stretch (tools/footage_log.py; B2 footage-log/), or None if the
+    clip has no log yet. Written from the timed dialogue and frames of the whole clip, so it knows who
+    did what (2026-11-24: a test card said 'Lucia is robbing Tucker's' when she stopped the robber)."""
+    from core import b2_store
+    for key in (f"footage-log/cutscenes/{game}/{name}.json", f"footage-log/footage/{game}/{name}.json"):
+        if key not in _LOG_CACHE:
+            data = b2_store.get_bytes(key)
+            _LOG_CACHE[key] = json.loads(data) if data else None
+        log = _LOG_CACHE[key]
+        if not log:
+            continue
+        lo, hi = start - pad, start + dur + pad
+        ev = [x for x in log.get("events", []) if float(x.get("end", 0)) >= lo and float(x.get("start", 0)) <= hi]
+        def line(x):
+            return (f"- {float(x.get('start', 0)) - start:+.0f} to {float(x.get('end', 0)) - start:+.0f} s from the "
+                    f"Short's start [{x.get('certainty', '')}]: {x.get('what', '')} | player: {x.get('player_does', '')} | "
+                    f"others: {x.get('others_do', '')} | quote: {x.get('quote', '')} | on screen: "
+                    f"{x.get('on_screen_text', '')} | money: {x.get('money', '')}")
+        # 2026-11-24 independent review: a card quoted a line and a wallet total from AFTER the Short
+        # ended. The viewer must see what the card claims, so the log is split in two.
+        inside = [x for x in ev if float(x.get("end", 0)) > start + 0.5 and float(x.get("start", 0)) < start + dur - 0.5]
+        outside = [x for x in ev if x not in inside]
+        warn = "\n".join(f"- {w}" for w in (log.get("watch_outs") or []))
+        return (f"Clip summary: {log.get('summary', '')}\n"
+                f"INSIDE THE SHORT (0 to {dur:.0f} s; the card may only claim what happens here):\n"
+                + ("\n".join(line(x) for x in inside) or "- (no logged event)")
+                + "\n" + LOG_OUTSIDE + " (context only, to get who-did-what right; the viewer never sees it, "
+                  "so never state it, quote it or use its numbers):\n"
+                + ("\n".join(line(x) for x in outside) or "- (none)")
+                + (f"\nWatch outs:\n{warn}" if warn else ""))
+    return None
+
+
 def build(clip: Path, game: str, start: float, dur: float, text: str | None, outdir: Path,
-          card: dict | None = None) -> Path:
+          card: dict | None = None, log_name: str | None = None, log_offset: float = 0.0) -> Path:
     gname = (CONFIG.reels.get("game_names", {}) or {}).get(game, "") or game
     outdir.mkdir(parents=True, exist_ok=True)
+    # FOOTAGE LOG FIRST (Bryce, 2026-11-24): a card is only written about footage whose log says who
+    # did what. A clip with no log yet is refused here, before any AI work, and the slot tries another.
+    truth = None
+    if not text and not card:
+        truth = footage_log_events(log_name or Path(clip).name, game, start + log_offset, dur)
+        lcfg0 = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
+        if truth is None and bool(lcfg0.get("require_footage_log", True)):
+            raise CardRefused(f"no footage log for {log_name or Path(clip).name} yet")
     seg = outdir / "segment.mp4"
     ff = ffmpeg.ffmpeg_bin() or "ffmpeg"
     # Never run past the footage: the final render LOOPS the segment to fill `dur`, so a
@@ -972,6 +1156,11 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         with tempfile.TemporaryDirectory() as tmp:
             cands = frames.extract_candidates(seg, Path(tmp), n=max(6, observe_frame_count(dur)))
             observation = _observe_clip(cands, gname, dur)
+            seen_text = observation + "\n" + (truth or "").split(LOG_OUTSIDE)[0]
+            if truth:
+                observation += ("\n\nWHAT REALLY HAPPENS AROUND THIS MOMENT (the footage log, written from the "
+                                "timed dialogue and frames of the whole recording; it OUTRANKS any reading of "
+                                f"these few frames, above all on who does what to whom):\n{truth}")
             from agents.content import adult_on_screen
             if adult_on_screen(observation):    # sexual activity or nudity: never post it
                 raise CardRefused("sexual content or nudity on screen")
@@ -992,14 +1181,28 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         lcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
         research = (research_scene(observation, subs, gname)
                     if bool(lcfg.get("research", True)) else "")
-        _facts = pick_facts(game) if bool(lcfg.get("facts", True)) else []
+        _facts = pick_facts(game, f"{observation} {subs}") if bool(lcfg.get("facts", True)) else []
         facts = facts_text(_facts)
         if _facts:
             log(f"fact bank: {len(_facts)} sourced facts offered "
                 f"({', '.join(str(x.get('id')) for x in _facts)})")
 
         def _judge(c: dict) -> tuple[bool, str]:
-            """Both gates: it must EXPLAIN (not narrate the picture) and be true."""
+            """The gates: no AI-slop patterns, it must EXPLAIN (not narrate the picture), be true,
+            and pass a real-fan read (2026-11-24)."""
+            slop = slop_problems(" ".join((c.get("headline", ""), c.get("body", ""))))
+            if slop:
+                return False, ("AI filler: " + ", ".join(slop) + ". Replace each with a real fact, "
+                               "number, rule or practical tip; never a reaction or a comparison")
+            src_bad = fact_source_problems(c, {str(x.get("id", "")).lower() for x in _facts})
+            if src_bad:
+                return False, ("unsourced facts: " + "; ".join(src_bad[:3]) + ". Use only on-screen "
+                               "text, the subtitles, a listed verified fact by its id, or the lore bible")
+            q_bad = quote_problems(" ".join((c.get("headline", ""), c.get("body", ""))), f"{subs}\n{seen_text}")
+            if q_bad:
+                return False, ("a quote is not word for word what is said or shown in the Short: "
+                               + "; ".join(f"'{q}'" for q in q_bad[:3]) + ". Quote it exactly from the subtitles "
+                               "or on-screen text, or say it in your own words without quote marks")
             shape_ok, shape_why = card_shape_ok(c.get("body", ""))
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
@@ -1040,8 +1243,20 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             suspects = unsupported_names(text, names_sup, extra_ok=(gname, *gname.split()))
             if suspects:
                 log(f"names in no evidence, sent to the checker: {', '.join(suspects)}")
-            return _check_card(c, observation, subs, gname, game, research, facts,
-                               used_fact=used_fact, suspects=suspects)
+            ok, why = _check_card(c, observation, subs, gname, game, research, facts,
+                                  used_fact=used_fact, suspects=suspects)
+            if not ok:
+                return ok, why
+            score, notes, wrong = fan_critic(c, observation, subs, gname)
+            log(f"fan critic: {score}/10 {notes}")
+            if wrong:
+                # 2026-11-24: a card scored 8/10 went through with a line the critic called wrong
+                # ("permanent 'Irredeemable' status"). Any claim a fan reads as wrong is a rewrite,
+                # whatever the score: one false line is what gets a card called AI garbage.
+                return False, f"a real fan says it gets something wrong: {'; '.join(wrong)}"[:600]
+            if score < FAN_MIN:
+                return False, f"a real fan scored it {score}/10 ({notes})"
+            return True, ""
 
         wrote = True
         # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
@@ -1054,14 +1269,20 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             ok, why = _judge(card)
             if not ok:
                 log(f"card rejected ({why}); rewriting.")
-                card2 = humanize.card(_write_card(observation, subs, game, gname, avoid=why,
-                                                  research=research, facts=facts),
-                                      gname, WORDS_MIN, WORDS_MAX)
-                if card2.get("body") and _judge(card2)[0]:
-                    card = card2
+                # Two rewrites, each told exactly why the last one failed (2026-11-24: the fan critic's
+                # notes say what a real fan wants, so a second rewrite usually lands).
+                for attempt in (2, 3):
+                    card2 = humanize.card(_write_card(observation, subs, game, gname, avoid=why,
+                                                      research=research, facts=facts),
+                                          gname, WORDS_MIN, WORDS_MAX)
+                    ok2, why2 = _judge(card2) if card2.get("body") else (False, "no card text")
+                    if ok2:
+                        card = card2
+                        break
+                    log(f"card {attempt} rejected ({why2})")
+                    why = why2
                 else:
-                    raise CardRefused("second card also rejected — not posting "
-                                     "invented lore")
+                    raise CardRefused("three cards rejected (slop, facts or fan critic): not posting")
         if not card.get("body"):
             raise CardRefused("no card text was written")
         if card.get("fact_id") and any(str(x.get("id")) == card["fact_id"] for x in _facts):
@@ -1177,6 +1398,8 @@ def main() -> int:
     ap.add_argument("--start", type=float, default=0.0, help="seconds into the clip")
     ap.add_argument("--dur", type=float, default=8.0, help="short length (default 8s)")
     ap.add_argument("--text", default=None, help="use this card text instead of writing one")
+    ap.add_argument("--log-name", default=None, help="footage-log file name when --clip is a local cut (tests)")
+    ap.add_argument("--log-offset", type=float, default=0.0, help="where the local cut starts in that logged clip")
     ap.add_argument("--card-json", default=None,
                     help="re-render using a card.json from an earlier run (skips the writer)")
     a = ap.parse_args()
@@ -1195,7 +1418,7 @@ def main() -> int:
     outdir = ROOT / "output" / "lore-shorts" / f"{stamp}_{a.game}"
     card = json.loads(Path(a.card_json).read_text(encoding="utf-8")) if a.card_json else None
     try:
-        build(clip, a.game, a.start, a.dur, a.text, outdir, card)
+        build(clip, a.game, a.start, a.dur, a.text, outdir, card, log_name=a.log_name, log_offset=a.log_offset)
     except CardRefused as e:
         log(f"refused: {e}")
         return 1

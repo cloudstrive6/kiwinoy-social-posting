@@ -341,6 +341,21 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
     skip = {str(x) for x in (exclude or [])}
     pool = list(_candidates(key))
     random.shuffle(pool)                     # RANDOM clip
+    # FOOTAGE LOG FIRST (Bryce, 2026-11-24): fact cards only use clips whose footage log says who did
+    # what (tools/lore_short.py refuses the rest). Offer only logged B2 clips, so the slot never
+    # downloads a 1 GB recording just to refuse it. Fails open to the whole pool if B2 cannot list.
+    lcfg = ((CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {})
+    if bool(lcfg.get("require_footage_log", True)):
+        try:
+            logged = {f.get("fileName", "")[len("footage-log/"):-len(".json")]
+                      for f in b2_store._list_names("footage-log/") if f.get("fileName", "").endswith(".json")}
+            if logged:
+                kept = [(k, it) for k, it in pool
+                        if k != "b2" or (isinstance(it, dict) and it.get("key") in logged)]
+                print(f"[reel] {len(kept)} of {len(pool)} {key} clips have a footage log.", flush=True)
+                pool = kept
+        except Exception as e:
+            print(f"[reel] footage-log list failed ({e!r}); offering every clip.", flush=True)
     if not pool:
         return None, None, 0.0
     led = gh_release.read_ledger()
