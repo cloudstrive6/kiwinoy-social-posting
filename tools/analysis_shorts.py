@@ -492,7 +492,9 @@ def load_beats(p: Paths) -> dict[str, dict]:
         b = dict(b)
         b["start"], b["seconds"], b["idx"] = float(t["start"]), float(t["seconds"]), i
         if b["type"] == "game":  # the quoted game line(s) of the cue, minus the editor's note
-            cue = re.sub(r"\s*\([^()]*\)\s*$", "", b.get("cue", ""))
+            # editor settings in the cue ('"crop": "none"') are not dialogue (2026-11-25: a Short captioned CROP NONE)
+            cue = re.sub(r';?\s*"(?:crop|at|blur|mask|note)"\s*:\s*"[^"]*"', "", b.get("cue", ""))
+            cue = re.sub(r"\s*\([^()]*\)\s*$", "", cue)
             b["text"] = " ".join(re.findall(r'"([^"]+)"', cue))
         beats[b["id"]] = b
     beats["_order"] = order  # type: ignore[assignment]
@@ -1012,7 +1014,9 @@ CAP_STRIP_H = 220
 
 NEG_WORDS = {"no", "not", "none", "never", "nothing", "nobody", "neither", "nor", "without", "cannot", "nowhere"}
 NEG_TAIL_FILLER = {"of", "a", "an", "the", "to", "it", "one", "even", "at", "all", "that", "this", "his", "her",
-                   "their", "its", "be", "been", "longer", "more", "is", "was", "are", "were", "really"}
+                   "their", "its", "be", "been", "longer", "more", "is", "was", "are", "were", "really",
+                   # 2026-11-25 review: "STARS GONE DOES NOT MEAN" / "YOU ARE SAFE." read as the opposite
+                   "mean", "means", "you", "make", "makes", "need", "have", "get", "keep"}
 NEG_MAX_WORDS = 5
 
 
@@ -1507,10 +1511,28 @@ def facebook_all(p: Paths, cfg: dict, only: set[str]) -> None:
     Facebook posts the analysis Shorts instead of the fill and lore reels). Post for Me with
     scheduled_at; the post id is written to the pick so a rerun never posts twice."""
     from agents import publisher
+    # FACEBOOK-ONLY packs (Bryce, 2026-11-25: GTA 6 guide tip Shorts "For Facebook only for now"): no
+    # YouTube slot exists, so each pick gets its own facebook_at, one a day at slots_utc[0], starting
+    # the first free day at least 3 hours from now and after any reel of this pack already booked.
+    if cfg.get("facebook_only"):
+        hhmm = (cfg.get("slots_utc") or ["04:00"])[0]
+        h, m = (int(x) for x in hhmm.split(":"))
+        now = dt.datetime.now(dt.timezone.utc)
+        booked = [dt.datetime.fromisoformat(str((s.get("facebook") or {}).get("scheduled_at")).replace("Z", "+00:00"))
+                  for s in cfg["shorts"] if (s.get("facebook") or {}).get("scheduled_at")]
+        day = max([now + dt.timedelta(hours=3)] + [b + dt.timedelta(days=1) for b in booked])
+        nxt = day.replace(hour=h, minute=m, second=0, microsecond=0)
+        if nxt < day:
+            nxt += dt.timedelta(days=1)
+        for s in sorted(cfg["shorts"], key=lambda x: x["order"]):
+            if (s.get("facebook") or {}).get("id") or (only and s["id"] not in only):
+                continue
+            s["facebook_at"] = nxt.strftime("%Y-%m-%dT%H:%M:%SZ")
+            nxt += dt.timedelta(days=1)
     for s in sorted(cfg["shorts"], key=lambda x: x["order"]):
         if only and s["id"] not in only:
             continue
-        slot = (s.get("youtube") or {}).get("publish_at")
+        slot = s.get("facebook_at") if cfg.get("facebook_only") else (s.get("youtube") or {}).get("publish_at")
         if not slot or (s.get("facebook") or {}).get("id"):
             continue
         video = p.out / f"{s['id']}.mp4"
@@ -1547,10 +1569,12 @@ def main() -> int:
     a = ap.parse_args()
     p = Paths(a.game, a.version)
     from core.config import CONFIG as _C
-    if a.facebook and not _C.game_allowed(a.game):  # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only)
-        print(f"{a.game} is paused by reels.games_only; nothing scheduled on Facebook.", flush=True)
-        return 1
     cfg = json.loads(p.picks.read_text(encoding="utf-8"))
+    # reels.games_only lock (Bryce, 2026-11-19: GTA 6 only). A pack folder like gta6-guide names its game
+    # in "game", so the lock checks the real game, not the folder name.
+    if a.facebook and not _C.game_allowed(cfg.get("game") or a.game):
+        print(f"{cfg.get('game') or a.game} is paused by reels.games_only; nothing scheduled on Facebook.", flush=True)
+        return 1
     only = set(filter(None, a.only.split(",")))
 
     if a.upload:   # Bryce, 2026-11-16: never upload a series ahead with publish times

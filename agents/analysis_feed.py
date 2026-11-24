@@ -83,6 +83,8 @@ def _picks_all() -> list[tuple[str, dict, dict]]:
         except Exception:
             continue
         game = f.parent.name
+        if cfg.get("facebook_only"):   # Bryce, 2026-11-25: GTA 6 guide tip reels are Facebook only
+            continue
         for s in sorted(cfg.get("shorts", []), key=lambda x: x.get("order", 0)):
             out.append((game, cfg, s))
     return out

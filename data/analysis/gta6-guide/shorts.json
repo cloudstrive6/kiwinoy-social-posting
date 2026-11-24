@@ -1,0 +1,530 @@
+{
+ "game": "gta6",
+ "note": "Facebook-only tip reels cut from the GTA 6 beginners guide (render v6-vox, public on YouTube a3WYi8RTXao since 2026-11-25 08:00 NZ). Bryce, 2026-11-25: guide tip Shorts go 'For Facebook only for now' (YouTube voiceover Shorts stay paused; no Instagram or TikTok). One tip per reel, opening on the tip itself (the reference channel's Short beat sheet), from the guide's checked narration only. facebook_at is each reel's own Facebook slot (one a day, 04:00 UTC, clear of the fact-card slots); there is no youtube record, so the YouTube release job and the Instagram/TikTok analysis feed never pick these up.",
+ "full_video": "https://youtu.be/a3WYi8RTXao",
+ "facebook_only": true,
+ "slots_utc": [
+  "04:00"
+ ],
+ "hashtags_base": [
+  "#GTA6",
+  "#GTAVI",
+  "#GTA6Tips",
+  "#KiwinoyGaming"
+ ],
+ "tags_base": [
+  "GTA 6",
+  "GTA 6 tips",
+  "GTA 6 beginners guide",
+  "Boss KG"
+ ],
+ "game_lines": {
+  "_note": "Game lines from the edl cues (2026-11-25): each tip reel that ends on a deadpan gag includes the game clip that answers it.",
+  "b008": "I want rent plus 10% for the trouble.",
+  "b015": "Okay, you are under arrest!",
+  "b026": "Guess I'm a natural.",
+  "b056": "All right, there you go Dolores, watch over the house while I'm gone.",
+  "b031": "Just this once, I'll get your ride registered for you on the house."
+ },
+ "shorts": [
+  {
+   "id": "s01",
+   "order": 1,
+   "spoilers": false,
+   "hook": "I lost $531 in one death",
+   "accent": "$531",
+   "title": "GTA 6 Tip: Bank Your Cash Before It's Gone",
+   "blurb": "Cash in your pocket is lost when you die in GTA 6. I lost $531 on launch day. Bank it at an ATM.",
+   "hashtags_extra": [
+    "#GTA6Money"
+   ],
+   "tags_extra": [
+    "GTA 6 money",
+    "GTA 6 bank"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b004"
+     ],
+     "from": "Bank your cash."
+    }
+   ],
+   "start": 36.07,
+   "end": 62.807,
+   "flash_holds": {},
+   "seconds": 28.24,
+   "cuts": [
+    [
+     36.07,
+     62.807
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nCash in your pocket is lost when you die in GTA 6. I lost $531 on launch day. Bank it at an ATM.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Money",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 money",
+    "GTA 6 bank"
+   ],
+   "facebook_at": "2026-11-25T04:00:00Z",
+   "facebook": {
+    "id": "sp_wiI3k8sQKF1a6H7PpAIpb",
+    "scheduled_at": "2026-11-25T04:00:00Z",
+    "created_at": "2026-11-24T23:27:10Z"
+   }
+  },
+  {
+   "id": "s02",
+   "order": 2,
+   "spoilers": false,
+   "hook": "Your phone can't bank cash",
+   "accent": "can't",
+   "title": "GTA 6 Tip: Your Phone Can't Bank Your Cash",
+   "blurb": "In GTA 6 you deposit at an ATM, in person. The phone app will not move pocket cash into the bank.",
+   "hashtags_extra": [
+    "#GTA6Money"
+   ],
+   "tags_extra": [
+    "GTA 6 ATM",
+    "GTA 6 money"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b005"
+     ],
+     "from": "You deposit at an ATM, in person."
+    }
+   ],
+   "start": 63.81,
+   "end": 81.027,
+   "flash_holds": {},
+   "seconds": 18.72,
+   "cuts": [
+    [
+     63.81,
+     81.027
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nIn GTA 6 you deposit at an ATM, in person. The phone app will not move pocket cash into the bank.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Money",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 ATM",
+    "GTA 6 money"
+   ],
+   "facebook_at": "2026-11-26T04:00:00Z",
+   "facebook": {
+    "id": "sp_nmq7grOQqtOTlrreOfZ",
+    "scheduled_at": "2026-11-26T04:00:00Z",
+    "created_at": "2026-11-24T23:27:16Z"
+   }
+  },
+  {
+   "id": "s03",
+   "order": 3,
+   "spoilers": false,
+   "hook": "Jason and Lucia share one bank",
+   "accent": "share",
+   "title": "GTA 6 Tip: Jason and Lucia Share One Bank Account",
+   "blurb": "Money one of them banks is money the other one can spend. Their ATM statement shows both.",
+   "hashtags_extra": [
+    "#GTA6Money"
+   ],
+   "tags_extra": [
+    "Jason and Lucia",
+    "GTA 6 bank account"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b006",
+      "b007",
+      "b008"
+     ],
+     "from": "Jason and Lucia share one bank account."
+    }
+   ],
+   "start": 82.23,
+   "end": 102.867,
+   "flash_holds": {},
+   "seconds": 22.14,
+   "cuts": [
+    [
+     82.23,
+     102.867
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nMoney one of them banks is money the other one can spend. Their ATM statement shows both.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Money",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "Jason and Lucia",
+    "GTA 6 bank account"
+   ],
+   "facebook_at": "2026-11-27T04:00:00Z",
+   "facebook": {
+    "id": "sp_ixmi4cMxep4rY64qn6",
+    "scheduled_at": "2026-11-27T04:00:00Z",
+    "created_at": "2026-11-24T23:27:23Z"
+   }
+  },
+  {
+   "id": "s04",
+   "order": 4,
+   "spoilers": false,
+   "hook": "Stolen goods aren't money yet",
+   "accent": "aren't",
+   "title": "GTA 6 Tip: Stolen Goods Aren't Money Until You Sell Them",
+   "blurb": "Loot goes into a stash bag. Sell it at a drop-off like Brian's Lockup before it counts as cash.",
+   "hashtags_extra": [
+    "#GTA6Money"
+   ],
+   "tags_extra": [
+    "GTA 6 stash bag",
+    "Brian's Lockup"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b009"
+     ],
+     "from": "Stolen goods are not money yet."
+    }
+   ],
+   "start": 104.16,
+   "end": 130.56,
+   "flash_holds": {},
+   "seconds": 27.9,
+   "cuts": [
+    [
+     104.16,
+     130.56
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nLoot goes into a stash bag. Sell it at a drop-off like Brian's Lockup before it counts as cash.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Money",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 stash bag",
+    "Brian's Lockup"
+   ],
+   "facebook_at": "2026-11-28T04:00:00Z",
+   "facebook": {
+    "id": "sp_YZQ22L2zE1vwU8W0Y7dBf",
+    "scheduled_at": "2026-11-28T04:00:00Z",
+    "created_at": "2026-11-24T23:27:30Z"
+   }
+  },
+  {
+   "id": "s05",
+   "order": 5,
+   "spoilers": false,
+   "hook": "Cops remember your outfit",
+   "accent": "outfit",
+   "title": "GTA 6 Tip: The Cops Remember What You Look Like",
+   "blurb": "Read the map after a crime: appearance known, outfit known. Hiding is only half the job.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 wanted level",
+    "GTA 6 police"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b013",
+      "b014",
+      "b015"
+     ],
+     "from": "The police remember what you look like."
+    }
+   ],
+   "start": 186.57,
+   "end": 212.387,
+   "flash_holds": {},
+   "seconds": 27.32,
+   "cuts": [
+    [
+     186.57,
+     212.387
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nRead the map after a crime: appearance known, outfit known. Hiding is only half the job.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 wanted level",
+    "GTA 6 police"
+   ],
+   "facebook_at": "2026-11-29T04:00:00Z",
+   "facebook": {
+    "id": "sp_FAbPiyJ2OhYxrBFq4Qq",
+    "scheduled_at": "2026-11-29T04:00:00Z",
+    "created_at": "2026-11-24T23:27:36Z"
+   }
+  },
+  {
+   "id": "s06",
+   "order": 6,
+   "spoilers": false,
+   "hook": "Stars gone doesn't mean safe",
+   "accent": "safe",
+   "title": "GTA 6 Tip: How to Actually Lose the Cops",
+   "blurb": "Break line of sight, then leave the red search zone. The stars can vanish while the search stays.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 lose the cops",
+    "GTA 6 wanted level"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b016"
+     ],
+     "from": "To lose the cops, break line of sight, then leave the red zone."
+    }
+   ],
+   "start": 213.64,
+   "end": 241.337,
+   "flash_holds": {},
+   "seconds": 29.2,
+   "cuts": [
+    [
+     213.64,
+     241.337
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nBreak line of sight, then leave the red search zone. The stars can vanish while the search stays.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 lose the cops",
+    "GTA 6 wanted level"
+   ],
+   "facebook_at": "2026-11-30T04:00:00Z",
+   "facebook": {
+    "id": "sp_HdIihI4WzoAATllBRAlQV",
+    "scheduled_at": "2026-11-30T04:00:00Z",
+    "created_at": "2026-11-24T23:27:43Z"
+   }
+  },
+  {
+   "id": "s07",
+   "order": 7,
+   "spoilers": false,
+   "hook": "Pay 'n' Spray won't save you",
+   "accent": "won't",
+   "title": "GTA 6 Tip: The Pay 'n' Spray Trick Doesn't Work",
+   "blurb": "You cannot enter a Pay 'n' Spray during a chase in GTA 6. Escape first, then paint.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 Pay n Spray",
+    "GTA 6 respray"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b022"
+     ],
+     "from": "The Pay 'n' Spray trick from older games does not work here."
+    }
+   ],
+   "start": 311.0,
+   "end": 332.617,
+   "flash_holds": {},
+   "seconds": 23.12,
+   "cuts": [
+    [
+     311.0,
+     332.617
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nYou cannot enter a Pay 'n' Spray during a chase in GTA 6. Escape first, then paint.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 Pay n Spray",
+    "GTA 6 respray"
+   ],
+   "facebook_at": "2026-12-01T04:00:00Z",
+   "facebook": {
+    "id": "sp_gwsgST15fGeOJ3jP5TMN9",
+    "scheduled_at": "2026-12-01T04:00:00Z",
+    "created_at": "2026-11-24T23:27:50Z"
+   }
+  },
+  {
+   "id": "s08",
+   "order": 8,
+   "spoilers": false,
+   "hook": "Scan before you steal",
+   "accent": "Scan",
+   "title": "GTA 6 Tip: Scan a Car Before You Steal It",
+   "blurb": "The WAiNK app shows a car's lock, alarm and tracker. Tracker none is the one you want.",
+   "hashtags_extra": [
+    "#GTA6Cars"
+   ],
+   "tags_extra": [
+    "GTA 6 cars",
+    "WAiNK app"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b024",
+      "b025",
+      "b026"
+     ],
+     "from": "Check a car before you steal it."
+    }
+   ],
+   "start": 340.22,
+   "end": 367.017,
+   "flash_holds": {},
+   "seconds": 28.3,
+   "cuts": [
+    [
+     340.22,
+     367.017
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nThe WAiNK app shows a car's lock, alarm and tracker. Tracker none is the one you want.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Cars",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 cars",
+    "WAiNK app"
+   ],
+   "facebook_at": "2026-12-02T04:00:00Z",
+   "facebook": {
+    "id": "sp_lU1Acm9uJX6Q1EhicfVxA",
+    "scheduled_at": "2026-12-02T04:00:00Z",
+    "created_at": "2026-11-24T23:27:58Z"
+   }
+  },
+  {
+   "id": "s09",
+   "order": 9,
+   "spoilers": false,
+   "hook": "Your first registration is free",
+   "accent": "free",
+   "title": "GTA 6 Tip: Spend Your Free Car Registration Wisely",
+   "blurb": "Registering keeps a stolen car. Moses does your first one free, so use it on a car you love.",
+   "hashtags_extra": [
+    "#GTA6Cars"
+   ],
+   "tags_extra": [
+    "GTA 6 register car",
+    "Moses GTA 6"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b030",
+      "b032"
+     ],
+     "from": "To keep a stolen car, register it."
+    }
+   ],
+   "start": 389.16,
+   "end": 418.7,
+   "flash_holds": {},
+   "seconds": 31.04,
+   "cuts": [
+    [
+     389.16,
+     418.7
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nRegistering keeps a stolen car. Moses does your first one free, so use it on a car you love.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Cars",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 register car",
+    "Moses GTA 6"
+   ],
+   "facebook_at": "2026-12-03T04:00:00Z",
+   "facebook": {
+    "id": "sp_HJC8xG9WDTmMiQFZkNjYG",
+    "scheduled_at": "2026-12-03T04:00:00Z",
+    "created_at": "2026-11-24T23:28:06Z"
+   }
+  },
+  {
+   "id": "s10",
+   "order": 10,
+   "spoilers": false,
+   "hook": "Loading in can wipe your stuff",
+   "accent": "wipe",
+   "title": "GTA 6 Tip: What You Lose When You Load a Save",
+   "blurb": "Unowned vehicles, weapons and items you did not store are gone when you load back in.",
+   "hashtags_extra": [
+    "#GTA6Guide"
+   ],
+   "tags_extra": [
+    "GTA 6 save",
+    "GTA 6 weapons"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b054",
+      "b055",
+      "b056"
+     ],
+     "from": "Anything you do not own, or did not store, is gone when you load back in."
+    }
+   ],
+   "start": 661.39,
+   "end": 697.447,
+   "flash_holds": {},
+   "seconds": 37.56,
+   "cuts": [
+    [
+     661.39,
+     697.447
+    ]
+   ],
+   "description": "Full video: https://youtu.be/a3WYi8RTXao\n\nUnowned vehicles, weapons and items you did not store are gone when you load back in.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Guide",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 beginners guide",
+    "Boss KG",
+    "GTA 6 save",
+    "GTA 6 weapons"
+   ],
+   "facebook_at": "2026-12-04T04:00:00Z",
+   "facebook": {
+    "id": "sp_YftvK5nIB2ZysR3ybXvPG",
+    "scheduled_at": "2026-12-04T04:00:00Z",
+    "created_at": "2026-11-24T23:28:15Z"
+   }
+  }
+ ]
+}
