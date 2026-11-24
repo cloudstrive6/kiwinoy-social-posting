@@ -1,6 +1,93 @@
-{"logo": "reels/assets/game-logo/Wolverine Game Logo.png",
+{
+ "logo": "reels/assets/game-logo/Wolverine Game Logo.png",
  "items": [
-  {"name": "thumb-a-he-forgot-her", "clip": 33, "at": 60.0, "crop": [0.40, 0.08, 1.0, 0.68], "lines": ["HE FORGOT", "HER"], "side": "left", "logo_w": 380, "size": 112, "dark": 0.6, "keep_clear": [0.46, 0.0, 1.0, 1.0]},
-  {"name": "thumb-b-he-chose-this", "clip": 32, "at": 44.0, "crop": [0.14, 0.0, 1.0, 0.76], "lines": ["HE CHOSE", "THIS"], "side": "left", "logo_w": 400, "size": 136, "dark": 0.6, "keep_clear": [0.55, 0.25, 0.72, 0.65]},
-  {"name": "thumb-c-nothing-left", "clip": 33, "at": 14.0, "crop": [0.0, 0.0, 0.8, 0.8], "lines": ["NOTHING", "LEFT"], "side": "left", "logo_w": 380, "size": 128, "dark": 0.55, "keep_clear": [0.47, 0.16, 0.78, 0.72]}
- ]}
+  {
+   "name": "thumb-a-he-forgot-her",
+   "clip": 33,
+   "at": 60.0,
+   "column": "left",
+   "place": {
+    "cx": 0.84,
+    "top": 0.04,
+    "zoom": 0.62,
+    "target_cx": 0.72
+   },
+   "faces": [
+    [
+     0.69,
+     0.13,
+     0.97,
+     0.7
+    ]
+   ],
+   "lines": [
+    "HE FORGOT",
+    "HER"
+   ]
+  },
+  {
+   "name": "thumb-b-he-chose-this",
+   "clip": 32,
+   "at": 44.0,
+   "column": "right",
+   "place": {
+    "cx": 0.5,
+    "top": 0.14,
+    "zoom": 0.56,
+    "target_cx": 0.3
+   },
+   "faces": [
+    [
+     0.46,
+     0.26,
+     0.54,
+     0.35
+    ],
+    [
+     0.32,
+     0.57,
+     0.47,
+     0.76
+    ]
+   ],
+   "lines": [
+    "HE CHOSE",
+    "THIS"
+   ],
+   "grade": {
+    "sat": 145,
+    "contrast": 80,
+    "bright": 132
+   }
+  },
+  {
+   "name": "thumb-c-nothing-left",
+   "clip": 32,
+   "at": 6.5,
+   "column": "right",
+   "place": {
+    "cx": 0.38,
+    "top": 0.0,
+    "zoom": 0.85,
+    "target_cx": 0.3
+   },
+   "faces": [
+    [
+     0.22,
+     0.06,
+     0.57,
+     0.64
+    ]
+   ],
+   "lines": [
+    "NOTHING",
+    "LEFT"
+   ],
+   "note": "Logan in profile shouting towards the words; replaces the Jean close-up (her hair fills 55% of every close-up, so the words always touched her head)",
+   "grade": {
+    "sat": 170,
+    "contrast": 86
+   }
+  }
+ ]
+}

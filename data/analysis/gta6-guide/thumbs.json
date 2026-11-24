@@ -1,0 +1,85 @@
+{
+ "logo": "reels/assets/game-logo/GTA 6 Logo.png",
+ "items": [
+  {
+   "name": "thumb-a-beginners-guide",
+   "clip": 1008,
+   "at": 231.0,
+   "column": "left",
+   "place": {
+    "cx": 0.38,
+    "top": 0.28,
+    "zoom": 0.6
+   },
+   "faces": [
+    [
+     0.33,
+     0.29,
+     0.43,
+     0.44
+    ]
+   ],
+   "lines": [
+    "BEGINNERS",
+    "GUIDE"
+   ],
+   "note": "Jason from behind walking to his black Ganado at the stilt house (reference 1's shot); replaces Lucia from behind (review: rear-focused)",
+   "grade": {
+    "sharpen": 70
+   }
+  },
+  {
+   "name": "thumb-b-lost-531",
+   "clip": 1004,
+   "at": 16.0,
+   "place": {
+    "cx": 0.48,
+    "top": 0.2,
+    "zoom": 0.66,
+    "target_cx": 0.35
+   },
+   "faces": [
+    [
+     0.41,
+     0.21,
+     0.54,
+     0.39
+    ]
+   ],
+   "money": {
+    "figure": "$0",
+    "lines": [
+     "- $531"
+    ],
+    "color": "red"
+   },
+   "grade": {
+    "sharpen": 60
+   }
+  },
+  {
+   "name": "thumb-c-busted",
+   "clip": 1017,
+   "at": 192.5,
+   "column": "right",
+   "letterbox": true,
+   "place": {
+    "cx": 0.43,
+    "top": 0.0,
+    "zoom": 0.82,
+    "target_cx": 0.3
+   },
+   "faces": [
+    [
+     0.32,
+     0.05,
+     0.61,
+     0.33
+    ]
+   ],
+   "lines": [
+    "BUSTED"
+   ]
+  }
+ ]
+}
