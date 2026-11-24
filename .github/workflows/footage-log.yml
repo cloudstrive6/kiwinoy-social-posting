@@ -8,7 +8,7 @@ name: Footage log (what happens in every clip)
 
 on:
   schedule:
-    - cron: "41 */3 * * *"     # every 3 hours; a few clips per run until every clip has a log
+    - cron: "41 */2 * * *"     # every 2 hours, 12 clips a run (2026-11-24: fact cards now need a log)
   workflow_dispatch:
     inputs:
       games:
@@ -18,7 +18,7 @@ on:
       max:
         description: "clips this run"
         required: false
-        default: "6"
+        default: "12"
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
       GAMES: ${{ github.event.inputs.games || 'gta6' }}
-      MAX: ${{ github.event.inputs.max || '6' }}
+      MAX: ${{ github.event.inputs.max || '12' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

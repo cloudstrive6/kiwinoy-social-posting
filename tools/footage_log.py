@@ -125,6 +125,7 @@ def main() -> int:
     ap.add_argument("--model", default="opus")
     ap.add_argument("--show", default="", help="print the log of one clip key")
     ap.add_argument("--redo", action="store_true", help="rebuild logs that exist")
+    ap.add_argument("--keys", default="", help="log exactly these B2 keys, separated by |")
     a = ap.parse_args()
     from core import b2_store
     if a.show:
@@ -137,8 +138,8 @@ def main() -> int:
         raise SystemExit("CLAUDE_CODE_OAUTH_TOKEN is not set (the log runs on the subscription, never the paid API)")
     have = {f.get("fileName", "") for f in b2_store._list_names("footage-log/")}
     failed = json.loads(b2_store.get_bytes("footage-log/_failed.json") or b"{}")
-    todo = []
-    for g in a.games:
+    todo = [k.strip() for k in a.keys.split("|") if k.strip()]
+    for g in ([] if todo else a.games):
         for c in b2_store.list_cutscenes(g) + b2_store.list_footage(g):
             if (a.redo or log_key(c["key"]) not in have) and failed.get(c["key"], 0) < 2:
                 todo.append(c["key"])
