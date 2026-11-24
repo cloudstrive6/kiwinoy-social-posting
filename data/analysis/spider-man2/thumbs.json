@@ -1,0 +1,6 @@
+{"logo": "reels/assets/game-logo/Marvel's_Spider-Man_2.png",
+ "items": [
+  {"name": "thumb-a-he-kept-it", "clip": 488, "at": 166.0, "crop": [0.18, 0.0, 1.0, 0.82], "lines": ["HE KEPT", "IT"], "side": "right", "logo_w": 430, "size": 150, "keep_clear": [0.26, 0.1, 0.52, 0.65]},
+  {"name": "thumb-b-save-yourself", "clip": 535, "at": 46.0, "crop": [0.08, 0.0, 0.73, 0.65], "lines": ["SAVE", "YOURSELF"], "side": "left", "logo_w": 400, "size": 128, "dark": 0.55, "keep_clear": [0.5, 0.08, 0.85, 0.6]},
+  {"name": "thumb-c-not-possessed", "clip": 1003, "at": 310.0, "crop": [0.20, 0.0, 0.80, 0.6], "anchor": "x1", "lines": ["NOT", "POSSESSED"], "side": "left", "logo_w": 430, "size": 124, "keep_clear": [0.5, 0.1, 0.85, 0.65]}
+ ]}
