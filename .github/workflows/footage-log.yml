@@ -19,6 +19,10 @@ on:
         description: "clips this run"
         required: false
         default: "12"
+      keys:
+        description: "log exactly these B2 clip keys, separated by | (for a script's footage check)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -50,4 +54,8 @@ jobs:
           pip install --quiet "faster-whisper==1.1.1"
           npm install -g @anthropic-ai/claude-code
       - name: Log clips without a log
-        run: python tools/footage_log.py $GAMES --max "$MAX"
+        env:
+          KEYS: ${{ github.event.inputs.keys }}
+        run: |
+          if [ -n "$KEYS" ]; then python tools/footage_log.py --keys "$KEYS" --max 10
+          else python tools/footage_log.py $GAMES --max "$MAX"; fi
