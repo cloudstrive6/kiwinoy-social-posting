@@ -362,13 +362,18 @@ def copy_file(src_key: str, dst_key: str) -> bool:
     fid = file_id_of(src_key) if auth else None
     if not (auth and fid and dst_key):
         return False
-    try:
-        r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_copy_file", headers={"Authorization": auth["token"]},
-                          json={"sourceFileId": fid, "fileName": dst_key, "metadataDirective": "COPY"},
-                          timeout=600)
-        return r.status_code == 200
-    except Exception:
-        return False
+    for attempt in range(3):  # 2026-11-24: the first live copy (guide v6) failed once, then worked on retry
+        try:
+            r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_copy_file", headers={"Authorization": auth["token"]},
+                              json={"sourceFileId": fid, "fileName": dst_key, "metadataDirective": "COPY"},
+                              timeout=900)
+            if r.status_code == 200:
+                return True
+            print(f"[b2] copy {dst_key}: {r.status_code} {r.text[:160]}", flush=True)
+        except Exception as e:
+            print(f"[b2] copy {dst_key}: {e!r}"[:200], flush=True)
+        time.sleep(10 * (attempt + 1))
+    return False
 
 
 def put_file(key: str, path, content_type: str = "video/mp4") -> bool:
