@@ -8,7 +8,7 @@ game: "marvel-rivals"
 cover: "/covers/lego-reveals-marvel-rivals-jeff-the-land-shark-set-for-january-2027.jpg"
 date: 2026-11-24
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/lego-reveals-adorable-marvel-rivals-jeff-the-land-shark-set"
 telegramMessageId: 1807
