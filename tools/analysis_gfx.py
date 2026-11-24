@@ -23,6 +23,7 @@ import re
 from pathlib import Path
 from typing import Callable
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageEnhance
 
 import analysis_motion as M
@@ -1157,19 +1158,36 @@ def g_storybook(spec: dict, n: int, grab=None) -> M.Graphic:
     return _g("storybook", n, c, draw)
 
 
+def _avatar(d: int) -> "M.Sprite":
+    """Bryce's KG profile photo as a round sprite, d px across, anchored at its centre (2026-11-24:
+    "why not just use my KG profile photo there instead of the letters KG")."""
+    src = Path(__file__).resolve().parent.parent / "assets" / "brand" / "kg-avatar.png"
+    im = Image.open(src).convert("RGBA").resize((d, d), Image.LANCZOS)
+    mask = Image.new("L", (d * 4, d * 4), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, d * 4 - 1, d * 4 - 1), fill=255)
+    im.putalpha(Image.fromarray(np.minimum(np.asarray(im.getchannel("A")),
+                                           np.asarray(mask.resize((d, d), Image.LANCZOS)))))
+    pad = 36
+    padded = Image.new("RGBA", (d + 2 * pad, d + 2 * pad), (0, 0, 0, 0))
+    padded.alpha_composite(im, (pad, pad))
+    return M.Sprite(M.shadow_stack(padded, 0.8), d / 2 + pad, d / 2 + pad)
+
+
 def g_endscreen(spec: dict, n: int, grab=None) -> M.Graphic:
+    """Closing card under YouTube's end-screen elements (set at upload). Bryce, 2026-11-24: no outline
+    boxes; the video slot stays clear for YouTube's own element, and the circle holds his profile photo,
+    which YouTube's subscribe element covers exactly. Text in the slot only if the spec gives 'next'."""
     x0, y0, x1, y1 = 140, 300, 1040, 806  # 16:9 slot for YouTube's end-screen video element
-    perim = [(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)]
     head = M.text("WATCH NEXT", M.MIN_LABEL, "heavy", M.OFF)
-    nl = M.wrap(spec["next"], M.LABEL, "display", x1 - x0 - 56)
-    nts = [M.text(s, M.LABEL) for s in nl]
-    sub = M.text(spec["sub"], M.LABEL, "display", M.ORANGE)
+    lines = []
+    if spec.get("next"):
+        lines = [M.text(s, M.LABEL) for s in M.wrap(spec["next"], M.LABEL, "display", x1 - x0 - 56)]
+        if spec.get("sub"):
+            lines.append(M.text(spec["sub"], M.LABEL, "display", M.ORANGE))
     mid = (y0 + y1) / 2
-    lines = nts + [sub]
     bases = [mid - (len(lines) - 1) * 32 + k * 64 + cap(M.LABEL) / 2 for k in range(len(lines))]
     ccx, ccy, cr = 1500, 553, 170
-    circ = M.arc_points(ccx, ccy, cr, -math.pi / 2, 1.5 * math.pi, 200)
-    kg = M.text("KG", M.SLAM)
+    av = _avatar(2 * cr)
     bx0, by0, bx1, by1 = ccx - 200, ccy + 200, ccx + 200, ccy + 280
     btn = M.Shape(bx0, by0, bx1, by1, pad=40).rect(bx0, by0, bx1, by1, fill=M.RED, r=10).done(shadow=True, k=0.8)
     bl = M.text("SUBSCRIBE", M.LABEL, "display", M.OFF, shadow=False)
@@ -1178,25 +1196,15 @@ def g_endscreen(spec: dict, n: int, grab=None) -> M.Graphic:
     c = Clock(n, 46)
     dim = M.dim(0.66)
 
-    def outline(pts, f):
-        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-        return M.Shape(min(xs), min(ys), max(xs), max(ys)).line(M.partial(pts, f), M.OFF, M.HAIR).done()
-
-    full_slot, full_circ = outline(perim, 1), outline(circ, 1)
-
     def draw(i):
         o = c.out(i)
         fade = 1 - o
         out = put(dim, 0, 0, a=tin(i, 0, 18, M.ease_out_cubic) * fade)
-        f = M.ease_in_out_cubic(seg(i, 0, 30))
-        out += put(full_slot if f >= 1 else outline(perim, f), 0, 0, a=fade) if f > 0 else []
-        f2 = M.ease_in_out_cubic(seg(i, 6, 30))
-        out += put(full_circ if f2 >= 1 else outline(circ, f2), 0, 0, a=fade) if f2 > 0 else []
         out += put(head, x0, y0 - 40, a=fade, mask=("rise", tin(i, 6, 18)))
         for k, (t, b) in enumerate(zip(lines, bases)):
             out += put(t, _centre_x(t, (x0 + x1) / 2), b, a=fade, mask=("rise", tin(i, 12 + 6 * k, 20)))
-        q = tin(i, 16, 20)
-        out += put(kg, _centre_x(kg, ccx), ccy + cap(M.SLAM) / 2, a=min(1, q * 2) * fade, s=0.92 + 0.08 * q)
+        q = tin(i, 10, 20)
+        out += put(av, ccx, ccy, a=min(1, q * 2) * fade, s=0.92 + 0.08 * q)
         q2 = M.ease_out_back(seg(i, 22, 24))  # the one overshoot of the closing chapter
         out += put(btn, 0, 0, a=min(1, seg(i, 22, 8)) * fade, s=max(0.02, 0.92 + 0.08 * q2), dy=o * 40)
         return out
