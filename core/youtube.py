@@ -260,6 +260,14 @@ def upload_video(
             raise
     vid = resp.get("id", "")
     print(f"[youtube] uploaded id={vid}  https://youtu.be/{vid}", flush=True)
+    if stream is None:
+        # Bryce, 2026-11-24: keep every final long-form on B2 for good (finals/longform/). Only
+        # files named <slug>-analysis-v<N>.mp4 are kept; never blocks the upload.
+        try:
+            from core import finals
+            finals.save_longform_upload(path, title, vid, status.get("privacyStatus", ""))
+        except Exception as e:
+            print(f"[youtube] finals copy skipped ({e!r})", flush=True)
 
     if thumbnail and Path(thumbnail).exists():
         yt.thumbnails().set(

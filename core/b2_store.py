@@ -347,8 +347,67 @@ def list_longform() -> list[dict[str, Any]]:
     return out
 
 
+def file_id_of(key: str) -> Optional[str]:
+    """The fileId of the newest version of one exact key, or None."""
+    for f in _list_names(key):
+        if f.get("fileName") == key and f.get("action") in (None, "upload"):
+            return f.get("fileId")
+    return None
+
+
+def copy_file(src_key: str, dst_key: str) -> bool:
+    """Server-side copy inside the bucket (no download; up to 5 GB). True on success.
+    Added 2026-11-24 for finals/ (Bryce: keep a copy of every final render on B2)."""
+    auth = _authorize()
+    fid = file_id_of(src_key) if auth else None
+    if not (auth and fid and dst_key):
+        return False
+    try:
+        r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_copy_file", headers={"Authorization": auth["token"]},
+                          json={"sourceFileId": fid, "fileName": dst_key, "metadataDirective": "COPY"},
+                          timeout=600)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
+def put_file(key: str, path, content_type: str = "video/mp4") -> bool:
+    """Upload one local file (streamed, up to 5 GB) to a private key. True on success.
+    Added 2026-11-24 for finals/; put_bytes holds the whole object in memory."""
+    import hashlib
+    path = Path(path)
+    auth = _authorize()
+    if not auth or not key or not path.is_file() or path.stat().st_size > 5 * 10**9:
+        return False
+    h = hashlib.sha1()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    for _ in range(3):
+        try:
+            r = requests.post(f"{auth['apiUrl']}/b2api/v3/b2_get_upload_url", headers={"Authorization": auth["token"]},
+                              json={"bucketId": auth["bucketId"]}, timeout=_TIMEOUT)
+            if r.status_code != 200:
+                continue
+            up = r.json()
+            with open(path, "rb") as fh:
+                r = requests.post(up["uploadUrl"], data=fh, timeout=3600,
+                                  headers={"Authorization": up["authorizationToken"],
+                                           "X-Bz-File-Name": quote(key, safe="/"), "Content-Type": content_type,
+                                           "Content-Length": str(path.stat().st_size),
+                                           "X-Bz-Content-Sha1": h.hexdigest()})
+            if r.status_code == 200:
+                return True
+        except Exception:
+            continue
+    return False
+
+
 def delete_file(key: str, file_id: str) -> bool:
-    """Delete one file version from B2 (the long-form 15-day post-upload cleanup)."""
+    """Delete one file version from B2 (the long-form 15-day post-upload cleanup).
+    Never deletes under finals/ (Bryce, 2026-11-24: final renders are kept for good)."""
+    if key.startswith("finals/"):
+        return False
     auth = _authorize()
     if not auth or not key or not file_id:
         return False
