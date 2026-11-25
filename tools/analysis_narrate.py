@@ -321,6 +321,10 @@ def narrate_backup(game: str, edl: dict, narr: list, nar: dict, out: Path, reaso
 def main() -> int:
     game = sys.argv[1] if len(sys.argv) > 1 else "wolverine"
     edl = json.loads((ROOT / "data" / "analysis" / game / "edl.json").read_text(encoding="utf-8"))
+    from analysis_edl import tts_drift  # the voiced words must be the reviewed words (2026-11-25)
+    drift = tts_drift(edl, game)
+    if drift:
+        raise SystemExit(f"tts differs from text in {', '.join(drift)}: change both (or rebuild the EDL), then narrate")
     import claims_check  # every footage claim checked against the footage before credits are spent (2026-11-23)
     claims_check.gate(game, edl)
     nar = edl.get("narrator")

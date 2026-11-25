@@ -90,6 +90,23 @@ def tts_text(text: str, game: str = "") -> str:
     return text
 
 
+# Older pronunciation respellings still in voiced EDLs (gta6-guide was voiced with "Loo-see-ah" before
+# Bryce picked the accented "Lucía", 2026-11-25): read as the name, so they are not drift.
+TTS_RESPELLED = [(r"\bLoo-see-ah\b", "Lucía")]
+
+
+def tts_drift(edl: dict, game: str) -> list[str]:
+    """Narration beats whose spoken "tts" no longer says what "text" says (2026-11-25: gta6-cops b012 was
+    reworded in "text" only, so the old words were voiced and passed every check). Delivery tags and
+    the pronunciation respellings above are allowed; any other word difference is drift."""
+    def norm(t: str) -> str:
+        for pat, rep in TTS_RESPELLED:
+            t = re.sub(pat, rep, t)
+        return " ".join(strip_tags(t).split())
+    return [b["id"] for b in edl.get("beats", []) if b.get("type") == "narr" and b.get("tts") is not None
+            and norm(tts_text(b.get("text", ""), game)) != norm(b["tts"])]
+
+
 # Delivery tags for Eleven v4 (Bryce picked v4 with tags in a blind A/B, 2026-11-17): a narration
 # paragraph may carry a few [quietly]-style cues before the words they shape. They stay in the TTS
 # text only; the EDL text (captions, Shorts, reviews) never has them, and tools/analysis_narrate.py
