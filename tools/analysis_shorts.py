@@ -1111,6 +1111,14 @@ def caption_pages(words: list[dict]) -> list[list[dict]]:
                 pages.append(cur[:-1])   # too wide to merge: rebalance 3+1 into 2+2 (STORY SOON / IS OUT.)
                 cur = cur[-1:]
                 soft = False
+            if soft and not hard and len(cur) <= 2 and _is_neg(w):
+                # a negation never opens a page cut off from the one or two words it completes
+                # (gta6-cops s10, 2026-11-26: "I CHANGED" / "NOTHING," read as the opposite); it joins
+                # this page, drawn smaller if it must. Longer pages keep the old split (a 5-word join
+                # drew "I DON'T KNOW NOTHING ABOUT" at half size, review 2026-11-26).
+                soft = False
+            if soft and not hard and _bare(prev) == "gta" and re.match(r"\d", w["disp"]):
+                soft = False   # "GTA" and its number stay on one page (s01: "COPS IN GTA" / "6 MEANS")
             if hard:
                 pages.append(cur)
                 cur = []
@@ -1506,7 +1514,7 @@ def b2_all(p: Paths, cfg: dict, only: set[str]) -> None:
             print(f"{s['id']}: B2 copy failed rc={rc}", flush=True)
 
 
-def facebook_all(p: Paths, cfg: dict, only: set[str]) -> None:
+def facebook_all(p: Paths, cfg: dict, only: set[str], start: "dt.datetime | None" = None) -> None:
     """Schedule each Short on the Boss KG Facebook page at its YouTube slot (Bryce, 2026-11-14:
     Facebook posts the analysis Shorts instead of the fill and lore reels). Post for Me with
     scheduled_at; the post id is written to the pick so a rerun never posts twice."""
@@ -1514,13 +1522,16 @@ def facebook_all(p: Paths, cfg: dict, only: set[str]) -> None:
     # FACEBOOK-ONLY packs (Bryce, 2026-11-25: GTA 6 guide tip Shorts "For Facebook only for now"): no
     # YouTube slot exists, so each pick gets its own facebook_at, one a day at slots_utc[0], starting
     # the first free day at least 3 hours from now and after any reel of this pack already booked.
+    # --start (ISO UTC) moves the first slot later, so a second pack waits for the slots another pack
+    # holds (gta6-cops after gta6-guide, 2026-11-26).
     if cfg.get("facebook_only"):
         hhmm = (cfg.get("slots_utc") or ["04:00"])[0]
         h, m = (int(x) for x in hhmm.split(":"))
         now = dt.datetime.now(dt.timezone.utc)
         booked = [dt.datetime.fromisoformat(str((s.get("facebook") or {}).get("scheduled_at")).replace("Z", "+00:00"))
                   for s in cfg["shorts"] if (s.get("facebook") or {}).get("scheduled_at")]
-        day = max([now + dt.timedelta(hours=3)] + [b + dt.timedelta(days=1) for b in booked])
+        day = max([now + dt.timedelta(hours=3)] + ([start] if start else [])
+                  + [b + dt.timedelta(days=1) for b in booked])
         nxt = day.replace(hour=h, minute=m, second=0, microsecond=0)
         if nxt < day:
             nxt += dt.timedelta(days=1)
@@ -1586,7 +1597,8 @@ def main() -> int:
         if a.b2:
             b2_all(p, cfg, only)
         if a.facebook:
-            facebook_all(p, cfg, only)
+            fb_start = dt.datetime.fromisoformat(a.start.replace("Z", "+00:00")) if a.start else None
+            facebook_all(p, cfg, only, start=fb_start)
         return 0
     if a.dry_run or a.upload:
         start = None

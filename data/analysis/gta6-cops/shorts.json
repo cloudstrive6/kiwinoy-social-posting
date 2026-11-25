@@ -1,0 +1,481 @@
+{
+ "game": "gta6",
+ "narrator": "guide-c",
+ "note": "Facebook-only tip reels cut from GTA 6 How to Lose the Cops (render v3-vox, YouTube kQz1_CHADlE, public from 2026-11-27 08:00 NZ). Bryce approved v3 on 2026-11-26 and said 'continue with the automation'; same rules as the guide's tip reels (data/analysis/gta6-guide/shorts.json): Facebook only for now, one tip per reel, opening on the tip itself, from the reviewed v3 narration only, no attributed lines ('guides say', 'a tip says', Rob Nelson's quote) and no 'Tip number' lead-in. Joke endings include the game line that answers them (game_lines). facebook_at is each reel's own Facebook slot (one a day, 04:00 UTC); the guide reels hold 04:00 UTC until 2026-12-04, so these start 2026-12-05 and are booked from the main session. There is no youtube record, so the YouTube release job and the Instagram/TikTok analysis feed never pick these up; youtube_gap_fill as for the guide pack (a YouTube Shorts slot whose fact card is refused may post the next unused tip reel, at most one per slot).",
+ "full_video": "https://youtu.be/kQz1_CHADlE",
+ "facebook_only": true,
+ "youtube_gap_fill": true,
+ "slots_utc": [
+  "04:00"
+ ],
+ "hashtags_base": [
+  "#GTA6",
+  "#GTAVI",
+  "#GTA6Tips",
+  "#KiwinoyGaming"
+ ],
+ "tags_base": [
+  "GTA 6",
+  "GTA 6 tips",
+  "GTA 6 lose the cops",
+  "Boss KG"
+ ],
+ "game_lines": {
+  "_note": "Game lines from the edl cues (2026-11-26): each tip reel that ends on a deadpan gag includes the game clip that answers it.",
+  "b015": "Don't move! Don't you move!",
+  "b018": "Got so bad once, I had bounties on me in three different states.",
+  "b025": "I don't know nothing about you, except you got a name and a ride that ain't yours."
+ },
+ "shorts": [
+  {
+   "id": "s01",
+   "order": 1,
+   "spoilers": false,
+   "hook": "Each red icon is a clue",
+   "accent": "clue",
+   "title": "GTA 6 Tip: What the Red Icons Under Your Stars Mean",
+   "blurb": "The red icons under your wanted stars are what the police know about you: outfit, face, car and weapon. Clear them one by one to lose the cops.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 wanted level",
+    "GTA 6 police"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b005"
+     ],
+     "from": "The red icons under the stars are what the police know about you."
+    }
+   ],
+   "start": 59.1,
+   "end": 77.437,
+   "flash_holds": {
+    "0": 0.3837
+   },
+   "seconds": 19.84,
+   "cuts": [
+    [
+     59.1,
+     77.437
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nThe red icons under your wanted stars are what the police know about you: outfit, face, car and weapon. Clear them one by one to lose the cops.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 wanted level",
+    "GTA 6 police"
+   ]
+  },
+  {
+   "id": "s02",
+   "order": 2,
+   "spoilers": false,
+   "hook": "Your gun is on their list",
+   "accent": "gun",
+   "title": "GTA 6 Tip: Put Your Gun Away When You're Wanted",
+   "blurb": "A gun on your back can be the only thing the police know about you. Holster a pistol, and drop a long gun or stow it in a car trunk.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 weapons",
+    "GTA 6 wanted level"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b011"
+     ],
+     "from": "Put your gun away."
+    }
+   ],
+   "start": 117.67,
+   "end": 136.11,
+   "flash_holds": {},
+   "seconds": 19.94,
+   "cuts": [
+    [
+     117.67,
+     136.11
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nA gun on your back can be the only thing the police know about you. Holster a pistol, and drop a long gun or stow it in a car trunk.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 weapons",
+    "GTA 6 wanted level"
+   ]
+  },
+  {
+   "id": "s03",
+   "order": 3,
+   "spoilers": false,
+   "hook": "Two stars to four in one jet",
+   "accent": "four",
+   "title": "GTA 6 Tip: Some Crimes Send Your Stars Flying",
+   "blurb": "I had two stars at the airport. Taking a passenger jet made it four before it left the ground.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 wanted level",
+    "GTA 6 airport"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b013",
+      "b014",
+      "b015"
+     ],
+     "from": "Some crimes send the stars flying."
+    }
+   ],
+   "start": 156.43,
+   "end": 177.997,
+   "flash_holds": {},
+   "seconds": 23.07,
+   "cuts": [
+    [
+     156.43,
+     177.997
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nI had two stars at the airport. Taking a passenger jet made it four before it left the ground.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 wanted level",
+    "GTA 6 airport"
+   ]
+  },
+  {
+   "id": "s04",
+   "order": 4,
+   "spoilers": false,
+   "hook": "At six stars, there is no escape",
+   "accent": "six",
+   "title": "GTA 6 Tip: Never Let It Reach Six Stars",
+   "blurb": "At six stars you can no longer lose your wanted level. When you see five, stop adding crimes and start running.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 six stars",
+    "GTA 6 wanted level"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b016",
+      "b017",
+      "b018"
+     ],
+     "from": "Never let it reach six stars."
+    }
+   ],
+   "start": 179.29,
+   "end": 199.417,
+   "flash_holds": {},
+   "seconds": 21.63,
+   "cuts": [
+    [
+     179.29,
+     199.417
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nAt six stars you can no longer lose your wanted level. When you see five, stop adding crimes and start running.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 six stars",
+    "GTA 6 wanted level"
+   ]
+  },
+  {
+   "id": "s05",
+   "order": 5,
+   "spoilers": false,
+   "hook": "On foot? Hide",
+   "accent": "Hide",
+   "title": "GTA 6 Tip: On Foot, Hide Until the Search Moves On",
+   "blurb": "Bushes, shipping containers and dumpsters all hide you on foot. If police dogs show up, keep moving through cover.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 hide from cops",
+    "GTA 6 wanted level"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b021"
+     ],
+     "from": "On foot, hide."
+    }
+   ],
+   "start": 222.11,
+   "end": 238.567,
+   "flash_holds": {},
+   "seconds": 17.96,
+   "cuts": [
+    [
+     222.11,
+     238.567
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nBushes, shipping containers and dumpsters all hide you on foot. If police dogs show up, keep moving through cover.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 hide from cops",
+    "GTA 6 wanted level"
+   ]
+  },
+  {
+   "id": "s06",
+   "order": 6,
+   "spoilers": false,
+   "hook": "They know your car. Ditch it",
+   "accent": "Ditch",
+   "title": "GTA 6 Tip: Ditch the Car the Cops Know",
+   "blurb": "Once I was on foot, the vehicle icon under my stars was gone. A different car does the same job.",
+   "hashtags_extra": [
+    "#GTA6Cars"
+   ],
+   "tags_extra": [
+    "GTA 6 cars",
+    "GTA 6 wanted level"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b023",
+      "b024",
+      "b025"
+     ],
+     "from": "Ditch the car."
+    }
+   ],
+   "start": 255.62,
+   "end": 277.237,
+   "flash_holds": {},
+   "seconds": 23.12,
+   "cuts": [
+    [
+     255.62,
+     277.237
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nOnce I was on foot, the vehicle icon under my stars was gone. A different car does the same job.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Cars",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 cars",
+    "GTA 6 wanted level"
+   ]
+  },
+  {
+   "id": "s07",
+   "order": 7,
+   "spoilers": false,
+   "hook": "Your glasses can give you away",
+   "accent": "glasses",
+   "title": "GTA 6 Tip: Check Your Items Wheel for the Red Badge",
+   "blurb": "The items wheel marks each item the police know with a red badge. Jason took off his glasses and the face icon vanished.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 items wheel",
+    "GTA 6 disguise"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b028"
+     ],
+     "from": "Open your items wheel.",
+     "to": "Check the wheel every time the stars go up."
+    }
+   ],
+   "start": 289.98,
+   "end": 304.37,
+   "flash_holds": {},
+   "seconds": 15.89,
+   "cuts": [
+    [
+     289.98,
+     304.37
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nThe items wheel marks each item the police know with a red badge. Jason took off his glasses and the face icon vanished.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 items wheel",
+    "GTA 6 disguise"
+   ]
+  },
+  {
+   "id": "s08",
+   "order": 8,
+   "spoilers": false,
+   "hook": "Mask on, then mask off",
+   "accent": "off",
+   "title": "GTA 6 Tip: Wear a Mask for the Job, Take It Off After",
+   "blurb": "A mask helps hide your face. Lucia took off her face wrap and glasses, and the game said appearance heat cleared.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 mask",
+    "GTA 6 disguise"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b029"
+     ],
+     "from": "Wear a mask for the job, and take it off after."
+    }
+   ],
+   "start": 308.35,
+   "end": 323.487,
+   "flash_holds": {},
+   "seconds": 16.64,
+   "cuts": [
+    [
+     308.35,
+     323.487
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nA mask helps hide your face. Lucia took off her face wrap and glasses, and the game said appearance heat cleared.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 mask",
+    "GTA 6 disguise"
+   ]
+  },
+  {
+   "id": "s09",
+   "order": 9,
+   "spoilers": false,
+   "hook": "Change clothes after you vanish",
+   "accent": "after",
+   "title": "GTA 6 Tip: Change Your Outfit Once You're Out of Sight",
+   "blurb": "A new outfit clears \"outfit known\" once you break line of sight. Lucia waited until her stars were gone, then walked into a clothing store, where denim cutoffs were $12.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 outfit",
+    "GTA 6 disguise"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b030"
+     ],
+     "from": "Change your outfit, but only once you are out of sight."
+    }
+   ],
+   "start": 324.94,
+   "end": 344.617,
+   "flash_holds": {},
+   "seconds": 21.18,
+   "cuts": [
+    [
+     324.94,
+     344.617
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nA new outfit clears \"outfit known\" once you break line of sight. Lucia waited until her stars were gone, then walked into a clothing store, where denim cutoffs were $12.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 outfit",
+    "GTA 6 disguise"
+   ]
+  },
+  {
+   "id": "s10",
+   "order": 10,
+   "spoilers": false,
+   "hook": "My stars came back",
+   "accent": "back",
+   "title": "GTA 6 Tip: Stars Gone Doesn't Mean You're Safe",
+   "blurb": "No stars on my HUD, but the map still had a red zone. I drove in and three stars lit up again. Go around the zone.",
+   "hashtags_extra": [
+    "#GTA6Wanted"
+   ],
+   "tags_extra": [
+    "GTA 6 wanted level",
+    "GTA 6 heat"
+   ],
+   "parts": [
+    {
+     "beats": [
+      "b034"
+     ],
+     "from": "Stars gone does not mean safe.",
+     "to": "three stars lit up again."
+    },
+    {
+     "beats": [
+      "b034"
+     ],
+     "from": "The heat stays around where you were last seen."
+    }
+   ],
+   "start": 387.48,
+   "end": 418.937,
+   "flash_holds": {},
+   "seconds": 23.09,
+   "cuts": [
+    [
+     387.48,
+     403.59
+    ],
+    [
+     413.46,
+     418.937
+    ]
+   ],
+   "description": "Full video: https://youtu.be/kQz1_CHADlE\n\nNo stars on my HUD, but the map still had a red zone. I drove in and three stars lit up again. Go around the zone.\n\nMusic:\n\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden\n\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0\n\n📘 New to GTA 6? Our unofficial Starter Pack, 27 tips from our own play → https://gta6.bosskg.com\n\nKG\n\n#GTA6 #GTAVI #GTA6Tips #KiwinoyGaming #GTA6Wanted",
+   "tags": [
+    "GTA 6",
+    "GTA 6 tips",
+    "GTA 6 lose the cops",
+    "Boss KG",
+    "GTA 6 wanted level",
+    "GTA 6 heat"
+   ]
+  }
+ ]
+}
