@@ -16,7 +16,7 @@ footages"). Add a fact only with the clip and time that shows it.
 - **Brian**: the fence at Brian's Lockup; his payouts show on the bank statement as "Brian".
 
 ## Pronunciation (narration)
-- **Lucia** is lu-SEE-yah, never LU-sha (Bryce, 2026-11-24). The voices are sent "Loo-see-ah" (tools/analysis_edl.py, TTS_GAME gta6); captions keep "Lucia".
+- **Lucia** is lu-SEE-yah, never LU-sha (Bryce, 2026-11-24). The voices are sent "Lucía" (Bryce picked it by ear on 2026-11-25 over "Loo-see-ah", which stressed the first syllable; tools/analysis_edl.py, TTS_GAME gta6); captions keep "Lucia".
 
 ## Places
 - **Jason's house**: a stilt house on a canal. Jason wakes there, dresses from his own wardrobe and saved outfits,

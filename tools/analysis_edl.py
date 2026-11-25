@@ -65,7 +65,9 @@ TTS_GAME["spider-man1"] = [x for x in TTS_GAME["spider-man2"] if "Emily" not in 
 
 # GTA 6 (Bryce, 2026-11-24): Lucia is lu-SEE-yah, never LU-sha. Measured on the VoxCPM2 backup: "Lucia" came out as
 # one squashed syllable, "Lu-see-yah" split into "Lucy Yarr", "Loo-see-ah" gave three syllables heard as "Lucia".
-TTS_GAME["gta6"] = [(r"\bLucia\b", "Loo-see-ah")]
+# 2026-11-25: Bryce heard the stress on the FIRST syllable in "Loo-see-ah" and picked "Lucía" by ear from five
+# voice-backup-say takes ("5-Lucia-accented.mp3 is the correct way of pronouncing Lucia"); Whisper hears it as "Lucia".
+TTS_GAME["gta6"] = [(r"\bLucia\b", "Lucía")]
 
 
 BASE_GAMES = ("spider-man1", "spider-man2", "wolverine", "gta6")  # gta6-guide (2026-11-22)
