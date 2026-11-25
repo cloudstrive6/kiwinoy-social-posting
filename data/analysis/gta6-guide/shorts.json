@@ -1,6 +1,6 @@
 {
  "game": "gta6",
- "note": "Facebook-only tip reels cut from the GTA 6 beginners guide (render v6-vox, public on YouTube a3WYi8RTXao since 2026-11-25 08:00 NZ). Bryce, 2026-11-25: guide tip Shorts go 'For Facebook only for now' (YouTube voiceover Shorts stay paused; no Instagram or TikTok). One tip per reel, opening on the tip itself (the reference channel's Short beat sheet), from the guide's checked narration only. facebook_at is each reel's own Facebook slot (one a day, 04:00 UTC, clear of the fact-card slots); there is no youtube record, so the YouTube release job and the Instagram/TikTok analysis feed never pick these up.",
+ "note": "Facebook-only tip reels cut from the GTA 6 beginners guide (render v6-vox, public on YouTube a3WYi8RTXao since 2026-11-25 08:00 NZ). Bryce, 2026-11-25: guide tip Shorts go 'For Facebook only for now' (YouTube voiceover Shorts stay paused; no Instagram or TikTok). One tip per reel, opening on the tip itself (the reference channel's Short beat sheet), from the guide's checked narration only. facebook_at is each reel's own Facebook slot (one a day, 04:00 UTC, clear of the fact-card slots); there is no youtube record, so the YouTube release job and the Instagram/TikTok analysis feed never pick these up. 2026-11-25: 'Guides say/agree/report' sentences cut out of s01, s02, s06, s09 and s10 (Bryce: 'we need to own it').",
  "full_video": "https://youtu.be/a3WYi8RTXao",
  "facebook_only": true,
  "slots_utc": [
@@ -47,16 +47,40 @@
      "beats": [
       "b004"
      ],
-     "from": "Bank your cash."
+     "from": "Bank your cash.",
+     "to": "Whatever you carry is lost when you die."
+    },
+    {
+     "beats": [
+      "b004"
+     ],
+     "from": "I had five hundred and thirty-one dollars on me on launch day.",
+     "to": "my HUD said zero."
+    },
+    {
+     "beats": [
+      "b004"
+     ],
+     "from": "So every time you pass an ATM with real money on you, stop and deposit it."
     }
    ],
    "start": 36.07,
    "end": 62.807,
-   "flash_holds": {},
-   "seconds": 28.24,
+   "flash_holds": {
+    "2": 0.6367
+   },
+   "seconds": 22.26,
    "cuts": [
     [
      36.07,
+     39.42
+    ],
+    [
+     41.49,
+     48.22
+    ],
+    [
+     52.13,
      62.807
     ]
    ],
@@ -96,16 +120,27 @@
      "beats": [
       "b005"
      ],
-     "from": "You deposit at an ATM, in person."
+     "from": "You deposit at an ATM, in person.",
+     "to": "It cannot."
+    },
+    {
+     "beats": [
+      "b005"
+     ],
+     "from": "ATMs sit in places you already visit."
     }
    ],
    "start": 63.81,
    "end": 81.027,
    "flash_holds": {},
-   "seconds": 18.72,
+   "seconds": 15.69,
    "cuts": [
     [
      63.81,
+     69.5
+    ],
+    [
+     72.53,
      81.027
     ]
    ],
@@ -296,16 +331,27 @@
      "beats": [
       "b016"
      ],
-     "from": "To lose the cops, break line of sight, then leave the red zone."
+     "from": "To lose the cops, break line of sight, then leave the red zone.",
+     "to": "and it still knows my outfit."
+    },
+    {
+     "beats": [
+      "b016"
+     ],
+     "from": "If police spot you there, the stars come back."
     }
    ],
    "start": 213.64,
    "end": 241.337,
    "flash_holds": {},
-   "seconds": 29.2,
+   "seconds": 26.55,
    "cuts": [
     [
      213.64,
+     232.27
+    ],
+    [
+     234.92,
      241.337
     ]
    ],
@@ -443,19 +489,30 @@
    "parts": [
     {
      "beats": [
-      "b030",
-      "b032"
+      "b030"
      ],
      "from": "To keep a stolen car, register it."
+    },
+    {
+     "beats": [
+      "b032"
+     ],
+     "from": "A Vapid Montagne XL showed a cost to register"
     }
    ],
    "start": 389.16,
    "end": 418.7,
-   "flash_holds": {},
-   "seconds": 31.04,
+   "flash_holds": {
+    "1": 0.2427
+   },
+   "seconds": 23.65,
    "cuts": [
     [
      389.16,
+     395.347
+    ],
+    [
+     402.74,
      418.7
     ]
    ],
@@ -493,20 +550,31 @@
    "parts": [
     {
      "beats": [
+      "b054"
+     ],
+     "from": "Anything you do not own, or did not store, is gone when you load back in.",
+     "to": "So treat guns you pick up off the floor as temporary."
+    },
+    {
+     "beats": [
       "b054",
       "b055",
       "b056"
      ],
-     "from": "Anything you do not own, or did not store, is gone when you load back in."
+     "from": "Cars work the same way."
     }
    ],
    "start": 661.39,
    "end": 697.447,
    "flash_holds": {},
-   "seconds": 37.56,
+   "seconds": 34.93,
    "cuts": [
     [
      661.39,
+     681.92
+    ],
+    [
+     684.55,
      697.447
     ]
    ],
