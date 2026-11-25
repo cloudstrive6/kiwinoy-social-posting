@@ -157,8 +157,13 @@ python tools/list_accounts.py        # show connected Post for Me accounts + IDs
   `publish_article.py --expire 7` daily, so drafts dated more than 7 days ago get
   `rejected: true` (files kept), their cards say so, and one Telegram summary is sent.
   First run 2026-11-21 cleared 134 of 141 pending drafts.
-- Taps answer within the poll interval (up to ~5 min), not instantly, because the bot polls
-  `getUpdates` instead of using a webhook. Tests: `python tests/test_telegram_article_approval.py`.
+- **Instant taps (2026-11-25):** each ig-poller run long-polls Telegram for up to 230 s
+  (`telegram_poller.py --check --listen 230`) and acts the moment a tap or message arrives, so
+  the tap is answered and its card edited within seconds. Before, a single check every 5 min
+  answered taps 2-5 min late, Telegram rejected the late answer ("query is too old") and the
+  button looked dead. Only ONE `getUpdates` caller may run at a time: never run another poller
+  or a `getUpdates` script against this bot while ig-poller is live (409 Conflict). Errors are
+  now logged instead of showing as "no updates". Public repo, so the minutes are free. Tests: `python tests/test_telegram_article_approval.py`.
 
 ## Troubleshooting — Post for Me accounts (IMPORTANT, hit twice)
 

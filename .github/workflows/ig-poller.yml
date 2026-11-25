@@ -45,12 +45,15 @@ jobs:
           python-version: "3.13"
           cache: "pip"
 
-      # CHEAP poll: confirm updates, ack a command, emit fire/game/seconds. Runs every 15 min.
+      # LISTEN for up to ~4 min (runs start every 5 min), acting the moment a tap or message
+      # arrives, so a ✅ / ❌ tap is answered and its card edited within seconds (2026-11-25:
+      # a once-per-run check answered taps 2-5 min late and Telegram dropped the answer).
+      # Public repo, so the extra Actions minutes are free.
       - name: Check Telegram for a command
         id: check
         run: |
           pip install requests PyYAML python-dotenv truststore
-          python tools/telegram_poller.py --check
+          python tools/telegram_poller.py --check --listen 230
 
       # ── "approved <article>" path: publish a draft article + cross-post (Python only, no render deps) ──
       - name: Install publish dependencies

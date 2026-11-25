@@ -376,6 +376,38 @@ class ReviewFixTests(Base):
         self.assertIn("Auto-published", pub.call_args.args[2])
 
 
+class ListenTests(Base):
+    """2026-11-25: taps were answered 2-5 min late; the poller now long-polls and acts at once."""
+
+    def poll_listen(self, batches, listen="30"):
+        calls = []
+
+        def fake_tg(method, **params):
+            calls.append(params)
+            if params.get("offset"):
+                return {}
+            return {"result": batches.pop(0) if batches else []}
+        with mock.patch.object(poller, "_tg", fake_tg), \
+                mock.patch.object(sys, "argv", ["x", "--check", "--listen", listen]):
+            poller.main()
+        out = dict(ln.partition("=")[::2] for ln in self.out.read_text(encoding="utf-8").splitlines())
+        return out, calls
+
+    def test_tap_arriving_while_listening_is_answered_at_once(self):
+        tap = self.tap(7, f"art:a:{atg.short_id(P1)}", markup=atg.buttons(P1))
+        out, calls = self.poll_listen([[], [], [tap]])
+        self.assertEqual(out["articles"], f"a:{P1}")
+        self.assertTrue(all(0 < c["timeout"] <= 25 for c in calls if "offset" not in c))
+        self.assertEqual(len([c for c in calls if "offset" not in c]), 3)   # stopped on the tap
+        self.assertEqual(len(self.tg.of("answerCallbackQuery")), 1)
+        self.assertIn("Approved", self.tg.of("editMessageText")[0]["text"])
+
+    def test_quiet_listen_ends_with_no_updates(self):
+        out, calls = self.poll_listen([], listen="1")
+        self.assertEqual((out["fire"], out.get("articles", "")), ("0", ""))
+        self.assertEqual(self.tg.calls, [])
+
+
 class ExpireTests(Base):
     """Bryce, 2026-11-21: "Yes, auto-reject old" (drafts older than 7 days)."""
 

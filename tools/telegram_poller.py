@@ -89,9 +89,19 @@ def _tg(method: str, **params):
     import requests
     tok = CONFIG.telegram_bot_token
     try:
-        r = requests.get(API.format(token=tok, method=method), params=params, timeout=30)
-        return r.json() if r.status_code == 200 else {}
-    except Exception:
+        r = requests.get(API.format(token=tok, method=method), params=params,
+                         timeout=int(params.get("timeout", 0)) + 15)
+        if r.status_code != 200:
+            # never hide a Telegram error as "no updates" (2026-11-25 tap investigation)
+            try:
+                desc = r.json().get("description", "")
+            except Exception:
+                desc = r.text[:200]
+            print(f"[poller] Telegram {method} failed [{r.status_code}]: {desc}", flush=True)
+            return {}
+        return r.json()
+    except Exception as e:
+        print(f"[poller] Telegram {method} error: {e!r}"[:300], flush=True)
         return {}
 
 
@@ -258,12 +268,38 @@ def main() -> int:
         _emit(0)
         return 0
     chat_id = str(CONFIG.telegram_chat_id)
-    updates = (_tg("getUpdates") or {}).get("result", []) or []
+    # LISTEN (2026-11-25): Bryce tapped Approve and "nothing happened". A single check every 5 min
+    # picked taps up ~2-5 min late, when Telegram already refuses the tap's answer ("query is too
+    # old"), so the button just stopped spinning. Now each run long-polls for up to --listen
+    # seconds and acts the moment anything arrives: the tap is answered and its card edited within
+    # seconds. Long polling never acknowledges by itself (no offset until the batch is handled).
+    listen = 0
+    if "--listen" in sys.argv:
+        try:
+            listen = max(0, int(sys.argv[sys.argv.index("--listen") + 1]))
+        except (IndexError, ValueError):
+            listen = 0
+    import time
+    deadline = time.time() + listen
+    updates = []
+    while True:
+        left = int(deadline - time.time())
+        params = {"timeout": min(25, left)} if listen and left > 0 else {}
+        res = _tg("getUpdates", **params)
+        updates = (res or {}).get("result", []) or []
+        if updates or not listen or time.time() >= deadline - 1:
+            break
+        if not res:                                      # an error (e.g. 409, another poller): no tight loop
+            time.sleep(5)
     if not updates:
         print("[poller] no updates.", flush=True)
         _emit(0)
         return 0
     max_uid = max(int(u.get("update_id", 0)) for u in updates)
+    from collections import Counter
+    kinds = Counter(next((k for k in u if k != "update_id"), "?") for u in updates)
+    print(f"[poller] {len(updates)} update(s): " + ", ".join(f"{k} {n}" for k, n in kinds.items()),
+          flush=True)
     from tools import article_tg as atg
     arts = atg.all_articles()
     decisions: list[dict] = []                           # Approve / Reject taps + replies to a card
@@ -276,6 +312,9 @@ def main() -> int:
             if str((cmsg.get("chat") or {}).get("id")) != chat_id:
                 continue                                 # chat-id gate
             m = atg.CB_RE.match(str(cq.get("data") or ""))
+            if not m:
+                print(f"[poller] button tap with unknown data {str(cq.get('data'))[:40]!r}, ignored",
+                      flush=True)
             if m:
                 decisions.append({"dec": "approve" if m.group(1) == "a" else "reject",
                                   "path": atg.find_by_id(m.group(2), arts), "sid": m.group(2),
