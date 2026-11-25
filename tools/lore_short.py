@@ -201,7 +201,7 @@ def outlet_say(x: dict) -> str:
     """The outlet names a card should write for a fact ('VGC and Kotaku'), from its source domains."""
     names = []
     for d in fact_source(x).split(", "):
-        k = next((k for k in OUTLETS if k in d), "")
+        k = next((k for k in OUTLETS if re.search(rf"(^|\.){re.escape(k)}\.", d)), "")
         if k:
             names.append(OUTLET_SAY.get(k, OUTLETS[k]))
     return " and ".join(list(dict.fromkeys(names))[:2])
@@ -322,8 +322,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "subject unless the frames do (a fact about a trailer scene is not this clip). "
            "ADD NOTHING TO THE FACT: no claim the fact does not make, no superlative ('most', "
            "'first', 'only', 'biggest') unless the fact says it, no invented process or motive "
-           "('Rockstar studied', 'documented', 'visited', 'on purpose'). The fact is the only "
-           "true thing you have; beats 1 and 2 must contain nothing else except what is visibly "
+           "('Rockstar studied', 'documented', 'visited', 'on purpose'). The listed fact(s) you cite are the "
+           "only true things you have; beats 1 and 2 must contain nothing else except what is visibly "
            "on screen (a test card invented 'Rockstar's most sourced region', 2026-11-19). "
            "WHO SAID IT: credit a fact only to its listed source ('Kotaku reports', 'previews "
            "say') or to nobody. Never write 'Rockstar confirmed', 'Rockstar revealed' or 'the "
@@ -806,8 +806,8 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
            "sourced region' got through (2026-11-19).\n\n"
            if facts else "")
         + (f"THIS CARD IS BUILT ON THESE LISTED FACTS (one, or a main fact plus one more), and they "
-           f"are ALL it may state as fact apart from what is visibly on screen:\n{used_fact}\n\n"
-           "Go through beats 1 and 2 claim by claim and hold each one against this fact and "
+           f"are ALL it may state as fact apart from what is visibly on screen or in the subtitles:\n{used_fact}\n\n"
+           "Go through beats 1 and 2 claim by claim and hold each one against these facts and "
            "the on-screen evidence. Flag as BAD:\n"
            "- a credit the source does not give: 'Rockstar confirmed', 'Rockstar revealed', "
            "'the developers said' when the source is a news site or preview\n"
@@ -1301,7 +1301,9 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                 cited = set(re.findall(r"[a-z0-9]+-\d+", " ".join(map(str, c.get("facts") or [])).lower()))
                 both = [used] + [x for x in _facts if str(x.get("id")).lower() in cited and x is not used][:1]
                 fact_sup = " ".join(f"{x.get('fact', '')} {fact_source(x)}" for x in both)
-                used_fact = "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)})" for x in both)
+                used_fact = "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}"
+                                      + (f"; the card may credit it as: {outlet_say(x)}" if outlet_say(x) else "")
+                                      + ")" for x in both)
             else:
                 fact_sup, used_fact = confirmed_research(research), ""
             over = attribution_overreach(text, f"{fact_sup} {subs}")
