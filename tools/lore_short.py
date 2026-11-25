@@ -868,6 +868,10 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         "do NOT demand a subtitle label for them. Forcing the writer to say 'someone' about "
         "a companion the bible plainly identifies produced a card that read like a mystery "
         "the scene did not have, so do not reward vagueness (user, 2026-10-09).\n"
+        "ALSO FLAG a place, scope or count narrower or wider than the fact says ('on the same street' "
+        "for a fact that says 'in that area'; 'anything' for one rule), and any conclusion the card "
+        "draws itself ('so clearing the circle does not reset anything') that no fact states "
+        "(missed in a test card, 2026-11-26).\n"
         "ALSO FLAG a card that implies a DARKER STATE than the evidence shows: a sleeping or "
         "resting character written as unconscious, dying or dead ('eyes stay shut', 'won't "
         "wake'), or any hint of injury or loss the clip and bible do not support.\n"
@@ -1269,6 +1273,16 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                 return False, ("a quote is not word for word what is said or shown in the Short: "
                                + "; ".join(f"'{q}'" for q in q_bad[:3]) + ". Quote it exactly from the subtitles "
                                "or on-screen text, or say it in your own words without quote marks")
+            # A conclusion drawn with 'so' / 'which is why' is a claim of its own; the AI checker passed
+            # "So clearing the circle does not reset anything" in a 2026-11-26 test. Allowed only when a
+            # listed fact or the subtitles use that link word themselves.
+            _links = re.findall(r"(?:^|[.!?]\s+|,\s+)(so|which is why|that is why|that's why|that is how|which means)\b",
+                                c.get("body", ""), re.I)
+            _have = " ".join([str(x.get("fact", "")) for x in _facts] + [subs]).lower()
+            _bad_links = [w for w in _links if not re.search(rf"\b{re.escape(w.lower())}\b", _have)]
+            if _bad_links:
+                return False, (f"the card draws its own conclusion with '{_bad_links[0]}'. State the fact and "
+                               "stop; never add a 'so' or 'which is why' conclusion that no listed fact states")
             shape_ok, shape_why = card_shape_ok(c.get("body", ""))
             if not shape_ok:
                 return False, (f"{shape_why} — the viewer can already see that. Explain what "
