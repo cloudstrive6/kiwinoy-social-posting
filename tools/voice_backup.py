@@ -103,6 +103,9 @@ def year_words(n: int) -> str:
 def tokens(text: str) -> list[str]:
     """Lower case, aliases applied, numbers as words, punctuation dropped, plurals folded."""
     t = text.lower().replace("’", "'")
+    # accents fold to plain letters, so "Lucía" (sent to the voice since 2026-11-25) matches Whisper's "Lucia"
+    import unicodedata
+    t = "".join(c for c in unicodedata.normalize("NFKD", t) if not unicodedata.combining(c))
     # "5,000", "5, 000", "5 ,000" (dry run 2026-11-23: "$1 ,800") and "5 000" are all 5000, not "five zero"
     t = re.sub(r"(?<=\d)(?:\s?,\s?|\s)(?=\d{3}\b)", "", t)
     t = t.replace(",", "")
