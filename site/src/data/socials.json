@@ -1,19 +1,19 @@
 {
   "youtube": {
-    "count": 576,
-    "display": "576"
+    "count": 578,
+    "display": "578"
   },
   "tiktok": {
     "count": 19100,
     "display": "19.1K"
   },
   "instagram": {
-    "count": 1233,
+    "count": 1236,
     "display": "1.2K"
   },
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "facebook": {
-    "count": 5209,
+    "count": 5205,
     "display": "5.2K"
   },
   "kick": {
@@ -25,7 +25,7 @@
     "display": "50"
   },
   "threads": {
-    "count": 34,
-    "display": "34"
+    "count": 35,
+    "display": "35"
   }
 }
