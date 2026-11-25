@@ -8,6 +8,7 @@ game: "steam-awards"
 cover: "/covers/steam-awards-2026-nominations-open-with-a-hall-of-fame-category-for-th.jpg"
 date: 2026-11-24
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/steam-awards-2026-nominations-open-hall-of-fame"
