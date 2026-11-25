@@ -152,9 +152,12 @@ def _youtube_fallback(args) -> int:
                             layout_override=args.layout, hook_override=args.hook,
                             caption_override=args.caption)
     if isinstance(res, dict) and res.get("published") and not args.dry_run:
-        ar.record_fill(slot, {"kind": "fact_card", "video_id": res.get("video_id", ""),
-                              "url": res.get("url", ""), "posted_at": ar.iso(now)})
-        print(f"[youtube-fallback] fact card filled {ar.iso(slot)}: {res.get('url', '')}", flush=True)
+        gap = res.get("layout") == "gap_fill"
+        vid = res.get("video_id") or res.get("youtube_id") or ""
+        url = res.get("url") or (f"https://youtu.be/{vid}" if vid else "")
+        ar.record_fill(slot, {"kind": "gap_fill" if gap else "fact_card", "video_id": vid,
+                              "url": url, "posted_at": ar.iso(now)})
+        print(f"[youtube-fallback] {'gap fill' if gap else 'fact card'} filled {ar.iso(slot)}: {url}", flush=True)
         return 0
     why = res.get("skipped") if isinstance(res, dict) else res
     print(f"[youtube-fallback] no fact card posted ({why}); the next release run retries.", flush=True)

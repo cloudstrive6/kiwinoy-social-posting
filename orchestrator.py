@@ -644,7 +644,20 @@ def run_gameplay_reel(
         log(f"Footage available: {games}")
         # reel_topics only PICKS the game here (preferring e.g. Spider-Man); the hook
         # itself is written from the actual clip + lore below, so it fits the footage.
-        brief = reel_topics.run("gameplay", games, taglish=False)
+        try:
+            brief = reel_topics.run("gameplay", games, taglish=False)
+        except Exception as e:
+            # WRITER DOWN (2026-11-25/26: the Claude subscription hit its weekly limit and the API
+            # fallback has no credit, so two YouTube slots crashed here before the gap fill could
+            # run). A YouTube slot still posts one ready voiceover Short (no AI needed); every
+            # other track fails loudly as before.
+            _ycfg = (CONFIG.reels.get("youtube_analysis_shorts", {}) or {})
+            if youtube_only and _ycfg.get("gap_fill", True):
+                log(f"Writer unavailable ({str(e)[:160]}) - trying the gap fill.")
+                _gap = _youtube_gap_fill(run_dir, slot_id, dry_run, log)
+                if _gap:
+                    return _gap
+            raise
     # --- Decide the LAYOUT first: it selects the footage pool + caption style.
     # Format variety per reel (helps avoid platform spam-detection). Alternate the
     # NON-rotated layouts (classic <-> triptych <-> fill) on the persistent used-clip
