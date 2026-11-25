@@ -1005,8 +1005,17 @@ def run_gameplay_reel(
                 clip_path, clip_id, _start = _np, _nid, float(_ns)
         if lore_out is None and lore_strict:
             log(f"No lore card survived the fact-check after {_max_tries} moments across the "
-                "footage pools — skipping the slot (lore-only track: no triptych/classic "
-                "fallback; the backup trigger makes it up).")
+                "footage pools.")
+            # GAP FILL (Bryce, 2026-11-25: "Yes, fill gaps" ... "it posts a random voiceover short/reel -
+            # so that it's not all from the same 1 long form video"): a YouTube slot whose fact card is
+            # refused posts one random voiceover Short instead (agents/analysis_feed.gap_fill_pick).
+            _ycfg = (CONFIG.reels.get("youtube_analysis_shorts", {}) or {})
+            if youtube_only and _ycfg.get("gap_fill", True):
+                _gap = _youtube_gap_fill(run_dir, slot_id, dry_run, log)
+                if _gap:
+                    return _gap
+            log("Skipping the slot (lore-only track: no triptych/classic fallback; the backup "
+                "trigger makes it up).")
             return _skip(run_dir, {"slot_id": slot_id, "kind": "gameplay", "brief": brief},
                          "lore_refused")
         if lore_out is None:
@@ -1773,6 +1782,65 @@ def _swear_beep(path, game: str, out: Path, log=print, reel: bool = True):
 def _skip(run_dir, result: dict[str, Any], reason: str) -> dict[str, Any]:
     result["published"] = False
     result["skipped"] = reason
+    _save(run_dir, result)
+    return result
+
+
+def _youtube_gap_fill(run_dir, slot_id, dry_run: bool, log) -> Optional[dict[str, Any]]:
+    """Post one random voiceover Short to YouTube when the slot's fact card was refused (Bryce, 2026-11-25).
+    Returns the result, or None when nothing is ready (the caller then skips the slot as before)."""
+    from agents import analysis_feed
+    run_dir = Path(run_dir)
+    try:
+        item = analysis_feed.gap_fill_pick()
+    except Exception as e:
+        log(f"GAP FILL: could not pick a voiceover Short ({e!r})")
+        return None
+    if not item:
+        log("GAP FILL: no unused voiceover Short is ready for YouTube.")
+        return None
+    log(f"GAP FILL: posting voiceover Short {item['pack']}/{item['pick']} ({item['title']}) to YouTube.")
+    result = {"slot_id": slot_id, "kind": "gameplay", "layout": "gap_fill", "brief": {"game": item["game"]},
+              "clip_id": item["clip_id"]}
+    if dry_run:
+        log("DRY RUN — skipping publish.")
+        result["published"] = False
+        _save(run_dir, result)
+        return result
+    import requests
+    from core import b2_store
+    from core import youtube as _yt
+    url = b2_store.presigned_url(item["b2_key"], valid_seconds=3600)
+    path = Path(run_dir) / f"gap_{item['pick']}.mp4"
+    with requests.get(url, stream=True, timeout=600) as r:
+        r.raise_for_status()
+        with open(path, "wb") as fh:
+            for chunk in r.iter_content(1 << 20):
+                fh.write(chunk)
+    title = item["title"] if "#shorts" in item["title"].lower() else f"{item['title']} #Shorts"[:100]
+    res = _yt.upload_video(path, title, item["description"], item["tags"], privacy="public")
+    vid = res.get("id")
+    result.update(published=bool(vid), youtube_id=vid)
+    if vid:
+        log(f"GAP FILL: uploaded https://youtu.be/{vid}")
+        pl = ((CONFIG.reels.get("youtube", {}) or {}).get("playlists", {}) or {}).get(item["game"])
+        if pl:
+            try:
+                _yt.add_to_playlist(vid, pl)
+            except Exception as e:
+                log(f"GAP FILL: playlist add failed ({e!r})")
+        if reel_composer.mark_clip_used(item["clip_id"], ["youtube"]):
+            log(f"GAP FILL: marked {item['clip_id']} used on YouTube.")
+        else:
+            log(f"WARNING: gap-fill Short posted but the ledger write FAILED ({item['clip_id']})")
+        try:
+            import time as _t
+            from core import gh_release as _g
+            _g.log_post({"ts": _t.time(), "kind": "gameplay", "game": item["game"], "clip_id": item["clip_id"],
+                         "layout": "gap_fill", "hook": item["title"], "caption": item["description"][:300],
+                         "platforms": ["youtube"], "result_id": vid})
+        except Exception:
+            pass
     _save(run_dir, result)
     return result
 

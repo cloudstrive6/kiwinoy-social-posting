@@ -918,6 +918,11 @@ reels:
     # the schedule comes up, then do the fact format"): a slot with no voiceover Short ready gets a
     # YouTube fact card Short instead (run.py --youtube-reel --fallback-slot, same workflow run).
     fact_card_fallback: true
+    # GAP FILL (Bryce, 2026-11-25: "Yes, fill gaps", then "it posts a random voiceover short/reel - so that
+    # it's not all from the same 1 long form video"): when a YouTube fact-card slot refuses every card, it
+    # posts ONE random unused voiceover Short from any pack the games lock allows (orchestrator
+    # _youtube_gap_fill). Packs opt out with "youtube_gap_fill": false in their shorts.json. false here stops it.
+    gap_fill: true
     # VOICEOVER PAUSED ON YOUTUBE (Bryce, 2026-11-20: "for the YouTube shorts, let's do only the fact
     # card format and pause the voiceover format until I say so"). true = every slot above, extra
     # slots included, posts a fact card Short; no voiceover Short is released. Analytics that day:

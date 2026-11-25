@@ -152,3 +152,52 @@ def fetch(item: dict) -> bytes:
     r = requests.get(url, timeout=300)
     r.raise_for_status()
     return r.content
+
+
+# ------------------------------------------------------------------ YouTube gap fill (2026-11-25)
+# Bryce: when a YouTube fact-card slot refuses every card, "Yes, fill gaps", then "it should be it posts a
+# random voiceover short/reel - so that it's not all from the same 1 long form video". Any voiceover pack
+# (data/analysis/<pack>/shorts.json, dedicated reel packs included) can fill a gap: a pick with a B2 render,
+# never uploaded to YouTube before, never used for a gap, whose game the games_only lock allows. One is
+# picked at random, preferring a different long-form from the previous gap. A pack opts out with
+# "youtube_gap_fill": false.
+
+def _gap_clip_id(pack: str, pick: dict) -> str:
+    return f"gap__{pack}__{pick['id']}"
+
+
+def gap_fill_pick(rng=None) -> Optional[dict[str, Any]]:
+    import random
+    import sys as _sys
+    from core import gh_release
+    from core.config import CONFIG
+    _sys.path.insert(0, str(ROOT / "tools"))
+    from analysis_edl import base_game
+    rng = rng or random.Random()
+    try:
+        used = set(gh_release.used_clips("youtube"))
+    except Exception:
+        used = set()
+    last = next((u.split("__")[1] for u in sorted(used, reverse=True) if u.startswith("gap__")), None)
+    cands = []
+    for f in sorted((ROOT / "data" / "analysis").glob("*/shorts.json")):
+        try:
+            cfg = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        pack = f.parent.name
+        game = cfg.get("game") or base_game(pack)
+        if cfg.get("youtube_gap_fill") is False or not CONFIG.game_allowed(game):
+            continue
+        for s in cfg.get("shorts", []):
+            if (not s.get("b2_key") or (s.get("youtube") or {}).get("id")
+                    or _gap_clip_id(pack, s) in used or clip_id(pack, s) in used):
+                continue
+            cands.append((pack, game, cfg, s))
+    if not cands:
+        return None
+    fresh = [c for c in cands if c[0] != last] or cands
+    pack, game, cfg, s = rng.choice(fresh)
+    return {"pack": pack, "game": game, "pick": s["id"], "clip_id": _gap_clip_id(pack, s), "b2_key": s["b2_key"],
+            "title": s.get("title", ""), "description": s.get("description", ""),
+            "tags": s.get("tags") or (cfg.get("tags_base") or []), "full_video": cfg.get("full_video", "")}
