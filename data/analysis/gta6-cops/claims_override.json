@@ -75,5 +75,12 @@
   "sig": "764dfde77bf16d6b",
   "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building and fixing the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
   "why": "callback to tip 7: the 12-44-38 log and frames show the wanted level going from 2 to 4 stars at about 106 to 108 s while taxiing the Driftair jet, and it stays at 4 to 193 s; KG has no clip above four stars."
+ },
+ {
+  "beat": "b036",
+  "match": "Getting busted takes your pocket cash",
+  "sig": "76ce400e6167ecd6",
+  "by": "Claude, web-confirmed on 2026-11-25 (agent-verified, not Bryce). Bryce delegated fact checks to agents and asked that every one-source fact get a second source or be cut (2026-11-25).",
+  "why": "A general game rule, not a footage claim: no BUSTED screen is recorded, so the footage cannot show it. Two independent sources say carried cash is lost on arrest (cops ledger 5.3: GB-W and GG-W, 'Carried cash can be lost after arrest or death'). The game's own tip in 12-50-26 at 24 s says unowned weapons are lost after death or arrest."
  }
 ]
