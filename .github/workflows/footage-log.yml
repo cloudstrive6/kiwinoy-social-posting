@@ -26,6 +26,7 @@ on:
 
 permissions:
   contents: read
+  actions: write   # the run starts the next one while clips are left (2026-11-25)
 
 concurrency:
   group: kiwinoy-footage-log
@@ -58,4 +59,19 @@ jobs:
           KEYS: ${{ github.event.inputs.keys }}
         run: |
           if [ -n "$KEYS" ]; then python tools/footage_log.py --keys "$KEYS" --max 10
-          else python tools/footage_log.py $GAMES --max "$MAX"; fi
+          else python tools/footage_log.py $GAMES --max "$MAX" | tee log-run.txt; fi
+      # CHAIN (2026-11-25): GitHub fired the 2-hourly schedule only twice in a day, so coverage crawled
+      # (fact cards need a log, and YouTube Shorts slots were skipping). While clips are left, this run
+      # starts the next one (a workflow_dispatch from GITHUB_TOKEN does start a new run). It stops by
+      # itself when nothing is left or a run logs nothing.
+      - name: Start the next run while clips are left
+        if: ${{ success() && github.event.inputs.keys == '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          left=$(grep -o '[0-9]* left for the next run' log-run.txt | grep -o '^[0-9]*' || echo 0)
+          done=$(grep -o 'done: [0-9]* logged' log-run.txt | grep -o '[0-9]*' || echo 0)
+          echo "logged $done, left $left"
+          if [ "${left:-0}" -gt 0 ] && [ "${done:-0}" -gt 0 ]; then
+            gh workflow run footage-log.yml --repo "$GITHUB_REPOSITORY" -f games="$GAMES" -f max=25
+          fi
