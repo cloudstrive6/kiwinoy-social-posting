@@ -1,5 +1,6 @@
 {
  "game": "gta6",
+ "narrator": "guide-c",
  "note": "Facebook-only tip reels cut from the GTA 6 beginners guide (render v6-vox, public on YouTube a3WYi8RTXao since 2026-11-25 08:00 NZ). Bryce, 2026-11-25: guide tip Shorts go 'For Facebook only for now' (YouTube voiceover Shorts stay paused; no Instagram or TikTok). One tip per reel, opening on the tip itself (the reference channel's Short beat sheet), from the guide's checked narration only. facebook_at is each reel's own Facebook slot (one a day, 04:00 UTC, clear of the fact-card slots); there is no youtube record, so the YouTube release job and the Instagram/TikTok analysis feed never pick these up. 2026-11-25: 'Guides say/agree/report' sentences cut out of s01, s02, s06, s09 and s10 (Bryce: 'we need to own it'). 2026-11-25 (Bryce, 'Yes, fill gaps'): a YouTube Shorts slot whose fact card is refused posts the next unused tip reel instead (youtube_gap_fill), at most one per slot; Instagram and TikTok still never take these.",
  "full_video": "https://youtu.be/a3WYi8RTXao",
  "facebook_only": true,

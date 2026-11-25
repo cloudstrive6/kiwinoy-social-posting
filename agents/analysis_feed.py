@@ -174,6 +174,7 @@ def gap_fill_pick(rng=None) -> Optional[dict[str, Any]]:
     _sys.path.insert(0, str(ROOT / "tools"))
     from analysis_edl import base_game
     rng = rng or random.Random()
+    _ycfg = (CONFIG.reels.get("youtube_analysis_shorts", {}) or {})
     try:
         used = set(gh_release.used_clips("youtube"))
     except Exception:
@@ -188,6 +189,12 @@ def gap_fill_pick(rng=None) -> Optional[dict[str, Any]]:
         pack = f.parent.name
         game = cfg.get("game") or base_game(pack)
         if cfg.get("youtube_gap_fill") is False or not CONFIG.game_allowed(game):
+            continue
+        # CURRENT NARRATOR ONLY (Bryce, 2026-11-25: "GTA 6 only for now especially since we only started this
+        # current narrator voice on GTA 6 game. But once we use this current narrator voice for other games,
+        # then you can mix those in as well"): a pack joins only when its shorts.json names a narrator listed in
+        # config reels.youtube_analysis_shorts.gap_fill_narrators.
+        if str(cfg.get("narrator", "")) not in set(map(str, _ycfg.get("gap_fill_narrators") or ["guide-c"])):
             continue
         for s in cfg.get("shorts", []):
             if (not s.get("b2_key") or (s.get("youtube") or {}).get("id")

@@ -923,6 +923,10 @@ reels:
     # posts ONE random unused voiceover Short from any pack the games lock allows (orchestrator
     # _youtube_gap_fill). Packs opt out with "youtube_gap_fill": false in their shorts.json. false here stops it.
     gap_fill: true
+    # Only packs voiced by the current narrator (Bryce, 2026-11-25: GTA 6 only for now, other games once they use
+    # this voice). A pack names its narrator in shorts.json ("narrator"); guide-c = BOSS KG Guide C, on
+    # ElevenLabs or its VoxCPM2 clone.
+    gap_fill_narrators: [guide-c]
     # VOICEOVER PAUSED ON YOUTUBE (Bryce, 2026-11-20: "for the YouTube shorts, let's do only the fact
     # card format and pause the voiceover format until I say so"). true = every slot above, extra
     # slots included, posts a fact card Short; no voiceover Short is released. Analytics that day:
