@@ -1,0 +1,1299 @@
+{
+ "game": "gta6-cops",
+ "narrator": {
+  "provider": "elevenlabs",
+  "name": "BOSS KG Guide C",
+  "voice_id": "BM5OFghW9ETIy6oAH5MH",
+  "model_id": "eleven_v4",
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "tempo": 1.0,
+  "master": "C"
+ },
+ "under_narration_db": -24,
+ "source": "script.md",
+ "beats": [
+  {
+   "type": "narr",
+   "text": "You think you lost the cops in GTA 6? Your stars can come back. Here is why, before you lose your cash.",
+   "tts": "You think you lost the cops in GTA 6? Your stars can come back. Here is why, before you lose your cash.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 117.0,
+     "out": 125.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G01"
+   ],
+   "chapter": "How to lose the cops in GTA 6",
+   "id": "b000"
+  },
+  {
+   "type": "narr",
+   "text": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and guides say there is no escape at all.",
+   "tts": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and guides say there is no escape at all.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 136.0,
+     "out": 140.5
+    },
+    {
+     "clip": 1005,
+     "in": 125.4,
+     "out": 128.4,
+     "crop": "none",
+     "push": true
+    },
+    {
+     "clip": 1002,
+     "in": 140.0,
+     "out": 143.3
+    },
+    {
+     "clip": 1003,
+     "in": 13.0,
+     "out": 17.3,
+     "crop": "none"
+    },
+    {
+     "clip": 1002,
+     "in": 22.0,
+     "out": 26.5
+    }
+   ],
+   "gfx": [
+    "G02"
+   ],
+   "id": "b001"
+  },
+  {
+   "type": "narr",
+   "text": "And one move can bring the cops right back. I made it on camera. I will show you near the end.",
+   "tts": "And one move can bring the cops right back. I made it on camera. I will show you near the end.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 61.0,
+     "out": 64.6,
+     "crop": "none",
+     "blur": true
+    },
+    {
+     "clip": 1015,
+     "in": 72.5,
+     "out": 76.5
+    }
+   ],
+   "gfx": [],
+   "id": "b002"
+  },
+  {
+   "type": "narr",
+   "text": "First, reading the stars. Then what makes it worse, breaking away, changing your look, and what comes after. The top five are at the end.",
+   "tts": "First, reading the stars. Then what makes it worse, breaking away, changing your look, and what comes after. The top five are at the end.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 70.0,
+     "out": 72.0
+    },
+    {
+     "clip": 1004,
+     "in": 240.0,
+     "out": 242.0
+    },
+    {
+     "clip": 1012,
+     "in": 270.0,
+     "out": 272.0
+    },
+    {
+     "clip": 1006,
+     "in": 74.8,
+     "out": 76.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 240.8,
+     "out": 242.8,
+     "crop": "none"
+    }
+   ],
+   "gfx": [],
+   "id": "b003"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Guides agree on all three. So glance up before you move. The colour tells you whether to run or to hide.",
+   "tts": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Guides agree on all three. So glance up before you move. The colour tells you whether to run or to hide.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 61.0,
+     "out": 64.0
+    },
+    {
+     "clip": 1002,
+     "in": 30.0,
+     "out": 33.0
+    },
+    {
+     "clip": 1002,
+     "in": 40.5,
+     "out": 45.5
+    },
+    {
+     "clip": 1002,
+     "in": 72.5,
+     "out": 79.0
+    },
+    {
+     "clip": 1015,
+     "in": 155.2,
+     "out": 157.9
+    },
+    {
+     "clip": 1004,
+     "in": 230.5,
+     "out": 233.0
+    },
+    {
+     "clip": 1006,
+     "in": 86.0,
+     "out": 90.0
+    }
+   ],
+   "gfx": [
+    "G03"
+   ],
+   "chapter": "Read the screen",
+   "id": "b004"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. Guides say there are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
+   "tts": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. Guides say there are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 59.5,
+     "out": 66.0,
+     "push": true
+    },
+    {
+     "clip": 1004,
+     "in": 235.8,
+     "out": 239.8
+    },
+    {
+     "clip": 1013,
+     "in": 162.0,
+     "out": 167.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1009,
+     "in": 127.0,
+     "out": 134.0
+    },
+    {
+     "clip": 1015,
+     "in": 125.8,
+     "out": 130.8,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G04"
+   ],
+   "id": "b005"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number three. Open the map after a crime. The search area spells it out in words. Mine said vehicle known, appearance known, outfit known. That is your to-do list. Clear it, line by line.",
+   "tts": "Tip number three. Open the map after a crime. The search area spells it out in words. Mine said vehicle known, appearance known, outfit known. That is your to-do list. Clear it, line by line.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 67.0,
+     "out": 71.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 124.6,
+     "out": 128.4,
+     "crop": "none",
+     "push": true
+    },
+    {
+     "clip": 1005,
+     "in": 128.6,
+     "out": 133.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G05"
+   ],
+   "id": "b006"
+  },
+  {
+   "type": "narr",
+   "text": "And in Leonida, the local news is always happy to help.",
+   "tts": "And in Leonida, the local news is always happy to help.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 139.0,
+     "out": 143.4
+    }
+   ],
+   "gfx": [],
+   "id": "b007"
+  },
+  {
+   "type": "game",
+   "clip": 1015,
+   "in": 145.6,
+   "out": 149.22,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4 @ 145.60-149.22 s: \"Weasel News (radio): a man and woman had been caught on CCTV fleeing the scene.\" (words 145.68-149.16; 'that' ends about 145.6, next 'He said' 149.32; news read, no music heard in the window; HUD and minimap at the edges); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b008"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. A big launch guide says the same. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
+   "tts": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. A big launch guide says the same. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 84.0,
+     "out": 87.4
+    },
+    {
+     "clip": 1015,
+     "in": 87.5,
+     "out": 92.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 92.5,
+     "out": 98.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1009,
+     "in": 160.0,
+     "out": 166.0
+    },
+    {
+     "clip": 1015,
+     "in": 106.5,
+     "out": 109.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G06"
+   ],
+   "id": "b009"
+  },
+  {
+   "type": "narr",
+   "text": "Now you can read the screen. Section two is what makes it worse.",
+   "tts": "Now you can read the screen. Section two is what makes it worse.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 112.0,
+     "out": 117.0
+    }
+   ],
+   "gfx": [
+    "G07"
+   ],
+   "chapter": "What makes it worse",
+   "id": "b010"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. Guides say a pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
+   "tts": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. Guides say a pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
+   "shots": [
+    {
+     "clip": 1004,
+     "in": 221.0,
+     "out": 226.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1004,
+     "in": 226.5,
+     "out": 230.4
+    },
+    {
+     "clip": 1004,
+     "in": 233.2,
+     "out": 235.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1012,
+     "in": 283.6,
+     "out": 287.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1023,
+     "in": 26.0,
+     "out": 30.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1023,
+     "in": 49.5,
+     "out": 56.5,
+     "crop": "none",
+     "push": true
+    }
+   ],
+   "gfx": [
+    "G08"
+   ],
+   "id": "b011"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number six. Leave the cops standing. Guides agree that killing police brings a more aggressive response. One guide says it also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
+   "tts": "Tip number six. Leave the cops standing. Guides agree that killing police brings a more aggressive response. One guide says it also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
+   "shots": [
+    {
+     "clip": 1010,
+     "in": 254.5,
+     "out": 259.5
+    },
+    {
+     "clip": 1010,
+     "in": 274.5,
+     "out": 281.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1010,
+     "in": 262.0,
+     "out": 268.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1010,
+     "in": 268.6,
+     "out": 273.5
+    }
+   ],
+   "gfx": [
+    "G09"
+   ],
+   "id": "b012"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. Guides say the highest levels are kept for crimes like this one. If you want an easy escape, do not start at an airport.",
+   "tts": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. Guides say the highest levels are kept for crimes like this one. If you want an easy escape, do not start at an airport.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 10.5,
+     "out": 16.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1001,
+     "in": 98.0,
+     "out": 102.6
+    },
+    {
+     "clip": 1001,
+     "in": 103.5,
+     "out": 111.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1001,
+     "in": 187.0,
+     "out": 191.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1000,
+     "in": 181.5,
+     "out": 186.5
+    }
+   ],
+   "gfx": [
+    "G10"
+   ],
+   "id": "b013"
+  },
+  {
+   "type": "narr",
+   "text": "To be fair, someone gave me very clear instructions.",
+   "tts": "To be fair, someone gave me very clear instructions.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 18.2,
+     "out": 21.8
+    }
+   ],
+   "gfx": [],
+   "id": "b014"
+  },
+  {
+   "type": "game",
+   "clip": 1001,
+   "in": 21.9,
+   "out": 24.85,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-19 12-44-38).mp4 @ 21.90-24.85 s: \"Airport security: Don't move! Don't you move!\" (words about 22.0-24.50; next 'Hands up!' 25.26; no subtitles on screen; the script's \"You moved!\" was a Whisper mishearing of these two lines); gameplay HUD, crop sides",
+   "crop": "band",
+   "id": "b015"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eight. Never let it reach six stars. Two guides agree. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
+   "tts": "Tip number eight. Never let it reach six stars. Two guides agree. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 0.5,
+     "out": 7.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1002,
+     "in": 7.6,
+     "out": 12.6
+    },
+    {
+     "clip": 1002,
+     "in": 14.0,
+     "out": 21.0
+    }
+   ],
+   "gfx": [
+    "G11"
+   ],
+   "id": "b016"
+  },
+  {
+   "type": "narr",
+   "text": "Someone at Moses' garage knows how far it can go.",
+   "tts": "Someone at Moses' garage knows how far it can go.",
+   "shots": [
+    {
+     "clip": 1020,
+     "in": 65.0,
+     "out": 68.9
+    }
+   ],
+   "gfx": [],
+   "id": "b017"
+  },
+  {
+   "type": "game",
+   "clip": 1020,
+   "in": 88.85,
+   "out": 92.2,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-23 01-40-40) p07.mp4 @ 88.85-92.20 s: \"Garage mechanic: Got so bad once, I had bounties on me in three different states.\" (words 88.98-92.08; 'streets.' ends 88.48, next 'Nowadays' 92.34; the subtitle on screen reads the same line; the mechanic answers Lucia's question about racing; no profanity); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b018"
+  },
+  {
+   "type": "narr",
+   "text": "Keep the stars low, and you can get away. So section three is how to break away.",
+   "tts": "Keep the stars low, and you can get away. So section three is how to break away.",
+   "shots": [
+    {
+     "clip": 1009,
+     "in": 144.0,
+     "out": 150.5
+    }
+   ],
+   "gfx": [
+    "G12"
+   ],
+   "chapter": "Break away",
+   "id": "b019"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. Guides agree you have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
+   "tts": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. Guides agree you have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 84.0,
+     "out": 90.0
+    },
+    {
+     "clip": 1014,
+     "in": 214.3,
+     "out": 217.4,
+     "crop": "none",
+     "push": true
+    },
+    {
+     "clip": 1015,
+     "in": 116.0,
+     "out": 119.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 119.6,
+     "out": 125.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 150.0,
+     "out": 154.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G13"
+   ],
+   "id": "b020"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Lucia crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. Guides say that if police dogs show up, you should keep moving, or they will track you down. Out of sight is the whole game.",
+   "tts": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Loo-see-ah crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. Guides say that if police dogs show up, you should keep moving, or they will track you down. Out of sight is the whole game.",
+   "shots": [
+    {
+     "clip": 1008,
+     "in": 77.5,
+     "out": 83.4
+    },
+    {
+     "clip": 1012,
+     "in": 275.0,
+     "out": 283.4
+    },
+    {
+     "clip": 1013,
+     "in": 97.5,
+     "out": 103.5
+    }
+   ],
+   "gfx": [
+    "G14"
+   ],
+   "id": "b021"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eleven. Know what winning looks like. Here, Lucia is driving with two stars. Watch the top right. They dim, and then they are gone. On launch night, the game also flashed heat cleared when my star went away. When you see it, slow down and blend into the traffic. The cops are gone. The heat might not be.",
+   "tts": "Tip number eleven. Know what winning looks like. Here, Loo-see-ah is driving with two stars. Watch the top right. They dim, and then they are gone. On launch night, the game also flashed heat cleared when my star went away. When you see it, slow down and blend into the traffic. The cops are gone. The heat might not be.",
+   "shots": [
+    {
+     "clip": 1021,
+     "in": 185.0,
+     "out": 188.3,
+     "crop": "none"
+    },
+    {
+     "clip": 1021,
+     "in": 188.4,
+     "out": 195.2
+    },
+    {
+     "clip": 1000,
+     "in": 153.5,
+     "out": 159.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 98.5,
+     "out": 103.0
+    }
+   ],
+   "gfx": [
+    "G15"
+   ],
+   "id": "b022"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. Guides agree a different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
+   "tts": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. Guides agree a different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 48.0,
+     "out": 53.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1002,
+     "in": 53.5,
+     "out": 58.5
+    },
+    {
+     "clip": 1002,
+     "in": 64.0,
+     "out": 69.0
+    },
+    {
+     "clip": 1015,
+     "in": 41.0,
+     "out": 46.5
+    }
+   ],
+   "gfx": [
+    "G16"
+   ],
+   "id": "b023"
+  },
+  {
+   "type": "narr",
+   "text": "Of course, a new car comes with its own questions.",
+   "tts": "Of course, a new car comes with its own questions.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 234.0,
+     "out": 238.0
+    }
+   ],
+   "gfx": [],
+   "id": "b024"
+  },
+  {
+   "type": "game",
+   "clip": 1015,
+   "in": 289.45,
+   "out": 294.6,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4 @ 289.45-294.60 s: \"Moses: I don't know nothing about you, except you got a name and a ride that ain't yours.\" (words 289.60-294.22; 'know.' ends 288.84, next 'Maybe' 295.20; the subtitle on screen reads the same line; Moses on his creeper); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b025"
+  },
+  {
+   "type": "narr",
+   "text": "We are past halfway. Next, the free disguise that takes two seconds. And I still owe you that move.",
+   "tts": "We are past halfway. Next, the free disguise that takes two seconds. And I still owe you that move.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 58.8,
+     "out": 61.0,
+     "blur": true
+    },
+    {
+     "clip": 1005,
+     "in": 242.6,
+     "out": 244.8,
+     "crop": "none",
+     "blur": true
+    },
+    {
+     "clip": 1002,
+     "in": 33.5,
+     "out": 36.1,
+     "blur": true
+    }
+   ],
+   "gfx": [],
+   "id": "b026"
+  },
+  {
+   "type": "narr",
+   "text": "The car was easy. You are harder to change. So section four is your disguise.",
+   "tts": "The car was easy. You are harder to change. So section four is your disguise.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 213.5,
+     "out": 219.3
+    }
+   ],
+   "gfx": [
+    "G17"
+   ],
+   "chapter": "Change your look",
+   "id": "b027"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number thirteen. Open your items wheel. The game marks each item the police know with a small red badge. One was on Jason's glasses. I took them off, and the face icon vanished from under the stars. Two seconds. No shop, no cost. Check the wheel every time the stars go up. This is tip number two in action. One icon down.",
+   "tts": "Tip number thirteen. Open your items wheel. The game marks each item the police know with a small red badge. One was on Jason's glasses. I took them off, and the face icon vanished from under the stars. Two seconds. No shop, no cost. Check the wheel every time the stars go up. This is tip number two in action. One icon down.",
+   "shots": [
+    {
+     "clip": 1006,
+     "in": 72.8,
+     "out": 74.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1006,
+     "in": 74.8,
+     "out": 77.0
+    },
+    {
+     "clip": 1006,
+     "in": 77.0,
+     "out": 81.0
+    },
+    {
+     "clip": 1006,
+     "in": 82.0,
+     "out": 86.0
+    },
+    {
+     "clip": 1012,
+     "in": 242.8,
+     "out": 248.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1006,
+     "in": 90.0,
+     "out": 94.5
+    }
+   ],
+   "gfx": [
+    "G18"
+   ],
+   "id": "b028"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number fourteen. Wear a mask for the job, and take it off after. Guides agree a mask helps hide your face. Here, Lucia had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
+   "tts": "Tip number fourteen. Wear a mask for the job, and take it off after. Guides agree a mask helps hide your face. Here, Loo-see-ah had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
+   "shots": [
+    {
+     "clip": 1022,
+     "in": 54.5,
+     "out": 58.5
+    },
+    {
+     "clip": 1022,
+     "in": 59.3,
+     "out": 64.8,
+     "crop": "none",
+     "push": true
+    },
+    {
+     "clip": 1022,
+     "in": 65.2,
+     "out": 69.8,
+     "crop": "none"
+    },
+    {
+     "clip": 1012,
+     "in": 139.0,
+     "out": 145.3
+    }
+   ],
+   "gfx": [
+    "G19"
+   ],
+   "id": "b029"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number fifteen. Change your outfit, but only once you are out of sight. Guides say a new outfit clears outfit known after you break line of sight. Lucia slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. Three guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "tts": "Tip number fifteen. Change your outfit, but only once you are out of sight. Guides say a new outfit clears outfit known after you break line of sight. Loo-see-ah slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. Three guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 177.0,
+     "out": 186.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1013,
+     "in": 188.0,
+     "out": 193.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1013,
+     "in": 207.5,
+     "out": 213.4
+    },
+    {
+     "clip": 1013,
+     "in": 260.5,
+     "out": 266.0,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G20"
+   ],
+   "id": "b030"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number sixteen. Paint the car after the chase. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray. The respray menu says a new colour reduces recognition. It even tells you whether the car has heat. At Moses' shop, a respray was a hundred dollars. Escape first. Paint second.",
+   "tts": "Tip number sixteen. Paint the car after the chase. The game says you cannot enter a Pay 'n' Spray when the cops are nearby or chasing you. Lose them first. Then respray. The respray menu says a new colour reduces recognition. It even tells you whether the car has heat. At Moses' shop, a respray was a hundred dollars. Escape first. Paint second.",
+   "shots": [
+    {
+     "clip": 1013,
+     "in": 121.0,
+     "out": 125.0
+    },
+    {
+     "clip": 1013,
+     "in": 125.5,
+     "out": 132.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1018,
+     "in": 50.5,
+     "out": 55.8,
+     "crop": "none",
+     "push": true
+    },
+    {
+     "clip": 1018,
+     "in": 92.5,
+     "out": 99.5,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G21"
+   ],
+   "id": "b031"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number seventeen. Split up, and watch for cameras. Guides agree the police can know you as a couple. Guides say splitting Jason and Lucia up clears that icon. Guides also say camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
+   "tts": "Tip number seventeen. Split up, and watch for cameras. Guides agree the police can know you as a couple. Guides say splitting Jason and Loo-see-ah up clears that icon. Guides also say camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
+   "shots": [
+    {
+     "clip": 1016,
+     "in": 109.5,
+     "out": 118.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1000,
+     "in": 192.0,
+     "out": 200.0
+    },
+    {
+     "clip": 1000,
+     "in": 202.0,
+     "out": 205.5
+    }
+   ],
+   "gfx": [
+    "G22"
+   ],
+   "id": "b032"
+  },
+  {
+   "type": "narr",
+   "text": "Now you look like someone else. Last section. What happens after the chase.",
+   "tts": "Now you look like someone else. Last section. What happens after the chase.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 0.5,
+     "out": 5.5
+    }
+   ],
+   "gfx": [
+    "G23"
+   ],
+   "chapter": "After the chase",
+   "id": "b033"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. Guides agree the heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
+   "tts": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. Guides agree the heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
+   "shots": [
+    {
+     "clip": 1015,
+     "in": 12.5,
+     "out": 15.5
+    },
+    {
+     "clip": 1015,
+     "in": 59.3,
+     "out": 64.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 65.2,
+     "out": 69.9,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 110.0,
+     "out": 116.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1015,
+     "in": 117.5,
+     "out": 125.0,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 232.0,
+     "out": 235.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 125.4,
+     "out": 128.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 240.8,
+     "out": 245.1,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 249.5,
+     "out": 252.0
+    },
+    {
+     "clip": 1009,
+     "in": 166.0,
+     "out": 170.4
+    }
+   ],
+   "gfx": [
+    "G24"
+   ],
+   "id": "b034"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number nineteen. Lie low, and let it cool. Guides agree the heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
+   "tts": "Tip number nineteen. Lie low, and let it cool. Guides agree the heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
+   "shots": [
+    {
+     "clip": 1019,
+     "in": 269.0,
+     "out": 280.0
+    },
+    {
+     "clip": 1024,
+     "in": 177.5,
+     "out": 181.5
+    }
+   ],
+   "gfx": [
+    "G25"
+   ],
+   "id": "b035"
+  },
+  {
+   "type": "narr",
+   "text": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Guides agree that getting busted takes your pocket cash too. One adds a small fee from your bank app. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
+   "tts": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Guides agree that getting busted takes your pocket cash too. One adds a small fee from your bank app. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
+   "shots": [
+    {
+     "clip": 1002,
+     "in": 139.0,
+     "out": 142.8
+    },
+    {
+     "clip": 1003,
+     "in": 13.0,
+     "out": 17.3,
+     "crop": "none"
+    },
+    {
+     "clip": 1007,
+     "in": 170.0,
+     "out": 173.6
+    },
+    {
+     "clip": 1003,
+     "in": 19.5,
+     "out": 25.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1011,
+     "in": 172.0,
+     "out": 177.5
+    },
+    {
+     "clip": 1011,
+     "in": 178.8,
+     "out": 181.8,
+     "crop": "none"
+    }
+   ],
+   "gfx": [
+    "G26"
+   ],
+   "id": "b036"
+  },
+  {
+   "type": "narr",
+   "text": "And when they do catch you, they keep it short.",
+   "tts": "And when they do catch you, they keep it short.",
+   "shots": [
+    {
+     "clip": 1007,
+     "in": 174.2,
+     "out": 178.2
+    }
+   ],
+   "gfx": [],
+   "id": "b037"
+  },
+  {
+   "type": "game",
+   "clip": 1007,
+   "in": 182.75,
+   "out": 184.55,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p11.mp4 @ 182.75-184.55 s: \"Officer: Okay, you are under arrest!\" (words 183.04-184.36; the line before (it swears) ends 182.52, next 'And' 184.94; subtitle shows from 182.85, no earlier line on screen at 182.6); \"crop\": \"none\"",
+   "crop": "none",
+   "id": "b038"
+  },
+  {
+   "type": "narr",
+   "text": "If this kept your stars down even once, subscribe. There are more GTA 6 guides coming.",
+   "tts": "If this kept your stars down even once, subscribe. There are more GTA 6 guides coming.",
+   "shots": [
+    {
+     "clip": 1017,
+     "in": 113.5,
+     "out": 119.5
+    }
+   ],
+   "gfx": [],
+   "id": "b039"
+  },
+  {
+   "type": "narr",
+   "text": "Here are the five that matter most. Number five. Never let it reach six stars. Number four. Break line of sight, and get out of the red zone. Number three. Check your items wheel for the red badge, and take that item off. Number two. Stars gone does not mean safe. Go around the zone. And number one, the most important tip in this video. Clear every icon under your stars.",
+   "tts": "Here are the five that matter most. Number five. Never let it reach six stars. Number four. Break line of sight, and get out of the red zone. Number three. Check your items wheel for the red badge, and take that item off. Number two. Stars gone does not mean safe. Go around the zone. And number one, the most important tip in this video. Clear every icon under your stars.",
+   "shots": [
+    {
+     "clip": 1001,
+     "in": 180.0,
+     "out": 186.5,
+     "crop": "none"
+    },
+    {
+     "clip": 1014,
+     "in": 214.3,
+     "out": 217.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1021,
+     "in": 180.0,
+     "out": 184.6,
+     "crop": "none"
+    },
+    {
+     "clip": 1005,
+     "in": 240.8,
+     "out": 244.4,
+     "crop": "none"
+    },
+    {
+     "clip": 1006,
+     "in": 66.0,
+     "out": 71.0
+    }
+   ],
+   "gfx": [
+    "G27"
+   ],
+   "chapter": "Top five recap",
+   "id": "b040"
+  },
+  {
+   "type": "narr",
+   "text": "Even after all that, people still get the wrong idea about me.",
+   "tts": "Even after all that, people still get the wrong idea about me.",
+   "shots": [
+    {
+     "clip": 1025,
+     "in": 236.0,
+     "out": 240.6
+    }
+   ],
+   "gfx": [],
+   "id": "b041"
+  },
+  {
+   "type": "game",
+   "clip": 1025,
+   "in": 249.0,
+   "out": 253.62,
+   "cue": "GAME AUDIO cutscenes/gta6/GTA 6 (2026-11-23 05-04-53) p04.mp4 @ 249.00-253.62 s: \"Dunk: I thought you was a cop or somethin'. Her reply: No, still not a cop, Dunk.\" (words 249.20-253.35; 'freaked me out.' ends 248.82, the next line opens with a swear at 253.90; the subtitle before this one carries a swear and stays on screen to about 251.2, and the next one appears at about 253.6, so the subtitle band is cropped); crop the subtitle",
+   "crop": "sub",
+   "id": "b042"
+  },
+  {
+   "type": "narr",
+   "text": "What is the highest wanted level you have hit so far, and how? Mine was four stars, in a passenger jet. Tell me in the comments. See you in Leonida.",
+   "tts": "What is the highest wanted level you have hit so far, and how? Mine was four stars, in a passenger jet. Tell me in the comments. See you in Leonida.",
+   "shots": [
+    {
+     "clip": 1024,
+     "in": 186.5,
+     "out": 197.0
+    },
+    {
+     "clip": 1024,
+     "in": 198.0,
+     "out": 205.0
+    },
+    {
+     "clip": 1017,
+     "in": 22.0,
+     "out": 28.5
+    }
+   ],
+   "gfx": [
+    "G28"
+   ],
+   "id": "b043"
+  }
+ ],
+ "gfx_cues": [
+  {
+   "id": "G01",
+   "cue": "lower \"GTA 6: HOW TO LOSE THE COPS\""
+  },
+  {
+   "id": "G02",
+   "cue": "caption \"20 TIPS TO LOSE THE COPS IN LEONIDA\""
+  },
+  {
+   "id": "G03",
+   "cue": "chapter 1 \"READ THE SCREEN\"; tag \"TIP 1: READ THE STAR COLOUR\""
+  },
+  {
+   "id": "G04",
+   "cue": "tag \"TIP 2: THE ICONS UNDER THE STARS\"; slam \"CLEAR EVERY ICON.\""
+  },
+  {
+   "id": "G05",
+   "cue": "tag \"TIP 3: READ THE SEARCH AREA\"; caption \"VEHICLE KNOWN, APPEARANCE KNOWN, OUTFIT KNOWN\""
+  },
+  {
+   "id": "G06",
+   "cue": "tag \"TIP 4: NOT ON YOUR MINIMAP\""
+  },
+  {
+   "id": "G07",
+   "cue": "chapter 2 \"WHAT MAKES IT WORSE\""
+  },
+  {
+   "id": "G08",
+   "cue": "tag \"TIP 5: PUT YOUR GUN AWAY\""
+  },
+  {
+   "id": "G09",
+   "cue": "tag \"TIP 6: LEAVE THE COPS STANDING\""
+  },
+  {
+   "id": "G10",
+   "cue": "tag \"TIP 7: SOME CRIMES SEND STARS FLYING\""
+  },
+  {
+   "id": "G11",
+   "cue": "tag \"TIP 8: NEVER REACH SIX STARS\""
+  },
+  {
+   "id": "G12",
+   "cue": "chapter 3 \"BREAK AWAY\""
+  },
+  {
+   "id": "G13",
+   "cue": "tag \"TIP 9: BREAK LINE OF SIGHT\""
+  },
+  {
+   "id": "G14",
+   "cue": "tag \"TIP 10: ON FOOT, HIDE\""
+  },
+  {
+   "id": "G15",
+   "cue": "tag \"TIP 11: KNOW WHAT WINNING LOOKS LIKE\""
+  },
+  {
+   "id": "G16",
+   "cue": "tag \"TIP 12: DITCH THE CAR\""
+  },
+  {
+   "id": "G17",
+   "cue": "chapter 4 \"CHANGE YOUR LOOK\""
+  },
+  {
+   "id": "G18",
+   "cue": "tag \"TIP 13: CHECK THE ITEMS WHEEL\""
+  },
+  {
+   "id": "G19",
+   "cue": "tag \"TIP 14: MASK ON, MASK OFF\""
+  },
+  {
+   "id": "G20",
+   "cue": "tag \"TIP 15: CHANGE CLOTHES OUT OF SIGHT\"; counter $12 \"DENIM CUTOFFS\""
+  },
+  {
+   "id": "G21",
+   "cue": "tag \"TIP 16: PAINT IT AFTER THE CHASE\"; counter $100 \"RESPRAY AT MOSES' SHOP\""
+  },
+  {
+   "id": "G22",
+   "cue": "tag \"TIP 17: SPLIT UP, WATCH FOR CAMERAS\""
+  },
+  {
+   "id": "G23",
+   "cue": "chapter 5 \"AFTER THE CHASE\""
+  },
+  {
+   "id": "G24",
+   "cue": "tag \"TIP 18: STARS GONE IS NOT SAFE\"; slam \"THE HEAT STAYS.\""
+  },
+  {
+   "id": "G25",
+   "cue": "tag \"TIP 19: LIE LOW, LET IT COOL\""
+  },
+  {
+   "id": "G26",
+   "cue": "tag \"TIP 20: BANK YOUR CASH FIRST\"; counter -$531 \"LOST IN ONE DEATH\""
+  },
+  {
+   "id": "G27",
+   "cue": "lower \"TOP FIVE RECAP\""
+  },
+  {
+   "id": "G28",
+   "cue": "endscreen; caption \"GTA 6 STARTER PACK: GTA6.BOSSKG.COM (UNOFFICIAL FAN GUIDE)\""
+  }
+ ]
+}

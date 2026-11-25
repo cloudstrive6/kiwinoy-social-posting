@@ -1,0 +1,813 @@
+{
+ "note": "Shot lists that the cue syntax cannot carry (2026-11-25 build): HUD box crops [0.64, 0, 1, 0.36] of the stars and icons, the items-wheel box [0.13, 0.15, 0.63, 0.65], the phone-call subtitle mask (the call card stays readable), and `at` anchors that start each proof shot on the words it proves (Guide C reads about 210 wpm, faster than the 175 wpm the ranges are sized for). Each list replaces that beat's shots in full; the ranges are the same as in script.md. Anchors never start with a number word or Lucia's name (Whisper writes digits, and the TTS text spells Lucia as Loo-see-ah).",
+ "shots": {
+  "b001": [
+   {
+    "clip": 1009,
+    "in": 136.0,
+    "out": 140.5
+   },
+   {
+    "clip": 1005,
+    "in": 125.4,
+    "out": 128.4,
+    "crop": "none",
+    "push": true,
+    "at": "First problem"
+   },
+   {
+    "clip": 1002,
+    "in": 140.0,
+    "out": 143.3,
+    "at": "Get caught or killed"
+   },
+   {
+    "clip": 1003,
+    "in": 13.0,
+    "out": 17.3,
+    "crop": "none"
+   },
+   {
+    "clip": 1002,
+    "in": 22.0,
+    "out": 26.5,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "Reach six stars"
+   }
+  ],
+  "b003": [
+   {
+    "clip": 1002,
+    "in": 70.0,
+    "out": 72.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ]
+   },
+   {
+    "clip": 1004,
+    "in": 240.0,
+    "out": 242.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ]
+   },
+   {
+    "clip": 1012,
+    "in": 270.0,
+    "out": 272.0
+   },
+   {
+    "clip": 1006,
+    "in": 74.8,
+    "out": 76.8,
+    "crop": "none"
+   },
+   {
+    "clip": 1005,
+    "in": 240.8,
+    "out": 242.8,
+    "crop": "none"
+   }
+  ],
+  "b004": [
+   {
+    "clip": 1006,
+    "in": 61.0,
+    "out": 64.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ]
+   },
+   {
+    "clip": 1002,
+    "in": 30.0,
+    "out": 33.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "White stars mean"
+   },
+   {
+    "clip": 1002,
+    "in": 40.5,
+    "out": 45.5,
+    "at": "I had four white ones"
+   },
+   {
+    "clip": 1002,
+    "in": 72.5,
+    "out": 79.0
+   },
+   {
+    "clip": 1015,
+    "in": 155.2,
+    "out": 157.9,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "Red stars mean"
+   },
+   {
+    "clip": 1004,
+    "in": 230.5,
+    "out": 233.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "Hollow stars mean"
+   },
+   {
+    "clip": 1006,
+    "in": 86.0,
+    "out": 90.0,
+    "at": "So glance up"
+   }
+  ],
+  "b005": [
+   {
+    "clip": 1006,
+    "in": 59.5,
+    "out": 66.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "push": true
+   },
+   {
+    "clip": 1004,
+    "in": 235.8,
+    "out": 239.8,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "The gun is your weapon"
+   },
+   {
+    "clip": 1013,
+    "in": 162.0,
+    "out": 167.8,
+    "crop": "none",
+    "at": "Guides say there are two more"
+   },
+   {
+    "clip": 1009,
+    "in": 127.0,
+    "out": 134.0,
+    "at": "Each icon is one more"
+   },
+   {
+    "clip": 1015,
+    "in": 125.8,
+    "out": 130.8,
+    "crop": "none",
+    "at": "Losing the cops"
+   }
+  ],
+  "b006": [
+   {
+    "clip": 1006,
+    "in": 67.0,
+    "out": 71.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1005,
+    "in": 124.6,
+    "out": 128.4,
+    "crop": "none",
+    "push": true,
+    "at": "Mine said"
+   },
+   {
+    "clip": 1005,
+    "in": 128.6,
+    "out": 133.0,
+    "crop": "none",
+    "at": "That is your to-do list"
+   }
+  ],
+  "b009": [
+   {
+    "clip": 1015,
+    "in": 84.0,
+    "out": 87.4
+   },
+   {
+    "clip": 1015,
+    "in": 87.5,
+    "out": 92.4,
+    "crop": "none",
+    "at": "A Sheriff truck"
+   },
+   {
+    "clip": 1015,
+    "in": 92.5,
+    "out": 98.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1009,
+    "in": 160.0,
+    "out": 166.0,
+    "at": "So when you are wanted"
+   },
+   {
+    "clip": 1015,
+    "in": 106.5,
+    "out": 109.5,
+    "crop": "none",
+    "at": "Your minimap will not"
+   }
+  ],
+  "b011": [
+   {
+    "clip": 1004,
+    "in": 221.0,
+    "out": 226.5,
+    "crop": "none"
+   },
+   {
+    "clip": 1004,
+    "in": 226.5,
+    "out": 230.4,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "hollow stars, and one icon"
+   },
+   {
+    "clip": 1004,
+    "in": 233.2,
+    "out": 235.8,
+    "crop": "none",
+    "at": "Guides say a pistol"
+   },
+   {
+    "clip": 1012,
+    "in": 283.6,
+    "out": 287.4,
+    "crop": "none"
+   },
+   {
+    "clip": 1023,
+    "in": 26.0,
+    "out": 30.5,
+    "crop": "none",
+    "at": "A long gun has to be"
+   },
+   {
+    "clip": 1023,
+    "in": 49.5,
+    "out": 56.5,
+    "crop": "none",
+    "push": true,
+    "at": "At the trunk"
+   }
+  ],
+  "b012": [
+   {
+    "clip": 1010,
+    "in": 254.5,
+    "out": 259.5
+   },
+   {
+    "clip": 1010,
+    "in": 274.5,
+    "out": 281.5,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.84,
+      0.85,
+      0.94
+     ]
+    ],
+    "at": "A tip says disabling"
+   },
+   {
+    "clip": 1010,
+    "in": 262.0,
+    "out": 268.5,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.84,
+      0.85,
+      0.94
+     ]
+    ],
+    "at": "Another says combat focus"
+   },
+   {
+    "clip": 1010,
+    "in": 268.6,
+    "out": 273.5,
+    "at": "Aim for the car"
+   }
+  ],
+  "b013": [
+   {
+    "clip": 1001,
+    "in": 10.5,
+    "out": 16.0,
+    "crop": "none"
+   },
+   {
+    "clip": 1001,
+    "in": 98.0,
+    "out": 102.6,
+    "at": "Then I took a passenger jet"
+   },
+   {
+    "clip": 1001,
+    "in": 103.5,
+    "out": 111.0,
+    "crop": "none",
+    "at": "Before it left the ground"
+   },
+   {
+    "clip": 1001,
+    "in": 187.0,
+    "out": 191.4,
+    "crop": "none",
+    "at": "Then a fighter jet"
+   },
+   {
+    "clip": 1000,
+    "in": 181.5,
+    "out": 186.5,
+    "at": "If you want an easy"
+   }
+  ],
+  "b020": [
+   {
+    "clip": 1002,
+    "in": 84.0,
+    "out": 90.0
+   },
+   {
+    "clip": 1014,
+    "in": 214.3,
+    "out": 217.4,
+    "crop": "none",
+    "push": true,
+    "at": "The red area on your map"
+   },
+   {
+    "clip": 1015,
+    "in": 116.0,
+    "out": 119.5,
+    "crop": "none",
+    "at": "Here is a landmark"
+   },
+   {
+    "clip": 1015,
+    "in": 119.6,
+    "out": 125.4,
+    "crop": "none",
+    "at": "In my footage"
+   },
+   {
+    "clip": 1015,
+    "in": 150.0,
+    "out": 154.5,
+    "crop": "none",
+    "at": "Treat a red bar"
+   }
+  ],
+  "b021": [
+   {
+    "clip": 1008,
+    "in": 77.5,
+    "out": 83.4
+   },
+   {
+    "clip": 1012,
+    "in": 275.0,
+    "out": 283.4
+   },
+   {
+    "clip": 1013,
+    "in": 97.5,
+    "out": 103.5,
+    "at": "crept through a whole"
+   }
+  ],
+  "b022": [
+   {
+    "clip": 1021,
+    "in": 185.0,
+    "out": 188.3,
+    "crop": "none"
+   },
+   {
+    "clip": 1021,
+    "in": 188.4,
+    "out": 195.2,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "Watch the top right"
+   },
+   {
+    "clip": 1000,
+    "in": 153.5,
+    "out": 159.5,
+    "crop": "none",
+    "at": "On launch night"
+   },
+   {
+    "clip": 1015,
+    "in": 98.5,
+    "out": 103.0,
+    "at": "When you see it"
+   }
+  ],
+  "b023": [
+   {
+    "clip": 1002,
+    "in": 48.0,
+    "out": 53.5,
+    "crop": "none"
+   },
+   {
+    "clip": 1002,
+    "in": 53.5,
+    "out": 58.5,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "In the air"
+   },
+   {
+    "clip": 1002,
+    "in": 64.0,
+    "out": 69.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "Once I was on foot"
+   },
+   {
+    "clip": 1015,
+    "in": 41.0,
+    "out": 46.5,
+    "at": "So if they know"
+   }
+  ],
+  "b028": [
+   {
+    "clip": 1006,
+    "in": 72.8,
+    "out": 74.8,
+    "crop": "none"
+   },
+   {
+    "clip": 1006,
+    "in": 74.8,
+    "out": 77.0,
+    "crop": [
+     0.13,
+     0.15,
+     0.63,
+     0.65
+    ],
+    "at": "The game marks each item"
+   },
+   {
+    "clip": 1006,
+    "in": 77.0,
+    "out": 81.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "I took them off"
+   },
+   {
+    "clip": 1006,
+    "in": 82.0,
+    "out": 86.0,
+    "at": "seconds. No shop"
+   },
+   {
+    "clip": 1012,
+    "in": 242.8,
+    "out": 248.4,
+    "crop": "none",
+    "at": "Check the wheel"
+   },
+   {
+    "clip": 1006,
+    "in": 90.0,
+    "out": 94.5,
+    "at": "This is tip number two"
+   }
+  ],
+  "b029": [
+   {
+    "clip": 1022,
+    "in": 54.5,
+    "out": 58.5
+   },
+   {
+    "clip": 1022,
+    "in": 59.3,
+    "out": 64.8,
+    "crop": "none",
+    "push": true,
+    "at": "face wrap and glasses"
+   },
+   {
+    "clip": 1022,
+    "in": 65.2,
+    "out": 69.8,
+    "crop": "none",
+    "at": "the game said appearance"
+   },
+   {
+    "clip": 1012,
+    "in": 139.0,
+    "out": 145.3,
+    "at": "The mask sits"
+   }
+  ],
+  "b030": [
+   {
+    "clip": 1013,
+    "in": 177.0,
+    "out": 186.5,
+    "crop": "none"
+   },
+   {
+    "clip": 1013,
+    "in": 188.0,
+    "out": 193.0,
+    "crop": "none",
+    "at": "Only once the stars"
+   },
+   {
+    "clip": 1013,
+    "in": 207.5,
+    "out": 213.4
+   },
+   {
+    "clip": 1013,
+    "in": 260.5,
+    "out": 266.0,
+    "crop": "none",
+    "at": "Denim cutoffs"
+   }
+  ],
+  "b031": [
+   {
+    "clip": 1013,
+    "in": 121.0,
+    "out": 125.0
+   },
+   {
+    "clip": 1013,
+    "in": 125.5,
+    "out": 132.0,
+    "crop": "none",
+    "at": "The game says you cannot"
+   },
+   {
+    "clip": 1018,
+    "in": 50.5,
+    "out": 55.8,
+    "crop": "none",
+    "push": true,
+    "at": "The respray menu says"
+   },
+   {
+    "clip": 1018,
+    "in": 92.5,
+    "out": 99.5,
+    "crop": "none",
+    "at": "At Moses' shop"
+   }
+  ],
+  "b032": [
+   {
+    "clip": 1016,
+    "in": 109.5,
+    "out": 118.5,
+    "crop": "none",
+    "mask": [
+     [
+      0.15,
+      0.84,
+      0.74,
+      0.94
+     ]
+    ]
+   },
+   {
+    "clip": 1000,
+    "in": 192.0,
+    "out": 200.0,
+    "at": "Guides also say camera"
+   },
+   {
+    "clip": 1000,
+    "in": 202.0,
+    "out": 205.5
+   }
+  ],
+  "b034": [
+   {
+    "clip": 1015,
+    "in": 12.5,
+    "out": 15.5
+   },
+   {
+    "clip": 1015,
+    "in": 59.3,
+    "out": 64.6,
+    "crop": "none",
+    "at": "Look at my screen"
+   },
+   {
+    "clip": 1015,
+    "in": 65.2,
+    "out": 69.9,
+    "crop": "none",
+    "at": "Now open the map"
+   },
+   {
+    "clip": 1015,
+    "in": 110.0,
+    "out": 116.0,
+    "crop": "none",
+    "at": "I changed nothing"
+   },
+   {
+    "clip": 1015,
+    "in": 117.5,
+    "out": 125.0,
+    "crop": "none",
+    "at": "The second I crossed"
+   },
+   {
+    "clip": 1005,
+    "in": 232.0,
+    "out": 235.4,
+    "crop": "none",
+    "at": "Jason's stars came back"
+   },
+   {
+    "clip": 1005,
+    "in": 125.4,
+    "out": 128.4,
+    "crop": "none",
+    "at": "with his map still"
+   },
+   {
+    "clip": 1005,
+    "in": 240.8,
+    "out": 245.1,
+    "crop": "none",
+    "at": "red stars at a toll"
+   },
+   {
+    "clip": 1005,
+    "in": 249.5,
+    "out": 252.0,
+    "at": "Guides agree the heat"
+   },
+   {
+    "clip": 1009,
+    "in": 166.0,
+    "out": 170.4,
+    "at": "So go around"
+   }
+  ],
+  "b036": [
+   {
+    "clip": 1002,
+    "in": 139.0,
+    "out": 142.8
+   },
+   {
+    "clip": 1003,
+    "in": 13.0,
+    "out": 17.3,
+    "crop": "none",
+    "at": "Mine was five hundred"
+   },
+   {
+    "clip": 1007,
+    "in": 170.0,
+    "out": 173.6,
+    "at": "Guides agree that getting busted"
+   },
+   {
+    "clip": 1003,
+    "in": 19.5,
+    "out": 25.5,
+    "crop": "none",
+    "at": "And the game says"
+   },
+   {
+    "clip": 1011,
+    "in": 172.0,
+    "out": 177.5,
+    "at": "So bank it"
+   },
+   {
+    "clip": 1011,
+    "in": 178.8,
+    "out": 181.8,
+    "crop": "none"
+   }
+  ],
+  "b040": [
+   {
+    "clip": 1001,
+    "in": 180.0,
+    "out": 186.5,
+    "crop": "none"
+   },
+   {
+    "clip": 1014,
+    "in": 214.3,
+    "out": 217.4,
+    "crop": "none",
+    "at": "Number four"
+   },
+   {
+    "clip": 1021,
+    "in": 180.0,
+    "out": 184.6,
+    "crop": "none",
+    "at": "Number three"
+   },
+   {
+    "clip": 1005,
+    "in": 240.8,
+    "out": 244.4,
+    "crop": "none",
+    "at": "Number two"
+   },
+   {
+    "clip": 1006,
+    "in": 66.0,
+    "out": 71.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "And number one"
+   }
+  ]
+ }
+}

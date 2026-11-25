@@ -1,0 +1,57 @@
+{
+ "note": "Music bed for GTA 6 How to Lose the Cops (2026-11-25), epic cinematic orchestra chosen per chapter by the agent (Bryce's rule, 2026-11-12), from the three tracks on private B2: Last Dawn (theme) for the cold open, breaking away and the ask, recap and end; Red (home) for reading the screen and changing your look; Epic and Dramatic Trailer Music (tension) for what makes it worse and after the chase. Never the game's own score.",
+ "tracks_note": "B2 keys in the private bucket (licensed tracks stay out of the public repo).",
+ "tracks": {
+  "theme": "music/analysis/last-dawn-ross-bugden.mp3",
+  "tension": "music/analysis/epic-dramatic-trailer-ross-bugden.mp3",
+  "home": "music/analysis/red-scott-buckley.mp3"
+ },
+ "credits": [
+  "\"Last Dawn\" and \"Epic and Dramatic Trailer Music\" by Ross Bugden",
+  "\"Red\" by Scott Buckley, www.scottbuckley.com.au, licensed under CC BY 4.0"
+ ],
+ "under_narration_db": -23,
+ "under_game_db": -30,
+ "xfade": 2.5,
+ "sections": [
+  {
+   "from": "b000",
+   "track": "theme",
+   "offset": 0,
+   "gain_db": -22
+  },
+  {
+   "from": "b004",
+   "track": "home",
+   "offset": 0
+  },
+  {
+   "from": "b010",
+   "track": "tension",
+   "offset": 0,
+   "gain_db": -25
+  },
+  {
+   "from": "b019",
+   "track": "theme",
+   "offset": 40
+  },
+  {
+   "from": "b026",
+   "track": "home",
+   "offset": 60
+  },
+  {
+   "from": "b033",
+   "track": "tension",
+   "offset": 70,
+   "gain_db": -25
+  },
+  {
+   "from": "b039",
+   "track": "theme",
+   "offset": 120,
+   "gain_db": -22
+  }
+ ]
+}

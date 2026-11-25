@@ -1,0 +1,98 @@
+{
+ "logo": "reels/assets/game-logo/GTA 6 Logo.png",
+ "items": [
+  {
+   "name": "thumb-a-wanted-guide",
+   "clip": 1001,
+   "at": 23.6,
+   "column": "right",
+   "place": {
+    "cx": 0.42,
+    "top": 0.28,
+    "zoom": 0.64
+   },
+   "faces": [
+    [
+     0.36,
+     0.38,
+     0.46,
+     0.55
+    ],
+    [
+     0.455,
+     0.36,
+     0.5,
+     0.47
+    ]
+   ],
+   "lines": [
+    "WANTED",
+    "GUIDE"
+   ],
+   "note": "Jason from behind walking into the terminal behind an airport officer (the script's pick, 12-44-38 at 23.6: no GRAB prompt on screen, SURRENDER prompt, HUD stars and minimap cropped out); both heads keep-clear",
+   "grade": {
+    "sharpen": 60
+   }
+  },
+  {
+   "name": "thumb-b-lose-the-cops",
+   "clip": 1015,
+   "at": 90.0,
+   "column": "right",
+   "place": {
+    "cx": 0.32,
+    "top": 0.1,
+    "zoom": 0.7
+   },
+   "faces": [
+    [
+     0.15,
+     0.42,
+     0.28,
+     0.53
+    ]
+   ],
+   "lines": [
+    "LOSE THE",
+    "COPS"
+   ],
+   "note": "a SHERIFF pickup passes Lucia's white car (tip 4's moment, 01-00-16 p10 at 1:30.0); the pickup's cab is keep-clear; minimap and waypoint cropped out",
+   "grade": {
+    "sharpen": 60
+   }
+  },
+  {
+   "name": "thumb-c-stars-came-back",
+   "clip": 1005,
+   "at": 242.8,
+   "column": "left",
+   "place": {
+    "cx": 0.531,
+    "top": 0.22,
+    "zoom": 0.53
+   },
+   "faces": [
+    [
+     0.43,
+     0.53,
+     0.48,
+     0.6
+    ],
+    [
+     0.6,
+     0.49,
+     0.66,
+     0.58
+    ]
+   ],
+   "lines": [
+    "STARS",
+    "CAME BACK"
+   ],
+   "note": "Jason's pickup alongside a City of Hamlet police car at the toll plaza (tip 18's moment, 00-03-41 p02 at 4:02.8); Jason's head in the cab and the officer at the wheel are keep-clear; HUD stars, minimap and route box cropped out",
+   "grade": {
+    "sharpen": 60
+   }
+  }
+ ]
+}

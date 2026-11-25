@@ -1,0 +1,72 @@
+[
+ {
+  "beat": "b009",
+  "match": "Sheriff truck drove right past me",
+  "sig": "e3666fc8c0eb0677",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "01-00-16 p10 at 89.6 to 90.3 s, full-resolution frames: a white KELLY COUNTY SHERIFF pickup passes the white car on the left; the minimap (bottom left) at 89.9 to 90.2 shows the route line and no police marker. The judge's 2 s, 640 px sheet could not resolve either."
+ },
+ {
+  "beat": "b020",
+  "match": "turned red the moment I crossed",
+  "sig": "0ff214c074c225a1",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "01-00-16 p10, frames every 0.25 s from 120.5 to 122.5: the bar across the top is plain at 120.5, the zone edge reaches the minimap at 121.0, and the bar turns red as three red stars light at 121.3 to 121.5. HUD sheet 56 to 120 s shows no stars before the crossing."
+ },
+ {
+  "beat": "b027",
+  "match": "The car was easy",
+  "sig": "067e2c9b74518e8e",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "a bridge line opening section 4: it refers back to tip 12 (ditch the car) and tip 16 (paint it), said in the previous section; it is not a claim about the clothing-store shot under it."
+ },
+ {
+  "beat": "b028",
+  "match": "One was on Jason's glasses",
+  "sig": "85274bc41afaf1b1",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "00-18-47 p01 at 75.5 s, full resolution: the items wheel shows UNSAVED EYEWEAR (ON) selected, with a red badge, and TAKE OFF; the BASEBALL CAP slot reads OFF, no badge. The footage log's 'baseball cap' is the wheel's centre label at 77.5 after the glasses go OFF. data/footage_facts/gta6.md has Jason as the player in this clip."
+ },
+ {
+  "beat": "b028",
+  "match": "face icon vanished from under the stars",
+  "sig": "85274bc41afaf1b1",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "00-18-47 p01: at 75.5 s the HUD shows two red stars with the hanger, person and car icons and the glasses ON; at 77.5 s the glasses read OFF; HUD strips at 77 to 81 s show only the hanger and car icons."
+ },
+ {
+  "beat": "b028",
+  "match": "Two seconds.",
+  "sig": "85274bc41afaf1b1",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "00-18-47 p01: glasses ON with the badge at 75.5 s, OFF at 77.5 s; the narration's 'two seconds' is the take-off itself."
+ },
+ {
+  "beat": "b029",
+  "match": "had a face wrap and glasses on",
+  "sig": "a64f75d17373a9aa",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "02-14-28 p02 at 59 to 64 s, 1 s frames: Lucia's items wheel reads FACE WRAP ON and DOUBLE BRIDGE AVIATORS ON (both with badges), then both OFF by 64 s. The judge's packet of this beat reached the pawn plaza shot only."
+ },
+ {
+  "beat": "b029",
+  "match": "game said appearance heat cleared",
+  "sig": "a64f75d17373a9aa",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "02-14-28 p02 at 66 to 68 s: the toast 'Appearance heat cleared' (top right) right after both items go off at 61 to 64 s."
+ },
+ {
+  "beat": "b033",
+  "match": "Now you look like someone else",
+  "sig": "7a022255146a657e",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "a bridge line closing section 4 (the disguise tips 13 to 17) and opening section 5; addressed to the viewer, not a claim about the bridge walk under it."
+ },
+ {
+  "beat": "b043",
+  "match": "Mine was four stars, in a passenger jet",
+  "sig": "e784cd1ea45ca7d8",
+  "by": "Claude, verified from KG's footage on 2026-11-25 (frames pulled from B2 at full resolution while building the cue sheet). Bryce delegated footage checks to agents (\"You/agents should be able to know this by reviewing the footages\", 2026-11-23); he did not review these himself.",
+  "why": "callback to tip 7: 12-44-38 log and frames, the wanted level goes from 2 to 4 stars at about 106 to 108 s while taxiing the Driftair jet and stays at 4 to 193 s; KG has no clip above four stars. The end shots under it are scenery."
+ }
+]

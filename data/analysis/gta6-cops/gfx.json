@@ -1,0 +1,307 @@
+{
+ "note": "Graphics for GTA 6 How to Lose the Cops (2026-11-25), house style of the beginners guide: the title lower third, a chapter card for each of the 5 sections, a TIP tag at each of the 20 tips, a caption with the map card's three lines in tip 3 (the card itself is readable for 1.2 s), counters only for figures the footage shows (timed to the spoken number), two slams, a recap lower third, and the end screen (no outline boxes, Bryce's profile photo, no placeholder text) with the Starter Pack caption outside the Watch next slot. beat_tail keeps the last beat at 20 s or more for the end card.",
+ "beat_tail": {
+  "b043": 13
+ },
+ "G01": [
+  {
+   "kind": "lower",
+   "text": "GTA 6: HOW TO LOSE THE COPS",
+   "at": 1.2,
+   "dur": 5.0
+  }
+ ],
+ "G02": [
+  {
+   "kind": "caption",
+   "text": "20 TIPS TO LOSE THE COPS IN LEONIDA",
+   "pos": "bottom",
+   "at_frac": 0.02,
+   "dur": 4.0
+  }
+ ],
+ "G03": [
+  {
+   "kind": "chapter",
+   "num": 1,
+   "title": "READ THE SCREEN",
+   "at": 0.3,
+   "dur": 4.2
+  },
+  {
+   "kind": "tag",
+   "text": "TIP 1: READ THE STAR COLOUR",
+   "slot": 0,
+   "at": 4.8,
+   "dur": 3.6
+  }
+ ],
+ "G04": [
+  {
+   "kind": "tag",
+   "text": "TIP 2: THE ICONS UNDER THE STARS",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "slam",
+   "text": "CLEAR EVERY ICON.",
+   "dur": 2.6,
+   "at_frac": 0.917
+  }
+ ],
+ "G05": [
+  {
+   "kind": "tag",
+   "text": "TIP 3: READ THE SEARCH AREA",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "caption",
+   "text": "VEHICLE KNOWN, APPEARANCE KNOWN, OUTFIT KNOWN",
+   "pos": "bottom",
+   "at_frac": 0.486,
+   "dur": 4.0
+  }
+ ],
+ "G06": [
+  {
+   "kind": "tag",
+   "text": "TIP 4: NOT ON YOUR MINIMAP",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G07": [
+  {
+   "kind": "chapter",
+   "num": 2,
+   "title": "WHAT MAKES IT WORSE",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G08": [
+  {
+   "kind": "tag",
+   "text": "TIP 5: PUT YOUR GUN AWAY",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G09": [
+  {
+   "kind": "tag",
+   "text": "TIP 6: LEAVE THE COPS STANDING",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G10": [
+  {
+   "kind": "tag",
+   "text": "TIP 7: SOME CRIMES SEND STARS FLYING",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G11": [
+  {
+   "kind": "tag",
+   "text": "TIP 8: NEVER REACH SIX STARS",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G12": [
+  {
+   "kind": "chapter",
+   "num": 3,
+   "title": "BREAK AWAY",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G13": [
+  {
+   "kind": "tag",
+   "text": "TIP 9: BREAK LINE OF SIGHT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G14": [
+  {
+   "kind": "tag",
+   "text": "TIP 10: ON FOOT, HIDE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G15": [
+  {
+   "kind": "tag",
+   "text": "TIP 11: KNOW WHAT WINNING LOOKS LIKE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G16": [
+  {
+   "kind": "tag",
+   "text": "TIP 12: DITCH THE CAR",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G17": [
+  {
+   "kind": "chapter",
+   "num": 4,
+   "title": "CHANGE YOUR LOOK",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G18": [
+  {
+   "kind": "tag",
+   "text": "TIP 13: CHECK THE ITEMS WHEEL",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G19": [
+  {
+   "kind": "tag",
+   "text": "TIP 14: MASK ON, MASK OFF",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G20": [
+  {
+   "kind": "tag",
+   "text": "TIP 15: CHANGE CLOTHES OUT OF SIGHT",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$12",
+   "label": "DENIM CUTOFFS",
+   "dur": 3.6,
+   "at_frac": 0.73
+  }
+ ],
+ "G21": [
+  {
+   "kind": "tag",
+   "text": "TIP 16: PAINT IT AFTER THE CHASE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$100",
+   "label": "RESPRAY AT MOSES' SHOP",
+   "dur": 3.6,
+   "at_frac": 0.889
+  }
+ ],
+ "G22": [
+  {
+   "kind": "tag",
+   "text": "TIP 17: SPLIT UP, WATCH FOR CAMERAS",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G23": [
+  {
+   "kind": "chapter",
+   "num": 5,
+   "title": "AFTER THE CHASE",
+   "at": 0.3,
+   "dur": 4.2
+  }
+ ],
+ "G24": [
+  {
+   "kind": "tag",
+   "text": "TIP 18: STARS GONE IS NOT SAFE",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "slam",
+   "text": "THE HEAT STAYS.",
+   "dur": 2.6,
+   "at_frac": 0.827
+  }
+ ],
+ "G25": [
+  {
+   "kind": "tag",
+   "text": "TIP 19: LIE LOW, LET IT COOL",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  }
+ ],
+ "G26": [
+  {
+   "kind": "tag",
+   "text": "TIP 20: BANK YOUR CASH FIRST",
+   "slot": 0,
+   "at": 0.4,
+   "dur": 3.6
+  },
+  {
+   "kind": "counter",
+   "value": "$531",
+   "label": "LOST IN ONE DEATH",
+   "dur": 3.6,
+   "at_frac": 0.299
+  }
+ ],
+ "G27": [
+  {
+   "kind": "lower",
+   "text": "TOP FIVE RECAP",
+   "at": 0.3,
+   "dur": 4.0
+  }
+ ],
+ "G28": [
+  {
+   "kind": "endscreen",
+   "last": 20
+  },
+  {
+   "kind": "caption",
+   "text": "GTA 6 STARTER PACK: GTA6.BOSSKG.COM (UNOFFICIAL FAN GUIDE)",
+   "pos": "bottom",
+   "at": -20,
+   "dur": 20
+  }
+ ]
+}

@@ -1,0 +1,136 @@
+{
+ "game": "gta6-cops",
+ "note": "Clip index as used in the script cues. Indices below 1000 are the footage-map numbers the script was cued against (index.json at the time); clips the script names by B2 key get indices from 1000 up. Seconds and fps from ffprobe on B2.",
+ "clips": {
+  "1000": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-19 12-39-35).mp4",
+   "seconds": 226.41,
+   "fps": "2997/50"
+  },
+  "1001": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-19 12-44-38).mp4",
+   "seconds": 193.47,
+   "fps": "2997/50"
+  },
+  "1002": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-19 12-47-53).mp4",
+   "seconds": 145.37,
+   "fps": "2997/50"
+  },
+  "1003": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-19 12-50-26).mp4",
+   "seconds": 98.24,
+   "fps": "2997/50"
+  },
+  "1004": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 00-03-41) p01.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1005": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 00-03-41) p02.mp4",
+   "seconds": 300.23,
+   "fps": "60000/1001"
+  },
+  "1006": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 00-18-47) p01.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1007": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 21-42-41) p11.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1008": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p04.mp4",
+   "seconds": 300.22,
+   "fps": "60000/1001"
+  },
+  "1009": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p07.mp4",
+   "seconds": 300.23,
+   "fps": "60000/1001"
+  },
+  "1010": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 22-40-04) p10.mp4",
+   "seconds": 299.25,
+   "fps": "2997/50"
+  },
+  "1011": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-21 23-37-28) p01.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1012": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p06.mp4",
+   "seconds": 300.22,
+   "fps": "60000/1001"
+  },
+  "1013": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p07.mp4",
+   "seconds": 300.23,
+   "fps": "60000/1001"
+  },
+  "1014": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p09.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1015": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p10.mp4",
+   "seconds": 299.25,
+   "fps": "2997/50"
+  },
+  "1016": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-00-16) p12.mp4",
+   "seconds": 252.62,
+   "fps": "2997/50"
+  },
+  "1017": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p01.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1018": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-22 01-59-31) p02.mp4",
+   "seconds": 133.75,
+   "fps": "60000/1001"
+  },
+  "1019": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 01-40-40) p04.mp4",
+   "seconds": 300.22,
+   "fps": "60000/1001"
+  },
+  "1020": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 01-40-40) p07.mp4",
+   "seconds": 226.33,
+   "fps": "60000/1001"
+  },
+  "1021": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 02-14-28) p01.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1022": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 02-14-28) p02.mp4",
+   "seconds": 300.23,
+   "fps": "60000/1001"
+  },
+  "1023": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 03-59-02) p09.mp4",
+   "seconds": 300.22,
+   "fps": "2997/50"
+  },
+  "1024": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 05-04-53) p03.mp4",
+   "seconds": 300.22,
+   "fps": "60000/1001"
+  },
+  "1025": {
+   "key": "cutscenes/gta6/GTA 6 (2026-11-23 05-04-53) p04.mp4",
+   "seconds": 300.22,
+   "fps": "60000/1001"
+  }
+ }
+}
