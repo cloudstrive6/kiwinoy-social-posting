@@ -175,7 +175,11 @@ def _domain(url: str) -> str:
 OUTLETS = {"videogameschronicle": "VGC Video Games Chronicle", "kotaku": "Kotaku", "ign": "IGN",
            "gamespot": "GameSpot", "pcgamer": "PC Gamer", "rockstargames": "Rockstar Rockstar Games",
            "polygon": "Polygon", "eurogamer": "Eurogamer", "gamesradar": "GamesRadar", "thegamer": "TheGamer",
-           "gamerant": "Game Rant", "dexerto": "Dexerto", "insider-gaming": "Insider Gaming", "theverge": "The Verge"}
+           "gamerant": "Game Rant", "dexerto": "Dexerto", "insider-gaming": "Insider Gaming", "theverge": "The Verge",
+           "screenrant": "Screen Rant", "shacknews": "Shacknews", "pushsquare": "Push Square",
+           "engadget": "Engadget", "vice": "Vice"}
+# How the card names each outlet (2026-11-26: a card wrote 'Videogameschronicle' from the bare domain).
+OUTLET_SAY = {"videogameschronicle": "VGC", "rockstargames": "Rockstar"}
 
 
 def outlet_names(text: str) -> str:
@@ -193,9 +197,20 @@ def fact_source(x: dict) -> str:
     return ", ".join(dict.fromkeys(_domain(s) for s in srcs if s)) or "unknown"
 
 
+def outlet_say(x: dict) -> str:
+    """The outlet names a card should write for a fact ('VGC and Kotaku'), from its source domains."""
+    names = []
+    for d in fact_source(x).split(", "):
+        k = next((k for k in OUTLETS if k in d), "")
+        if k:
+            names.append(OUTLET_SAY.get(k, OUTLETS[k]))
+    return " and ".join(list(dict.fromkeys(names))[:2])
+
+
 def facts_text(facts: list[dict]) -> str:
-    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}; "
-                     f"pairs with: {x.get('pairs_with', 'any clip')})" for x in facts)
+    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}"
+                     + (f"; credit it as: {outlet_say(x)}" if outlet_say(x) else "")
+                     + f"; pairs with: {x.get('pairs_with', 'any clip')})" for x in facts)
 
 
 def mark_fact(game: str, fact_id: str) -> None:
@@ -250,7 +265,9 @@ def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tupl
         "hedging; the comment line may be a dry joke as long as it states nothing untrue. A claim about how "
         "the game works (what causes, clears, raises or lowers something, what you must do) that the clip "
         "does not show and no named source backs is WRONG even if it sounds plausible; so is anything "
-        "the clip summary says happens outside the Short. Name every "
+        "the clip summary says happens outside the Short. A card that ends on a true, sourced fact "
+        "with no tip is fine: never mark it down for lacking advice, and in 'better' never ask for a "
+        "tip, rule, cause or number that neither the clip nor a source named in the card states. Name every "
         "sentence that is filler or wrong, and say what a real fan would want this card to say "
         "instead. Reply with JSON only: "
         '{"score": <1-10>, "filler": ["..."], "wrong": ["..."], "better": "..."}')
@@ -299,8 +316,9 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "the KIND of moment on screen (its 'pairs with' note, or the place or activity you "
            "can see). This is the 'did you know' card, and viewers love a fact they never knew. "
            "Then beat 1 ties the fact to what is on screen in a few words, beat 2 IS the fact, "
-           "told in your own words with every number and name exactly as given, and beat 3 is "
-           "what it means for a player (a cost, a risk, a use, a tip). Never claim the clip itself shows the fact's "
+           "told in your own words with every number and name exactly as given, and beat 3 (only "
+           "when the fact itself states one) is what it means for a player (a cost, a risk, a use, "
+           "a tip); when the fact states no consequence, the card ends on the fact. Never claim the clip itself shows the fact's "
            "subject unless the frames do (a fact about a trailer scene is not this clip). "
            "ADD NOTHING TO THE FACT: no claim the fact does not make, no superlative ('most', "
            "'first', 'only', 'biggest') unless the fact says it, no invented process or motive "
@@ -314,7 +332,10 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "unless the fact names it or it is readable on screen, and no label for the feature "
            "the fact does not use ('RPG-lite', 'physique system', 'connects to'). A card added "
            "'Rockstar confirmed' and 'his Key Lento safehouse' to a Kotaku fact (2026-11-20). "
-           "Put the fact's id in fact_id. If no fact fits, write a scene card and leave "
+           "Credit a fact with the outlet names its 'credit it as' note gives, and keep the credit in "
+           "every sentence that states part of that fact ('Dexerto reports the level holds there, and "
+           "that a cop who spots you restarts the chase'), never one credit followed by bare claims. "
+           "Put the main fact's id in fact_id; a second listed fact must also be in your facts list by its id. If no fact fits, write a scene card and leave "
            "fact_id empty.\n\n"
            if facts else "")
         + "FIRST DECIDE THE MODE (Bryce, 2026-11-22: what YOU can do in the game is not the same "
@@ -340,8 +361,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "lines ('That is ice cold.', 'That is confident.', 'Dignity not included.'), no 'every "
         "gamer knows' or 'classic GTA' comparisons, no metaphors that restate the fact ('a vault "
         "with no door', 'a notification with a long memory'), no hype. If you only have one fact, "
-        "add the second from the listed facts or the lore, or explain the practical consequence; "
-        "never pad.\n\n"
+        "add a second one from the listed facts or the lore, or stop short; never pad, and never "
+        "invent a consequence or tip to fill space.\n\n"
         "Write a card about THIS moment, a HEADLINE then three beats, as ONE paragraph:\n"
         "  0. HEADLINE (Bryce, 2026-11-22: lead with the surprise): 6 to 8 words, shown big "
         "above the body. The single most surprising true thing in the card, said plainly "
@@ -352,14 +373,18 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "or 'In GTA 6' or any 'In <game>' phrase: the headline already did the job.\n"
         "  2. THE DETAIL: the specific thing worth knowing, with its number, name or rule, and "
         "what it MEANS. This is the heart of the card.\n"
-        "  3. WHAT TO DO WITH IT: the practical consequence or tip for a player (what it costs, "
-        "what to do first, what to avoid, what it sets up), or for a story moment what the line "
-        "reveals about the character. Information, never a reaction. The card ends on this.\n\n"
+        "  3. WHAT TO DO WITH IT (OPTIONAL, 2026-11-26): a consequence or tip for a player (what "
+        "it costs, what to do first, what to avoid) ONLY when a listed fact, the subtitles or "
+        "on-screen text states it; for a story moment, what the line reveals ONLY when the "
+        "subtitles or a fact say it. When nothing states one, leave beat 3 out and end on beat "
+        "2: a card that ends on a true, sourced fact is a GOOD card. A tip, rule or consequence "
+        "you worked out yourself gets the card refused (19 cards in a row on 2026-11-25 were "
+        "refused for exactly this). Information, never a reaction.\n\n"
         "FUNNY CLIPS (Bryce, 2026-11-20): when WHAT IS ON SCREEN says the TONE is funny, the "
         "COMMENT line carries the joke. The body still teaches something true (from the "
         "subtitles, the lore bible or a listed fact). Never invent an engine, physics or AI "
         "reason for a gag.\n\n"
-        f"- \"body\": all three beats, {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
+        f"- \"body\": beats 1 to 3 (beat 3 optional), {WORDS_MIN}-{WORDS_MAX} WORDS. The length IS the format: "
         "it must take ~15 seconds to read, about as long as the clip or longer, so the viewer "
         "stays to finish it. "
         "Plain spoken English, present tense, no hype words, no emojis, no hashtags.\n"
@@ -379,8 +404,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "ACCURACY IS EVERYTHING — a gaming audience catches invented trivia instantly:\n"
         "- use ONLY what the screen and the subtitles above show, plus the lore bible\n"
         "- never invent a developer intention, a camera trick, a statistic or a hidden detail "
-        "you cannot see in the evidence. Beats 3 and 4 are opinion and comparison, which is "
-        "fine — but beats 1 and 2 must be literally true of this clip\n"
+        "you cannot see in the evidence. Every beat must be literally true of this clip or "
+        "stated by a listed fact or the lore bible\n"
         "- you MAY name a character whose subtitle speaker label appears, AND one the lore "
         "bible identifies unmistakably from what is on screen (its visual tells plus who is "
         "with whom in that part of the story). Vagueness is not safety: 'someone whose eyes "
@@ -410,6 +435,15 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "- naming who is played when WHAT REALLY HAPPENS says it is only likely; say 'the "
         "player' instead\n"
         "- a reaction or vibe line ('peak innocent-bystander energy'); end on the fact\n"
+        "- a time into the clip ('from about 0:09', 'nine seconds in'): the log's times differ "
+        "by a second, so say 'then' or 'a moment later' instead\n"
+        "- a cause or link nobody states ('which is why the level follows you indoors', 'so a "
+        "new look brings the stars down'): put the fact and the picture side by side and let "
+        "the viewer connect them; never write 'so', 'which is why' or 'that is how' between them unless the fact itself "
+        "states that link\n"
+        "- saying the clip shows the fact happening when it does not (the fact is about "
+        "swapping clothes and nobody swaps clothes): tell the fact as a fact about the game "
+        "('Kotaku reports that ...'), not as what happens in this clip\n"
         "MATCH THE PICTURE (Bryce, 2026-11-22, after a card gave Danny's line to Lucia and "
         "described a shrug nobody could see):\n"
         "- give a spoken line ONLY to the speaker whose label shows with it in the subtitles; "
@@ -424,7 +458,10 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "option only as it reads on screen or in the fact\n"
         "- the HEADLINE's subject must be visible in this clip (the notice, menu, action or "
         "moment itself), not something that only happens later; if the clip never shows it, "
-        "headline what the clip DOES show\n"
+        "headline what the clip DOES show. A fact card's headline may instead state its listed "
+        "fact, adding nothing to it and keeping its hedges ('can', 'might'), with no number "
+        "that is not on screen, when the clip shows the kind of moment the fact is about "
+        "(a police fact on a wanted-level clip)\n"
         "- one consistent story: never say two things that contradict each other\n"
         "- a number or stat the clip does not show on screen must say where it comes from in "
         "the same sentence ('guides list pull-ups at +5% Strength'); never state an off-screen "
@@ -761,15 +798,15 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         + (f"VERIFIED GAME FACTS (sourced; a card built on one of these is SUPPORTED as long as "
            f"it keeps every number, date and name exactly as written here, and does not claim "
            f"the clip itself shows something only the fact describes):\n{facts}\n\n"
-           "A FACT CARD may contain NOTHING beyond the fact, what is visibly on screen, and the "
-           "practical consequence that follows directly from them. Flag as BAD any added claim around the fact: "
+           "A FACT CARD may contain NOTHING beyond the fact, what is visibly on screen, and a "
+           "consequence that the fact, the subtitles or on-screen text states. Flag as BAD any added claim around the fact: "
            "a superlative the fact does not make ('most', 'first', 'only', 'biggest'), an invented "
            "process or motive ('Rockstar documented', 'studied', 'visited', 'on purpose'), or a "
            "broader generalisation stated as fact. This is how an unsourced 'Rockstar's most "
            "sourced region' got through (2026-11-19).\n\n"
            if facts else "")
-        + (f"THIS CARD IS BUILT ON ONE FACT, and this is ALL it may state as fact apart from "
-           f"what is visibly on screen:\n{used_fact}\n\n"
+        + (f"THIS CARD IS BUILT ON THESE LISTED FACTS (one, or a main fact plus one more), and they "
+           f"are ALL it may state as fact apart from what is visibly on screen:\n{used_fact}\n\n"
            "Go through beats 1 and 2 claim by claim and hold each one against this fact and "
            "the on-screen evidence. Flag as BAD:\n"
            "- a credit the source does not give: 'Rockstar confirmed', 'Rockstar revealed', "
@@ -815,7 +852,9 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
           "trigger'); a NAMED later mission, chapter or event that comes after this clip in the "
           "story (a spoiler, even when a walkthrough confirms it); a comparison that gets the "
           "mechanic backwards ('caps the damage you can take' for MORE health); and a headline "
-          "whose subject the on-screen evidence never shows; and a number or stat that is not "
+          "whose subject the on-screen evidence never shows (except a fact card's headline that "
+          "states its listed fact, adds nothing, keeps its hedges and has no off-screen number, on a clip of the kind of moment the fact is "
+          "about); and a number or stat that is not "
           "on screen and is stated without saying where it comes from.\n\n"
         "CHECK THE DIRECTION OF THE ACTION FIRST. Who is doing what, TO WHOM, and who is "
         "awake, standing, holding or reaching — compare that against the on-screen evidence "
@@ -836,14 +875,15 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
         "detail, a developer/design intention, a camera or animation claim you cannot verify, "
         "a character who is not shown or named, a misquoted or mis-attributed line, or an "
         "event outside this clip presented as happening in it.\n"
-        "The card ENDS on a practical consequence or tip (2026-11-24: reaction lines and 'every "
-        "gamer knows' comparisons were dropped as AI filler). Flag as BAD a tip or consequence "
-        "the evidence does not support (a mechanic, cost or rule no source gives). "
+        "The card may end on its fact, or on a consequence or tip (2026-11-26: the tip is "
+        "OPTIONAL). Never flag a card for having no tip, consequence or practical use. Flag as "
+        "BAD a tip, consequence or cause the evidence does not support (a mechanic, cost, rule "
+        "or 'which is why' link no source gives). "
         "Do not flag ordinary re-telling of what is shown, or established series lore. "
         "Flag only something stated as fact that is not true.\n"
         "ALWAYS flag an invented NUMBER or DURATION — a year, a count, 'five years later', "
-        "'the only time in the series' — unless that exact figure is in the bible or on "
-        "screen. Check every span against the bible's TIMELINE.\n"
+        "'the only time in the series' — unless that exact figure is in the bible, on screen or in a listed fact "
+        "(as written there). Check every span against the bible's TIMELINE.\n"
         "ALSO CHECK THE READING, NOT JUST THE FACTS. A sentence can be traceable to a line "
         "of dialogue and still be BACKWARDS about the story. Hold the card's interpretation "
         "against what the bible says these characters WANT and DO: if the card has someone "
@@ -1219,7 +1259,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             slop = slop_problems(" ".join((c.get("headline", ""), c.get("body", ""))))
             if slop:
                 return False, ("AI filler: " + ", ".join(slop) + ". Replace each with a real fact, "
-                               "number, rule or practical tip; never a reaction or a comparison")
+                               "number or rule from the screen, the subtitles or a listed fact; never a reaction or a comparison")
             src_bad = fact_source_problems(c, {str(x.get("id", "")).lower() for x in _facts})
             if src_bad:
                 return False, ("unsourced facts: " + "; ".join(src_bad[:3]) + ". Use only on-screen "
@@ -1256,8 +1296,12 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             # A fact card's facts come from the fact alone; a scene card's may also come from
             # research that does not hedge. Either way the screen and subtitles count.
             if used:
-                fact_sup = f"{used.get('fact', '')} {fact_source(used)}"
-                used_fact = f"[{used.get('id')}] {used.get('fact')} (source: {fact_source(used)})"
+                # A second listed fact the card cites by id in its "facts" list counts too (2026-11-26:
+                # the writer is told to add a second listed fact, and the checker refused it as unsourced).
+                cited = set(re.findall(r"[a-z0-9]+-\d+", " ".join(map(str, c.get("facts") or [])).lower()))
+                both = [used] + [x for x in _facts if str(x.get("id")).lower() in cited and x is not used][:1]
+                fact_sup = " ".join(f"{x.get('fact', '')} {fact_source(x)}" for x in both)
+                used_fact = "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)})" for x in both)
             else:
                 fact_sup, used_fact = confirmed_research(research), ""
             over = attribution_overreach(text, f"{fact_sup} {subs}")

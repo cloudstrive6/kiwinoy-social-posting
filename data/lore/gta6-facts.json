@@ -1028,6 +1028,307 @@
    "pairs_with": "rooftops, bars, nightlife",
    "flag": "",
    "checked": "2026-11-20"
+  },
+  {
+   "id": "gta6-85",
+   "fact": "A crime only reaches the police if someone witnesses it or an alarm goes off, Rockstar North's Rob Nelson told IGN. Just committing a robbery doesn't necessarily raise your Wanted level.",
+   "source": "https://www.engadget.com/2322564/gta-6-wanted-level-star-system-details/",
+   "sources": [
+    "https://www.engadget.com/2322564/gta-6-wanted-level-star-system-details/",
+    "https://www.vice.com/en/article/gta-6-wanted-system-explained/"
+   ],
+   "wow": 4,
+   "pairs_with": "robbery, wanted level",
+   "flag": "Nelson's words to IGN, relayed by Engadget and Vice (IGN itself could not be fetched).",
+   "checked": "2026-11-26",
+   "quote": "Engadget: \"requires that someone witness the crime, or an alarm needs to be set off for it to be reported to the law\" (Rob Nelson, quoted by IGN). \"Just committing a robbery doesn't necessarily mean your Wanted level will rise, either.\" Vice: \"A crime can go unreported if nobody sees it.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-86",
+   "fact": "Hollow (outlined) stars mean police are responding to a report but don't know who did it. Solid white stars mean they can see you.",
+   "source": "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+   "sources": [
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+    "https://gamerant.com/gta-6-wanted-levels-colors/",
+    "https://www.engadget.com/2322564/gta-6-wanted-level-star-system-details/"
+   ],
+   "wow": 3,
+   "pairs_with": "wanted level HUD, stars",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"White outlined stars: The cops are responding to a report, but don't know you committed the crime.\" \"White stars: The cops can see you and are in active pursuit.\" Game Rant (hollowed-out stars): \"Police have received a report about a crime but don't know who committed it.\" Engadget (citing GameSpot): \"When police have direct line of sight with you, your stars are solid white\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-87",
+   "fact": "Grey stars mean the cops have lost sight of you but are still searching. Game Rant calls it a good moment to change your clothes, vehicle or appearance before they spot you again.",
+   "source": "https://gamerant.com/gta-6-wanted-levels-colors/",
+   "sources": [
+    "https://gamerant.com/gta-6-wanted-levels-colors/",
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/"
+   ],
+   "wow": 4,
+   "pairs_with": "wanted level, hiding from police",
+   "flag": "Close to the bank's clothes-swap fact (gta6-35); the new part is the grey-star timing.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant (Gray): \"Police have lost visual contact but are still searching for you.\" \"This is a good opportunity to change your clothes, vehicle, or appearance before they spot you again.\" Screen Rant: \"Gray stars: The cops can't see you.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-88",
+   "fact": "Police no longer show up on the minimap. To see them, you have to use the Focus mechanic.",
+   "source": "https://www.pushsquare.com/news/2026/08/watch-gta-6-extended-look-here-17-things-weve-learned",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/08/watch-gta-6-extended-look-here-17-things-weve-learned",
+    "https://www.engadget.com/2322564/gta-6-wanted-level-star-system-details/"
+   ],
+   "wow": 4,
+   "pairs_with": "police chase, minimap",
+   "flag": "The Focus part is from Push Square only; Engadget (citing GameSpot) confirms police are off the minimap.",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Rockstar has done away with showing cops on the minimap; now, you have to use the Focus mechanic to see them.\" Engadget (citing GameSpot): \"you won't be able to see the police on your minimap, which makes it harder to plan escape routes in advance\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-89",
+   "fact": "To end a pursuit you must get out of the search circle and stay out until it disappears. Even after you escape, your Wanted level stays the same in that area, and if cops recognise you there the chase restarts.",
+   "source": "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+   "sources": [
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+    "https://www.dexerto.com/wikis/gta-6/how-to-lose-the-police/",
+    "https://www.vice.com/en/article/gta-6-wanted-system-explained/"
+   ],
+   "wow": 3,
+   "pairs_with": "police chase, map search circle",
+   "flag": "Builds on the bank's search-circle fact (gta6-55); the new part is staying out and the restart rule.",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"To end the pursuit, you'll need to get out of this circle and stay out of it until it disappears\" Dexerto: \"Even if you've escaped, your Wanted Level will stay the same in this area\" \"if the cops recognize you, the pursuit will restart.\" Vice: \"Leaving that area is one way to end the immediate pursuit.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-90",
+   "fact": "A two-heads Heat icon means police know two people did the crime and are hunting both. The fix is to split up: hold Right on the d-pad and press Triangle to Split Up.",
+   "source": "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+   "sources": [
+    "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+    "https://www.pushsquare.com/guides/gta-6-how-to-change-characters",
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+    "https://www.dexerto.com/wikis/gta-6/how-to-lose-the-police/"
+   ],
+   "wow": 4,
+   "pairs_with": "Jason and Lucia, wanted level",
+   "flag": "Button prompt is the PlayStation layout given by Push Square.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant (Accomplice): \"Police know that two people were involved in the crime and are searching for both characters.\" \"You should look to split up.\" Push Square: \"(This can be particularly important when you're Wanted and police know you're operating as a pair.)\" \"The easiest way to do this is to hold Right and press Triangle to Split Up\" Screen Rant: \"Two heads: Partner recognized.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-91",
+   "fact": "A camera Heat icon means CCTV recorded your crime: smash the security recorder at the scene and the icon clears. But if the camera icon has a cloud, the footage is already online and there's no way to get rid of it.",
+   "source": "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+   "sources": [
+    "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/"
+   ],
+   "wow": 5,
+   "pairs_with": "robbery, security cameras",
+   "flag": "Smash-to-clear is from Game Rant; the cloud icon is from Screen Rant. Game Rant's bank guide also says cloud-saved CCTV means police are under a minute away.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Look for the security recorder in the area where you committed the crime.\" \"Smashing or destroying the recorder removes the footage and clears the icon.\" Screen Rant: \"Camera with cloud: You've been caught on camera, and the footage has been uploaded online.\" \"Unfortunately, there's no way to get rid of this icon.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-92",
+   "fact": "If the car Heat icon shows, police know your getaway vehicle. Switch cars, or once you've lost the immediate chase, get it resprayed at a Pay 'n' Spray or a Mod Shop.",
+   "source": "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+   "sources": [
+    "https://gamerant.com/gta-6-all-heat-icons-explained-lose-avoid/",
+    "https://screenrant.com/gta-6-escape-cops-clear-heat-wanted-system/",
+    "https://www.dexerto.com/wikis/gta-6/how-to-lose-the-police/"
+   ],
+   "wow": 3,
+   "pairs_with": "car chase, Pay 'n' Spray",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Police have identified your getaway vehicle, including its appearance and other identifying details.\" \"Abandon the vehicle and steal another one.\" \"Visit a Pay 'N Spray to respray your car after losing the immediate police chase.\" Screen Rant: \"Car: Vehicle recognized. Switch to a different car, or take your current one to a Mod Shop to repaint it.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-93",
+   "fact": "A one-star Wanted level can be erased by talking the cop down: hold the left trigger to focus on the officer and pick the option to defuse, as long as you don't have a gun out.",
+   "source": "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+   "sources": [
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016"
+   ],
+   "wow": 5,
+   "pairs_with": "police stop, one star",
+   "flag": "Single source (Kotaku launch tips).",
+   "checked": "2026-11-26",
+   "quote": "\"a one-star wanted level can be erased if you just talk to the cop and defuse the situation\" \"Hold the left trigger to focus on the cop\" \"you'll see the option to defuse or provoke the cop.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-94",
+   "fact": "At one star you might only have a patrol car with two officers after you. Two stars bring more police vehicles, and three stars can bring in a helicopter.",
+   "source": "https://gamerant.com/gta-6-wanted-levels-colors/",
+   "sources": [
+    "https://gamerant.com/gta-6-wanted-levels-colors/"
+   ],
+   "wow": 3,
+   "pairs_with": "police helicopter, wanted level",
+   "flag": "Single source for the per-star breakdown; Screen Rant only says more squad cars, SWAT teams and helicopters come as stars rise.",
+   "checked": "2026-11-26",
+   "quote": "\"At one star, you might only have a patrol car with two officers looking for you.\" \"Two stars bring even more police vehicles, while three stars can bring in a whole helicopter.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-95",
+   "fact": "Get busted and the cops take all the cash in your pocket, and you can't get it back. Money in the bank or in your hidden stash stays safe.",
+   "source": "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+   "sources": [
+    "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+    "https://www.vice.com/en/article/gta-6-wanted-system-explained/"
+   ],
+   "wow": 4,
+   "pairs_with": "getting busted, arrest",
+   "flag": "Vice (citing Famitsu) confirms carried cash can be lost on Busted or Wasted; the bank and stash part is Game Rant only.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Any money you have in your pocket at the time of arrest will be taken by the cops.\" \"You cannot get it back.\" \"Money in the bank or in your hidden stash remains safe.\" Vice: \"cash you're carrying can be lost if you get Busted or Wasted.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-96",
+   "fact": "Later in the story, getting busted also charges a small bailout fee to your BuckMe account when you're released.",
+   "source": "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+   "sources": [
+    "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+    "https://gamerant.com/gta-6-deposit-5000-buckme-family-savings-account/"
+   ],
+   "wow": 3,
+   "pairs_with": "getting busted, phone banking app",
+   "flag": "Both pages are Game Rant.",
+   "checked": "2026-11-26",
+   "quote": "\"Starting from Chapter 2, if you get arrested, you're charged a small bailout fee directly to your BuckMe account\" \"when you're released.\" \"There is no such thing in Chapter 1.\" Second Game Rant page: \"they can (and will) deduct a bail fee from the cash in your Current Account.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-97",
+   "fact": "Surrender to the police and your Wanted level won't go up and your Criminal Profile stays the same. Resist arrest and get away, and you gain a star and the chase starts again.",
+   "source": "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+   "sources": [
+    "https://gamerant.com/gta-6-arrested-busted-what-happens/"
+   ],
+   "wow": 4,
+   "pairs_with": "arrest, police on foot",
+   "flag": "Single source (Game Rant).",
+   "checked": "2026-11-26",
+   "quote": "\"If you surrender, your wanted star level will not go up, and you'll immediately be arrested and sent to jail.\" \"Your criminal profile will remain the same.\" \"If you resist arrest (and succeed), your wanted level will go up by 1 star, and the police chase will begin anew.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-98",
+   "fact": "Each character can carry up to two stash bags, but the second one ties up a hand and limits weapon use. Hold right on the d-pad to hand one to your partner.",
+   "source": "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6",
+    "https://gamerant.com/gta-6-bank-robbery-stealth-guide-vault-safe-cash-drawers"
+   ],
+   "wow": 4,
+   "pairs_with": "robbery, Jason and Lucia",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Each of them can carry up to two bags, but this will limit weapon use\" \"since one of their hands will be used to carry the second bag\" \"you can hand one of your two bags over to your partner by holding the right d-pad\" Game Rant: \"Grab all the Marked Bills, and if your bags ever get full, pass them to your partner.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-99",
+   "fact": "Get busted while carrying stolen goods and the police confiscate them, stash bags meant for a fence included.",
+   "source": "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+   "sources": [
+    "https://gamerant.com/gta-6-arrested-busted-what-happens/",
+    "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6"
+   ],
+   "wow": 3,
+   "pairs_with": "getting busted, robbery loot",
+   "flag": "Shacknews is softer: if captured or wasted 'you'll probably lose it'.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"If you have any stolen merchandise on your person or in your car, it will be confiscated by the police.\" \"This includes Stash Bags that need to be delivered to fences.\" Shacknews: \"if you're captured or wasted, you'll probably lose it.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-100",
+   "fact": "Some stolen cars carry an Advanced tracker, shown as a red icon in the bottom left. It only gives away your location if you drive slowly, so keep your speed up or police will swarm the area.",
+   "source": "https://www.shacknews.com/article/151427/disable-vehicle-trackers-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151427/disable-vehicle-trackers-gta6",
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+    "https://www.thegamer.com/gta-6-advanced-trackers-how-to-remove-randys-car-list-guide/"
+   ],
+   "wow": 5,
+   "pairs_with": "stealing cars, highway chase",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"These trackers do transmit your location, but only if you're moving slowly.\" \"Driving fast will prevent the tracker from transmitting your location.\" \"If you must slow down, which is common, the tracker will tell police where you are, and they will swarm the area.\" Kotaku: \"If you steal a car and you spot a red tracking icon in the bottom left\" \"police will be able to find you on the map if you drive slowly for too long.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-101",
+   "fact": "Large banks have three places to loot: the cash drawers, the safe and the vault, which holds the most money. VGC says the police response is huge once they're called.",
+   "source": "https://www.videogameschronicle.com/guide/how-to-make-money-in-gta-6/",
+   "sources": [
+    "https://www.videogameschronicle.com/guide/how-to-make-money-in-gta-6/",
+    "https://gamerant.com/gta-6-bank-robbery-stealth-guide-vault-safe-cash-drawers"
+   ],
+   "wow": 4,
+   "pairs_with": "bank robbery, heist",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"There are basic cash drawers which you can get by threatening the tellers, there are safe which hide large numbers of marked bills\" \"there are the bank vaults which house the largest amounts of money and in the game.\" \"The police response is huge as soon as they are called\" Game Rant: \"Large Banks in GTA 6 have three points of interest: The Safe, Vault, and Cash Drawers.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-102",
+   "fact": "Later in the story, tail an armoured truck to a bank and the vault will be open. But the moment you step into the vault, the alarms go off.",
+   "source": "https://gamerant.com/gta-6-bank-robbery-stealth-guide-vault-safe-cash-drawers",
+   "sources": [
+    "https://gamerant.com/gta-6-bank-robbery-stealth-guide-vault-safe-cash-drawers"
+   ],
+   "wow": 5,
+   "pairs_with": "bank robbery, armoured truck",
+   "flag": "Single source (Game Rant). The same guide says full bank looting unlocks partway through the story; that detail is left out to avoid naming missions.",
+   "checked": "2026-11-26",
+   "quote": "\"If you've tailed an Armored Truck to a bank, then the vault will be open.\" \"As soon as you enter the vault, alarms will go off, so stealth is out the window.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-103",
+   "fact": "When you sneak in to rob a place, use Focus: doors wired to the alarm system glow red.",
+   "source": "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+   "sources": [
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016"
+   ],
+   "wow": 4,
+   "pairs_with": "stealth robbery, Focus",
+   "flag": "Single source (Kotaku launch tips).",
+   "checked": "2026-11-26",
+   "quote": "\"When sneaking into a place to rob it, use focus to spot which doors are connected to the alarm system quickly.\" \"These doors will glow red.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-104",
+   "fact": "Once free switching unlocks, you can swap control between Jason and Lucia instantly while they are together, and you can swap between them mid-mission.",
+   "source": "https://www.pushsquare.com/news/2026/08/watch-gta-6-extended-look-here-17-things-weve-learned",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/08/watch-gta-6-extended-look-here-17-things-weve-learned",
+    "https://www.videogameschronicle.com/review/grand-theft-auto-6/"
+   ],
+   "wow": 4,
+   "pairs_with": "Jason and Lucia, getaway driving",
+   "flag": "Free switching in the open world only unlocks after Chapter 1 (Kotaku, VGC guide).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"While Jason and Lucia are together, you're able to switch control between them instantaneously.\" VGC review: \"You can swap between them mid-mission, or play the entire thing as one of the other.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
   }
  ],
  "note": "Sourced GTA 6 facts for the card writer (tools/lore_short.py fact bank). Only facts an independent check confirmed against their sources go here (2026-11-19). Facts awaiting a check sit in gta6-facts-unchecked.json; move each one over only after checking its source. Removed on purpose: a real private person's money demand and the 2022 hacker's medical detention."
