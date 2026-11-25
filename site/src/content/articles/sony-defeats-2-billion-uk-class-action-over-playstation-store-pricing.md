@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/playstation-store-pricing-uk-class-action-lawsuit-result"
+rejected: true
 ---
 
 Sony has defeated a major **£2 billion** UK class action lawsuit over the price of games on the **PlayStation Store**. The judgment, published by London's **Competition Appeal Tribunal on 17th November**, rejected the claim that Sony had removed "all actual and potential competition" in the sale of digital games on its consoles.
