@@ -300,7 +300,27 @@ def _parse_ledger(payload: dict) -> dict[str, set[str]]:
     return out
 
 
+_LEDGER_CACHE: dict = {}
+
+
 def read_ledger(retries: int = 4) -> Optional[dict[str, set[str]]]:
+    """The used-clip ledger, falling back to this run's last good read when GitHub fails.
+
+    2026-11-25: a fact-card slot reads the ledger once per moment it tries; after about an hour of
+    tries one read failed, the picker failed closed and the whole slot gave up. Within one run nothing
+    is posted between those reads, so the last good copy (kept up to 3 hours) is as safe as a fresh one;
+    with no good copy yet it still fails closed (None)."""
+    led = _read_ledger_once(retries)
+    if led is not None:
+        _LEDGER_CACHE.update(at=time.time(), led=led)
+        return led
+    if _LEDGER_CACHE and time.time() - _LEDGER_CACHE.get("at", 0) < 3 * 3600:
+        print("[ledger] GitHub read failed; using this run's last good copy.", flush=True)
+        return {k: set(v) for k, v in _LEDGER_CACHE["led"].items()}
+    return None
+
+
+def _read_ledger_once(retries: int = 4) -> Optional[dict[str, set[str]]]:
     """Fetch the per-platform used-clip ledger. Distinguishes states:
       * {platform: set(...)} -> the recorded ids (empty sets if nothing yet)
       * None                 -> UNREADABLE after retries (transient GitHub error).
@@ -767,7 +787,7 @@ def add_used_clip(clip_id: str, platforms, retries: int = 4) -> bool:
     if not clip_id or not plats:
         return False
     for attempt in range(retries):
-        led = read_ledger()
+        led = _read_ledger_once()         # writes need a FRESH copy, never the run's cached fallback
         if led is None:                   # couldn't read -> can't safely merge; retry
             if attempt < retries - 1:
                 time.sleep(1.0 * (attempt + 1))
@@ -791,7 +811,7 @@ def add_used_clip(clip_id: str, platforms, retries: int = 4) -> bool:
 def reset_used(prefix: Optional[str] = None, platforms=None) -> bool:
     """Restart a cycle: clear this game's (`prefix`) entries on the given `platforms`
     (all platforms if None). Used when every clip for a game has been shown on a platform."""
-    led = read_ledger()
+    led = _read_ledger_once()
     if led is None:
         return False
     plats = [str(p) for p in platforms] if platforms else list(led.keys())

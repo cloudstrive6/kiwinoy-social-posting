@@ -172,6 +172,19 @@ def _domain(url: str) -> str:
     return m.group(1).lower() if m else str(url or "").strip()
 
 
+OUTLETS = {"videogameschronicle": "VGC Video Games Chronicle", "kotaku": "Kotaku", "ign": "IGN",
+           "gamespot": "GameSpot", "pcgamer": "PC Gamer", "rockstargames": "Rockstar Rockstar Games",
+           "polygon": "Polygon", "eurogamer": "Eurogamer", "gamesradar": "GamesRadar", "thegamer": "TheGamer",
+           "gamerant": "Game Rant", "dexerto": "Dexerto", "insider-gaming": "Insider Gaming", "theverge": "The Verge"}
+
+
+def outlet_names(text: str) -> str:
+    """The names a card may credit for a fact, from its source domains (2026-11-25: a card crediting VGC
+    for a videogameschronicle.com fact was refused because 'VGC' appeared in no evidence)."""
+    low = (text or "").lower()
+    return " ".join(v for k, v in OUTLETS.items() if k in low)
+
+
 def fact_source(x: dict) -> str:
     """Who reported a fact, as a domain ('kotaku.com'). The writer and the checker need it: a
     card turned a Kotaku preview into 'Rockstar confirmed...' because neither was ever told
@@ -383,7 +396,20 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "'the only time in the series' — unless that exact figure is in the lore bible or on "
         "screen. Fans check these. Say 'years later' or 'for a long time' instead\n"
         "- the COMMENT line is posted too and is held to the same standard; it may be funny, "
-        "but it may not state anything untrue\n"
+        "but it may not state anything untrue. It is OPTIONAL: leave it empty (\"\") unless it "
+        "only restates what the clip shows. Most refused cards failed on a comment line\n"
+        "WHAT GETS CARDS REFUSED (2026-11-25: every card of a whole slot was refused for these; "
+        "the checker is right, so write so it has nothing to catch):\n"
+        "- widening what the clip shows: 'every stop' when two are shown, 'the whole tab' when "
+        "the line says 'pays the drinks', 'nothing else', 'always', 'never', 'across the city'. "
+        "Say exactly as much as the screen or the line says, no more\n"
+        "- a tip or rule ('change your look before the crime', 'trust the prompt over the "
+        "distance') that is not written in a listed fact or on screen. Advice is allowed only "
+        "when a listed fact states it\n"
+        "- any number not on screen or in a fact (a distance, 'ten feet', a count)\n"
+        "- naming who is played when WHAT REALLY HAPPENS says it is only likely; say 'the "
+        "player' instead\n"
+        "- a reaction or vibe line ('peak innocent-bystander energy'); end on the fact\n"
         "MATCH THE PICTURE (Bryce, 2026-11-22, after a card gave Danny's line to Lucia and "
         "described a shrug nobody could see):\n"
         "- give a spoken line ONLY to the speaker whose label shows with it in the subtitles; "
@@ -1238,7 +1264,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             if over:
                 return False, over
             from core import lore as _lore
-            names_sup = " ".join((fact_sup, observation, subs, _lore.lore_for(game) or "",
+            names_sup = " ".join((fact_sup, outlet_names(fact_sup), observation, subs, _lore.lore_for(game) or "",
                                   _lore.playable_note(game) or ""))
             suspects = unsupported_names(text, names_sup, extra_ok=(gname, *gname.split()))
             if suspects:
