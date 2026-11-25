@@ -36,13 +36,13 @@
    },
    {
     "clip": 1003,
-    "in": 13.0,
-    "out": 17.3,
+    "in": 14.3,
+    "out": 18.1,
     "crop": [
-     0.64,
+     0.55,
      0.0,
      1.0,
-     0.36
+     0.45
     ],
     "at": "the cash in your pocket"
    },
@@ -348,7 +348,7 @@
       0.94
      ]
     ],
-    "at": "A tip says disabling"
+    "at": "disabling a pursuing"
    },
    {
     "clip": 1010,
@@ -363,7 +363,7 @@
       0.94
      ]
     ],
-    "at": "Another says combat focus"
+    "at": "combat focus shows"
    },
    {
     "clip": 1010,
@@ -824,9 +824,14 @@
    },
    {
     "clip": 1003,
-    "in": 13.0,
-    "out": 17.3,
-    "crop": "none",
+    "in": 14.3,
+    "out": 18.1,
+    "crop": [
+     0.55,
+     0.0,
+     1.0,
+     0.45
+    ],
     "at": "Mine was five hundred"
    },
    {
