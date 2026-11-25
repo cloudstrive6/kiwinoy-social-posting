@@ -1,6 +1,19 @@
 {
  "note": "Shot lists that the cue syntax cannot carry (2026-11-25 build): HUD box crops [0.64, 0, 1, 0.36] of the stars and icons, the items-wheel box [0.13, 0.15, 0.63, 0.65], the phone-call subtitle mask (the call card stays readable), and `at` anchors that start each proof shot on the words it proves (Guide C reads about 210 wpm, faster than the 175 wpm the ranges are sized for). Each list replaces that beat's shots in full; the ranges are the same as in script.md. Anchors never start with a number word or Lucia's name (Whisper writes digits, and the TTS text spells Lucia as Loo-see-ah).",
  "shots": {
+  "b000": [
+   {
+    "clip": 1015,
+    "in": 119.3,
+    "out": 126.8,
+    "crop": [
+     0.25,
+     0.0,
+     1.0,
+     0.75
+    ]
+   }
+  ],
   "b001": [
    {
     "clip": 1009,
@@ -17,7 +30,7 @@
    },
    {
     "clip": 1002,
-    "in": 140.0,
+    "in": 141.0,
     "out": 143.3,
     "at": "Get caught or killed"
    },
@@ -25,7 +38,13 @@
     "clip": 1003,
     "in": 13.0,
     "out": 17.3,
-    "crop": "none"
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "the cash in your pocket"
    },
    {
     "clip": 1002,
@@ -37,7 +56,7 @@
      1.0,
      0.36
     ],
-    "at": "Reach six stars"
+    "at": "Third"
    }
   ],
   "b003": [
@@ -177,7 +196,7 @@
     "in": 162.0,
     "out": 167.8,
     "crop": "none",
-    "at": "Guides say there are two more"
+    "at": "There are two more"
    },
    {
     "clip": 1009,
@@ -224,16 +243,29 @@
    },
    {
     "clip": 1015,
-    "in": 87.5,
-    "out": 92.4,
+    "in": 88.7,
+    "out": 90.4,
     "crop": "none",
     "at": "A Sheriff truck"
    },
    {
     "clip": 1015,
-    "in": 92.5,
+    "in": 90.4,
+    "out": 92.9,
+    "crop": [
+     0.0,
+     0.58,
+     0.4,
+     0.98
+    ],
+    "at": "my minimap showed no police"
+   },
+   {
+    "clip": 1015,
+    "in": 93.0,
     "out": 98.0,
-    "crop": "none"
+    "crop": "none",
+    "at": "Rob Nelson said"
    },
    {
     "clip": 1009,
@@ -273,7 +305,7 @@
     "in": 233.2,
     "out": 235.8,
     "crop": "none",
-    "at": "Guides say a pistol"
+    "at": "A pistol can be"
    },
    {
     "clip": 1012,
@@ -362,7 +394,7 @@
    },
    {
     "clip": 1001,
-    "in": 187.0,
+    "in": 189.0,
     "out": 191.4,
     "crop": "none",
     "at": "Then a fighter jet"
@@ -449,9 +481,14 @@
    },
    {
     "clip": 1000,
-    "in": 153.5,
+    "in": 154.5,
     "out": 159.5,
-    "crop": "none",
+    "crop": [
+     0.5,
+     0.15,
+     1.0,
+     0.65
+    ],
     "at": "On launch night"
    },
    {
@@ -499,29 +536,57 @@
     "at": "So if they know"
    }
   ],
-  "b028": [
+  "b026": [
    {
-    "clip": 1006,
-    "in": 72.8,
-    "out": 74.8,
-    "crop": "none"
+    "clip": 1015,
+    "in": 58.8,
+    "out": 61.0,
+    "blur": true
    },
    {
     "clip": 1006,
-    "in": 74.8,
-    "out": 77.0,
+    "in": 73.9,
+    "out": 75.95,
     "crop": [
      0.13,
      0.15,
      0.63,
      0.65
     ],
-    "at": "The game marks each item"
+    "at": "the free disguise"
+   },
+   {
+    "clip": 1005,
+    "in": 242.6,
+    "out": 244.8,
+    "crop": "none",
+    "blur": true,
+    "at": "still owe you"
+   }
+  ],
+  "b028": [
+   {
+    "clip": 1006,
+    "in": 71.0,
+    "out": 73.9,
+    "crop": "none"
    },
    {
     "clip": 1006,
-    "in": 77.0,
-    "out": 81.0,
+    "in": 73.9,
+    "out": 75.95,
+    "crop": [
+     0.13,
+     0.15,
+     0.63,
+     0.65
+    ],
+    "at": "small red badge"
+   },
+   {
+    "clip": 1006,
+    "in": 75.4,
+    "out": 79.4,
     "crop": [
      0.64,
      0.0,
@@ -653,7 +718,7 @@
     "clip": 1000,
     "in": 192.0,
     "out": 200.0,
-    "at": "Guides also say camera"
+    "at": "Camera footage stored"
    },
    {
     "clip": 1000,
@@ -676,9 +741,14 @@
    },
    {
     "clip": 1015,
-    "in": 65.2,
+    "in": 66.0,
     "out": 69.9,
-    "crop": "none",
+    "crop": [
+     0.44,
+     0.06,
+     1.0,
+     0.62
+    ],
     "at": "Now open the map"
    },
    {
@@ -690,9 +760,14 @@
    },
    {
     "clip": 1015,
-    "in": 117.5,
-    "out": 125.0,
-    "crop": "none",
+    "in": 119.4,
+    "out": 123.0,
+    "crop": [
+     0.25,
+     0.0,
+     1.0,
+     0.75
+    ],
     "at": "The second I crossed"
    },
    {
@@ -712,15 +787,27 @@
    {
     "clip": 1005,
     "in": 240.8,
+    "out": 242.0,
+    "crop": [
+     0.64,
+     0.0,
+     1.0,
+     0.36
+    ],
+    "at": "red stars at a toll"
+   },
+   {
+    "clip": 1005,
+    "in": 242.0,
     "out": 245.1,
     "crop": "none",
-    "at": "red stars at a toll"
+    "at": "white seconds later"
    },
    {
     "clip": 1005,
     "in": 249.5,
     "out": 252.0,
-    "at": "Guides agree the heat"
+    "at": "The heat stays around"
    },
    {
     "clip": 1009,
@@ -746,7 +833,7 @@
     "clip": 1007,
     "in": 170.0,
     "out": 173.6,
-    "at": "Guides agree that getting busted"
+    "at": "Getting busted takes"
    },
    {
     "clip": 1003,
@@ -807,6 +894,19 @@
      0.36
     ],
     "at": "And number one"
+   }
+  ],
+  "b043": [
+   {
+    "clip": 1002,
+    "in": 36.6,
+    "out": 40.4
+   },
+   {
+    "clip": 1015,
+    "in": 24.0,
+    "out": 38.0,
+    "at": "Tell me in the comments"
    }
   ]
  }

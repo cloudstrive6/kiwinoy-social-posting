@@ -20,9 +20,8 @@
    "shots": [
     {
      "clip": 1015,
-     "in": 117.0,
-     "out": 125.0,
-     "crop": "none"
+     "in": 119.3,
+     "out": 126.8
     }
    ],
    "gfx": [
@@ -33,8 +32,8 @@
   },
   {
    "type": "narr",
-   "text": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and guides say there is no escape at all.",
-   "tts": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and guides say there is no escape at all.",
+   "text": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and there is no escape at all.",
+   "tts": "This is how I shake the police in Leonida, and make them forget me. First problem. The cops remember your face, your clothes and your car, even after the stars go. Second. Get caught or killed, and the cash in your pocket is gone. Third. Reach six stars, and there is no escape at all.",
    "shots": [
     {
      "clip": 1009,
@@ -50,14 +49,13 @@
     },
     {
      "clip": 1002,
-     "in": 140.0,
+     "in": 141.0,
      "out": 143.3
     },
     {
      "clip": 1003,
      "in": 13.0,
-     "out": 17.3,
-     "crop": "none"
+     "out": 17.3
     },
     {
      "clip": 1002,
@@ -129,8 +127,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Guides agree on all three. So glance up before you move. The colour tells you whether to run or to hide.",
-   "tts": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Guides agree on all three. So glance up before you move. The colour tells you whether to run or to hide.",
+   "text": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Learn all three. So glance up before you move. The colour tells you whether to run or to hide.",
+   "tts": "Tip number one. Read the colour of your stars. The meter goes up to six. White stars mean they are chasing you, and they can see you. I had four white ones, running from a crashed plane. Red stars mean you got away, and the area is still hot. Hollow stars mean a crime is being looked into. Learn all three. So glance up before you move. The colour tells you whether to run or to hide.",
    "shots": [
     {
      "clip": 1006,
@@ -176,8 +174,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. Guides say there are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
-   "tts": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. Guides say there are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
+   "text": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. There are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
+   "tts": "Tip number two, and it is the most important tip in this video. The red icons under the stars are what the police know about you. The coat hanger is your outfit. The little person is your face. The car is your vehicle. The gun is your weapon. There are two more, for a security camera and for your partner. Each icon is one more way to spot you. Losing the cops in GTA 6 means clearing those icons, one by one.",
    "shots": [
     {
      "clip": 1006,
@@ -268,8 +266,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. A big launch guide says the same. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
-   "tts": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. A big launch guide says the same. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
+   "text": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
+   "tts": "Tip number four. Do not trust your minimap. A Sheriff truck drove right past me here, and my minimap showed no police marker. Rockstar's Rob Nelson said the police do not show up on the radar. They show up when you use Focus. So when you are wanted, use Focus to find them. Your minimap will not warn you.",
    "shots": [
     {
      "clip": 1015,
@@ -278,13 +276,18 @@
     },
     {
      "clip": 1015,
-     "in": 87.5,
-     "out": 92.4,
+     "in": 88.7,
+     "out": 90.4,
      "crop": "none"
     },
     {
      "clip": 1015,
-     "in": 92.5,
+     "in": 90.4,
+     "out": 92.9
+    },
+    {
+     "clip": 1015,
+     "in": 93.0,
      "out": 98.0,
      "crop": "none"
     },
@@ -324,8 +327,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. Guides say a pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
-   "tts": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. Guides say a pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
+   "text": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. A pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
+   "tts": "Tip number five. Put your gun away. Here I am walking out of a house with a rifle on my back. Two hollow stars, and one icon under them. A gun. At that moment, my weapon was the only thing on their list. A pistol can be holstered. A long gun has to be dropped, or stowed in a trunk. At the trunk, look for stow longarms. Out of sight is out of the description.",
    "shots": [
     {
      "clip": 1004,
@@ -371,8 +374,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number six. Leave the cops standing. Guides agree that killing police brings a more aggressive response. One guide says it also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
-   "tts": "Tip number six. Leave the cops standing. Guides agree that killing police brings a more aggressive response. One guide says it also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
+   "text": "Tip number six. Leave the cops standing. Killing police brings a more aggressive response. It also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
+   "tts": "Tip number six. Leave the cops standing. Killing police brings a more aggressive response. It also pushes your criminal profile toward violent. The game tracks the opposite too. A tip says disabling a pursuing cop car without casualties counts toward a hardened profile. Another says combat focus shows the vulnerable areas on their cars. Aim for the car, and leave the driver alone.",
    "shots": [
     {
      "clip": 1010,
@@ -404,8 +407,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. Guides say the highest levels are kept for crimes like this one. If you want an easy escape, do not start at an airport.",
-   "tts": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. Guides say the highest levels are kept for crimes like this one. If you want an easy escape, do not start at an airport.",
+   "text": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. If you want an easy escape, do not start at an airport.",
+   "tts": "Tip number seven. Some crimes send the stars flying. At the airport, I already had two stars. Then I took a passenger jet off the apron. Before it left the ground, I had four. The game told me that flying lower can reduce my chance of being spotted. Then a fighter jet pulled up beside me. If you want an easy escape, do not start at an airport.",
    "shots": [
     {
      "clip": 1001,
@@ -426,7 +429,7 @@
     },
     {
      "clip": 1001,
-     "in": 187.0,
+     "in": 189.0,
      "out": 191.4,
      "crop": "none"
     },
@@ -466,8 +469,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number eight. Never let it reach six stars. Two guides agree. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
-   "tts": "Tip number eight. Never let it reach six stars. Two guides agree. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
+   "text": "Tip number eight. Never let it reach six stars. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
+   "tts": "Tip number eight. Never let it reach six stars. At six, you can no longer lose your wanted level. The police and the military keep coming until you are busted or wasted. There is no clever trick at six. So the moment you see five, stop adding crimes, and start running.",
    "shots": [
     {
      "clip": 1002,
@@ -533,8 +536,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. Guides agree you have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
-   "tts": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. Guides agree you have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
+   "text": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. You have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
+   "tts": "Tip number nine. Break line of sight, then get out of the red zone. The red area on your map is where they are searching. You have to leave it unseen. Here is a landmark. Watch the bar across the top of your screen. In my footage, it turned red the moment I crossed into the zone. Treat a red bar as your warning.",
    "shots": [
     {
      "clip": 1002,
@@ -574,8 +577,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Lucia crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. Guides say that if police dogs show up, you should keep moving, or they will track you down. Out of sight is the whole game.",
-   "tts": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Loo-see-ah crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. Guides say that if police dogs show up, you should keep moving, or they will track you down. Out of sight is the whole game.",
+   "text": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Lucia crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. In bigger chases, police dogs can run you down. If dogs show up, keep moving through cover. Out of sight is the whole game.",
+   "tts": "Tip number ten. On foot, hide. Bushes, shipping containers, dumpsters. Lucía crept through a whole junkyard like this, with the stars still up. Stay hidden until the search moves on. One catch. In bigger chases, police dogs can run you down. If dogs show up, keep moving through cover. Out of sight is the whole game.",
    "shots": [
     {
      "clip": 1008,
@@ -601,7 +604,7 @@
   {
    "type": "narr",
    "text": "Tip number eleven. Know what winning looks like. Here, Lucia is driving with two stars. Watch the top right. They dim, and then they are gone. On launch night, the game also flashed heat cleared when my star went away. When you see it, slow down and blend into the traffic. The cops are gone. The heat might not be.",
-   "tts": "Tip number eleven. Know what winning looks like. Here, Loo-see-ah is driving with two stars. Watch the top right. They dim, and then they are gone. On launch night, the game also flashed heat cleared when my star went away. When you see it, slow down and blend into the traffic. The cops are gone. The heat might not be.",
+   "tts": "Tip number eleven. Know what winning looks like. Here, Lucía is driving with two stars. Watch the top right. They dim, and then they are gone. On launch night, the game also flashed heat cleared when my star went away. When you see it, slow down and blend into the traffic. The cops are gone. The heat might not be.",
    "shots": [
     {
      "clip": 1021,
@@ -616,9 +619,8 @@
     },
     {
      "clip": 1000,
-     "in": 153.5,
-     "out": 159.5,
-     "crop": "none"
+     "in": 154.5,
+     "out": 159.5
     },
     {
      "clip": 1015,
@@ -633,8 +635,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. Guides agree a different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
-   "tts": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. Guides agree a different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
+   "text": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. A different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
+   "tts": "Tip number twelve. Ditch the car. Watch the icons when my plane went down. In the air, they knew my outfit, my face and my vehicle. Once I was on foot, the vehicle icon was gone. A different car does the same job. So if they know your ride, leave it somewhere quiet and find another.",
    "shots": [
     {
      "clip": 1002,
@@ -698,16 +700,15 @@
      "blur": true
     },
     {
+     "clip": 1006,
+     "in": 73.9,
+     "out": 75.95
+    },
+    {
      "clip": 1005,
      "in": 242.6,
      "out": 244.8,
      "crop": "none",
-     "blur": true
-    },
-    {
-     "clip": 1002,
-     "in": 33.5,
-     "out": 36.1,
      "blur": true
     }
    ],
@@ -738,19 +739,19 @@
    "shots": [
     {
      "clip": 1006,
-     "in": 72.8,
-     "out": 74.8,
+     "in": 71.0,
+     "out": 73.9,
      "crop": "none"
     },
     {
      "clip": 1006,
-     "in": 74.8,
-     "out": 77.0
+     "in": 73.9,
+     "out": 75.95
     },
     {
      "clip": 1006,
-     "in": 77.0,
-     "out": 81.0
+     "in": 75.4,
+     "out": 79.4
     },
     {
      "clip": 1006,
@@ -776,8 +777,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number fourteen. Wear a mask for the job, and take it off after. Guides agree a mask helps hide your face. Here, Lucia had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
-   "tts": "Tip number fourteen. Wear a mask for the job, and take it off after. Guides agree a mask helps hide your face. Here, Loo-see-ah had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
+   "text": "Tip number fourteen. Wear a mask for the job, and take it off after. A mask helps hide your face. Here, Lucia had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
+   "tts": "Tip number fourteen. Wear a mask for the job, and take it off after. A mask helps hide your face. Here, Lucía had a face wrap and glasses on. She took both off, and the game said appearance heat cleared. The mask sits on the same items wheel. Put it on before. Take it off after.",
    "shots": [
     {
      "clip": 1022,
@@ -810,8 +811,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number fifteen. Change your outfit, but only once you are out of sight. Guides say a new outfit clears outfit known after you break line of sight. Lucia slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. Three guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
-   "tts": "Tip number fifteen. Change your outfit, but only once you are out of sight. Guides say a new outfit clears outfit known after you break line of sight. Loo-see-ah slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. Three guides also suggest keeping a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "text": "Tip number fifteen. Change your outfit, but only once you are out of sight. A new outfit clears outfit known, once you break line of sight. Lucia slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. You can also keep a spare outfit in your car's trunk. Change after you vanish, never before.",
+   "tts": "Tip number fifteen. Change your outfit, but only once you are out of sight. A new outfit clears outfit known, once you break line of sight. Lucía slipped away from a junkyard in a tow truck. Only once the stars were gone did she walk into a clothing store. Denim cutoffs were twelve dollars. You can also keep a spare outfit in your car's trunk. Change after you vanish, never before.",
    "shots": [
     {
      "clip": 1013,
@@ -879,8 +880,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number seventeen. Split up, and watch for cameras. Guides agree the police can know you as a couple. Guides say splitting Jason and Lucia up clears that icon. Guides also say camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
-   "tts": "Tip number seventeen. Split up, and watch for cameras. Guides agree the police can know you as a couple. Guides say splitting Jason and Loo-see-ah up clears that icon. Guides also say camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
+   "text": "Tip number seventeen. Split up, and watch for cameras. The police can know you as a couple. Splitting Jason and Lucia up makes you harder to spot. Camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
+   "tts": "Tip number seventeen. Split up, and watch for cameras. The police can know you as a couple. Splitting Jason and Lucía up makes you harder to spot. Camera footage stored on site can be destroyed. Footage backed up to the cloud cannot. So destroy the recording, or keep your face off camera.",
    "shots": [
     {
      "clip": 1016,
@@ -923,8 +924,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. Guides agree the heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
-   "tts": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. Guides agree the heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
+   "text": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. The heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
+   "tts": "Tip number eighteen. This is the move I promised you. Stars gone does not mean safe. Look at my screen. No stars on the HUD. Now open the map. Three red stars are still there, with a red zone round the town I was driving to. Appearance known. Outfit known. I changed nothing, and drove straight in. The second I crossed the line, three stars lit up again. Jason's stars came back too, in the same pickup, with his map still saying vehicle known. Two red stars at a toll plaza, white seconds later. My footage does not show what set those off. The heat stays around where you were last seen. So go around the zone, or clear your icons before you go in.",
    "shots": [
     {
      "clip": 1015,
@@ -939,9 +940,8 @@
     },
     {
      "clip": 1015,
-     "in": 65.2,
-     "out": 69.9,
-     "crop": "none"
+     "in": 66.0,
+     "out": 69.9
     },
     {
      "clip": 1015,
@@ -951,9 +951,8 @@
     },
     {
      "clip": 1015,
-     "in": 117.5,
-     "out": 125.0,
-     "crop": "none"
+     "in": 119.4,
+     "out": 123.0
     },
     {
      "clip": 1005,
@@ -970,6 +969,11 @@
     {
      "clip": 1005,
      "in": 240.8,
+     "out": 242.0
+    },
+    {
+     "clip": 1005,
+     "in": 242.0,
      "out": 245.1,
      "crop": "none"
     },
@@ -991,8 +995,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number nineteen. Lie low, and let it cool. Guides agree the heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
-   "tts": "Tip number nineteen. Lie low, and let it cool. Guides agree the heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
+   "text": "Tip number nineteen. Lie low, and let it cool. The heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
+   "tts": "Tip number nineteen. Lie low, and let it cool. The heat on an area fades with time, as long as you stop committing crimes there. So do something quiet somewhere else. Come back later. The town will still be there.",
    "shots": [
     {
      "clip": 1019,
@@ -1000,9 +1004,9 @@
      "out": 280.0
     },
     {
-     "clip": 1024,
-     "in": 177.5,
-     "out": 181.5
+     "clip": 1019,
+     "in": 256.5,
+     "out": 260.5
     }
    ],
    "gfx": [
@@ -1012,8 +1016,8 @@
   },
   {
    "type": "narr",
-   "text": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Guides agree that getting busted takes your pocket cash too. One adds a small fee from your bank app. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
-   "tts": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Guides agree that getting busted takes your pocket cash too. One adds a small fee from your bank app. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
+   "text": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Getting busted takes your pocket cash too. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
+   "tts": "Tip number twenty. Bank your cash before you start trouble. If you get wasted, the cash in your pocket is gone. Mine was five hundred and thirty-one dollars. Getting busted takes your pocket cash too. And the game says it plainly. Unowned weapons are lost after you die in combat or get arrested. So bank it at an ATM first. Then go and cause problems.",
    "shots": [
     {
      "clip": 1002,
@@ -1084,8 +1088,8 @@
    "shots": [
     {
      "clip": 1017,
-     "in": 113.5,
-     "out": 119.5
+     "in": 113.0,
+     "out": 119.0
     }
    ],
    "gfx": [],
@@ -1139,8 +1143,8 @@
    "shots": [
     {
      "clip": 1025,
-     "in": 236.0,
-     "out": 240.6
+     "in": 240.8,
+     "out": 244.8
     }
    ],
    "gfx": [],
@@ -1161,19 +1165,14 @@
    "tts": "What is the highest wanted level you have hit so far, and how? Mine was four stars, in a passenger jet. Tell me in the comments. See you in Leonida.",
    "shots": [
     {
-     "clip": 1024,
-     "in": 186.5,
-     "out": 197.0
+     "clip": 1002,
+     "in": 36.6,
+     "out": 40.4
     },
     {
-     "clip": 1024,
-     "in": 198.0,
-     "out": 205.0
-    },
-    {
-     "clip": 1017,
-     "in": 22.0,
-     "out": 28.5
+     "clip": 1015,
+     "in": 24.0,
+     "out": 38.0
     }
    ],
    "gfx": [

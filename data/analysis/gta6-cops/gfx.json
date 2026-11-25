@@ -1,7 +1,10 @@
 {
- "note": "Graphics for GTA 6 How to Lose the Cops (2026-11-25), house style of the beginners guide: the title lower third, a chapter card for each of the 5 sections, a TIP tag at each of the 20 tips, a caption with the map card's three lines in tip 3 (the card itself is readable for 1.2 s), counters only for figures the footage shows (timed to the spoken number), two slams, a recap lower third, and the end screen (no outline boxes, Bryce's profile photo, no placeholder text) with the Starter Pack caption outside the Watch next slot. beat_tail keeps the last beat at 20 s or more for the end card.",
+ "note": "Graphics for GTA 6 How to Lose the Cops (2026-11-25), house style of the beginners guide: the title lower third, a chapter card for each of the 5 sections, a TIP tag at each of the 20 tips, a caption with the map card's three lines in tip 3 (the card itself is readable for 1.2 s), counters only for figures the footage shows (timed to the spoken number), two slams, a recap lower third, and the end screen (no outline boxes, Bryce's profile photo, no placeholder text) with the Starter Pack caption outside the Watch next slot. beat_tail on the last beat leaves about 5 s from the narrator's last word to the end (Bryce, 2026-11-25: \"5 seconds is enough\"); the end card covers that whole last beat. The subscribe lower third waits until after 0:45 (review of v1).",
  "beat_tail": {
-  "b043": 13
+  "b043": 4.6
+ },
+ "brand": {
+  "at": 46.0
  },
  "G01": [
   {
@@ -48,7 +51,7 @@
    "kind": "slam",
    "text": "CLEAR EVERY ICON.",
    "dur": 2.6,
-   "at_frac": 0.917
+   "at_frac": 0.915
   }
  ],
  "G05": [
@@ -206,7 +209,7 @@
    "value": "$12",
    "label": "DENIM CUTOFFS",
    "dur": 3.6,
-   "at_frac": 0.73
+   "at_frac": 0.732
   }
  ],
  "G21": [
@@ -255,7 +258,7 @@
    "kind": "slam",
    "text": "THE HEAT STAYS.",
    "dur": 2.6,
-   "at_frac": 0.827
+   "at_frac": 0.832
   }
  ],
  "G25": [
@@ -280,7 +283,7 @@
    "value": "$531",
    "label": "LOST IN ONE DEATH",
    "dur": 3.6,
-   "at_frac": 0.299
+   "at_frac": 0.431
   }
  ],
  "G27": [
