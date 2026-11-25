@@ -278,10 +278,29 @@ def qc(b: dict, raw: Path, wav: Path) -> tuple[list[str], dict]:
     bad += anchor_problems(b, heard, secs)
     if n >= LONG and secs > 0:
         m["wpm"] = round(n / (secs / 60), 1)
-        if not PACE_RANGE[0] <= m["wpm"] <= PACE_RANGE[1]:
-            bad.append(f"pace {m['wpm']} wpm")
+        # Pace is judged in SYLLABLES, scaled to an ordinary paragraph's density (2026-11-25: a paragraph of
+        # long words, 1.56 syllables a word against the script's 1.27, read at 178 wpm, which is 219 wpm at
+        # normal density, and was refused three times although it sounded at the right speed).
+        m["syl_per_word"] = round(syllables(text) / max(1, n), 3)
+        m["wpm_density"] = round(m["wpm"] * m["syl_per_word"] / SYL_PER_WORD, 1)
+        if not PACE_RANGE[0] <= m["wpm_density"] <= PACE_RANGE[1]:
+            bad.append(f"pace {m['wpm']} wpm ({m['wpm_density']} at normal word length)")
         m["pitch_hz"] = pitch_median(wav)
     return bad, m
+
+
+SYL_PER_WORD = 1.27   # the GTA 6 cops script's average over its long paragraphs (2026-11-25)
+
+
+def syllables(text: str) -> int:
+    """A vowel-group syllable count, good enough to compare paragraphs with each other."""
+    total = 0
+    for w in re.findall(r"[a-z]+", text.lower()):
+        n = len(re.findall(r"[aeiouy]+", w))
+        if w.endswith("e") and n > 1 and not w.endswith(("le", "ee")):
+            n -= 1
+        total += max(1, n)
+    return total
 
 
 def take_hash(b: dict) -> str:
