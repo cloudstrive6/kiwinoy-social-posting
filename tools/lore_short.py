@@ -716,7 +716,11 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         return {}
 
 
-_SOURCE_TAG = re.compile(r"\((screen|subtitles?|log|footage log|bible|fact\s+([a-z0-9]+-\d+))\)\s*$", re.I)
+_ONE_TAG = re.compile(r"(screen|subtitles?|log|footage log|bible|fact\s+([a-z0-9]+-\d+))", re.I)
+# The last bracket of a fact; it may hold several tags, '(subtitles, log)' or '(screen; fact gta6-12)'
+# (2026-11-26 16:00 UTC: a Facebook card was refused for '(subtitles, log)', a fair double source).
+_TAG_BRACKET = re.compile(r"\(([^()]*)\)\s*\.?\s*$")
+_TAG_SPLIT = re.compile(r"\s*(?:,|;|/|\+|&|\band\b)\s*", re.I)
 
 
 def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
@@ -727,12 +731,17 @@ def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
         return ["the card lists fewer than 2 sourced facts"]
     bad = []
     for f in facts:
-        m = _SOURCE_TAG.search(f.strip())
-        if not m:
-            bad.append(f"'{f[:70]}' has no allowed source (screen, subtitles, log, fact id, bible)")
-        elif m.group(2) and m.group(2).lower() not in fact_ids:
+        f = f.strip()
+        m = _TAG_BRACKET.search(f)
+        parts = [x for x in _TAG_SPLIT.split(m.group(1).strip()) if x] if m else []
+        tags = [_ONE_TAG.fullmatch(x) for x in parts]
+        if not parts or not all(tags):
+            bad.append(f"'{f[:50]}...{f[-30:]}' has no allowed source (screen, subtitles, log, fact id, bible)")
+            continue
+        ids = [t.group(2).lower() for t in tags if t.group(2)]
+        if any(i not in fact_ids for i in ids):
             bad.append(f"'{f[:70]}' cites a fact id that is not in the bank")
-        elif m.group(1).lower() in ("log", "footage log") and re.search(r"[\d$%]", f[:m.start()]):
+        elif all(t.group(1).lower() in ("log", "footage log") for t in tags) and re.search(r"[\d$%]", f[:m.start()]):
             bad.append(f"'{f[:70]}' puts a number or price on the footage log, which only says who is on "
                        "screen and what they do; take numbers from the screen or a listed fact")
     return bad
