@@ -1,0 +1,803 @@
+{
+ "game": "spider-man-miles-morales",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "spider-man-miles-morales-01",
+   "fact": "When Miles wears the Into the Spider-Verse suit, he moves at a lower framerate than the rest of the game, a nod to the film's animation. It is a suit mod that can be turned off at any time.",
+   "source": "https://kotaku.com/spider-man-miles-morales-has-an-into-the-spider-verse-1845531909",
+   "sources": [
+    "https://kotaku.com/spider-man-miles-morales-has-an-into-the-spider-verse-1845531909",
+    "https://www.engadget.com/spider-man-miles-morales-into-the-spider-verse-suit-151055035.html",
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 5,
+   "pairs_with": "suits, spider-verse, animation, framerate",
+   "fit": [
+    "spider-verse suit",
+    "spider verse suit",
+    "choppy animation",
+    "low framerate"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"Miles actually moves at a lower framerate when wearing the suit than in the rest of the game, a great nod to a similar animation technique used in Into the Spider-Verse\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-02",
+   "fact": "In the Into the Spider-Verse suit, some of Miles' attacks are accompanied by comic book style POW! and THWACK! icons.",
+   "source": "https://www.pushsquare.com/news/2020/10/marvels_spider-man_miles_morales_gets_amazing_into_the_spider-verse_suit",
+   "sources": [
+    "https://www.pushsquare.com/news/2020/10/marvels_spider-man_miles_morales_gets_amazing_into_the_spider-verse_suit",
+    "https://www.engadget.com/spider-man-miles-morales-into-the-spider-verse-suit-151055035.html"
+   ],
+   "wow": 4,
+   "pairs_with": "suits, spider-verse, comic book, combat",
+   "fit": [
+    "pow",
+    "thwack",
+    "comic book",
+    "spider-verse suit"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"When Miles goes into combat, some of his attacks are accompanied by comic book style POW! and THWACK! icons.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-03",
+   "fact": "The Vibe the Verse suit mod lets Miles leap into the Spider-Verse and makes his suit mimic the look of a different Earth.",
+   "source": "https://www.gamesradar.com/spider-man-miles-morales-suits/",
+   "sources": [
+    "https://www.gamesradar.com/spider-man-miles-morales-suits/"
+   ],
+   "wow": 4,
+   "pairs_with": "suits, suit mods, spider-verse",
+   "fit": [
+    "vibe the verse",
+    "vibe verse",
+    "suit mod menu"
+   ],
+   "flag": "Single source (GamesRadar+).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Vibe the Verse: Use this mod to leap into the Spider-Verse and cause the attached suit to mimic the aesthetic of a different Earth.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-04",
+   "fact": "A bodega's resident cat, also named Spider-Man, is nabbed in a robbery. Miles rescues him from a warehouse, tucked inside a backpack, and can earn a suit with the cat riding in that backpack.",
+   "source": "https://www.gamesradar.com/spider-man-miles-morales-spider-cat",
+   "sources": [
+    "https://www.gamesradar.com/spider-man-miles-morales-spider-cat",
+    "https://kotaku.com/spider-man-miles-morales-lets-you-wear-a-cat-on-your-b-1845374296"
+   ],
+   "wow": 5,
+   "pairs_with": "spider-cat, bodega, suits, side quest",
+   "fit": [
+    "bodega cat",
+    "spider-cat",
+    "spider cat",
+    "cat backpack",
+    "cat rescue"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"this one had an adorable resident cat (also named Spider-Man) who was sadly nabbed in the robbery, as well.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-05",
+   "fact": "The Spider-Cat is not just cosmetic: when Miles performs finishing moves, the cat leaps out of the backpack and slashes foes.",
+   "source": "https://kotaku.com/spider-man-miles-morales-lets-you-wear-a-cat-on-your-b-1845374296",
+   "sources": [
+    "https://kotaku.com/spider-man-miles-morales-lets-you-wear-a-cat-on-your-b-1845374296",
+    "https://www.gamesradar.com/spider-man-miles-morales-spider-cat"
+   ],
+   "wow": 5,
+   "pairs_with": "spider-cat, finisher, combat, suits",
+   "fit": [
+    "spider-cat",
+    "spider cat",
+    "cat backpack",
+    "cat finisher",
+    "cat slash"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"when you perform finishing moves, the cat will leap out of the backpack and slash foes\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-06",
+   "fact": "Miles got completely new swinging animations, and Game Informer's Andrew Reiner said his movements are inspired by skydiving acrobatics.",
+   "source": "https://www.gamesradar.com/spider-man-miles-morales-new-swinging-animations-show-miles-is-still-getting-used-to-this-hero-thing",
+   "sources": [
+    "https://www.gamesradar.com/spider-man-miles-morales-new-swinging-animations-show-miles-is-still-getting-used-to-this-hero-thing"
+   ],
+   "wow": 4,
+   "pairs_with": "web swinging, animation, skydiving",
+   "fit": [
+    "skydiving",
+    "skydive",
+    "freefall pose"
+   ],
+   "flag": "Single source (GamesRadar+, quoting Game Informer).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Yes. Completely new. Miles' movements are inspired by skydiving acrobatics.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-07",
+   "fact": "Miles can bust out more than 20 distinct air tricks while swinging, like a Tony Hawk character, and each trick grants a little experience.",
+   "source": "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496",
+   "sources": [
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 4,
+   "pairs_with": "air tricks, web swinging, xp",
+   "fit": [
+    "air trick",
+    "trick",
+    "barrel roll",
+    "trick xp"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"Like a Tony Hawk character, he can bust out more than 20 distinct tricks.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-08",
+   "fact": "A burst of Venom can send Miles higher into the air or into a quick dash while exploring.",
+   "source": "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying",
+   "sources": [
+    "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying"
+   ],
+   "wow": 3,
+   "pairs_with": "venom, traversal, web swinging",
+   "fit": [
+    "venom dash",
+    "venom jump",
+    "venom burst"
+   ],
+   "flag": "Single source (Game Informer).",
+   "checked": "2026-11-26",
+   "quote": "Game Informer: \"A burst of Venom sends him higher into the air or into a quick dash, and both add a bit more superhero might to exploration.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-09",
+   "fact": "The Venom Jump move propels Miles 15 feet into the air, while Venom Punch is a devastating charge attack.",
+   "source": "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+   "sources": [
+    "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more"
+   ],
+   "wow": 4,
+   "pairs_with": "venom, combat, venom jump, venom punch",
+   "fit": [
+    "venom jump",
+    "venom punch",
+    "charged punch"
+   ],
+   "flag": "Single source (VGC, from Game Informer's preview).",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"One move, Venom Jump, propels Miles 15 feet into the air, while Venom Punch is described as a devastating charge attack.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-10",
+   "fact": "Miles' Venom attacks, triggered by holding L1 and pressing face buttons, need a Venom Meter that works like Peter's Focus Meter.",
+   "source": "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+   "sources": [
+    "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more"
+   ],
+   "wow": 2,
+   "pairs_with": "venom, combat, meter, controls",
+   "fit": [
+    "venom meter",
+    "venom bar",
+    "venom attack"
+   ],
+   "flag": "Single source (VGC).",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"Players must fill up a Venom Meter (which is like Peter’s Focus Meter) in order to use them\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-11",
+   "fact": "Miles' new Venom abilities put a greater emphasis on area-of-effect attacks, since he often faces a crowd of enemies.",
+   "source": "https://www.gamesradar.com/spider-man-miles-morales-puts-a-greater-emphasis-on-area-of-effect-attacks-and-abilities",
+   "sources": [
+    "https://www.gamesradar.com/spider-man-miles-morales-puts-a-greater-emphasis-on-area-of-effect-attacks-and-abilities",
+    "https://www.pushsquare.com/news/2020/10/marvels_spider-man_miles_morales_combat_gameplay_shows_new_abilities_in_action"
+   ],
+   "wow": 2,
+   "pairs_with": "venom, combat, area of effect",
+   "fit": [
+    "venom attack",
+    "venom punch",
+    "electric attack",
+    "venom smash"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"The director says that the introduction of the new venom abilities really changes up combat, putting a greater emphasis on area-of-effect attacks.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-12",
+   "fact": "Miles can turn invisible with camouflage, and enemies who lose sight of him return to their patterns, so you can try picking them off silently again.",
+   "source": "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying",
+   "sources": [
+    "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying"
+   ],
+   "wow": 3,
+   "pairs_with": "camouflage, invisibility, stealth",
+   "fit": [
+    "camouflage",
+    "invisible",
+    "invisibility",
+    "camo"
+   ],
+   "flag": "Single source (Game Informer).",
+   "checked": "2026-11-26",
+   "quote": "Game Informer: \"Enemies can lose sight of Miles and return to their patterns, so you can try picking them off silently again.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-13",
+   "fact": "Miles' camouflage also makes snipers lose track of him, and it can be used in the middle of an all-out brawl.",
+   "source": "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496",
+   "sources": [
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 3,
+   "pairs_with": "camouflage, snipers, combat",
+   "fit": [
+    "camouflage",
+    "invisible",
+    "camo"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"The camouflage will also cause snipers to lose track of you, making it arguably the most helpful trick in Miles’ book.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-14",
+   "fact": "Miles earns a one-hit-kill finisher move every 15 hits in a combo.",
+   "source": "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496",
+   "sources": [
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 3,
+   "pairs_with": "combat, finisher, combo",
+   "fit": [
+    "finisher",
+    "finishing move",
+    "combo counter"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"You earn a one-hit-kill finisher move every 15 hits.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-15",
+   "fact": "Enemies Miles webs up in stealth takedowns dangle in plain sight, yet no one else notices them.",
+   "source": "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496",
+   "sources": [
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 3,
+   "pairs_with": "stealth, takedown, webbed enemies",
+   "fit": [
+    "hanging enemy",
+    "dangling enemy",
+    "dangling",
+    "perch takedown",
+    "strung up"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"Even though webbed enemies will dangle in plain sight, no one else will notice them\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-16",
+   "fact": "A suit mod shows whether enemies will notice your stealth takedowns, with lines connecting the characters.",
+   "source": "https://www.pushsquare.com/news/2020/10/marvels_spider-man_miles_morales_combat_gameplay_shows_new_abilities_in_action",
+   "sources": [
+    "https://www.pushsquare.com/news/2020/10/marvels_spider-man_miles_morales_combat_gameplay_shows_new_abilities_in_action"
+   ],
+   "wow": 3,
+   "pairs_with": "stealth, suit mods, visor, takedown",
+   "fit": [
+    "takedown lines",
+    "connecting lines",
+    "line between enemies",
+    "detection lines"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"One shown is a mod that tells you if enemies will notice your stealth takedowns, indicated by lines connecting the characters.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-17",
+   "fact": "Swiping left on the touchpad brings up a phone with the Friendly Neighborhood Spider-Man app, which replaces the first game's police scanner for finding crimes and activities.",
+   "source": "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+   "sources": [
+    "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 3,
+   "pairs_with": "app, phone, crimes, side activities, hud",
+   "fit": [
+    "phone app",
+    "friendly neighborhood",
+    "neighborhood app",
+    "phone menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"Swiping left on the DualSense’s touchpad brings up a phone, where players can find the new Friendly Neighbourhood Spider App.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-18",
+   "fact": "Miles Morales' Photo Mode lets players move and place up to three lights to set up their shots.",
+   "source": "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+   "sources": [
+    "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+    "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/"
+   ],
+   "wow": 2,
+   "pairs_with": "photo mode, lighting",
+   "fit": [
+    "photo light",
+    "photo mode light",
+    "photo mode"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"Players can move and place up to three lights to create ideal settings for their shots\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-19",
+   "fact": "The game's first boss fight sees Miles face Rhino after he escapes from a cargo container moving through Harlem, a set piece Game Informer called far larger in scope than anything in the first game.",
+   "source": "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+   "sources": [
+    "https://www.videogameschronicle.com/news/new-spider-man-miles-morales-details-photo-mode-2-zero-loads-venom-attacks-and-more",
+    "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying"
+   ],
+   "wow": 4,
+   "pairs_with": "boss, rhino, harlem, set piece",
+   "fit": [
+    "rhino",
+    "rhino boss",
+    "cargo container"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"The mag describes the set piece as “far larger in scope than anything seen in the first game”.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-20",
+   "fact": "Early in the game Miles climbs onto Rhino's back and runs through a shopping mall, and a trophy asks you to smash into 15 breakable objects while steering him.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 4,
+   "pairs_with": "rhino, mall, trophy, opening",
+   "fit": [
+    "shopping mall",
+    "mall",
+    "riding rhino",
+    "ride rhino",
+    "rhino back"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"you'll climb onto the back of Rhino and run through a shopping mall.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-21",
+   "fact": "A statue of Stan Lee stands in the Upper West Side, not far from Central Park, and interacting with it unlocks the Best Fries In Town trophy.",
+   "source": "https://www.thegamer.com/stan-lee-statue-miles-morales/",
+   "sources": [
+    "https://www.thegamer.com/stan-lee-statue-miles-morales/",
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 5,
+   "pairs_with": "stan lee, statue, tribute, trophy, easter eggs",
+   "fit": [
+    "stan lee",
+    "bronze statue",
+    "best fries"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"Finding and interacting with the statue, which can be found in the Upper West Side not far from Central Park, will even unlock the Best Fries In Town trophy.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-22",
+   "fact": "The Wakandan embassy from the first game now stands on Boseman Way, a tribute to Black Panther actor Chadwick Boseman.",
+   "source": "https://www.thegamer.com/stan-lee-statue-miles-morales/",
+   "sources": [
+    "https://www.thegamer.com/stan-lee-statue-miles-morales/",
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 4,
+   "pairs_with": "wakanda, tribute, boseman, landmarks",
+   "fit": [
+    "wakandan embassy",
+    "wakanda",
+    "boseman way",
+    "embassy"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"the Wakandan embassy, which was also part of Marvel's Spider-Man can now be found on Boseman Way.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-23",
+   "fact": "Two references in the game reveal X-Men's Dazzler to be a pretty big pop star in Insomniac's Spider-Man universe.",
+   "source": "https://www.thegamer.com/stan-lee-statue-miles-morales/",
+   "sources": [
+    "https://www.thegamer.com/stan-lee-statue-miles-morales/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, x-men, dazzler",
+   "fit": [
+    "dazzler",
+    "dazzler poster",
+    "dazzler billboard"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"There are two references to X-Men's Dazzler in the game, revealing the mutant to be a pretty big pop star in Insomniac's Spider-Verse.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-24",
+   "fact": "Swim far out to sea and you can find boats of unfinished-looking NPCs, as in the 2018 game. In Miles Morales one of them wears a post-it note asking players if they missed them.",
+   "source": "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/",
+   "sources": [
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 5,
+   "pairs_with": "easter eggs, boats, npcs, ocean, map edge",
+   "fit": [
+    "post-it note",
+    "unfinished npc",
+    "ocean boat",
+    "swimming"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"What's even funnier is that one of them wears a post-it note asking players if they missed them, a subtle nod to their inclusion in the first installment.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-25",
+   "fact": "Spider-Training challenges start from a computer Peter Parker left behind and come in three types: Combat, Traversal and Stealth. Each one beaten grants a skill you cannot earn any other way.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks",
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 3,
+   "pairs_with": "spider-training, challenges, skills, hologram",
+   "fit": [
+    "spider-training",
+    "spider training",
+    "training challenge",
+    "hologram"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"interact with the computer left behind by Peter Parker to begin the activity.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-26",
+   "fact": "After Peter's training challenges, a secret last test pits Miles against a virtual Vulture.",
+   "source": "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/",
+   "sources": [
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 4,
+   "pairs_with": "vulture, boss, hologram, training",
+   "fit": [
+    "vulture",
+    "virtual vulture",
+    "hologram vulture"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"The last quest is known as The Final Test and brings in a virtual Vulture to combat against.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-27",
+   "fact": "Marvel's Spider-Man: Miles Morales has 69 collectibles to find, including 16 Time Capsules, 8 Postcards and 35 Underground Caches.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 2,
+   "pairs_with": "collectibles, time capsules, postcards, caches",
+   "fit": [
+    "time capsule",
+    "postcard",
+    "underground cache"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Marvel's Spider-Man: Miles Morales has 69 collectibles for you to find.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-28",
+   "fact": "When you track an Underground cache, the distance compass works in three dimensions, so 83m means 83 meters away in any direction.",
+   "source": "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496",
+   "sources": [
+    "https://kotaku.com/tips-for-playing-marvels-spider-man-miles-morales-1845658496"
+   ],
+   "wow": 3,
+   "pairs_with": "collectibles, caches, tracking, hud",
+   "fit": [
+    "underground cache",
+    "cache",
+    "distance marker",
+    "cache tracker"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"be wary that the resulting compass operates on a three-dimensional plane, rather than a two-dimensional one.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-29",
+   "fact": "Miles' dad and Uncle Aaron used to record the sounds of the city together, hoping to build a song they never finished. The Sound Sample collectibles let Miles gather the recordings to polish it off.",
+   "source": "https://www.gamesradar.com/how-spider-man-miles-morales-uses-the-sounds-of-harlem-to-immerse-you-into-its-world",
+   "sources": [
+    "https://www.gamesradar.com/how-spider-man-miles-morales-uses-the-sounds-of-harlem-to-immerse-you-into-its-world",
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 4,
+   "pairs_with": "sound samples, music, collectibles, family",
+   "fit": [
+    "sound sample",
+    "sound recording",
+    "audio sample"
+   ],
+   "flag": "Sources differ on the count (9 or 10 samples); do not state a number.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"The pair would record the sounds of the city together, hoping to eventually build a song out of it, which they never finished.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-30",
+   "fact": "In C.J. Walker Park there is a DJ spinning songs, and Miles can wander over and dance in front of him.",
+   "source": "https://www.gamesradar.com/how-spider-man-miles-morales-uses-the-sounds-of-harlem-to-immerse-you-into-its-world",
+   "sources": [
+    "https://www.gamesradar.com/how-spider-man-miles-morales-uses-the-sounds-of-harlem-to-immerse-you-into-its-world"
+   ],
+   "wow": 4,
+   "pairs_with": "harlem, music, dance, park",
+   "fit": [
+    "dj",
+    "dance",
+    "dancing",
+    "walker park"
+   ],
+   "flag": "Single source (GamesRadar+).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"You can even wander over to the DJ to dance in front of him, even if Miles' moves aren't quite there yet.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-31",
+   "fact": "On PS5, the game has ray-traced reflections under ice and snow and on wet streets, including holiday lighting reflecting off them.",
+   "source": "https://www.gameinformer.com/2020/10/23/five-ways-marvels-spider-man-miles-morales-is-optimized-for-ps5",
+   "sources": [
+    "https://www.gameinformer.com/2020/10/23/five-ways-marvels-spider-man-miles-morales-is-optimized-for-ps5"
+   ],
+   "wow": 3,
+   "pairs_with": "ps5, ray tracing, snow, reflections",
+   "fit": [
+    "reflection",
+    "wet street",
+    "christmas lights",
+    "ice reflection",
+    "holiday lights"
+   ],
+   "flag": "PS5 version only. Single source (Game Informer).",
+   "checked": "2026-11-26",
+   "quote": "Game Informer: \"We have ray-traced reflections under ice and snow and wet streets at different times of day\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-32",
+   "fact": "On PS5, dying or fast travelling brings near-instant loads with no loading screens, while the PS4 version keeps the loading screens and subway transitions.",
+   "source": "https://www.gameinformer.com/2020/10/23/five-ways-marvels-spider-man-miles-morales-is-optimized-for-ps5",
+   "sources": [
+    "https://www.gameinformer.com/2020/10/23/five-ways-marvels-spider-man-miles-morales-is-optimized-for-ps5",
+    "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying"
+   ],
+   "wow": 2,
+   "pairs_with": "ps5, loading, fast travel, subway",
+   "fit": [
+    "fast travel",
+    "subway",
+    "loading screen"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Informer: \"If you die or if you fast travel there are near-instant loads.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-33",
+   "fact": "The game is set in wintertime, about a year after the first game, with Marvel's New York covered in snow just before Christmas break.",
+   "source": "https://blog.playstation.com/2020/06/18/marvels-spider-man-miles-morales-an-update-from-insomniac-games/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/18/marvels-spider-man-miles-morales-an-update-from-insomniac-games/"
+   ],
+   "wow": 3,
+   "pairs_with": "winter, snow, christmas, setting, harlem",
+   "fit": [
+    "christmas tree",
+    "christmas decoration",
+    "holiday decoration",
+    "christmas wreath"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"It’s now wintertime, about a year after the events of the first game. Marvel’s New York is covered in snow\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-34",
+   "fact": "Insomniac compared the game's overall scope to Uncharted: The Lost Legacy, and Game Informer found it runs at roughly half the length of the 2018 game.",
+   "source": "https://blog.playstation.com/2020/06/18/marvels-spider-man-miles-morales-an-update-from-insomniac-games/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/18/marvels-spider-man-miles-morales-an-update-from-insomniac-games/",
+    "https://www.gameinformer.com/review/marvels-spider-man-miles-morales/marvels-spider-man-miles-morales-review-an-electrifying"
+   ],
+   "wow": 2,
+   "pairs_with": "scope, length, development",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"one that’s more akin to a game like Uncharted: The Lost Legacy in terms of overall scope.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-35",
+   "fact": "Marvel's Spider-Man: Miles Morales sold through 4.1 million units across PS5 and PS4 by the end of December 2020, in under two months on sale.",
+   "source": "https://www.pushsquare.com/news/2021/02/marvels_spider-man_miles_morales_webs_up_4_1_million_sales",
+   "sources": [
+    "https://www.pushsquare.com/news/2021/02/marvels_spider-man_miles_morales_webs_up_4_1_million_sales",
+    "https://www.shacknews.com/article/122558/marvels-spider-man-miles-morales-has-sold-41-million-units-in-under-2-months"
+   ],
+   "wow": 2,
+   "pairs_with": "sales, ps5 launch, reception",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"has sold through 4.1 million units as of the end of December.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-36",
+   "fact": "There are 19 suits to unlock in Miles Morales. You can collect 18 in a single playthrough, but the final one needs New Game+.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-all-suits-and-how-to-unlock-them",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-all-suits-and-how-to-unlock-them",
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 2,
+   "pairs_with": "suits, new game plus, unlocks",
+   "fit": [
+    "suit menu",
+    "suit selection",
+    "new game plus",
+    "new game+"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"There are 19 suits to unlock in Marvel's Spider-Man: Miles Morales.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-37",
+   "fact": "Miles can use Remote Mines on electrical panels to quickly clear out multiple enemies.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-miles-morales-guide-all-trophies-collectibles-tips-and-tricks"
+   ],
+   "wow": 3,
+   "pairs_with": "gadgets, remote mine, stealth",
+   "fit": [
+    "remote mine",
+    "electrical panel",
+    "electric panel",
+    "fuse box"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"You can use Remote Mines on electrical panels to quickly and easy clear out multiple enemies.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-38",
+   "fact": "Accessibility options include narrated American Sign Language lines and numerous ways to tweak subtitles for readability.",
+   "source": "https://www.gamespot.com/articles/spider-man-miles-morales-dev-details-extensive-accessibility-options/1100-6484209/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-miles-morales-dev-details-extensive-accessibility-options/1100-6484209/"
+   ],
+   "wow": 3,
+   "pairs_with": "accessibility, subtitles, asl",
+   "fit": [
+    "sign language",
+    "asl",
+    "subtitle settings",
+    "accessibility menu"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"There’s a narrated ASL option, and numerous ways to tweak your subtitles for improved readability.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-39",
+   "fact": "The Contrast Options accessibility setting can show the hero, allies and enemies in solid single colors to help with visibility.",
+   "source": "https://www.gamespot.com/articles/spider-man-miles-morales-dev-details-extensive-accessibility-options/1100-6484209/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-miles-morales-dev-details-extensive-accessibility-options/1100-6484209/"
+   ],
+   "wow": 4,
+   "pairs_with": "accessibility, high contrast, visibility",
+   "fit": [
+    "high contrast",
+    "solid color",
+    "contrast option",
+    "accessibility menu"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"Including solid single colors on the hero, allies, enemies, etc.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man-miles-morales-40",
+   "fact": "A mural in the city develops through the game as NPCs slowly add to it, and it ends up celebrating Miles as a hero.",
+   "source": "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/",
+   "sources": [
+    "https://screenrant.com/marvels-spider-man-miles-morales-things-most-players-never-discover/"
+   ],
+   "wow": 4,
+   "pairs_with": "mural, art, npcs, harlem",
+   "fit": [
+    "mural",
+    "graffiti mural",
+    "miles mural"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"Some players never discover this piece of art, which NPCs are slowly adding to.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

@@ -343,16 +343,25 @@ OUTLETS = {"videogameschronicle": "VGC Video Games Chronicle", "kotaku": "Kotaku
            "polygon": "Polygon", "eurogamer": "Eurogamer", "gamesradar": "GamesRadar", "thegamer": "TheGamer",
            "gamerant": "Game Rant", "dexerto": "Dexerto", "insider-gaming": "Insider Gaming", "theverge": "The Verge",
            "screenrant": "Screen Rant", "shacknews": "Shacknews", "pushsquare": "Push Square",
-           "engadget": "Engadget", "vice": "Vice"}
+           "engadget": "Engadget", "vice": "Vice",
+           # 2026-11-26, fact banks for every game: developers' own sites and more outlets.
+           "insomniac": "Insomniac Insomniac Games", "playstation": "PlayStation PlayStation Blog",
+           "naughtydog": "Naughty Dog", "halowaypoint": "Halo Waypoint Halo Studios", "xbox": "Xbox Xbox Wire",
+           "gameinformer": "Game Informer", "techradar": "TechRadar", "mobilelegends": "Moonton Mobile Legends",
+           "tarsier": "Tarsier Tarsier Studios", "bandainamco": "Bandai Namco"}
 # How the card names each outlet (2026-11-26: a card wrote 'Videogameschronicle' from the bare domain).
-OUTLET_SAY = {"videogameschronicle": "VGC", "rockstargames": "Rockstar"}
+OUTLET_SAY = {"videogameschronicle": "VGC", "rockstargames": "Rockstar", "insomniac": "Insomniac",
+              "playstation": "the PlayStation Blog", "halowaypoint": "Halo Waypoint", "xbox": "Xbox Wire",
+              "mobilelegends": "Moonton", "tarsier": "Tarsier"}
 
 
 def outlet_names(text: str) -> str:
     """The names a card may credit for a fact, from its source domains (2026-11-25: a card crediting VGC
     for a videogameschronicle.com fact was refused because 'VGC' appeared in no evidence)."""
+    # Domains only ('kotaku.com', 'blog.playstation.com'): a plain substring credited Vice for 'Vice City'
+    # and IGN for 'design' (review 2026-11-26).
     low = (text or "").lower()
-    return " ".join(v for k, v in OUTLETS.items() if k in low)
+    return " ".join(v for k, v in OUTLETS.items() if re.search(rf"(^|[\s./,(]){re.escape(k)}\.", low))
 
 
 def fact_source(x: dict) -> str:

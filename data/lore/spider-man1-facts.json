@@ -1,0 +1,768 @@
+{
+ "game": "spider-man1",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "spider-man1-01",
+   "fact": "The game's Marvel's New York is made of approximately 800 square tiles, each 128 meters square, making the city several times larger than what the studio built for Sunset Overdrive.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/"
+   ],
+   "wow": 4,
+   "pairs_with": "open world, map, tech, manhattan, streaming",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"There are approximately 800 square tiles making up our version of Marvel’s New York, each 128 meters square, making the city several times larger than what we built for Sunset Overdrive.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-02",
+   "fact": "When Spider-Man is really pushing his top speed, the game is loading about one new tile of the city every second.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/"
+   ],
+   "wow": 4,
+   "pairs_with": "web swinging, speed, tech, streaming",
+   "fit": [
+    "top speed",
+    "swinging fast"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"And when Spider-Man is really pushing his top speed, we’re loading about one new tile every second.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-03",
+   "fact": "Every piece of architecture in the city is tagged with places webs can attach, and as you swing the game finds the swing points that preserve your momentum toward your destination.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+    "https://gamerant.com/spider-man-game-web-swing/"
+   ],
+   "wow": 4,
+   "pairs_with": "web swinging, physics, momentum, buildings",
+   "fit": [
+    "swing point",
+    "attach point",
+    "web attach point"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Every piece of architecture in the city is tagged with places webs can attach, and as you swing around, we find the perfect swing points to preserve your momentum and keep you flying towards your destination.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-04",
+   "fact": "Insomniac says a perfect simulation of a person hanging from a rope would not make the player feel much like a Super Hero, so camera movement, field of view and careful character animation sell the feeling of being Spider-Man.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/"
+   ],
+   "wow": 3,
+   "pairs_with": "web swinging, physics, camera, animation",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"if we perfectly simulated the dynamics of a person hanging from a rope on 34th Street, the player wouldn’t feel much like a Super Hero.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-05",
+   "fact": "Game director Ryan Smith said the team wanted swinging to never feel like flying, and wanted players to feel the arc of the pendulum pulling on them.",
+   "source": "https://shacknews.com/article/106493/exclusive-interview-spider-man-game-director-ryan-smith-talks-perfecting-spideys-web-slinging",
+   "sources": [
+    "https://shacknews.com/article/106493/exclusive-interview-spider-man-game-director-ryan-smith-talks-perfecting-spideys-web-slinging"
+   ],
+   "wow": 3,
+   "pairs_with": "web swinging, pendulum, physics, design",
+   "fit": [
+    "pendulum",
+    "swing arc",
+    "swinging arc"
+   ],
+   "flag": "Single source (Shacknews).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"We wanted to make sure that it felt like you were swinging and never felt like flying. We wanted to feel that arc of the pendulum and how it really pulled on you.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-06",
+   "fact": "The final foe you face in Marvel's Spider-Man is rendered with more than one million polygons.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/"
+   ],
+   "wow": 4,
+   "pairs_with": "boss, graphics, tech, polygons",
+   "fit": [
+    "doctor octopus",
+    "doc ock",
+    "final boss",
+    "last boss"
+   ],
+   "flag": "Single source (PlayStation Blog). Avoid naming the foe (late-story spoiler).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"The final foe you face in the game is rendered with more than one million polygons\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-07",
+   "fact": "Insomniac's Mike Fitzgerald said that at street level you can find little shout-outs to other Marvel characters, and friends to take selfies with in Times Square.",
+   "source": "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/",
+   "sources": [
+    "https://blog.playstation.com/2018/09/06/insomniac-interview-the-tech-behind-marvels-spider-man/"
+   ],
+   "wow": 2,
+   "pairs_with": "times square, selfie, easter eggs, street level",
+   "fit": [
+    "times square",
+    "selfie"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"There are lots of little shout-outs to other Marvel characters, iconic pieces of New York City architecture to climb around, and friends to take selfies with in Times Square.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-08",
+   "fact": "Photo Mode came with the game's day one patch, and players can even use it to make their own faux comic book covers.",
+   "source": "https://www.shacknews.com/article/107024/marvels-spider-man-adds-photo-mode-with-day-one-patch",
+   "sources": [
+    "https://www.shacknews.com/article/107024/marvels-spider-man-adds-photo-mode-with-day-one-patch"
+   ],
+   "wow": 3,
+   "pairs_with": "photo mode, comic book, selfie",
+   "fit": [
+    "photo mode",
+    "comic book cover",
+    "comic cover",
+    "photo filter"
+   ],
+   "flag": "Single source (Shacknews).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Players can even make their own faux comic book covers.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-09",
+   "fact": "A post-launch update added puddle stickers to Photo Mode, so players can add as many puddles as they like, a joke at the 'Puddlegate' complaints.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-developers-troll-complaining-player/1100-6462681/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-developers-troll-complaining-player/1100-6462681/",
+    "https://www.gamesradar.com/spider-man-ps4-new-game-plus"
+   ],
+   "wow": 4,
+   "pairs_with": "photo mode, puddles, stickers, update",
+   "fit": [
+    "puddle",
+    "puddle sticker",
+    "puddlegate"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"The addition of puddle stickers allows players to add as many puddles as they like to the game\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-10",
+   "fact": "Free patches 1.07 and 1.08 added New Game+, which lets you replay the adventure keeping all the gadgets and suits you unlocked, plus a new Ultimate difficulty.",
+   "source": "https://www.gamesradar.com/spider-man-ps4-new-game-plus",
+   "sources": [
+    "https://www.gamesradar.com/spider-man-ps4-new-game-plus",
+    "https://www.pushsquare.com/news/2018/10/spider-man_ps4_adds_brand_new_features_with_1_08_patch"
+   ],
+   "wow": 2,
+   "pairs_with": "new game plus, difficulty, update, suits, gadgets",
+   "fit": [
+    "new game plus",
+    "new game+",
+    "ultimate difficulty",
+    "ng+"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"This means that now you get to live your adventure through New York all over again, keeping all of the gadgets and suits you'd previously unlocked.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-11",
+   "fact": "Unlocking a suit unlocks its Suit Power, but Suit Powers are not tied to suits: once unlocked, a power can be equipped with any suit.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them",
+    "https://www.gamesradar.com/marvel-spider-man-ps4-suits"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, suit powers, customization",
+   "fit": [
+    "suit power",
+    "suit menu",
+    "suit selection"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Thankfully though, Suit Powers aren't tied to suits, so once you've unlocked one you can equip it with any suit.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-12",
+   "fact": "The Undies suit, unlocked by reaching 100% completion, comes with the Equaliser power: everyone goes down in one hit, including you.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them"
+   ],
+   "wow": 5,
+   "pairs_with": "suits, undies, suit powers, completion",
+   "fit": [
+    "undies",
+    "underwear",
+    "undies suit",
+    "equaliser",
+    "equalizer"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Equaliser: Everyone goes down in one hit, including you.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-13",
+   "fact": "The Spider-Punk suit's power, Rock Out, makes Spider-Man whip out an electric guitar and stun enemies with soundwaves.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-suits",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-suits",
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them"
+   ],
+   "wow": 4,
+   "pairs_with": "suits, spider-punk, guitar, suit powers",
+   "fit": [
+    "spider-punk",
+    "spider punk",
+    "electric guitar",
+    "guitar",
+    "rock out"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Rock Out - Makes Spider-Man whip out an electric guitar and stun enemies with soundwaves.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-14",
+   "fact": "The Iron Spider suit's power, Iron Arms, lets Spider-Man wreak havoc with four articulated arms.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them",
+    "https://www.gamesradar.com/marvel-spider-man-ps4-suits"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, iron spider, spider arms, suit powers",
+   "fit": [
+    "iron spider",
+    "iron arms",
+    "mechanical arms",
+    "four arms"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Iron Arms: Wreak havoc with four articulated arms made from rapidly grown mono-atomic alloy crystal.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-15",
+   "fact": "The Stark Suit, from Captain America: Civil War and Spider-Man: Homecoming, comes with the Spider Bro power, which deploys the spider drone from the movie to zap enemies with electricity.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-suits",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-suits",
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, stark suit, drone, MCU, suit powers",
+   "fit": [
+    "stark suit",
+    "spider drone",
+    "spider bro"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Power: Spider Bro power - Deploys the spider drone from the movie which helps you out in combat by zapping enemies with electricity.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-16",
+   "fact": "Peter left 55 backpacks webbed up around the city when he was in high school, and collecting all of them unlocks the Homemade Suit.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+    "https://www.pushsquare.com/guides/marvels-spider-man-all-suits-and-how-to-unlock-them"
+   ],
+   "wow": 3,
+   "pairs_with": "backpacks, collectibles, homemade suit",
+   "fit": [
+    "backpack",
+    "homemade suit"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"Easily the richest source of Easter eggs in Spider-Man are the 55 backpacks that Peter left webbed up around the city when he was in high school.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-17",
+   "fact": "One backpack explains where they all came from: in high school, Peter won the Wilson Fisk Science Prize and was rewarded with a lifetime supply of backpacks.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 4,
+   "pairs_with": "backpacks, collectibles, Fisk, easter eggs",
+   "fit": [
+    "backpack",
+    "science prize",
+    "fisk prize"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"When he was in high school, Peter won the Wilson Fisk Science Prize and was rewarded with a lifetime supply of backpacks.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-18",
+   "fact": "Stand close to a pizza restaurant and you can hear the Pizza Delivery theme from the 2004 Spider-Man 2 tie-in game.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, pizza, music, spider-man 2",
+   "fit": [
+    "pizza",
+    "pizza restaurant",
+    "pizza shop",
+    "pizza theme"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"If you stand close to a pizza restaurant you can hear the Pizza Delivery theme from the 2004 game.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-19",
+   "fact": "Wall Street's Charging Bull is replaced by a bronze statue of Lockjaw, the Inhumans' dog, and it is one of the photo ops.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs"
+   ],
+   "wow": 4,
+   "pairs_with": "landmarks, statue, inhumans, photo ops, easter eggs",
+   "fit": [
+    "lockjaw",
+    "dog statue",
+    "lockjaw statue",
+    "charging bull"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"One of the photo ops is with a bronze statue of Lockjaw, the Inhumans' faithful dog companion, who stands in place of Wall Street's Charging Bull.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-20",
+   "fact": "Avengers Tower is hard to miss on the New York skyline, and there is a trophy for climbing it.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 3,
+   "pairs_with": "landmarks, avengers tower, trophy, climbing",
+   "fit": [
+    "avengers tower",
+    "avengers building"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"The Avengers Tower is hard to miss on the New York skyline, plus there’s a trophy for climbing it.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-21",
+   "fact": "At the Wakandan Embassy, Peter ponders whether T'Challa was bitten by a radioactive panther.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+    "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references"
+   ],
+   "wow": 4,
+   "pairs_with": "landmarks, wakanda, black panther, easter eggs",
+   "fit": [
+    "wakanda",
+    "wakandan embassy",
+    "embassy"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"Here, Peter ponders whether T'Challa was bitten by a radioactive panther.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-22",
+   "fact": "You can see Doctor Strange's Sanctum Sanctorum from the outside, but there is no way to enter it.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 3,
+   "pairs_with": "landmarks, doctor strange, easter eggs",
+   "fit": [
+    "sanctum sanctorum",
+    "sanctum",
+    "doctor strange",
+    "dr strange"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"You can go and see Dr Strange's Sanctum Sanctorum from the outside - unfortunately there’s no way to enter the magical haven.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-23",
+   "fact": "The rockets that RPG-wielding enemies fire at Spider-Man say \"Guaranteed to Kill Spiders\" on the side.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references"
+   ],
+   "wow": 5,
+   "pairs_with": "enemies, rockets, rpg, details",
+   "fit": [
+    "rocket",
+    "rocket launcher",
+    "rpg",
+    "guaranteed to kill"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"The rockets that RPG-wielding enemies fire at you say \"Guaranteed to Kill Spiders\" on the side.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-24",
+   "fact": "Press L3 in mid air to dive to the ground, and from high enough Spider-Man lands in the trademark heroic pose, shattering the ground.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs"
+   ],
+   "wow": 4,
+   "pairs_with": "traversal, dive, landing, superhero landing",
+   "fit": [
+    "superhero landing",
+    "heroic landing",
+    "ground pound",
+    "landing pose"
+   ],
+   "flag": "Single source (GamesRadar+).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Press L3 in mid air to dive to the ground, and if you do it from high enough Spider-Man lands in the trademark heroic pose, shattering the ground as he does so.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-25",
+   "fact": "Go to the graveyard at the top of the map and you can pay your respects to Uncle Ben.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 3,
+   "pairs_with": "uncle ben, graveyard, easter eggs",
+   "fit": [
+    "graveyard",
+    "grave",
+    "cemetery",
+    "uncle ben"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Go to the graveyard at the top of the map and you can pay your respects to Uncle Ben.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-26",
+   "fact": "The volunteer wall at F.E.A.S.T. has photographs of the Spider-Man developers on it.",
+   "source": "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+   "sources": [
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, developers, f.e.a.s.t.",
+   "fit": [
+    "feast",
+    "f.e.a.s.t.",
+    "volunteer wall",
+    "feast shelter"
+   ],
+   "flag": "Single source (GamesRadar+).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"On the volunteer wall are photographs of the Spider-Man developers in a great little homage to all the effort that’s gone into bringing the game to life.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-28",
+   "fact": "A Trip Mine stuck to an enemy will grab the nearest person and slam them into that enemy, which is how you unlock the 'Hug It Out' trophy.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/"
+   ],
+   "wow": 4,
+   "pairs_with": "gadgets, trip mine, trophy",
+   "fit": [
+    "trip mine",
+    "web mine",
+    "hug it out"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"An activated mine on an enemy will essentially grab the nearest person and slam them into the original target.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-29",
+   "fact": "The Concussive Blast gadget emits a powerful sonic wave, and on a rooftop a flick of the wrist can send enemies flying over the edge, knocking them out of combat.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/"
+   ],
+   "wow": 3,
+   "pairs_with": "gadgets, concussive blast, rooftop",
+   "fit": [
+    "concussive blast",
+    "sonic wave",
+    "sonic blast"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"A flick of your wrist is all it takes to send enemies flying over the edge, instantly knocking them out of combat.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-30",
+   "fact": "Unlike Spider-Man's other gadgets, an empty Web Shooter only needs a few seconds to recharge.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/"
+   ],
+   "wow": 2,
+   "pairs_with": "gadgets, web shooter",
+   "fit": [
+    "web shooter recharge",
+    "empty web shooter",
+    "web cartridge",
+    "web ammo"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"an empty Web Shooter only needs a few seconds to recharge.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-31",
+   "fact": "When fully upgraded, the Impact Web makes its first target spread Spider-Man's web to any other enemy they come into contact with.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/"
+   ],
+   "wow": 3,
+   "pairs_with": "gadgets, impact web, upgrades",
+   "fit": [
+    "impact web",
+    "web blast",
+    "web spread"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"When fully upgraded, the Impact Web can deploy a blast that causes the initial target to spread Spidey’s web to any other enemy they come into contact with.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-32",
+   "fact": "A Web Bomb does not need a direct hit: aim it at the environment and it detonates after a few seconds, trapping anyone who comes close.",
+   "source": "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/",
+   "sources": [
+    "https://www.gamespot.com/articles/spider-man-ps4-gadget-guide-all-the-right-tools-fo/1100-6461647/"
+   ],
+   "wow": 3,
+   "pairs_with": "gadgets, web bomb",
+   "fit": [
+    "web bomb",
+    "web trap"
+   ],
+   "flag": "Single source (GameSpot).",
+   "checked": "2026-11-26",
+   "quote": "GameSpot: \"Simply aim at the environment and the Web Bomb will detonate after a few seconds and entrap anyone that comes close.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-33",
+   "fact": "In Marvel's Spider-Man Remastered, Peter Parker's face was recast: Ben Jordan replaced John Bubniak as face model, to better match actor Yuri Lowenthal's facial capture.",
+   "source": "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/",
+    "https://www.gamesradar.com/marvels-spider-man-remastered-gives-peter-parker-a-new-face",
+    "https://www.gameinformer.com/2020/09/30/peter-parker-has-been-recast-for-marvels-spider-man-remastered-on-playstation-5"
+   ],
+   "wow": 4,
+   "pairs_with": "remastered, face, cast, ps5",
+   "fit": [
+    "unmasked peter",
+    "peter face"
+   ],
+   "flag": "Remastered only (PS5 and PC); the 2018 PS4 version uses John Bubniak's face.",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"we have cast Ben Jordan to be the face model for Peter Parker on the PS5 console.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-34",
+   "fact": "Marvel's Spider-Man Remastered adds ray-traced reflections, so the windows of buildings show true reflections.",
+   "source": "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/"
+   ],
+   "wow": 3,
+   "pairs_with": "remastered, ray tracing, reflections, ps5",
+   "fit": [
+    "window reflection",
+    "glass reflection",
+    "reflection",
+    "ray tracing",
+    "glass building"
+   ],
+   "flag": "Remastered only. Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"We now have true reflections on the windows of buildings, and it looks stunning with our new skies and weather.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-35",
+   "fact": "With near-instant loading in the Remastered version, you can turn the subway fast travel cutscenes back on if you miss watching Spider-Man take the subway.",
+   "source": "https://www.gamesradar.com/marvels-spider-man-remastered-gives-peter-parker-a-new-face",
+   "sources": [
+    "https://www.gamesradar.com/marvels-spider-man-remastered-gives-peter-parker-a-new-face",
+    "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/"
+   ],
+   "wow": 3,
+   "pairs_with": "remastered, fast travel, subway, loading",
+   "fit": [
+    "fast travel",
+    "subway",
+    "subway cutscene"
+   ],
+   "flag": "Remastered only.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"You can always turn the fast travel cutscenes back on if you miss watching Spider-Man take the subway.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-36",
+   "fact": "The Remastered version's Photo Mode lets you place lights in the environment and change your Spider-Suit after you have lined up your shot.",
+   "source": "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/09/30/marvels-spider-man-remastered-detailed/"
+   ],
+   "wow": 2,
+   "pairs_with": "remastered, photo mode, suits",
+   "fit": [
+    "photo light",
+    "photo mode light",
+    "photo mode"
+   ],
+   "flag": "Remastered only. Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"you can now place lights in the environment and change your Spider-Suit after you’ve lined up your shot!\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-37",
+   "fact": "Marvel's Spider-Man broke Sony's sales records in its first three days, and took just under a year to sell through 13.2 million units.",
+   "source": "https://www.pushsquare.com/news/2021/02/marvels_spider-man_miles_morales_webs_up_4_1_million_sales",
+   "sources": [
+    "https://www.pushsquare.com/news/2021/02/marvels_spider-man_miles_morales_webs_up_4_1_million_sales",
+    "https://www.gamespot.com/articles/spider-man-ps4-developers-troll-complaining-player/1100-6462681/"
+   ],
+   "wow": 3,
+   "pairs_with": "sales, records, reception",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"The original Marvel’s Spider-Man took just under a year to sell through 13.2 million units\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-38",
+   "fact": "Kinda Funny's Greg Miller, known for posing shirtless in a Spidey mask, appears in the game at a university costume party.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references"
+   ],
+   "wow": 3,
+   "pairs_with": "easter eggs, cameo, costume party",
+   "fit": [
+    "costume party",
+    "shirtless",
+    "greg miller"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"It clearly left an impression, as he's in the game during a university costume party.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-39",
+   "fact": "A fan asked Insomniac to include a proposal message to his then-girlfriend, Maddie, and the studio obliged, but the couple broke up weeks before the game came out.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references",
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/"
+   ],
+   "wow": 5,
+   "pairs_with": "easter eggs, proposal, sign, fans",
+   "fit": [
+    "proposal",
+    "marry me",
+    "maddie",
+    "proposal message"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"A fan reached out to Insomniac to include a proposal message to his then-girlfriend, and the developer kindly obliged.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man1-40",
+   "fact": "You can find Damage Control HQ, the headquarters of the construction company Tony Stark set up to clean up damage from super-fights.",
+   "source": "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+   "sources": [
+    "https://screenrant.com/spider-man-ps4-marvel-easter-eggs-secrets/",
+    "https://www.gamesradar.com/marvel-spider-man-ps4-easter-eggs",
+    "https://www.pushsquare.com/guides/marvels-spider-man-easter-eggs-all-secrets-and-references"
+   ],
+   "wow": 3,
+   "pairs_with": "landmarks, damage control, tony stark, easter eggs",
+   "fit": [
+    "damage control",
+    "damage control hq"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"the headquarters of the construction company that Tony Stark established to clean up damage from super-fights.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

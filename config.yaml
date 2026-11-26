@@ -726,6 +726,7 @@ reels:
     spider-man2: "Marvel's Spider-Man 2"
     wolverine: "Marvel's Wolverine"
     gta6: "Grand Theft Auto VI"
+    reanimal: 'Reanimal'                         # added 2026-11-26 (fact bank)
     general: 'this game'
   # ONE fitting emoji per game. Used for the GAME-TITLE line that sits between the
   # caption body and the hashtags on CLASSIC/TRIPTYCH reel captions (FB/IG/TikTok,

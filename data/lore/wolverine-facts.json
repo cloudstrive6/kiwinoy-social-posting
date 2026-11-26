@@ -1,0 +1,805 @@
+{
+ "game": "wolverine",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "wolverine-01",
+   "fact": "Marvel's Wolverine launched on PS5 on September 15, 2026.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/",
+    "https://www.gamesradar.com/uk/marvels-wolverine-guide"
+   ],
+   "wow": 1,
+   "pairs_with": "release date, ps5",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Marvel's Wolverine launched on PlayStation 5 consoles on September 15, 2026.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-02",
+   "fact": "From Rage Tier 2, Logan's moves are empowered, and losing all his health can activate Last Stand, giving him a chance to get back in the fight.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/"
+   ],
+   "wow": 3,
+   "pairs_with": "rage, last stand, healing factor",
+   "fit": [
+    "last stand",
+    "rage tier 2",
+    "near death revive"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"From Rage Tier 2, Logan's moves become empowered and losing all Health can activate Last Stand, giving Logan a chance to get back in the fight.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-03",
+   "fact": "At Rage Tier 3, Logan's damage goes up greatly, he can shrug off incoming attacks, and deadly Critical Strikes unlock.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/"
+   ],
+   "wow": 2,
+   "pairs_with": "rage, critical strike",
+   "fit": [
+    "rage tier 3",
+    "critical strike"
+   ],
+   "flag": "Single source (PlayStation).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Tier 3 greatly increases his damage, lets him shrug off incoming attacks, and unlocks deadly Critical Strikes.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-04",
+   "fact": "In Rage mode Logan essentially becomes a wild animal, killing enemies with unique takedown animations as they scream in terror.",
+   "source": "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+   "sources": [
+    "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+    "https://kotaku.com/marvels-wolverine-review-insomniac-logan-jean-spider-man-2000732912"
+   ],
+   "wow": 2,
+   "pairs_with": "rage, takedown, finisher",
+   "fit": [
+    "rage mode",
+    "rage takedown",
+    "rage kill",
+    "berserk"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Just when you think the game can't get any bloodier, Wolverine enters Rage mode, where he essentially becomes a wild animal; killing enemies with unique takedown animations as they scream in terror.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-05",
+   "fact": "Logan can unlock and upgrade six key abilities, but only four fit on his ability wheel at once.",
+   "source": "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+   "sources": [
+    "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+    "https://www.videogameschronicle.com/review/marvels-wolverine-review-uninspired-gameplay-leaves-logan-feeling-declawed-despite-a-strong-narrative/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/"
+   ],
+   "wow": 2,
+   "pairs_with": "abilities, special techniques",
+   "fit": [
+    "ability wheel",
+    "technique wheel",
+    "special technique"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"As you level up, you can unlock and upgrade six key abilities that can be equipped to a four-slot wheel.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-06",
+   "fact": "Tornado Spin is a high-damage, multi-hit spin attack that cleaves surrounding enemies and builds Logan's Rage. With upgrades it can break enemy blocks and even interrupt attacks.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/"
+   ],
+   "wow": 2,
+   "pairs_with": "tornado spin, special techniques",
+   "fit": [
+    "tornado spin",
+    "spin attack",
+    "spinning attack"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Cleave surrounding enemies with a high-damage, multi-hit spin attack that builds Logan's Rage. With upgrades, each spin deals increased damage, breaks enemy blocks and even interrupts attacks.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-07",
+   "fact": "Knee Breaker is a staggering flying knee to the head that interrupts enemy attacks and leaves the victim vulnerable to moves like Healing Strike.",
+   "source": "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+   "sources": [
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/"
+   ],
+   "wow": 2,
+   "pairs_with": "knee breaker, special techniques",
+   "fit": [
+    "knee breaker",
+    "flying knee"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"A staggering flying knee to the head that interrupts all enemy attacks and leaves the victim vulnerable to things like Healing Strike.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-08",
+   "fact": "The Relentless technique focuses Logan's healing factor so he recovers health faster for a limited time. Upgraded, it also grants a healing burst when he is near death.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/"
+   ],
+   "wow": 3,
+   "pairs_with": "healing factor, relentless, special techniques",
+   "fit": [
+    "relentless",
+    "healing burst",
+    "relentless technique"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Focus your healing factor to recover Health faster for a limited duration. Upgrading it allows the Technique to also shrug off basic attacks, increases its duration and grants a healing burst when Logan is near death.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-09",
+   "fact": "Healing Strike can deal potentially lethal damage to a staggered enemy and also instantly restores a chunk of Logan's health.",
+   "source": "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+   "sources": [
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/"
+   ],
+   "wow": 3,
+   "pairs_with": "healing factor, healing strike",
+   "fit": [
+    "healing strike",
+    "heal staggered"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"This is one of the most useful techniques in the whole game, letting you not only deal potentially lethal damage to a staggered enemy (especially if you use it to end a Barrage) but also instantly regenerate a chunk of health.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-10",
+   "fact": "There is no stamina meter, so Logan lands cuts and impalements about as fast as you can press the attack button.",
+   "source": "https://www.pushsquare.com/reviews/ps5/marvels-wolverine",
+   "sources": [
+    "https://www.pushsquare.com/reviews/ps5/marvels-wolverine"
+   ],
+   "wow": 2,
+   "pairs_with": "claw combat, combos",
+   "fit": [
+    "impale",
+    "impalement",
+    "rapid claw"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Without a stamina meter to worry about, Wolverine lands cuts and impalements about as fast as you can press the attack button.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-11",
+   "fact": "Tougher foes can be staggered with multiple successful parries, and their Reckless Attacks, shown as yellow flashes, can be answered with lethal counters.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.gamesradar.com/games/action/marvels-wolverine-adaptations-best/"
+   ],
+   "wow": 3,
+   "pairs_with": "parry, counters, reckless attack",
+   "fit": [
+    "yellow flash",
+    "reckless attack",
+    "lethal counter"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"But some foes are more combative than others: successfully execute multiple parries to stagger them, or respond to Reckless Attacks (yellow flashes) with lethal counters.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-12",
+   "fact": "Enemy leaders are marked by a red icon. They empower nearby enemies to coordinate and fight more aggressively, so they should be a priority.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/"
+   ],
+   "wow": 3,
+   "pairs_with": "enemies, leaders, hud",
+   "fit": [
+    "red icon",
+    "enemy leader"
+   ],
+   "flag": "Single source (PlayStation).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Leaders (marked by a red icon) should also be a priority, as they empower nearby enemies to coordinate and fight more aggressively.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-13",
+   "fact": "In stealth Logan can surprise enemies up close with quick takedowns, or silence them from afar with a predatory leap, at the risk of making noise and alerting others.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/"
+   ],
+   "wow": 2,
+   "pairs_with": "stealth, takedowns",
+   "fit": [
+    "predatory leap",
+    "pounce",
+    "stealth takedown"
+   ],
+   "flag": "Single source (PlayStation).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Surprise them up close with quick takedowns, or silence them from afar with a predatory leap – at the risk of making noise and alerting others.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-14",
+   "fact": "Logan's scent trails show as thick blue smoke guiding him to things. An early update toned down the trail's intensity after players criticised it.",
+   "source": "https://www.pushsquare.com/news/2026/09/newest-wolverine-ps5-update-wipes-out-scent-trails-to-collectibles",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/09/newest-wolverine-ps5-update-wipes-out-scent-trails-to-collectibles",
+    "https://insider-gaming.com/marvels-wolverine-hotfix-scent-trail-visuals/"
+   ],
+   "wow": 3,
+   "pairs_with": "senses, scent trail, patches",
+   "fit": [
+    "scent trail",
+    "blue smoke",
+    "sniff"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"The last Wolverine update toned down the intensity of the scent trail in general, with its thick blue smoke guiding you to things.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-15",
+   "fact": "Update 1.001.006 lets players turn off whisky bottle scent trails, Material Crate audio clues and the purple roots leading to Nightmare Doors, while keeping the senses needed for the story.",
+   "source": "https://insider-gaming.com/marvels-wolverine-patch-disable-scent-trails/",
+   "sources": [
+    "https://insider-gaming.com/marvels-wolverine-patch-disable-scent-trails/",
+    "https://www.pushsquare.com/news/2026/09/newest-wolverine-ps5-update-wipes-out-scent-trails-to-collectibles",
+    "https://support.insomniac.games/hc/articles/52228548716819-What-Accessibility-options-does-Marvel-s-Wolverine-feature"
+   ],
+   "wow": 3,
+   "pairs_with": "senses, scent trail, nightmare doors, patches",
+   "fit": [
+    "purple root",
+    "nightmare door",
+    "whisky scent trail",
+    "senses setting"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Marvel's Wolverine update 1.001.006 lets players disable Whisky Bottle Scent Trails, Material Crate Audio Clues, and Nightmare Door Roots while keeping the senses needed for story progression.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-16",
+   "fact": "Nightmare Doors hidden through the game lead to Nightmare Trials. Completing them earns AP, and special Gauntlet trials reward pieces of new outfits and claws.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/",
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-suits/"
+   ],
+   "wow": 2,
+   "pairs_with": "nightmare doors, side activities, suits",
+   "fit": [
+    "nightmare door",
+    "nightmare trial",
+    "gauntlet trial"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Discover Nightmare Doors hidden throughout the journey and take on the Nightmare Trials beyond. Completing Trials earns AP, and special Gauntlet trials even reward you with pieces of new outfits and claws.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-17",
+   "fact": "Nightmare Door trials unlock one of Logan's memories through tasks like running an obstacle course or fighting over 25 waves of enemies.",
+   "source": "https://kotaku.com/marvels-wolverine-review-insomniac-logan-jean-spider-man-2000732912",
+   "sources": [
+    "https://kotaku.com/marvels-wolverine-review-insomniac-logan-jean-spider-man-2000732912",
+    "https://www.pushsquare.com/reviews/ps5/marvels-wolverine"
+   ],
+   "wow": 3,
+   "pairs_with": "nightmare doors, memories, side activities",
+   "fit": [
+    "nightmare door",
+    "nightmare trial",
+    "obstacle course",
+    "logan memory"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"During the occasional Nightmare Door trials in which you unlock one of Logan's memories through a mundane task like running through an obstacle course or fighting over 25 waves of enemies\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-18",
+   "fact": "There are 21 collectible whisky bottles, and every one is named after something relating to Wolverine or the X-Men comics.",
+   "source": "https://www.gamesradar.com/uk/marvels-wolverine-guide",
+   "sources": [
+    "https://www.gamesradar.com/uk/marvels-wolverine-guide",
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-whiskey-bottles/",
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/"
+   ],
+   "wow": 3,
+   "pairs_with": "whisky bottles, collectibles, easter eggs",
+   "fit": [
+    "whisky bottle",
+    "whiskey bottle",
+    "whisky"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Then there are the collectible Marvel's Wolverine whiskey bottles, all 21 of which are named after something relating to Wolverine or the X-Men comics.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-19",
+   "fact": "Each whisky bottle gives two Adaptation Points, and finding all 21 unlocks the Midnight suit.",
+   "source": "https://www.gamesradar.com/uk/games/action/marvels-wolverine-whiskey-bottles/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-whiskey-bottles/",
+    "https://www.gamesradar.com/games/action/marvels-wolverine-adaptations-best/"
+   ],
+   "wow": 3,
+   "pairs_with": "whisky bottles, adaptations, suits",
+   "fit": [
+    "whisky bottle",
+    "whiskey bottle",
+    "midnight suit",
+    "adaptation point"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Each bottle you find provides two Adaptation Points which help you unlock and equip more of the best Wolverine Adaptations – while there is a Whiskey Finder Adaptation, I recommend sticking with this guide! Find all 21 bottles and you'll also unlock the Midnight suit for your Wolverine suits collection.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-20",
+   "fact": "A bizarre kissing toilet in a Tokyo bar's basement hides a whisky bottle. GamesRadar says it draws on a real Japanese toilet whose mask makes kissing noises.",
+   "source": "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/",
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-whiskey-bottles/"
+   ],
+   "wow": 5,
+   "pairs_with": "easter eggs, tokyo, whisky bottles",
+   "fit": [
+    "kissing toilet",
+    "toilet",
+    "kissing noise"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The bizarre kissing toilet in the basement of the bar Wolverine and Jean burst into, which hides a collectible whiskey bottle, isn't just a random invention. No, this is pulling from a real Japanese toilet where a similar mask will make strange kissing noises at you as you do your business.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-21",
+   "fact": "Suits are cosmetic, but filling out the suit collection raises Logan's maximum health, up to double its base amount.",
+   "source": "https://www.gamesradar.com/uk/games/action/marvels-wolverine-suits/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-suits/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "suits, crafting, health",
+   "fit": [
+    "suit menu",
+    "suit collection",
+    "suit selection",
+    "crafting menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"While all the suits and claws are just cosmetic options with no gameplay effects, crafting suits is quite important as the more you fill out your suit collection, the more you'll increase Wolverine's maximum health, up to double its base amount.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-22",
+   "fact": "Material Crates make a sound you can listen for. The materials inside craft new suits, working towards permanent health upgrades.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/"
+   ],
+   "wow": 2,
+   "pairs_with": "material crates, crafting, suits",
+   "fit": [
+    "material crate",
+    "smash crate",
+    "crate sound"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Listen for the sound of Material Crates. Use the Materials inside to craft new suits and work towards additional permanent Health upgrades.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-23",
+   "fact": "Glowing breakable objects give XP when destroyed, and they take different forms depending on the location.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.videogameschronicle.com/review/marvels-wolverine-review-uninspired-gameplay-leaves-logan-feeling-declawed-despite-a-strong-narrative/"
+   ],
+   "wow": 2,
+   "pairs_with": "xp, collectibles, levelling",
+   "fit": [
+    "xp crate",
+    "glowing crate",
+    "glowing object",
+    "glowing breakable"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Appearing in different forms depending on their location, these breakable objects yield XP when destroyed. If it glows, it's probably worth shredding.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-24",
+   "fact": "The game has 27 suits and 22 claws, plus five more of each in the Digital Deluxe Edition.",
+   "source": "https://www.gamesradar.com/uk/games/action/marvels-wolverine-suits/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/action/marvels-wolverine-suits/",
+    "https://www.gamesradar.com/uk/marvels-wolverine-guide"
+   ],
+   "wow": 2,
+   "pairs_with": "suits, claws, customisation",
+   "fit": [
+    "suit menu",
+    "claws menu",
+    "claw selection",
+    "suit selection"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Marvel's Wolverine features 27 suits and 22 claws, with an additional five of each if you own the Digital Deluxe Edition of the game.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-25",
+   "fact": "The mission select screen nods to the famous meme of a sad Wolverine on his bed looking at a picture frame, from X-Men: The Animated Series.",
+   "source": "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, menus, animated series",
+   "fit": [
+    "mission select",
+    "chapter select",
+    "picture frame",
+    "sad wolverine"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The mission select screen in Marvel's Wolverine has an Easter Egg to the (at this point) iconic meme of a sad Wolverine sitting on his bed and looking at a picture frame. The moment is originally from an episode of the animated X-Men TV series\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-26",
+   "fact": "Logan's Nightmare Cabin lets you replay missions and Nightmare Trials at any time, and every level-specific trophy and collectible can be earned through Mission Replay.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://blog.playstation.com/2026/08/28/marvels-wolverine-details-on-logans-mutant-abilities-game-features-and-more/",
+    "https://blog.playstation.com/2026/10/22/marvels-wolverine-photo-mode-guide/"
+   ],
+   "wow": 2,
+   "pairs_with": "nightmare cabin, mission replay, trophies",
+   "fit": [
+    "nightmare cabin",
+    "mission replay",
+    "cabin"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"As you progress through the adventure, you'll gain access to Logan's Nightmare Cabin, allowing you to replay missions and Nightmare Trials at any time. It's perfect for trophy hunters, as all level-specific trophies and collectibles can be acquired through Mission Replay.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-27",
+   "fact": "New Game+ carries your unlocks over and adds an increased level cap, more Strands and four additional Adaptations.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+    "https://gameinformer.com/review/marvels-wolverine/relentless-momentum"
+   ],
+   "wow": 2,
+   "pairs_with": "new game plus, adaptations",
+   "fit": [
+    "new game plus",
+    "new game+",
+    "ng+"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Carry your unlocks into New Game+ and experience the story again with an increased level cap, more Strands and four additional game-changing Adaptations.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-28",
+   "fact": "There are 36 Technique nodes, or 40 with the extra New Game+ techniques, and all of them can be unlocked in a single playthrough.",
+   "source": "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/",
+   "sources": [
+    "https://www.gamesradar.com/games/action/marvels-wolverine-techniques/"
+   ],
+   "wow": 2,
+   "pairs_with": "techniques, skill tree, levelling",
+   "fit": [
+    "technique menu",
+    "technique node",
+    "technique point",
+    "skill tree"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"There are 36 Technique nodes to unlock in Marvel's Wolverine (40 if you include the additional Unstoppable Force Techniques in NG+), and you can unlock all of them in a single playthrough.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-29",
+   "fact": "There are 25 Adaptations, passive perks, and you can eventually equip 10 of them at once.",
+   "source": "https://www.gamesradar.com/games/action/marvels-wolverine-adaptations-best/",
+   "sources": [
+    "https://www.gamesradar.com/games/action/marvels-wolverine-adaptations-best/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/"
+   ],
+   "wow": 2,
+   "pairs_with": "adaptations, perks",
+   "fit": [
+    "adaptation menu",
+    "adaptation",
+    "perk menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"There are 25 Adaptations in total and you can eventually equip 10.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-30",
+   "fact": "Insomniac chose the Reavers as enemies because, as hyper-lethal cyborg mercenaries, they had the equipment, armor and manpower to face Wolverine competently.",
+   "source": "https://blog.playstation.com/2026/09/14/marvels-wolverine-developers-discuss-capturing-the-essence-of-logan-out-september-15/",
+   "sources": [
+    "https://blog.playstation.com/2026/09/14/marvels-wolverine-developers-discuss-capturing-the-essence-of-logan-out-september-15/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/"
+   ],
+   "wow": 3,
+   "pairs_with": "enemies, reavers",
+   "fit": [
+    "reaver",
+    "cyborg mercenary"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"the Reavers were a good fit as extremely hyper-lethal cyborg mercenaries who had the equipment, the armor, the endurance, and the manpower to basically face off against Wolverine in a competent way.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-31",
+   "fact": "Insomniac's narrative director calls Sabretooth literally the big brother: a man who is about nine feet tall.",
+   "source": "https://blog.playstation.com/2026/09/14/marvels-wolverine-developers-discuss-capturing-the-essence-of-logan-out-september-15/",
+   "sources": [
+    "https://blog.playstation.com/2026/09/14/marvels-wolverine-developers-discuss-capturing-the-essence-of-logan-out-september-15/"
+   ],
+   "wow": 4,
+   "pairs_with": "sabretooth, allies, team x",
+   "fit": [
+    "sabretooth",
+    "sabertooth",
+    "sabretooth fight"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Sabretooth is kind of literally the big brother. This is a man who's about nine feet tall\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-32",
+   "fact": "Logan can perform 30-foot jumps in some missions, yet Push Square found he could not hop over a police car in another.",
+   "source": "https://www.pushsquare.com/reviews/ps5/marvels-wolverine",
+   "sources": [
+    "https://www.pushsquare.com/reviews/ps5/marvels-wolverine"
+   ],
+   "wow": 3,
+   "pairs_with": "traversal, jumping, invisible walls",
+   "fit": [
+    "big leap",
+    "long jump",
+    "giant leap",
+    "police car"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Logan can perform 30-foot jumps in some missions, but then can't hop over a police car in another.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-33",
+   "fact": "In team combos, Jean Grey uses her telekinetic powers to set up easy kills for Logan, while brutal finishing animations sever body parts.",
+   "source": "https://www.pushsquare.com/reviews/ps5/marvels-wolverine",
+   "sources": [
+    "https://www.pushsquare.com/reviews/ps5/marvels-wolverine"
+   ],
+   "wow": 2,
+   "pairs_with": "jean grey, team combos, finishers",
+   "fit": [
+    "jean grey",
+    "telekinesis",
+    "telekinetic",
+    "team combo"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Brutal finishing animations sever body parts while Jean Grey uses her telekinetic powers to set up easy kills for Logan.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-34",
+   "fact": "Logan often shakes the blood off his claws before he carries on fighting.",
+   "source": "https://www.shacknews.com/article/150675/marvels-wolverine-review-score",
+   "sources": [
+    "https://www.shacknews.com/article/150675/marvels-wolverine-review-score"
+   ],
+   "wow": 3,
+   "pairs_with": "claws, blood, animation",
+   "fit": [
+    "shake blood",
+    "bloody claws",
+    "flick blood"
+   ],
+   "flag": "Single source (Shacknews).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"You'll often see him shake the blood off of his claws before he resumes slaying.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-35",
+   "fact": "Photo Mode brings back Action Figure mode from Marvel's Spider-Man 2: one click in the Character Pose menu turns Logan miniature.",
+   "source": "https://blog.playstation.com/2026/10/22/marvels-wolverine-photo-mode-guide/",
+   "sources": [
+    "https://blog.playstation.com/2026/10/22/marvels-wolverine-photo-mode-guide/"
+   ],
+   "wow": 3,
+   "pairs_with": "photo mode, action figure",
+   "fit": [
+    "action figure",
+    "miniature",
+    "character pose"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"A fun feature making a welcome leap from Marvel's Spider-Man 2: Action Figure mode. Found in the Character Pose sub-menu, one click turns Logan miniature.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-36",
+   "fact": "In Madripoor, the Princess Bar in Low Town is a safe haven for mutants run by Tyger Tiger, while Trask's headquarters is in High Town.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/",
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/"
+   ],
+   "wow": 2,
+   "pairs_with": "madripoor, locations, princess bar",
+   "fit": [
+    "madripoor",
+    "princess bar",
+    "low town",
+    "lowtown"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"Explore the disparate island nation of Madripoor, home to the Princess Bar in Low Town – a safe haven for mutants run by Tyger Tiger. It's also home to Trask's headquarters in High Town.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-37",
+   "fact": "The adventure begins in the jungles of Telambang, where Logan faces deadly Reavers led by Omega Red.",
+   "source": "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-wolverine/marvels-wolverine-combat-characters-locations/",
+    "https://www.playstation.com/en-us/games/marvels-wolverine/"
+   ],
+   "wow": 2,
+   "pairs_with": "locations, opening, reavers, omega red",
+   "fit": [
+    "telambang",
+    "omega red",
+    "jungle reaver"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation: \"The adventure begins in the jungles of Telambang where Logan will face off against deadly Reavers led by the brutish Omega Red.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-38",
+   "fact": "In Tokyo's Kabukicho, the real tower famous for a giant Godzilla head is reimagined with a red T-Rex, which GamesRadar says seems to nod to Marvel's Devil Dinosaur.",
+   "source": "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/"
+   ],
+   "wow": 4,
+   "pairs_with": "tokyo, kabukicho, easter eggs",
+   "fit": [
+    "kabukicho",
+    "t-rex",
+    "red t-rex",
+    "dinosaur head"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The huge tower in real-life contains the Hotel Gracery Shinjuku, and is famous for having a massive Godzilla head on the side. Here, the equivalent is reimagined as a T-Rex with distinctive crimson red skin, which seems like a direct reference to Devil Dinosaur from the '70s comic\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-39",
+   "fact": "You can find several instances of 'Bub' sprayed as graffiti on a wall, a nod to Logan's catchphrase.",
+   "source": "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/uk/games/marvels-wolverine-easter-eggs/"
+   ],
+   "wow": 3,
+   "pairs_with": "easter eggs, madripoor, graffiti",
+   "fit": [
+    "bub",
+    "bub graffiti"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"you can find several instances of 'Bub' sprayed artfully on a wall, referencing Logan's catchphrase.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "wolverine-40",
+   "fact": "Players have shared videos of Wolverine reaching a checkpoint on a motorcycle without needing to hold the controller.",
+   "source": "https://insider-gaming.com/marvels-wolverine-hotfix-scent-trail-visuals/",
+   "sources": [
+    "https://insider-gaming.com/marvels-wolverine-hotfix-scent-trail-visuals/",
+    "https://kotaku.com/marvels-wolverine-review-insomniac-logan-jean-spider-man-2000732912"
+   ],
+   "wow": 4,
+   "pairs_with": "motorcycle, chase, criticism",
+   "fit": [
+    "motorcycle",
+    "motorbike"
+   ],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Players have shared videos of Wolverine making his way to a checkpoint on a motorcycle without players even needing to hold the controller.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

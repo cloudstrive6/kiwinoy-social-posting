@@ -1,0 +1,424 @@
+{
+ "game": "mlbb",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "mlbb-01",
+   "fact": "Pharsa's \"Seasworn Oracle\" skin came with the 2026 ALLSTAR event, alongside a \"Seasworn Seeker\" painted version, and was only available for a limited time.",
+   "source": "https://en.moonton.com/news/330.html",
+   "sources": [
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 3,
+   "pairs_with": "pharsa, skin, allstar",
+   "fit": [
+    "seasworn oracle",
+    "seasworn seeker",
+    "seasworn",
+    "allstar skin"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"The new Pharsa \"Seasworn Oracle\" Skin, Pharsa \"Seasworn Seeker\" Painted skin, and Julian \"Phantom Current\" Skin will also be available for a limited time.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-02",
+   "fact": "Pharsa is a long-range mage who deals area-of-effect damage.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-hero-tier-list/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-hero-tier-list/"
+   ],
+   "wow": 1,
+   "pairs_with": "pharsa, mage, role",
+   "fit": [
+    "pharsa ultimate",
+    "feathered air strike",
+    "pharsa long range"
+   ],
+   "flag": "Single source (TheGamer). From an older tier list; its opinion on her ultimate is left out.",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"Another AoE mage with a long-range\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-03",
+   "fact": "For 2026 ALLSTAR, starting 30 April, the Land of Dawn map was plunged beneath the waves, with submerged ruins to explore.",
+   "source": "https://en.moonton.com/news/330.html",
+   "sources": [
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 3,
+   "pairs_with": "allstar, map, tidal ruins, underwater",
+   "fit": [
+    "tidal ruins",
+    "submerged ruins",
+    "sunken ruins",
+    "underwater map"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"From 30 April, ALLSTAR returns, plunging the Land of Dawn beneath the waves.\" | MOONTON Games: \"Navigate submerged ruins, face the revamped Siren Lord\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-04",
+   "fact": "The 2026 ALLSTAR map added the Siren Lord, a fearsome evolution of the Elemental Lord that turns the tide of the game for the team that takes her down.",
+   "source": "https://en.moonton.com/news/330.html",
+   "sources": [
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 3,
+   "pairs_with": "siren lord, allstar, objective",
+   "fit": [
+    "siren lord",
+    "siren",
+    "sea monster"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"From the depths emerges the Siren Lord, a fearsome evolution of the Elemental Lord that turns the tide of game for those who take her down.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-05",
+   "fact": "During 2026 ALLSTAR, teams earned Treasure Hunt Coins by taking neutral objectives, destroying turrets or finding hidden drops, and the coins gave a chance to win real gold merchandise.",
+   "source": "https://en.moonton.com/news/330.html",
+   "sources": [
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 4,
+   "pairs_with": "allstar, treasure, turrets",
+   "fit": [
+    "treasure hunt coin",
+    "treasure coin",
+    "hidden drop"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Earn Treasure Hunt Coins with your team by securing neutral objectives, destroying turrets, or uncovering hidden drops.\" | MOONTON Games: \"Treasure Hunt Coins can be used in 2026 ALLSTAR events for a chance to win real gold merchandise.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-06",
+   "fact": "2026 ALLSTAR also had a Tidal Fishing mini-game, with fish in Green, Blue, Purple and Rare rarities.",
+   "source": "https://en.moonton.com/news/330.html",
+   "sources": [
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 3,
+   "pairs_with": "allstar, fishing, mini-game",
+   "fit": [
+    "tidal fishing",
+    "fishing",
+    "fishing rod",
+    "bait"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Cast a line in Tidal Fishing from 15 May to 28 June. Complete mini-game tasks to earn bait and reel in fish of different rarities: Green, Blue, Purple, and Rare.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-07",
+   "fact": "The year before, ALLSTAR 2025 turned the map into a dinosaur world where the Lord became Lord Pterosaur, which a team could tame to fight on its side.",
+   "source": "https://en.moonton.com/news/217.html",
+   "sources": [
+    "https://en.moonton.com/news/217.html"
+   ],
+   "wow": 3,
+   "pairs_with": "allstar, lord, dinosaur",
+   "fit": [
+    "lord pterosaur",
+    "pterosaur",
+    "dinosaur"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Lord Pterosaur now wields Bombardments that deal heavy damage to nearby heroes. Teams must unite to conquer and tame this mighty beast, turning him into their powerful ally.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-08",
+   "fact": "Project NEXT 2025 brought four new maps: Broken Walls, Dangerous Grass, Flying Cloud and Expanding Rivers. Which one you get is decided during hero selection.",
+   "source": "https://en.moonton.com/news/244.html",
+   "sources": [
+    "https://en.moonton.com/news/244.html",
+    "https://en.moonton.com/news/237.html"
+   ],
+   "wow": 3,
+   "pairs_with": "map, land of dawn, draft",
+   "fit": [
+    "broken walls",
+    "dangerous grass",
+    "flying cloud",
+    "expanding rivers",
+    "project next"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"These new maps are randomly available and will be determined during the hero selection phase.\" | MOONTON Games: \"namely Broken Walls, Dangerous Grass, Flying Cloud, or Expanding Rivers.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-09",
+   "fact": "On the Flying Cloud map, a platform near the base can carry a newly respawned hero, hovering for five seconds beyond the high ground.",
+   "source": "https://en.moonton.com/news/237.html",
+   "sources": [
+    "https://en.moonton.com/news/237.html"
+   ],
+   "wow": 3,
+   "pairs_with": "map, respawn, flying cloud",
+   "fit": [
+    "flying cloud",
+    "floating platform",
+    "cloud platform"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Found near the base, the Flying Cloud platform can transport a newly-respawned hero by entering the flight state and hovering for five seconds beyond the higher ground.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-10",
+   "fact": "On the Broken Walls map, junglers can enter the pit from behind to steal the Lord or the Turtle.",
+   "source": "https://en.moonton.com/news/237.html",
+   "sources": [
+    "https://en.moonton.com/news/237.html"
+   ],
+   "wow": 3,
+   "pairs_with": "map, lord, turtle, jungle",
+   "fit": [
+    "broken walls",
+    "lord pit",
+    "steal lord",
+    "steal turtle"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Meanwhile, junglers can now enter the pit from behind to steal the Lord or Turtle.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-11",
+   "fact": "Mobile Legends matches last around 10 minutes, matchmaking is designed to get you into a game in just 10 seconds, and the controls can be played with just two fingers.",
+   "source": "https://gamerant.com/best-moba-mobile-ranked/",
+   "sources": [
+    "https://gamerant.com/best-moba-mobile-ranked/"
+   ],
+   "wow": 2,
+   "pairs_with": "matches, controls, matchmaking",
+   "fit": [],
+   "flag": "Single source (Game Rant).",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Matches are short, lasting around 10 minutes, with a system designed to get players into a game in just 10 seconds. The controls are incredibly intuitive and can be played with just two fingers\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-12",
+   "fact": "Mobile Legends: Bang Bang launched in 2016 and has over 1.5 billion installs and 110 million monthly active users.",
+   "source": "https://en.moonton.com/news/383.html",
+   "sources": [
+    "https://en.moonton.com/news/383.html",
+    "https://insider-gaming.com/savvy-group-to-acquire-mobile-legends-bang-bang-studio-for-over-6-billion/",
+    "https://en.moonton.com/news/330.html"
+   ],
+   "wow": 2,
+   "pairs_with": "players, downloads, anniversary",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"Since its launch in 2016, MLBB has grown into one of the world's most popular mobile games, recording over 1.5 billion installations and 110 million Monthly Active Users (MAU) worldwide.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-13",
+   "fact": "Nearly one in five Malaysians plays Mobile Legends every month, and the game passed 90 million downloads in Malaysia.",
+   "source": "https://en.moonton.com/news/371.html",
+   "sources": [
+    "https://en.moonton.com/news/371.html"
+   ],
+   "wow": 4,
+   "pairs_with": "malaysia, players",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"MOONTON Games announced that Mobile Legends: Bang Bang (MLBB) has surpassed 90 million cumulative downloads in Malaysia. Nearly one in five Malaysians plays MLBB each month\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-14",
+   "fact": "For the game's 10th anniversary, Indonesia built an eight-metre-tall sculpture of the Lord.",
+   "source": "https://en.moonton.com/news/383.html",
+   "sources": [
+    "https://en.moonton.com/news/383.html"
+   ],
+   "wow": 4,
+   "pairs_with": "lord, anniversary, indonesia",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"In Indonesia, an eight-metre-tall \"Lord\" sculpture brought one of MLBB's most iconic in-game elements to life.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-15",
+   "fact": "Fnatic ONIC Philippines won the M6 World Championship by beating Team Liquid Indonesia 4:1, the Philippines' fifth M Series title in a row since M2 in 2021.",
+   "source": "https://en.moonton.com/news/159.html",
+   "sources": [
+    "https://en.moonton.com/news/159.html"
+   ],
+   "wow": 3,
+   "pairs_with": "esports, m6, philippines",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"The M6 World Championship Grand Finals concluded yesterday (14 December) with Fnatic Onic Philippines (FNOP) defeating Team Liquid Indonesia (TLID) 4:1 in a best-of-seven (BO7) series. Their victory marks the Philippines' fifth consecutive M Series title since the M2 World Championship in 2021.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-16",
+   "fact": "The M6 Finals MVP skin for Beatrix, \"Sky Force Maverick\", has a hedgehog charm and the name of Kelra's child, \"Slake\", on the outfit.",
+   "source": "https://en.moonton.com/news/243.html",
+   "sources": [
+    "https://en.moonton.com/news/243.html"
+   ],
+   "wow": 4,
+   "pairs_with": "esports, skin, beatrix",
+   "fit": [
+    "sky force maverick",
+    "hedgehog charm",
+    "m6 skin",
+    "beatrix mvp skin"
+   ],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"From a playful hedgehog charm at her waist to Kelra's child's name, \"Slake\", emblazoned on the outfit\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-17",
+   "fact": "Aurora Gaming PH won the M7 World Championship in Jakarta, which brought 22 teams together in January 2026 for a 1 million US dollar prize pool.",
+   "source": "https://en.moonton.com/news/300.html",
+   "sources": [
+    "https://en.moonton.com/news/300.html",
+    "https://en.moonton.com/news/293.html",
+    "https://en.moonton.com/news/304.html"
+   ],
+   "wow": 2,
+   "pairs_with": "esports, m7, philippines",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"The M7 World Championship (M7) concluded today in Jakarta with an electrifying Grand Finals that marked the crowning of new the Mobile Legends: Bang Bang (MLBB) world champions, Aurora Gaming PH (RORA).\" | MOONTON Games: \"bringing 22 of the world's top teams to Jakarta, Indonesia, from 3 to 25 January 2026 to compete for a USD 1 million prize pool.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-18",
+   "fact": "At its peak, more than 5.68 million fans were watching the M7 World Championship at once, a bigger peak than any other esports game had in that quarter.",
+   "source": "https://insider-gaming.com/mlbb-power-mobile-esports-massive-peak-viewership/",
+   "sources": [
+    "https://insider-gaming.com/mlbb-power-mobile-esports-massive-peak-viewership/"
+   ],
+   "wow": 4,
+   "pairs_with": "esports, viewers, m7",
+   "fit": [],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"In January, the $1 million M7 World Championship unfolded in Indonesia, and at one point, more than 5.68 million fans were tuned into the action.\" | Insider Gaming: \"the M7 World Championship pulled in a peak viewer count of more than 5.68 million users, dwarfing every other esports title during Q1.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-19",
+   "fact": "ECHO beat Blacklist International 4-0 in an all-Filipino M4 World Championship final.",
+   "source": "https://www.dexerto.com/esports/m4-world-championship-schedule-results-teams-stream-2022218/",
+   "sources": [
+    "https://www.dexerto.com/esports/m4-world-championship-schedule-results-teams-stream-2022218/"
+   ],
+   "wow": 2,
+   "pairs_with": "esports, m4, philippines",
+   "fit": [],
+   "flag": "Single source (Dexerto).",
+   "checked": "2026-11-26",
+   "quote": "Dexerto: \"they were no match for their Filipino rival ECHO, who ran out 4-0 winners in a one-sided final.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-20",
+   "fact": "The M4 World Championship peaked at over 4.2 million viewers, one of the most popular tournaments in esports history.",
+   "source": "https://www.dexerto.com/esports/m5-world-championship-schedule-scores-teams-stream-2182449/",
+   "sources": [
+    "https://www.dexerto.com/esports/m5-world-championship-schedule-scores-teams-stream-2182449/"
+   ],
+   "wow": 3,
+   "pairs_with": "esports, viewers, m4",
+   "fit": [],
+   "flag": "Single source (Dexerto).",
+   "checked": "2026-11-26",
+   "quote": "Dexerto: \"the M4 World Championship, which became one of the most popular tournaments in esports history with a peak of over 4.2 million viewers.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-21",
+   "fact": "The M8 World Championship Finals in Istanbul will be the first time the M Series is held in Europe.",
+   "source": "https://en.moonton.com/news/383.html",
+   "sources": [
+    "https://en.moonton.com/news/383.html"
+   ],
+   "wow": 2,
+   "pairs_with": "esports, m8, europe",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"the M8 World Championship Finals in Istanbul, Türkiye, will mark the M Series' historic European debut, bringing the pinnacle of MLBB Esports to the continent for the first time.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-22",
+   "fact": "Mobile Legends made its Asian Games debut as a medal event in 2026, and Myanmar won the first gold by sweeping Indonesia 4-0.",
+   "source": "https://en.moonton.com/news/378.html",
+   "sources": [
+    "https://en.moonton.com/news/378.html"
+   ],
+   "wow": 3,
+   "pairs_with": "esports, asian games, myanmar",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"The result makes Myanmar the first-ever Asian Games gold medallist in MLBB, following the title's debut as an official medal event at Aichi-Nagoya 2026.\" | MOONTON Games: \"sweeping Indonesia 4-0\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-23",
+   "fact": "The Mobile Legends Asian Games Qualifiers became the most-watched esports tournament in Asian Games history by hours watched, with 10.1 million hours.",
+   "source": "https://en.moonton.com/news/353.html",
+   "sources": [
+    "https://en.moonton.com/news/353.html"
+   ],
+   "wow": 3,
+   "pairs_with": "esports, asian games, viewers",
+   "fit": [],
+   "flag": "Single source (MOONTON Games).",
+   "checked": "2026-11-26",
+   "quote": "MOONTON Games: \"The recently concluded MLBB Asian Games Qualifiers (AGQ) became the most-watched esports tournament in Asian Games history by Hours Watched (HW), generating 10.1 million HW according to Esports Charts.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-24",
+   "fact": "ByteDance agreed to sell Moonton, the maker of Mobile Legends, to Savvy Games Group for 6 billion US dollars.",
+   "source": "https://www.engadget.com/gaming/bytedance-is-selling-its-moonton-game-unit-to-savvy-games-for-a-cool-6-billion-124131595.html",
+   "sources": [
+    "https://www.engadget.com/gaming/bytedance-is-selling-its-moonton-game-unit-to-savvy-games-for-a-cool-6-billion-124131595.html",
+    "https://insider-gaming.com/savvy-group-to-acquire-mobile-legends-bang-bang-studio-for-over-6-billion/"
+   ],
+   "wow": 3,
+   "pairs_with": "moonton, business",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Engadget: \"ByteDance has agreed to sell its games unit Moonton to Savvy Games Group for $6 billion.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

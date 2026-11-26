@@ -1,0 +1,818 @@
+{
+ "game": "spider-man2",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "spider-man2-01",
+   "fact": "A tap of Triangle in mid-air opens the Web Wings, and the left stick lets Spider-Man dip and soar. They are a quicker way to cross low-rise areas, rivers and Central Park.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 3,
+   "pairs_with": "web wings, traversal, gliding",
+   "fit": [
+    "web wings",
+    "wingsuit",
+    "gliding",
+    "glide"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"A tap of Triangle in the air will deploy your web wings, letting you dip and soar with the left stick.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-02",
+   "fact": "Marvel's Spider-Man 2 adds super slingshots and wind tunnels that act as jet streams, and PlayStation says Spider-Man has never been faster in the air.",
+   "source": "https://www.playstation.com/en-us/games/marvels-spider-man-2/whats-new-in-marvels-spider-man-2/",
+   "sources": [
+    "https://www.playstation.com/en-us/games/marvels-spider-man-2/whats-new-in-marvels-spider-man-2/",
+    "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/"
+   ],
+   "wow": 3,
+   "pairs_with": "wind tunnels, web wings, traversal",
+   "fit": [
+    "wind tunnel",
+    "slingshot",
+    "jet stream",
+    "super slingshot"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation.com: \"With the new interactive elements like super slingshots and wind tunnels that act as jet streams, Spider-Man has never been faster in the air.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-03",
+   "fact": "There is a trophy, Soar, for gliding from the Financial District to Astoria using only the Web Wings. Push Square says it needs good knowledge of the map and where the wind tunnels are.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-glide-from-the-financial-district-to-astoria-using-only-your-web-wings",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-glide-from-the-financial-district-to-astoria-using-only-your-web-wings"
+   ],
+   "wow": 3,
+   "pairs_with": "web wings, wind tunnels, trophies",
+   "fit": [
+    "web wings",
+    "wind tunnel",
+    "soar trophy",
+    "glide astoria",
+    "glide east river"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"One of the miscellaneous Trophies in the game, this achievement requires good knowledge of the Map and where Wind Tunnels are located.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-04",
+   "fact": "Holding L2 and X starts the Slingshot Launch. Let go and Spider-Man goes flying into the sky, a quick way to build momentum and cover large distances.",
+   "source": "https://kotaku.com/spider-man-2-ps5-tips-tricks-help-guide-spoiler-free-1850941904",
+   "sources": [
+    "https://kotaku.com/spider-man-2-ps5-tips-tricks-help-guide-spoiler-free-1850941904"
+   ],
+   "wow": 3,
+   "pairs_with": "slingshot launch, traversal",
+   "fit": [
+    "slingshot",
+    "slingshot launch",
+    "launches upward",
+    "launches into sky"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"Hold L2+X anywhere to start the slingshot move and then release to go flying into the sky.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-05",
+   "fact": "Web-swinging has a Swing Assistance slider with 10 levels. The game starts at Level 10, the default from the previous games, and players can turn it down to get less help. The game also has fall damage.",
+   "source": "https://www.gamesradar.com/marvels-spider-man-2-has-adjustable-swing-assist-as-well-as-fall-damage-so-you-can-really-put-peter-and-miles-through-their-paces/",
+   "sources": [
+    "https://www.gamesradar.com/marvels-spider-man-2-has-adjustable-swing-assist-as-well-as-fall-damage-so-you-can-really-put-peter-and-miles-through-their-paces/",
+    "https://www.pushsquare.com/news/2023/10/spider-man-2-ps5-will-empower-you-to-make-the-swinging-much-tougher"
+   ],
+   "wow": 3,
+   "pairs_with": "web-swinging, settings, swing assist",
+   "fit": [
+    "swing assist",
+    "swing assistance",
+    "fall damage",
+    "swing steering"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"\"There are 10 levels of Swing Assistance on that slider,\" Stevenson said in a reply to a since-deleted tweet, \"The game starts at the default (from the previous games!) Level 10.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-06",
+   "fact": "When you switch between Peter and Miles, the camera zooms far above to a bird's eye view of New York, then zooms back in on the other Spider-Man elsewhere in the city.",
+   "source": "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "character switch, PS5 SSD, Peter and Miles",
+   "fit": [
+    "character switch",
+    "switch to miles",
+    "switch to peter",
+    "switching characters"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"The game zooms far above to a bird's eye view of Marvel's New York City when switching between the two Heroes, then zooms back in on the newly selected Spider-Man elsewhere in the city.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-07",
+   "fact": "Marvel's Spider-Man 2 extends the map beyond Manhattan to include Brooklyn and Queens, doubling its size. In the earlier Marvel's Spider-Man games those areas could not be reached and were just low-poly representations of the wider city.",
+   "source": "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+    "https://blog.playstation.com/2023/09/14/marvels-spider-man-2-new-state-of-play-trailer-gameplay-details/",
+    "https://www.gamesradar.com/marvels-spider-man-2-map-is-about-twice-the-size-of-the-original/",
+    "https://www.pcgamer.com/spider-man-2s-open-world-will-be-twice-as-big-as-the-first-games/"
+   ],
+   "wow": 4,
+   "pairs_with": "map, Brooklyn, Queens, boroughs",
+   "fit": [
+    "brooklyn",
+    "queens",
+    "williamsburg",
+    "astoria"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"In previous Marvel's Spider-Man games, these areas weren't accessible and were simply low-poly representations of the wider city.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-08",
+   "fact": "Every visual mode on PS5 has ray tracing on. Insomniac's Mike Fitzgerald said there is no mode of the game with ray tracing turned off, and it is used for reflections on the water.",
+   "source": "https://kotaku.com/spiderman-2-ray-tracing-framerate-modes-playstation-5-1850844400",
+   "sources": [
+    "https://kotaku.com/spiderman-2-ray-tracing-framerate-modes-playstation-5-1850844400",
+    "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+    "https://www.pcgamer.com/spider-man-2s-open-world-will-be-twice-as-big-as-the-first-games/"
+   ],
+   "wow": 3,
+   "pairs_with": "ray tracing, reflections, PS5 tech",
+   "fit": [
+    "water reflection",
+    "river reflection",
+    "reflection",
+    "ray tracing"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"There's no mode of this game that has the ray tracing turned off, no need for it.\" | PC Gamer: \"It's on the water and the oceans and really gives a more realistic picture everywhere.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-09",
+   "fact": "In the earlier games you could peek through windows at decorated rooms. Marvel's Spider-Man 2 adds actual people living inside those interiors.",
+   "source": "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/19/how-marvels-spider-man-2-taps-into-the-power-of-ps5/"
+   ],
+   "wow": 4,
+   "pairs_with": "city detail, windows, interiors",
+   "fit": [
+    "apartment interior",
+    "inside apartment",
+    "room interior",
+    "window interior"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"In past Marvel's Spider-Man titles, players could peep into building windows for a glimpse at decorated interiors – Marvel's Spider-Man 2 heightens the detail with actual occupants.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-10",
+   "fact": "The game opens with a boss fight against Sandman: Flint Marko as a 40-story-tall sand monster rampaging through the Financial District, with no origin story.",
+   "source": "https://kotaku.com/spider-man-2-sandman-opening-ps5-villains-cutscenes-1850939620",
+   "sources": [
+    "https://kotaku.com/spider-man-2-sandman-opening-ps5-villains-cutscenes-1850939620",
+    "https://blog.playstation.com/2023/10/20/marvels-spider-man-2-launch-interview-bryan-intihar-on-the-games-opening-sequence-asl-accessibility-options-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "Sandman, bosses, opening",
+   "fit": [
+    "sandman",
+    "sand monster",
+    "giant sand",
+    "flint marko"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"But there's no origin story here, just Flint Marko transformed into a 40-story-tall sand monster rampaging through the Financial District.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-11",
+   "fact": "Lizard appears in two forms. The classic one is human-sized in a lab coat and can still talk to Peter. Insomniac's own version is leaner, meaner, bigger and greener, wears no clothes and has lost all humanity.",
+   "source": "https://blog.playstation.com/2023/10/12/scaling-up-in-marvels-spider-man-2-how-insomniac-created-a-new-version-of-lizard/",
+   "sources": [
+    "https://blog.playstation.com/2023/10/12/scaling-up-in-marvels-spider-man-2-how-insomniac-created-a-new-version-of-lizard/"
+   ],
+   "wow": 4,
+   "pairs_with": "Lizard, bosses, character design",
+   "fit": [
+    "lizard",
+    "giant lizard",
+    "curt connors",
+    "lizard lab coat"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"There's a more classic Lizard, which has the lab coat, the pants,\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-12",
+   "fact": "Lizard's eyes are built like an animal's. When light hits them his pupils look smaller, because his eyes are actually reacting to light. Insomniac researched how to make that happen in real time on PS5.",
+   "source": "https://blog.playstation.com/2023/10/12/scaling-up-in-marvels-spider-man-2-how-insomniac-created-a-new-version-of-lizard/",
+   "sources": [
+    "https://blog.playstation.com/2023/10/12/scaling-up-in-marvels-spider-man-2-how-insomniac-created-a-new-version-of-lizard/"
+   ],
+   "wow": 4,
+   "pairs_with": "Lizard, character design, PS5 tech",
+   "fit": [
+    "lizard eye",
+    "lizard close-up",
+    "lizard closeup",
+    "lizard face"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"when light hits his eyes, they look smaller, his eyes are actually reacting to light.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-13",
+   "fact": "Kraven's Hunters bring drones. Airborne Talon Drones snipe from afar, while four-legged ones put out large fields that lock out your skills until they are knocked out, and they explode shortly after being downed.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "Kraven's Hunters, drones, enemies",
+   "fit": [
+    "talon drone",
+    "drone",
+    "nullifying field",
+    "hunter drone",
+    "skill lock"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Airborne, mechanized Talon Drones will snipe from afar, while their four-legged counterparts emit large nullifying fields that lock out your skills until they're knocked out (and surprise! They explode shortly after being downed).\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-14",
+   "fact": "Peter and Miles can now parry. Attacks that can be parried show a yellow circle turning red around the enemy, and a well-timed L1 repels them. Some attacks cannot be dodged and need a parry.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+    "https://www.playstation.com/en-us/games/marvels-spider-man-2/whats-new-in-marvels-spider-man-2/",
+    "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/"
+   ],
+   "wow": 3,
+   "pairs_with": "parry, combat, Kraven's Hunters",
+   "fit": [
+    "parry",
+    "parried",
+    "yellow circle",
+    "red circle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"those particular attacks denoted by a yellow circle turning red around an advancing enemy, tapping L1 correctly repelling them.\" | PlayStation Blog: \"some attacks can't simply be dodged and will require a parry to properly evade them!\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-15",
+   "fact": "The web-shooters' capacity is doubled to twelve slots, and they recharge quickly. A rapid tap of R1 still webs up a single enemy.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 3,
+   "pairs_with": "web shooters, gadgets, combat",
+   "fit": [
+    "web shooter",
+    "web shooter slots",
+    "web ammo",
+    "web cartridge"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Their capacity is doubled to twelve slots, and recharge quickly.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-16",
+   "fact": "The Web Grabber gadget fires webbing out on all sides, then yanks whatever is attached back in, piling enemies up for an area attack. In one PlayStation Blog hands-on it even pulled in a nearby sewer drain cover.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+    "https://kotaku.com/spider-man-2-ps5-tips-tricks-help-guide-spoiler-free-1850941904",
+    "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/"
+   ],
+   "wow": 3,
+   "pairs_with": "Web Grabber, gadgets, combat",
+   "fit": [
+    "web grabber",
+    "pulls enemies together"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Web Grabber was the firm favorite, though, firing out webbing from all sides, then yanking anything attached back in rapidly, primed for an AOE strike takedown.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-17",
+   "fact": "The new Web Line gadget lets you string a high wire between points for stealth. Cast a line over two Hunters and Spider-Man performs a dual takedown, a first for the Marvel's Spider-Man series.",
+   "source": "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/",
+   "sources": [
+    "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/",
+    "https://www.playstation.com/en-us/games/marvels-spider-man-2/whats-new-in-marvels-spider-man-2/"
+   ],
+   "wow": 4,
+   "pairs_with": "Web Line, stealth, takedowns",
+   "fit": [
+    "web line",
+    "dual takedown",
+    "double takedown",
+    "tightrope",
+    "high wire"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Cast a line over a couple of Hunters and watch as Spider-Man performs a dual takedown… a Marvel's Spider-Man first!\" | PlayStation.com: \"lets you craft your own high wire paths across specific points in the environment, giving you even more control and flexibility over stealth takedowns\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-18",
+   "fact": "Peter's four mechanical Spider-Arms were just one of many suit powers in the first game. In Marvel's Spider-Man 2 they are his default loadout until the symbiote comes into play.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "Spider-Arms, Peter abilities",
+   "fit": [
+    "spider-arms",
+    "mechanical arms",
+    "robotic arms",
+    "metal arms"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"What was just one of many customizable suit powers in the original Marvel's Spider-Man is now – until the symbiote comes into play – his default loadout\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-19",
+   "fact": "Pressing L3 and R3 in the Black Suit triggers Symbiote Surge, a whirling grab-and-slam attack that lets you target enemies yourself and ground them for good.",
+   "source": "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/"
+   ],
+   "wow": 4,
+   "pairs_with": "symbiote, Black Suit, combat",
+   "fit": [
+    "symbiote surge",
+    "symbiote slam",
+    "tendril slam",
+    "symbiote tendrils"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"This suit's L3 + R3 special Symbiote Surge is a savage, whirling, fast-paced grab-and-slam attack that lets you manually target and permanently ground enemies.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-20",
+   "fact": "Miles has a new ability called Thunder Burst, an electrifying ground-pound against a group of foes. It chains well after the Web Grabber pulls enemies together.",
+   "source": "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/",
+   "sources": [
+    "https://blog.playstation.com/2023/05/24/marvels-spider-man-2-gameplay-revealed/"
+   ],
+   "wow": 3,
+   "pairs_with": "Miles abilities, venom powers, combat",
+   "fit": [
+    "thunder burst",
+    "ground pound",
+    "electric slam",
+    "bioelectric slam"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"This allows Miles to chain one of his new abilities, the Thunder Burst, unleashing an electrifying ground-pound against a group of foes.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-21",
+   "fact": "Before launch, Insomniac announced 65 suits for Marvel's Spider-Man 2, including new designs and fan favourites from films and comics, and Suit Styles unlock alternate colour shaders for over 200 looks.",
+   "source": "https://blog.playstation.com/2023/09/14/marvels-spider-man-2-new-state-of-play-trailer-gameplay-details/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/14/marvels-spider-man-2-new-state-of-play-trailer-gameplay-details/",
+    "https://www.pcgamer.com/spider-man-2s-open-world-will-be-twice-as-big-as-the-first-games/"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, suit styles, customisation",
+   "fit": [
+    "suit menu",
+    "suit style",
+    "suit select",
+    "suit selection"
+   ],
+   "flag": "Pre-launch count from 2023-09; later updates added more suits.",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Featuring 65 suits, which include new original designs and fan favorites from films and comics, players will have an expansive wardrobe of costumes to equip in Marvel's Spider-Man 2.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-22",
+   "fact": "Peter's and Miles's suits tear and rip when they take a beating in combat.",
+   "source": "https://blog.playstation.com/2023/10/19/marvels-spider-man-2-photo-mode-features-detailed-tips-to-get-started/",
+   "sources": [
+    "https://blog.playstation.com/2023/10/19/marvels-spider-man-2-photo-mode-features-detailed-tips-to-get-started/"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, battle damage, combat",
+   "fit": [
+    "torn suit",
+    "ripped suit",
+    "suit damage",
+    "battle damage",
+    "tattered suit"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Peter and Miles' suits will tear and rip if you get bodied during combat.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-23",
+   "fact": "Reaching level 52 unlocks the Best There Is Suit, a Wolverine-themed suit based on the comic of the same name.",
+   "source": "https://insider-gaming.com/10-spider-man-2-easter-eggs-you-need-to-see/",
+   "sources": [
+    "https://insider-gaming.com/10-spider-man-2-easter-eggs-you-need-to-see/",
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-all-suits-list-and-how-to-unlock-them"
+   ],
+   "wow": 4,
+   "pairs_with": "suits, Wolverine, easter eggs",
+   "fit": [
+    "best there is"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"If you take Miles all the way up to level 52, you'll unlock the Best There Is Suit, which is a Wolverine-themed Spidey suit based on the comic of the same name.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-24",
+   "fact": "The Fresh Start suit from the film Spider-Man: Brand New Day was added to Marvel's Spider-Man 2 for free. After fan complaints, update 1.005.001 on 2026-08-07 changed its colours and materials and gave it battle damage.",
+   "source": "https://www.pushsquare.com/news/2026/08/marvels-spider-man-2-update-adjusts-the-brand-new-day-suit-following-fan-outcry",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/08/marvels-spider-man-2-update-adjusts-the-brand-new-day-suit-following-fan-outcry",
+    "https://www.pushsquare.com/news/2026/07/insomniacs-spider-man-finishing-moves-influenced-brand-new-day-says-tom-holland"
+   ],
+   "wow": 3,
+   "pairs_with": "suits, Brand New Day, updates",
+   "fit": [
+    "fresh start suit",
+    "fresh start",
+    "brand new day"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"The update improves the costume with adjusted colours and materials to better match the movie, plus battle damage to keep it consistent with the rest of Spidey's wardrobe.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-25",
+   "fact": "Tom Holland said the finishing moves in Insomniac's Spider-Man games influenced a lot of their stuff in the film Spider-Man: Brand New Day. Push Square adds that the stunt team reportedly brought in screenshots of moves from the games.",
+   "source": "https://www.pushsquare.com/news/2026/07/insomniacs-spider-man-finishing-moves-influenced-brand-new-day-says-tom-holland",
+   "sources": [
+    "https://www.pushsquare.com/news/2026/07/insomniacs-spider-man-finishing-moves-influenced-brand-new-day-says-tom-holland"
+   ],
+   "wow": 5,
+   "pairs_with": "finishers, Brand New Day, Tom Holland",
+   "fit": [
+    "finisher",
+    "finishing move"
+   ],
+   "flag": "Single source (Push Square, reporting Holland's comments to IGN).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"And yeah, for me, a lot of those finishing moves... A lot of our stuff was influenced by that stuff.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-26",
+   "fact": "Since update 1.002 on 2024-03-07, players who finish the story can change the time of day, handy for getting Photo Mode shots in just the right light.",
+   "source": "https://blog.playstation.com/2024/02/21/marvels-spider-man-2-update-adds-new-game-plus-and-new-suits-on-march-7/",
+   "sources": [
+    "https://blog.playstation.com/2024/02/21/marvels-spider-man-2-update-adds-new-game-plus-and-new-suits-on-march-7/"
+   ],
+   "wow": 3,
+   "pairs_with": "time of day, updates, photo mode",
+   "fit": [
+    "time of day",
+    "time setting",
+    "day night toggle"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"You'll also be able to change the time of day once you complete the story, allowing you to get all those cool Photo Mode shots with just the right lighting.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-27",
+   "fact": "Photo Mode gained an Action Figure mode in a later update. It shrinks your hero so they appear as a tiny figure you can place on tables, signs or almost anywhere.",
+   "source": "https://blog.playstation.com/2023/10/19/marvels-spider-man-2-photo-mode-features-detailed-tips-to-get-started/",
+   "sources": [
+    "https://blog.playstation.com/2023/10/19/marvels-spider-man-2-photo-mode-features-detailed-tips-to-get-started/",
+    "https://blog.playstation.com/2024/02/21/marvels-spider-man-2-update-adds-new-game-plus-and-new-suits-on-march-7/"
+   ],
+   "wow": 4,
+   "pairs_with": "photo mode, action figure, updates",
+   "fit": [
+    "action figure",
+    "tiny spider-man",
+    "miniature spider-man",
+    "action figure mode"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"this option will scale down your hero, making them appear in the world as tiny little figures! Place them on tables, signs, or almost anywhere!\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-28",
+   "fact": "Game Speed can be mapped to a D-pad shortcut, slowing the action to 70%, 50% or 30% of real time for more time to react, or to line up a photo.",
+   "source": "https://blog.playstation.com/2023/09/28/marvels-spider-man-2-builds-on-accessibility-in-previous-titles-and-introduces-new-features/",
+   "sources": [
+    "https://blog.playstation.com/2023/09/28/marvels-spider-man-2-builds-on-accessibility-in-previous-titles-and-introduces-new-features/",
+    "https://blog.playstation.com/2023/10/19/marvels-spider-man-2-photo-mode-features-detailed-tips-to-get-started/"
+   ],
+   "wow": 3,
+   "pairs_with": "accessibility, game speed, slow motion",
+   "fit": [
+    "slow motion",
+    "slowed time"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"players can assign Game Speeds of 70%, 50%, and 30% of the real-time rate to Shortcut buttons.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-29",
+   "fact": "There are 42 Spider-Bots hidden across the game's 14 city districts. Each one's paint job references a specific Spider-Man suit, era or character.",
+   "source": "https://www.videogameschronicle.com/guide/spider-man-2-all-spider-bot-locations/",
+   "sources": [
+    "https://www.videogameschronicle.com/guide/spider-man-2-all-spider-bot-locations/",
+    "https://blog.playstation.com/2023/09/15/marvels-spider-man-2-hands-on-report-gameplay-details-on-symbiote-powers-combat-ps5-features-and-more/",
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-all-spider-bots-locations"
+   ],
+   "wow": 3,
+   "pairs_with": "Spider-Bots, collectibles, suits",
+   "fit": [
+    "spider-bot",
+    "spider bot",
+    "spiderbot"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"In total, there are 42 Spider-Bots hidden around Spider-Man 2's 14 city districts.\" | PlayStation Blog: \"each's paint job cutely emulating a specific Spider-Man suit from across the years\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-30",
+   "fact": "There are 10 Mysteriums, and only Miles can play them. Through a teleporter he enters another dimension to complete timed tasks for a Gold, Silver or Bronze rating.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-2-all-mysteriums-locations",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-all-mysteriums-locations"
+   ],
+   "wow": 3,
+   "pairs_with": "Mysterio, Mysteriums, side activities",
+   "fit": [
+    "mysterium",
+    "mysterio",
+    "teleporter",
+    "mysterio challenge"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"There are 10 Mysteriums in the game, and you can only play them as Miles.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-31",
+   "fact": "Marko's Memories are 14 large orange crystals that document Sandman's memories. Peter or Miles must beat the Sand Minions around each one before shattering it.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-2-all-markos-memories-locations",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-all-markos-memories-locations"
+   ],
+   "wow": 3,
+   "pairs_with": "Sandman, collectibles, side activities",
+   "fit": [
+    "orange crystal",
+    "crystal",
+    "sand minion",
+    "sand crystal",
+    "marko memories"
+   ],
+   "flag": "Single source (Push Square).",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Documenting the memories of Sandman, they take the shape of large orange crystals stuck into the ground.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-32",
+   "fact": "A baseball stadium near Coney Island in Downtown Brooklyn hides a trophy. Run all the bases as Peter or Miles to unlock Home Run!, with some fun dialogue along the way.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-round-the-bases-at-the-big-apple-ballers-stadium",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-round-the-bases-at-the-big-apple-ballers-stadium",
+    "https://kotaku.com/spider-man-2-ps5-tips-tricks-help-guide-spoiler-free-1850941904"
+   ],
+   "wow": 3,
+   "pairs_with": "trophies, easter eggs, Brooklyn",
+   "fit": [
+    "baseball",
+    "baseball stadium",
+    "baseball diamond",
+    "home run"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"The Big Apple Ballers Stadium is located just to the left of Coney Island in Downtown Brooklyn.\" | Kotaku: \"run the bases as either Miles or Peter for some fun dialogue and an easy-to-grab trophy\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-33",
+   "fact": "A building in Hell's Kitchen has a half-painted blue \"4\" in a circle on its roof, the Fantastic Four's logo, on what appears to be their Baxter Building.",
+   "source": "https://www.gamesradar.com/marvels-spider-man-2-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/marvels-spider-man-2-easter-eggs/",
+    "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, Fantastic Four, Hell's Kitchen",
+   "fit": [
+    "fantastic four",
+    "4 logo",
+    "baxter building",
+    "blue 4"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Head to a building in the Hell's Kitchen district and you might notice a half-painted logo on the roof - a giant blue \"4\" in a circle.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-34",
+   "fact": "Insomniac put a statue of Stan Lee in the Upper West Side district as a tribute to the late Stan Lee.",
+   "source": "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/",
+   "sources": [
+    "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/"
+   ],
+   "wow": 3,
+   "pairs_with": "easter eggs, Stan Lee, Upper West Side",
+   "fit": [
+    "stan lee",
+    "stan lee statue",
+    "bronze statue"
+   ],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Insomniac paid tribute to the legend in the form of his statue that can be found in the Upper West district of the map\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-35",
+   "fact": "As Miles, you can go to the Wakandan embassy in Midtown, press Triangle and do the Wakanda Forever pose as a tribute to the late Chadwick Boseman.",
+   "source": "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/",
+   "sources": [
+    "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, Black Panther, Midtown",
+   "fit": [
+    "wakanda forever",
+    "wakandan embassy",
+    "wakanda",
+    "embassy"
+   ],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Press the triangle button and perform the iconic Wakanda Forever pose at the Wakandan embassy.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-36",
+   "fact": "Peter can solve a Rubik's cube while skydiving. Leap off a high building, dive, hold Square and pull the left stick down.",
+   "source": "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/",
+   "sources": [
+    "https://insider-gaming.com/10-more-spider-man-2-easter-eggs-you-need-to-see/"
+   ],
+   "wow": 4,
+   "pairs_with": "easter eggs, tricks, skydiving",
+   "fit": [
+    "rubik's cube",
+    "rubik",
+    "rubiks cube"
+   ],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Show off Peter's genius by leaping off a high building, diving, holding down the square button, and then pulling the left analog stick down.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-37",
+   "fact": "Sometimes the other Spider-Man joins in on a street crime. Get close and the two of them automatically point at each other, a nod to the Spider-Man pointing meme.",
+   "source": "https://insider-gaming.com/10-spider-man-2-easter-eggs-you-need-to-see/",
+   "sources": [
+    "https://insider-gaming.com/10-spider-man-2-easter-eggs-you-need-to-see/"
+   ],
+   "wow": 5,
+   "pairs_with": "easter eggs, memes, Peter and Miles",
+   "fit": [
+    "point each other",
+    "pointing",
+    "both spider-men",
+    "two spider-men",
+    "pointing meme"
+   ],
+   "flag": "Single source (Insider Gaming).",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"When this does happen, get closer to the other Spider-Man, and you should see that both of them automatically point at each other.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-38",
+   "fact": "At the Coney Island fair there is a spot called Dazzler's Stage, an open-mic stage named after the X-Men's pop star hero Dazzler.",
+   "source": "https://www.gamesradar.com/marvels-spider-man-2-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/marvels-spider-man-2-easter-eggs/"
+   ],
+   "wow": 3,
+   "pairs_with": "easter eggs, Coney Island, X-Men",
+   "fit": [
+    "dazzler",
+    "dazzler's stage",
+    "dazzler stage",
+    "open mic"
+   ],
+   "flag": "Single source (GamesRadar+).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"during the Coney Island sequence in Marvel's Spider-Man 2, you can find something called Dazzler's Stage, which appears to be an open-mic night for any aspiring musician\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-39",
+   "fact": "Fast travel is earned district by district. Fill a district's progress bar halfway by doing its missions and finding collectibles, and fast travel to that district unlocks.",
+   "source": "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-fast-travel",
+   "sources": [
+    "https://www.pushsquare.com/guides/marvels-spider-man-2-how-to-fast-travel",
+    "https://kotaku.com/spider-man-2-ps5-tips-tricks-help-guide-spoiler-free-1850941904"
+   ],
+   "wow": 3,
+   "pairs_with": "fast travel, map, districts",
+   "fit": [
+    "fast travel",
+    "district progress",
+    "fast travel unlock"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"You need to fill the District Progress bar until it reaches this marker, and then Fast Travel to that specific District will be unlocked.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "spider-man2-40",
+   "fact": "Marvel's Spider-Man 2 sold more than 2.5 million copies in its first 24 hours, making it the fastest-selling PlayStation Studios game at the time.",
+   "source": "https://www.pushsquare.com/news/2023/10/marvels-spider-man-2-is-immediately-the-fastest-selling-playstation-studios-game-ever",
+   "sources": [
+    "https://www.pushsquare.com/news/2023/10/marvels-spider-man-2-is-immediately-the-fastest-selling-playstation-studios-game-ever",
+    "https://www.shacknews.com/article/137486/marvels-spider-man-2-2-5-million-copies-sold"
+   ],
+   "wow": 2,
+   "pairs_with": "sales, launch, records",
+   "fit": [],
+   "flag": "Sony's count; figure as of 2023-10-23.",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"PlayStation has confirmed that the superhero sequel sold through a crazy 2.5 million copies in its first 24 hours\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

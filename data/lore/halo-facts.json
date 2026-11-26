@@ -1,0 +1,764 @@
+{
+ "game": "halo",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "halo-01",
+   "fact": "You can now pick up Elites' Energy Swords and use them yourself. Halo Studios says picking up the energy sword was something you couldn't do in the original Combat Evolved.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-is-a-faithful-remake-tasked-with-relaunching-a-legendary-franchise-we-see-this-as-a-way-to-grow-expand-and-reconnect-the-halo-community/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-is-a-faithful-remake-tasked-with-relaunching-a-legendary-franchise-we-see-this-as-a-way-to-grow-expand-and-reconnect-the-halo-community/",
+    "https://blog.playstation.com/?p=420899",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 5,
+   "pairs_with": "energy sword, elites, weapons, original vs remake",
+   "fit": [
+    "energy sword",
+    "sword"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Like adding the ability to pick up and use the energy sword, Fuel Rod cannon, and Sentinel Beam Gun. You can also pilot the Wraith tank. These were all things you couldn't do in Combat Evolved.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-02",
+   "fact": "The remake adds nine weapons from across the Halo series that were never usable in the original Combat Evolved, including the Energy Sword, Battle Rifle and Needle Rifle.",
+   "source": "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+   "sources": [
+    "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+    "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/"
+   ],
+   "wow": 4,
+   "pairs_with": "weapons, arsenal, energy sword, battle rifle, needle rifle",
+   "fit": [
+    "energy sword",
+    "battle rifle",
+    "needle rifle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Halo Waypoint: \"Wield nine additional weapons from the Halo universe for the first time in Halo: Combat Evolved!\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-03",
+   "fact": "For the first time in Halo: Combat Evolved, Master Chief can hijack nearby enemy vehicles and drive a Covenant Wraith tank.",
+   "source": "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+   "sources": [
+    "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+    "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 5,
+   "pairs_with": "wraith, hijack, vehicles, covenant",
+   "fit": [
+    "wraith",
+    "hijack",
+    "hijacking",
+    "boarding vehicle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Halo Waypoint: \"For the first time in Halo: Combat Evolved, the Master Chief can hijack nearby enemy vehicles and add range to his repertoire at the helm of a Wraith tank.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-04",
+   "fact": "The Warthog now has an extra seat on its rear bumper, so a full four-player fireteam can ride out together.",
+   "source": "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+   "sources": [
+    "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved"
+   ],
+   "wow": 4,
+   "pairs_with": "warthog, co-op, vehicles, four players",
+   "fit": [
+    "rear bumper",
+    "bumper seat",
+    "warthog passenger",
+    "four warthog"
+   ],
+   "flag": "Single source (Halo Waypoint).",
+   "checked": "2026-11-26",
+   "quote": "Halo Waypoint: \"Better still, the dependable Warthog now boasts an additional seat on the rear bumper\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-05",
+   "fact": "Hijacking works both ways. You can snag an enemy Ghost or Banshee if you're quick, but the Covenant can hijack your vehicles right back.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "hijack, ghost, banshee, elites, vehicles",
+   "fit": [
+    "hijack",
+    "hijacking",
+    "steal ghost",
+    "steal banshee",
+    "board banshee"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Most vehicles can also be hijacked now, but note that this works both ways, so the Covenant can hijack you right back!\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-06",
+   "fact": "By default the Warthog now uses standard driving controls: steer with the left stick, camera on the right stick, gas on R2, brake and reverse on L2. The classic look-based steering is still an option.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 3,
+   "pairs_with": "warthog, controls, driving, vehicles",
+   "fit": [
+    "warthog",
+    "drive warthog"
+   ],
+   "flag": "Single source (PlayStation Blog). Button names are the PS5 layout.",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"By default, Halo: Campaign Evolved gives the Warthog standard, recognizable vehicle controls, allowing you to steer it with the left analog stick, control the camera with the right stick, hit the gas with R2, and brake and reverse with L2.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-07",
+   "fact": "Master Chief can sprint in the remake, something the 2001 original never had, and players can turn sprint off if they don't want it.",
+   "source": "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/",
+   "sources": [
+    "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/",
+    "https://blog.playstation.com/?p=420899",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 4,
+   "pairs_with": "sprint, movement, original vs remake",
+   "fit": [
+    "sprint",
+    "sprinting"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"Oh – and you can sprint now, if you'd like, or disable it if you don't.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-08",
+   "fact": "Health packs are gone. Both shields and health now recharge, but health recharges at a much slower rate.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 4,
+   "pairs_with": "health, shields, hud, original vs remake",
+   "fit": [
+    "shield recharge",
+    "health recharge",
+    "health pack",
+    "health bar"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Campaign Evolved gets rid of health packs and instead makes both your shields and health recharge, but your health recharges at a much slower rate.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-09",
+   "fact": "Overshields and Active Camo no longer switch on the moment you grab them. They are stored like Halo 3 equipment and used with a button press.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "overshield, active camo, equipment, power-ups",
+   "fit": [
+    "overshield",
+    "active camo",
+    "active camouflage",
+    "camouflage"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Unlike in the original where Overshields and Active Camo would activate as soon as you pick them up, Campaign Evolved treats them like Halo 3-style equipment pieces that must be deployed with a button press.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-10",
+   "fact": "Jackal snipers, deadly in almost every Halo game except the first, have been added to plenty of missions in the remake.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "jackals, snipers, beam rifle, enemies",
+   "fit": [
+    "jackal sniper",
+    "beam rifle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Jackal snipers are an infamously lethal foe in practically every Halo game except for the first one. Campaign Evolved rectifies this, adding them into plenty of missions.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-11",
+   "fact": "The large Flood Tank Form, first seen in Halo 3, appears in the remake. It is rare and about as serious a threat as a Covenant Hunter.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 4,
+   "pairs_with": "flood, tank form, hunter, enemies",
+   "fit": [
+    "tank form",
+    "flood tank",
+    "giant flood"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The large Tank Form Flood, first seen in Halo 3, appear in Campaign Evolved. They're rare and pose quite a serious threat, similar to a Covenant Hunter.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-12",
+   "fact": "Later in the story you will run into Flood-infected Hunters, one of the remake's tweaks to enemy deployments.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "flood, hunters, enemies",
+   "fit": [
+    "infected hunter",
+    "flood hunter"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"You'll also run into Flood-infected Hunters in later levels.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-13",
+   "fact": "The SMG from later Halo games is now in the campaign, and Flood charging at you carrying SMGs can be particularly deadly.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 3,
+   "pairs_with": "smg, flood, weapons",
+   "fit": [
+    "smg",
+    "flood smg"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Flood charging toward you carrying SMGs can be particularly deadly, for example.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-14",
+   "fact": "Brutes appear only in the three new prequel missions, where they carry Spikers and Brute Plasma Rifles.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://blog.playstation.com/?p=420899",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 4,
+   "pairs_with": "brutes, spiker, brute plasma rifle, prequel missions",
+   "fit": [
+    "brute",
+    "spiker",
+    "brute plasma rifle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Brutes make an exclusive appearance in these missions, wielding Spikers and Brute Plasma Rifles.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-15",
+   "fact": "The new prequel missions bring new threats like the Brute Berserker, and even take the fight into space.",
+   "source": "https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 4,
+   "pairs_with": "brute berserker, brutes, space combat, prequel missions",
+   "fit": [
+    "brute berserker",
+    "berserker",
+    "space battle",
+    "space combat",
+    "outer space"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"facing new threats like the Brute Berserker, and even bringing the fight into space.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-17",
+   "fact": "The remake adds three new prequel missions set a year before the original story, in which Master Chief and Sgt. Johnson infiltrate a Covenant research vessel.",
+   "source": "https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/",
+    "https://www.halowaypoint.com/news/halo-campaign-evolved-new-missions-reveal-trailer"
+   ],
+   "wow": 4,
+   "pairs_with": "prequel missions, sergeant johnson, covenant ship",
+   "fit": [
+    "purple hallway",
+    "purple corridor",
+    "research vessel",
+    "prequel mission"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"this new adventure sends players behind enemy lines in a clandestine UNSC operation aboard a Covenant research vessel.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-18",
+   "fact": "The three prequel missions all take place on a single Covenant ship full of shiny purple hallways, with one middle stretch that goes outdoors.",
+   "source": "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review/",
+   "sources": [
+    "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review/"
+   ],
+   "wow": 3,
+   "pairs_with": "prequel missions, covenant ship, environments",
+   "fit": [
+    "purple hallway",
+    "purple corridor",
+    "shiny purple",
+    "prequel mission"
+   ],
+   "flag": "Single source (PC Gamer).",
+   "checked": "2026-11-26",
+   "quote": "PC Gamer: \"The trio of lengthy assignments take place on a single Covenant ship, resplendent in shiny purple hallways with little variation beyond a middle chapter that goes outdoors.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-19",
+   "fact": "A new Perspective Skull lets you play the whole campaign in third-person view.",
+   "source": "https://www.halowaypoint.com/news/silent-cartographer-third-person-gameplay-halo-campaign-evolved",
+   "sources": [
+    "https://www.halowaypoint.com/news/silent-cartographer-third-person-gameplay-halo-campaign-evolved",
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 5,
+   "pairs_with": "skulls, third person, perspective skull",
+   "fit": [
+    "third person",
+    "third-person",
+    "perspective skull"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Halo Waypoint: \"Check out some fresh gameplay, captured entirely in third-person view, thanks to the new Perspective Skull.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-20",
+   "fact": "There are 42 Skulls to collect: three per level for 39, plus three Campaign Remix Skulls.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.halowaypoint.com/news/silent-cartographer-third-person-gameplay-halo-campaign-evolved",
+    "https://www.halowaypoint.com/news/halo-campaign-evolved-out-now"
+   ],
+   "wow": 3,
+   "pairs_with": "skulls, collectibles",
+   "fit": [
+    "skull",
+    "skull pickup"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"with 42 Skulls (three per level for a total of 39 plus three Campaign Remix ones) and 13 Terminals (one per level)\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-21",
+   "fact": "Halo Studios completely moved the Skulls from their old locations, so veterans who know where they were since 2001 have to hunt for them again.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 4,
+   "pairs_with": "skulls, collectibles, secrets",
+   "fit": [
+    "skull",
+    "skull pickup"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"For Halo: Campaign Evolved, Halo Studios has completely repositioned the original locations of the Skulls\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-22",
+   "fact": "Each of the 13 levels hides one lore Terminal, 13 in all.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 2,
+   "pairs_with": "terminals, collectibles, lore",
+   "fit": [
+    "terminal",
+    "lore terminal"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"and 13 Terminals (one per level)\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-23",
+   "fact": "Collect any three Skulls and you unlock Campaign Remix, a mode for replaying finished missions with randomized elements.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 3,
+   "pairs_with": "campaign remix, skulls, modes",
+   "fit": [
+    "campaign remix",
+    "remix menu",
+    "skull menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"Collecting any three Skulls in Halo: Campaign Evolved grants access to Campaign Remix\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-24",
+   "fact": "In Campaign Remix, the Armistice Skull makes every type of enemy fight together as allies against you, while Adaptation randomizes enemies and Reload randomizes weapon placement.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/"
+   ],
+   "wow": 5,
+   "pairs_with": "campaign remix, skulls, armistice, flood, covenant",
+   "fit": [
+    "campaign remix",
+    "armistice",
+    "adaptation skull",
+    "reload skull"
+   ],
+   "flag": "Single source (Xbox Wire).",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"Adaptation randomizes the enemy types that appear across a level, Reload similarly randomizes weapon placement, and Armistice ensures that every type of enemy will fight together as allies against you, their true villain.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-25",
+   "fact": "Campaign Remix adds a Nightvision effect that tints Chief's view green and outlines enemies and points of interest in neon green.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/"
+   ],
+   "wow": 4,
+   "pairs_with": "campaign remix, nightvision, visual effects",
+   "fit": [
+    "nightvision",
+    "night vision",
+    "green outline",
+    "green tint"
+   ],
+   "flag": "Single source (Xbox Wire).",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"The former adds a permanent green nightvision effect to Chief's view, with enemies and points of interest outlined in a neon green light.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-26",
+   "fact": "The Spore Visibility effect in Campaign Remix fills levels with a thick, translucent fog of Flood spores that cuts visibility.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/"
+   ],
+   "wow": 4,
+   "pairs_with": "campaign remix, spore visibility, flood, fog",
+   "fit": [
+    "spore",
+    "spore fog",
+    "spore visibility"
+   ],
+   "flag": "Single source (Xbox Wire).",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"The latter introduces an even more intense modifier, a thick, translucent layer cloud of fog and Flood spores across the environment, reducing visibility and distorting objects in your immediate vision.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-27",
+   "fact": "One Skull makes Grunts explode in a shower of confetti, and another can remove your HUD.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "skulls, grunts, confetti, easter egg",
+   "fit": [
+    "confetti",
+    "no hud",
+    "hud removed"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"These might do anything from amping up the difficulty by removing your heads-up display, to making Grunts explode in a shower of confetti.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-28",
+   "fact": "Elites now have combat barks in human languages that let you know how fervently they fight for the Prophets and the Covenant.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://www.shacknews.com/article/150095/halo-campaign-evolved-review-score"
+   ],
+   "wow": 4,
+   "pairs_with": "elites, grunts, covenant, dialogue, original vs remake",
+   "fit": [
+    "elite dialogue",
+    "elite shout",
+    "elite shouting",
+    "speak english",
+    "elite taunt"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Elites have various combat barks in human languages that let you know how fervently they fight for the Prophets and the Covenant.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-29",
+   "fact": "Jackals in the remake are no longer left-handed, a change from the original.",
+   "source": "https://www.shacknews.com/article/150095/halo-campaign-evolved-review-score",
+   "sources": [
+    "https://www.shacknews.com/article/150095/halo-campaign-evolved-review-score"
+   ],
+   "wow": 3,
+   "pairs_with": "jackals, enemies, original vs remake",
+   "fit": [
+    "jackal",
+    "jackal shield"
+   ],
+   "flag": "Single source (Shacknews).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Plus, bizarrely, the Jackals are no longer left-handed.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-30",
+   "fact": "Steve Downes and Jen Taylor, the original voices of Master Chief and Cortana, re-recorded their lines, including some new ones. Captain Keyes and Sergeant Johnson were recast.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/"
+   ],
+   "wow": 3,
+   "pairs_with": "voice cast, cortana, master chief",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Steve Downes and Jen Taylor, who voice Master Chief and Cortana respectively, have re-recorded their lines, including some new ones as mentioned above.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-31",
+   "fact": "Every gun can now aim down sights. The smart-link zoom is usually about 1.4x, borrowed from Halo 5's system.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 3,
+   "pairs_with": "aiming, zoom, weapons",
+   "fit": [
+    "aim down sights",
+    "aiming down sights",
+    "zoomed aim"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"It essentially amounts to a small amount of zoom (usually 1.4x) that helps you more accurately shoot enemies that are slightly further away than is ideal.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-33",
+   "fact": "The plasma grenade has lost its gaseous look and its signature hiss is quieter, cues that used to warn you one was about to go off.",
+   "source": "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review/",
+   "sources": [
+    "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review/"
+   ],
+   "wow": 3,
+   "pairs_with": "plasma grenade, grenades, sound",
+   "fit": [
+    "plasma grenade",
+    "sticky grenade"
+   ],
+   "flag": "Single source (PC Gamer review).",
+   "checked": "2026-11-26",
+   "quote": "PC Gamer: \"In the remake, the sticky nade has lost its gaseous visuals and dampened its signature hissing, important signs for noticing when one is about to go off.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-34",
+   "fact": "When you board one Covenant ship through its gravity lift, a Wraith tank now waits in the hangar, and you can use its turret on the Covenant defenders.",
+   "source": "https://blog.playstation.com/?p=420899",
+   "sources": [
+    "https://blog.playstation.com/?p=420899"
+   ],
+   "wow": 4,
+   "pairs_with": "wraith, gravity lift, covenant ship, hangar",
+   "fit": [
+    "gravity lift",
+    "hangar wraith",
+    "wraith turret"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"you'll find a Wraith tank waiting in the hangar with a turret you can use to wreck Covenant defenders.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-35",
+   "fact": "In co-op, weapon spawns stack with the number of players, giving everyone a balanced and plentiful arsenal.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/"
+   ],
+   "wow": 4,
+   "pairs_with": "co-op, weapons, four players",
+   "fit": [
+    "co-op",
+    "coop",
+    "four players"
+   ],
+   "flag": "Single source (Xbox Wire).",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"Weapon spawns stack with the number of players, ensuring a balanced and plentiful arsenal for everyone in the game.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-36",
+   "fact": "The levels were built for two-player co-op in 2001. The remake rebuilt them for up to four players online, with cross-play, while split-screen stays two players on console.",
+   "source": "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/07/23/halo-campaign-evolved-early-access-launch-xbox/",
+    "https://www.halowaypoint.com/news/introducing-halo-campaign-evolved",
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/",
+    "https://news.xbox.com/en-us/2025/10/24/halo-campaign-evolved-answering-the-big-questions/"
+   ],
+   "wow": 3,
+   "pairs_with": "co-op, split-screen, crossplay",
+   "fit": [
+    "co-op",
+    "coop",
+    "split screen",
+    "split-screen",
+    "four players"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"While these spaces were originally designed to accommodate up to two Chiefs playing together in co-op, this remake has been thoughtfully rebuilt with double the players in mind.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-37",
+   "fact": "Halo: Campaign Evolved is the first Halo game ever released on PlayStation. It launched July 28, 2026, with early access from July 23.",
+   "source": "https://www.pcgamer.com/games/fps/halo-campaign-evolved-guide/",
+   "sources": [
+    "https://www.pcgamer.com/games/fps/halo-campaign-evolved-guide/",
+    "https://blog.playstation.com/?p=420899",
+    "https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/",
+    "https://www.halowaypoint.com/news/halo-campaign-evolved-new-missions-reveal-trailer"
+   ],
+   "wow": 3,
+   "pairs_with": "release, playstation, ps5",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PC Gamer: \"This makes it the first Halo game to ever be released on PlayStation\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-38",
+   "fact": "Difficulty presets let you tune things like friendly fire, damage resistance and shield recharge rate, on top of Skulls.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 2,
+   "pairs_with": "difficulty, settings, accessibility",
+   "fit": [
+    "difficulty menu",
+    "difficulty preset",
+    "difficulty setting",
+    "friendly fire"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"you can also create difficulty presets that adjust things like friendly fire, damage resistance, and shield recharge rate\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-39",
+   "fact": "In the snowy level, icicles hang from Forerunner tunnels and snow swooshes beneath your speeding Warthog's tire treads.",
+   "source": "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/",
+   "sources": [
+    "https://www.videogameschronicle.com/review/halo-campaign-evolved-review/"
+   ],
+   "wow": 3,
+   "pairs_with": "snow, warthog, forerunner, visuals",
+   "fit": [
+    "icicle",
+    "warthog snow",
+    "snowy tunnel",
+    "forerunner tunnel"
+   ],
+   "flag": "Single source (VGC).",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"like icicles hanging from Forerunner tunnels, and snow dynamically swooshing beneath the tire treads of your speeding Warthog.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "halo-40",
+   "fact": "In the second level, the Forerunner cave you drive the Warthog through no longer has its odd ramp section and is now one continuous path.",
+   "source": "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/",
+   "sources": [
+    "https://www.gamesradar.com/games/halo/halo-campaign-evolved-all-changes/"
+   ],
+   "wow": 3,
+   "pairs_with": "warthog, forerunner cave, level changes",
+   "fit": [
+    "warthog cave",
+    "forerunner cave",
+    "warthog tunnel"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"the Forerunner cave that you drive the Warthog through in Halo no longer has that weird ramp section and is now just one continuous path.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

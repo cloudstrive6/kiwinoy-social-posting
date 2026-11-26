@@ -1,0 +1,702 @@
+{
+ "game": "reanimal",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "reanimal-01",
+   "fact": "Reanimal launched on February 13, 2026. It came out on PS5, Xbox Series X/S, Nintendo Switch 2 and PC.",
+   "source": "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/"
+   ],
+   "wow": 1,
+   "pairs_with": "release, platforms",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"which launches on PS5 Feb 13, 2026\" | TheGamer: \"At launch, Reanimal is available on plenty of platforms, including PlayStation 5, Xbox Series X/S, Nintendo Switch 2, and PC through Steam.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-02",
+   "fact": "Reanimal opens with the boy alone in a small boat, following red lights through the dark sea until he hauls a masked figure out of the water.",
+   "source": "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/",
+   "sources": [
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/",
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 2,
+   "pairs_with": "opening, boat, sister",
+   "fit": [
+    "red light",
+    "buoy",
+    "masked figure",
+    "pulls girl"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"I started as The Boy, floating alone in a boat adrift in a sea of darkness.\" | PlayStation Blog: \"A press of R2 drove me towards a single red light bobbing on the horizon.\" | PlayStation Blog: \"Until eventually I stopped to haul a masked figure out of the sea\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-03",
+   "fact": "When the boy pulls a girl aboard his boat and reaches for the hare mask covering her face, she pins him down and rips at his mask until he kicks her away.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review",
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/"
+   ],
+   "wow": 3,
+   "pairs_with": "sister, mask, boat",
+   "fit": [
+    "hare mask",
+    "rabbit mask",
+    "girl attacks boy",
+    "pulls girl"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"At the fourth buoy, the boy stops the boat and pulls aboard a girl. When he reaches for the hare mask covering her face, she pins him to the small outboard's wooden bottom, her hands ripping at his mask until he kicks her away.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-04",
+   "fact": "The game never tells you the boy and the girl are brother and sister. You pick it up from how they help and comfort each other.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 4,
+   "pairs_with": "siblings, story, co-op",
+   "fit": [
+    "hug",
+    "comfort",
+    "hold hand",
+    "holding hand"
+   ],
+   "flag": "Single source (IGN).",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"The boy and the girl are brother and sister, but this fact is never told to you. You learn it through the way they help each other up, comfort each other when things go wrong.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-05",
+   "fact": "The girl can clip her lantern to her hip and still carry things, but the boy can only use his lighter when his hands are free.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review",
+    "https://www.gamesradar.com/games/survival-horror/reanimal-is-as-deliciously-morbid-as-little-nightmares-and-comes-from-the-original-creators/"
+   ],
+   "wow": 4,
+   "pairs_with": "lantern, lighter, light, dark",
+   "fit": [
+    "lighter",
+    "lantern hip",
+    "clipped lantern"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"Little distinguishes the boy from the girl, save that she can attach her lantern to her hip while carrying something else. The boy's lighter, on the other hand, is only usable if his hands are free.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-06",
+   "fact": "Reanimal has no HUD, no meters and no minimap on screen.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 3,
+   "pairs_with": "hud, presentation, camera",
+   "fit": [
+    "no hud",
+    "no minimap"
+   ],
+   "flag": "Single source (IGN).",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"There is no HUD, no meters, no minimap.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-07",
+   "fact": "In co-op you cannot choose who plays who. Player one is the boy and player two is the girl.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review",
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/"
+   ],
+   "wow": 3,
+   "pairs_with": "co-op, multiplayer",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"There is no way to select who plays who; it simply works out this way\" | TheGamer: \"with the first player being the boy and the second player being the girl\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-08",
+   "fact": "Co-op uses one shared camera in every mode, local and online, with no split-screen. Tarsier did this so both players are scared together.",
+   "source": "https://news.xbox.com/en-us/2026/02/13/reanimal-interview/",
+   "sources": [
+    "https://news.xbox.com/en-us/2026/02/13/reanimal-interview/"
+   ],
+   "wow": 3,
+   "pairs_with": "co-op, camera, split-screen",
+   "fit": [
+    "shared camera",
+    "no split-screen",
+    "no split screen"
+   ],
+   "flag": "Single source (Xbox Wire).",
+   "checked": "2026-11-26",
+   "quote": "Xbox Wire: \"When you play co-op, both local and online, it's the same camera in all game modes\" | Xbox Wire: \"There's no split-screen, and that was to enhance this pillar even more.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-09",
+   "fact": "Playing solo, the AI sister gives you a boost up to high ledges when you press Triangle, and L1 gets her to use things in the world.",
+   "source": "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/",
+   "sources": [
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/"
+   ],
+   "wow": 2,
+   "pairs_with": "ai partner, controls, boost",
+   "fit": [
+    "boost",
+    "leg up"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"swiftly responding to a press of the Triangle button when we needed to give each other a boost to out-of-reach platforms.\" | PlayStation Blog: \"Alternatively, a tap of L1 gets her to interact with certain elements in the environment.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-10",
+   "fact": "There are 18 masks hidden around the world, and you can put them on either child to change their look. Masks carry over between playthroughs.",
+   "source": "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/",
+    "https://gamerant.com/reanimal-all-mask-locations-behind-the-mask-achievement-trophy/"
+   ],
+   "wow": 2,
+   "pairs_with": "masks, collectibles",
+   "fit": [
+    "mask collectible",
+    "pick up mask",
+    "new mask",
+    "mask menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"There are 18 masks hidden around the world of Reanimal for you to find and collect as you go along.\" | TheGamer: \"You can even equip them on the children to change their look, too!\" | TheGamer: \"Masks are shared across playthroughs and are tied to your account\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-11",
+   "fact": "Masks are often found in boxes on floors and tables, near a bigger version of whatever the mask shows.",
+   "source": "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/"
+   ],
+   "wow": 3,
+   "pairs_with": "masks, collectibles, secrets",
+   "fit": [
+    "mask box",
+    "pick up mask",
+    "mask on table"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"They'll often appear in boxes on floors and tables, typically near a larger iteration of what the mask represents.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-12",
+   "fact": "Pre-orders got two exclusive masks, Foxhead and Muttonhead. Tarsier picked them for their bestial look and their predator and prey pairing.",
+   "source": "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/"
+   ],
+   "wow": 3,
+   "pairs_with": "masks, pre-order, fox",
+   "fit": [
+    "foxhead",
+    "muttonhead",
+    "fox mask",
+    "sheep mask"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"All pre-orders of Reanimal unlock a pair of exclusive masks\" | PlayStation Blog: \"The Foxhead and Muttonhead masks resonated especially well because they had that bestial flavour that we were looking for; while their predator/prey characterisations quietly reiterate the game's thematic undercurrents.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-13",
+   "fact": "Tarsier, the studio making Reanimal's creepy masks, once made hats and costumes for LittleBigPlanet.",
+   "source": "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+    "https://www.gamesradar.com/games/horror/we-wanted-to-make-something-darker-reanimals-developer-tells-me-we-dont-give-people-the-safety-net-of-the-charm-of-little-nightmares/"
+   ],
+   "wow": 4,
+   "pairs_with": "masks, studio history, littlebigplanet",
+   "fit": [
+    "mask collectible",
+    "pick up mask",
+    "mask menu"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"As a studio that cut its teeth making hats and costumes for LittleBigPlanet, it feels strangely appropriate to be back here all these years later talking about the masks of Reanimal.\" | GamesRadar: \"Tarsier worked on LittleBigPlanet and Tearaway from 2008 to 2015\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-14",
+   "fact": "There are 20 black posters with red art to find. Each one you tear down unlocks concept art in the main menu.",
+   "source": "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/",
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/"
+   ],
+   "wow": 3,
+   "pairs_with": "posters, concept art, collectibles",
+   "fit": [
+    "poster",
+    "black poster",
+    "tear poster",
+    "concept art"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"These black posters with red art are here, there, and everywhere, and every one you take down when you find it unlocks some pretty spooky concept art for Reanimal in the main menu of the game. There are 20 to find, also with an achievement for finding them all.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-15",
+   "fact": "You can sit down at hidden resting spots, including chairs, cages and even toilets. Sitting in ten of them earns a trophy.",
+   "source": "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/",
+    "https://www.thegamer.com/reanimal-resting-place-locations-achievement-trophy-collections/"
+   ],
+   "wow": 3,
+   "pairs_with": "resting spots, trophy, secrets",
+   "fit": [
+    "sit down",
+    "sit chair",
+    "sit toilet",
+    "sit cage",
+    "resting spot"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"These seats will be things like chairs, cages, or even toilets, and you unlock a trophy in Reanimal for sitting on ten in a playthrough.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-16",
+   "fact": "Five lamb statues are hidden off the main path. Praying at one lights a candle in its hands, and you must find all five in one playthrough to earn the trophy.",
+   "source": "https://www.thegamer.com/reanimal-hidden-statue-locations-pray-reward-mask/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-hidden-statue-locations-pray-reward-mask/",
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/"
+   ],
+   "wow": 3,
+   "pairs_with": "statues, candle, prayer, secrets",
+   "fit": [
+    "lamb statue",
+    "lamb",
+    "candle",
+    "pray",
+    "praying"
+   ],
+   "flag": "Game Rant and TheGamer disagree on which mask the statues unlock, so the mask is left out.",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"you can always pause to pray at five lamb statues hidden throughout several of the game's chapters.\" | TheGamer: \"There are five statues hidden throughout the world in Reanimal that can be interacted with to light a candle in their hands for a moment of peace.\" | TheGamer: \"You have to find all five hidden statues in a single playthrough to earn this trophy.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-17",
+   "fact": "Reanimal has a secret ending. You must find all five hidden coffins in one playthrough, and opening each one releases a child's phantom.",
+   "source": "https://gamerant.com/reanimal-secret-ending-coffin-locations-friends-reunited/",
+   "sources": [
+    "https://gamerant.com/reanimal-secret-ending-coffin-locations-friends-reunited/",
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/"
+   ],
+   "wow": 4,
+   "pairs_with": "secret ending, coffins, ghost",
+   "fit": [
+    "coffin",
+    "phantom",
+    "ghost child"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Opening these coffins will release a phantom of a child and a glimpse of the dreadful fate that befell them.\" | TheGamer: \"You'll need to find all five coffins in one playthrough to get the secret ending in Reanimal\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-18",
+   "fact": "Five Critters hide around the world, and killing each one gives you a unique mask.",
+   "source": "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+   "sources": [
+    "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/"
+   ],
+   "wow": 3,
+   "pairs_with": "critters, masks, secrets",
+   "fit": [
+    "critter",
+    "spider creature",
+    "spider-like"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"There are a total of five Critters that players can hunt down in REANIMAL, each giving players a unique mask to wear on their characters.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-19",
+   "fact": "One Critter hides under a traffic cone, and killing it drops the Cone Head mask.",
+   "source": "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+   "sources": [
+    "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+    "https://gamerant.com/reanimal-all-mask-locations-behind-the-mask-achievement-trophy/"
+   ],
+   "wow": 4,
+   "pairs_with": "critter, traffic cone, mask",
+   "fit": [
+    "traffic cone",
+    "cone head",
+    "cone critter"
+   ],
+   "flag": "Single source (Game Rant).",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Inside the room, you'll spot a traffic cone that has a spider-like creature underneath it.\" | Game Rant: \"Players will receive the Cone Head mask by taking down the Critter in chapter two.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-20",
+   "fact": "Hitting a scarecrow in a flower field knocks a Critter off it, and killing it gives the Deer Head mask.",
+   "source": "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+   "sources": [
+    "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+    "https://gamerant.com/reanimal-all-mask-locations-behind-the-mask-achievement-trophy/"
+   ],
+   "wow": 4,
+   "pairs_with": "scarecrow, critter, mask",
+   "fit": [
+    "scarecrow",
+    "flower field",
+    "field of flowers",
+    "deer head"
+   ],
+   "flag": "Single source (Game Rant).",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Approach the scarecrow and hit it with a melee weapon. A Critter will fall off the scarecrow, and you'll need to make quick work of it to get the Deer Head mask.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-21",
+   "fact": "The boy fights with a crowbar and the girl with a knife.",
+   "source": "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+   "sources": [
+    "https://gamerant.com/reanimal-all-critter-locations-critter-kill-hit-trophy/",
+    "https://www.gamesradar.com/games/horror/reanimal-review/"
+   ],
+   "wow": 2,
+   "pairs_with": "weapons, crowbar, knife, combat",
+   "fit": [
+    "crowbar",
+    "knife"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"You'll need to use the Boy's Crowbar or the Girl's Knife to attack the critter until it's eliminated.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-22",
+   "fact": "The boat is how you travel between areas, and steering it a total of 10,000 meters earns a trophy.",
+   "source": "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/",
+    "https://www.pushsquare.com/reviews/ps5/reanimal"
+   ],
+   "wow": 3,
+   "pairs_with": "boat, sailing, trophy",
+   "fit": [
+    "steer boat",
+    "steering boat",
+    "sailing",
+    "sails"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"While steering the boat you'll use to navigate between sections of the game, travel 10,000 meters in total.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-23",
+   "fact": "Spiked naval mines float in the water. Once you have harpoons you can blow them up, and destroying 20 in one playthrough earns a trophy.",
+   "source": "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-achievement-trophy-guide-hidden-story-collectibles/"
+   ],
+   "wow": 3,
+   "pairs_with": "naval mines, harpoon, boat",
+   "fit": [
+    "naval mine",
+    "sea mine",
+    "spiked mine",
+    "harpoon"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"As you sail around on your boat, you'll occasionally find naval mines floating in the water, large grayish-silver balls with spikes on the side. After accessing the harpoons, you can blow them up to clear them of their danger. Do so 20 times in one playthrough for this achievement.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-24",
+   "fact": "Empty human skins lying around can suddenly come to life and slither after the children like snakes.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review",
+    "https://www.thegamer.com/reanimal-tips-multiplayer-co-op-help-control-secret/"
+   ],
+   "wow": 4,
+   "pairs_with": "skins, chase, creatures",
+   "fit": [
+    "human skin",
+    "empty skin",
+    "slithering",
+    "skin snake"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"the man/animal skins around us come to life, slithering after us like snakes.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-25",
+   "fact": "Sniffer, the first enemy you must escape, is an impossibly tall man who skitters like a spider and bites your head off if he catches you.",
+   "source": "https://www.thegamer.com/reanimal-chapter-one-walkthrough-dead-water-sniffer-train-hide-run/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-chapter-one-walkthrough-dead-water-sniffer-train-hide-run/",
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 4,
+   "pairs_with": "sniffer, tall man, chase",
+   "fit": [
+    "sniffer",
+    "tall man",
+    "skittering"
+   ],
+   "flag": "Name from TheGamer, description from IGN.",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"Sniffer, the very first enemy you'll need to escape\" | IGN: \"the first living human we encounter is impossibly tall, his face a Halloween mask of sagging skin, empty eye sockets, a maw that is always open. He skitters after us like a spider, biting our heads off if he catches us.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-26",
+   "fact": "The tall figure can apparently travel through the bellies of bloated corpses, using them like fleshy portals.",
+   "source": "https://www.gamesradar.com/games/horror/reanimal-review/",
+   "sources": [
+    "https://www.gamesradar.com/games/horror/reanimal-review/",
+    "https://www.pushsquare.com/reviews/ps5/reanimal"
+   ],
+   "wow": 5,
+   "pairs_with": "tall figure, corpses, portal",
+   "fit": [
+    "bloated corpse",
+    "corpse portal",
+    "tall figure corpse"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"who can also apparently use the bellies of bloated, distended corpses as some sort of fleshy, rib-lined portal to move around.\" | Push Square: \"contorting monsters will appear and then disappear through dead bodies in the environment.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-27",
+   "fact": "Sniffer has an ice cream van that turns on and chases the children down a hill, and its jingle can be heard in the distance.",
+   "source": "https://www.thegamer.com/reanimal-chapter-one-walkthrough-dead-water-sniffer-train-hide-run/",
+   "sources": [
+    "https://www.thegamer.com/reanimal-chapter-one-walkthrough-dead-water-sniffer-train-hide-run/",
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/"
+   ],
+   "wow": 4,
+   "pairs_with": "sniffer, ice cream van, chase",
+   "fit": [
+    "ice cream van",
+    "ice cream truck",
+    "ice cream",
+    "jingle"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"you'll see Sniffer's ice cream van from before, which turns on and begins to chase you down the hill.\" | PlayStation Blog: \"A particular favourite of mine was the distant jingle of an ice cream van which foreshadowed\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-28",
+   "fact": "Early on, the siblings fix up a pump trolley by finding its missing wheels, so they can ride it across the train tracks.",
+   "source": "https://www.gamesradar.com/games/survival-horror/reanimal-is-as-deliciously-morbid-as-little-nightmares-and-comes-from-the-original-creators/",
+   "sources": [
+    "https://www.gamesradar.com/games/survival-horror/reanimal-is-as-deliciously-morbid-as-little-nightmares-and-comes-from-the-original-creators/",
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/",
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 2,
+   "pairs_with": "pump trolley, puzzle, factory",
+   "fit": [
+    "pump trolley",
+    "handcar",
+    "rail cart",
+    "trolley wheel"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"fix up a pump trolley to make it across train tracks.\" | PlayStation Blog: \"ranging from simply finding wheels for a pump trolley\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-29",
+   "fact": "Plunging a clogged toilet turns up a key, along with the deflated skin of what was once perhaps a man, his face caught between a person and a pig.",
+   "source": "https://www.ign.com/articles/reanimal-review",
+   "sources": [
+    "https://www.ign.com/articles/reanimal-review"
+   ],
+   "wow": 4,
+   "pairs_with": "toilet, key, skins, factory",
+   "fit": [
+    "plunger",
+    "clogged toilet",
+    "plunge toilet",
+    "pig face"
+   ],
+   "flag": "Single source (IGN).",
+   "checked": "2026-11-26",
+   "quote": "IGN: \"A plunger applied to a clogged toilet reveals a key and the deformed, deflated skin of what was once, perhaps, a man; his features are off, deformed, his face caught between that of a person and a pig.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-30",
+   "fact": "The island setting takes you through an abandoned factory, an unsettling forest, a sinkhole-plagued city and a waterlogged workshop, before opening up for freer exploration.",
+   "source": "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/",
+   "sources": [
+    "https://blog.playstation.com/2026/02/11/reanimal-hands-on-a-haunting-co-op-platformer-built-on-trust-timing-and-fear/"
+   ],
+   "wow": 2,
+   "pairs_with": "island, locations, factory, forest",
+   "fit": [
+    "abandoned factory",
+    "sinkhole",
+    "flooded city",
+    "waterlogged workshop"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Your adventure across a fragmented island pushes you to an abandoned factory, an unsettling forest, a sinkhole-plagued city, and a waterlogged workshop, just for starters, before things vastly open up for more non-linear exploration.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-31",
+   "fact": "The siblings are searching for three missing friends named Hood, Bucket and Bandage, each one held in a different area of the island.",
+   "source": "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+   "sources": [
+    "https://blog.playstation.com/2025/11/20/reanimal-out-feb-13-2026-on-ps5/",
+    "https://www.gamesradar.com/games/horror/get-a-behind-the-scenes-look-at-reanimals-creature-filled-horror-from-the-creators-of-little-nightmares-1-and-2/"
+   ],
+   "wow": 3,
+   "pairs_with": "friends, island, story",
+   "fit": [
+    "bucket head",
+    "hooded kid",
+    "bandaged kid",
+    "missing friend"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"they set off in their boat to find and reclaim their missing friends\" | PlayStation Blog: \"Hood, Bucket and Bandage\" | GamesRadar: \"as you travel these three main island areas - each one holding one of your friends\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-32",
+   "fact": "A homicidal cloud of seagulls attacks the children at one point, which GamesRadar compared to The Birds.",
+   "source": "https://www.gamesradar.com/games/horror/reanimal-review/",
+   "sources": [
+    "https://www.gamesradar.com/games/horror/reanimal-review/"
+   ],
+   "wow": 3,
+   "pairs_with": "seagulls, birds, creatures",
+   "fit": [
+    "seagull",
+    "gull",
+    "bird swarm",
+    "birds attack"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Being attacked by a homicidal cloud of seagulls in full The Birds mode was a memorable event\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-33",
+   "fact": "Obstacles in your way can be anything from a locked door to a giant, eyeless, crying whale.",
+   "source": "https://www.gamesradar.com/games/horror/reanimal-review/",
+   "sources": [
+    "https://www.gamesradar.com/games/horror/reanimal-review/"
+   ],
+   "wow": 4,
+   "pairs_with": "whale, creatures, obstacles",
+   "fit": [
+    "whale",
+    "giant whale",
+    "crying whale"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"With Reanimal that could be anything from a locked door to a giant eyeless crying whale, or worse.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-34",
+   "fact": "Reanimal switched from the 2.5D platforming of Little Nightmares to a more fully 3D world, freeing the camera from what Tarsier calls the dollhouse view.",
+   "source": "https://www.videogameschronicle.com/features/hands-on-reanimal-is-a-literal-new-dimension-in-horror-from-little-nightmares-studio-tarsier/",
+   "sources": [
+    "https://www.videogameschronicle.com/features/hands-on-reanimal-is-a-literal-new-dimension-in-horror-from-little-nightmares-studio-tarsier/",
+    "https://news.xbox.com/en-us/2026/02/13/reanimal-interview/"
+   ],
+   "wow": 3,
+   "pairs_with": "camera, little nightmares, 3d",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"there are clear differences here, most notably with the switch from 2.5D platforming to a more fully 3D environment.\" | Xbox Wire: \"The camera was a big liberator this time around, because we weren't confined to that dollhouse camera.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "reanimal-35",
+   "fact": "Talking about the boat exploration, Tarsier's narrative director joked that The Legend of Zelda: The Wind Waker was an inspiration, though the tone is a complete 180 from it.",
+   "source": "https://www.videogameschronicle.com/features/hands-on-reanimal-is-a-literal-new-dimension-in-horror-from-little-nightmares-studio-tarsier/",
+   "sources": [
+    "https://www.videogameschronicle.com/features/hands-on-reanimal-is-a-literal-new-dimension-in-horror-from-little-nightmares-studio-tarsier/"
+   ],
+   "wow": 4,
+   "pairs_with": "boat, zelda, inspiration",
+   "fit": [
+    "sailing",
+    "steer boat",
+    "steering boat",
+    "open sea"
+   ],
+   "flag": "Single source (VGC).",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"Marvik joked that The Legend of Zelda: The Wind Waker was an inspiration – tonally, this is a complete 180 from that.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}

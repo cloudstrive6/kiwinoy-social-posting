@@ -1,0 +1,811 @@
+{
+ "game": "thelastofus2",
+ "updated": "2026-11-26",
+ "note": "Sourced facts for fact cards. Each 'fit' lists what must be visible in a clip for the fact to be about it.",
+ "facts": [
+  {
+   "id": "thelastofus2-01",
+   "fact": "The Last of Us Part II has more than 60 accessibility settings, including completely new features for low-vision and blind players.",
+   "source": "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/",
+    "https://www.videogameschronicle.com/news/the-last-of-us-part-2-takes-top-prizes-at-the-game-awards/"
+   ],
+   "wow": 4,
+   "pairs_with": "accessibility, settings, menu",
+   "fit": [
+    "accessibility menu",
+    "accessibility setting",
+    "accessibility options"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"The Last of Us Part II features more than 60 accessibility settings, with expanded options focused on fine-motor and hearing, as well as completely new features that benefit low-vision and blind players.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-02",
+   "fact": "The High Contrast Display mode mutes the colours of the world and adds distinct contrast colouring to allies, enemies, items and interactive objects.",
+   "source": "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/"
+   ],
+   "wow": 4,
+   "pairs_with": "accessibility, high contrast, visuals",
+   "fit": [
+    "high contrast",
+    "contrast mode",
+    "contrast display"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Mutes environment colors and adds distinct contrast coloring to allies, enemies, items, and interactive objects.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-03",
+   "fact": "With Enhanced Listen Mode on, a scan triggers audio cues at the target's location, and the pitch changes based on the target's height relative to you.",
+   "source": "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/"
+   ],
+   "wow": 4,
+   "pairs_with": "listen mode, accessibility, audio",
+   "fit": [
+    "enhanced listen mode",
+    "enhanced listen",
+    "audio cue scan"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Send out a scan triggering audio cues at the target's location. The pitch of the sound changes based on the target's height relative to you.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-04",
+   "fact": "An accessibility option called Invisible While Prone makes you invisible to enemies while you are prone and not aiming. It is disabled in certain encounters where stealth is not an option.",
+   "source": "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/",
+   "sources": [
+    "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/"
+   ],
+   "wow": 5,
+   "pairs_with": "stealth, prone, accessibility",
+   "fit": [
+    "invisible while prone",
+    "prone invisibility"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"You are invisible to enemies while prone and not aiming. This setting is disabled during certain encounters where stealth is not an option.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-05",
+   "fact": "The guitar shows a circle on screen divided into six notes. You point a stick at a chord, then swipe the touchpad to strum, or tap it to pluck single strings.",
+   "source": "https://screenrant.com/how-to-play-guitar-guide-last-us-2/",
+   "sources": [
+    "https://screenrant.com/how-to-play-guitar-guide-last-us-2/"
+   ],
+   "wow": 3,
+   "pairs_with": "guitar, chords, touchpad",
+   "fit": [
+    "guitar",
+    "chord wheel",
+    "playing guitar",
+    "strum guitar"
+   ],
+   "flag": "Single source (Screen Rant).",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"they will be presented with a circle on-screen divided into six different notes.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-06",
+   "fact": "Naughty Dog built the first guitar prototype from motion capture of Ellie actress Ashley Johnson singing Take on Me.",
+   "source": "https://www.thegamer.com/naughty-dog-details-the-last-of-us-part-2s-playable-guitar/",
+   "sources": [
+    "https://www.thegamer.com/naughty-dog-details-the-last-of-us-part-2s-playable-guitar/",
+    "https://www.gamesradar.com/the-last-of-us-2-interactive-guitar-was-born-from-ellies-voice-actors-singing/"
+   ],
+   "wow": 4,
+   "pairs_with": "guitar, Ashley Johnson, music, development",
+   "fit": [
+    "guitar",
+    "playing guitar",
+    "take on me"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"This way of thinking led the team to create a prototype for the guitar from the captured cinematics of Ellie actress Ashley Johnson singing Take on Me.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-07",
+   "fact": "In the Remastered version, the very first cutscene shows Joel cleaning a guitar's frets, and the DualSense vibrates from left to right as his hand moves along the neck.",
+   "source": "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+   "sources": [
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html"
+   ],
+   "wow": 4,
+   "pairs_with": "haptics, DualSense, guitar, Joel",
+   "fit": [
+    "joel guitar",
+    "cleaning guitar",
+    "guitar frets",
+    "guitar neck"
+   ],
+   "flag": "Single source (Engadget). Remastered on PS5 only.",
+   "checked": "2026-11-26",
+   "quote": "Engadget: \"The game's very first cut scene shows Part I protagonist Joel cleaning the frets on a guitar, and you can feel slight vibrations from left to right as his hand moves across the guitar neck.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-08",
+   "fact": "Ellie leaves a scent trail that fades over time, and if a dog picks it up, it can find her wherever she is hiding, in a way a human enemy cannot.",
+   "source": "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+   "sources": [
+    "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+    "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/"
+   ],
+   "wow": 4,
+   "pairs_with": "dogs, scent, stealth",
+   "fit": [
+    "scent trail",
+    "sniffing dog",
+    "guard dog",
+    "dog"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"as Ellie moves around she leaves behind this [scent] trail that fades over time, but if the dog picks up the trailer he can find you wherever you're hiding in a way that a human on their own can't.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-09",
+   "fact": "Listen Mode shows your scent, so you can see whether a dog is sniffing you out, and you can throw bottles to distract it off your scent.",
+   "source": "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/",
+   "sources": [
+    "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/"
+   ],
+   "wow": 4,
+   "pairs_with": "dogs, listen mode, bottles, stealth",
+   "fit": [
+    "scent trail",
+    "listen mode dog",
+    "throw bottle dog",
+    "dog distracted"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"You can see if the dog is sniffing you and where it's going, you can throw bottles to distract the dog off of your scent.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-10",
+   "fact": "Every human enemy in the game has a unique name, such as Omar or Joe, which Naughty Dog says needed new tech and a lot of recording.",
+   "source": "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+   "sources": [
+    "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/"
+   ],
+   "wow": 5,
+   "pairs_with": "enemies, names, AI, WLF, Seraphites",
+   "fit": [
+    "shouts name",
+    "calls name",
+    "omar"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"One example is that every human enemy in the game features a unique name, such as Omar, or Joe.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-11",
+   "fact": "The Seraphites talk to each other with whistles, so they can coordinate without showing the player exactly what they are doing.",
+   "source": "https://www.gamesradar.com/naughty-dog-tells-us-about-the-last-of-us-part-2s-creepiest-new-enemies-and-they-arent-clickers/",
+   "sources": [
+    "https://www.gamesradar.com/naughty-dog-tells-us-about-the-last-of-us-part-2s-creepiest-new-enemies-and-they-arent-clickers/"
+   ],
+   "wow": 4,
+   "pairs_with": "Seraphites, whistles, stealth",
+   "fit": [
+    "whistle",
+    "whistling",
+    "seraphite whistle"
+   ],
+   "flag": "Single source (GamesRadar, quoting co-game director Anthony Newman).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"the way that they communicate with each other with the whistles, they're able to coordinate with each other without revealing to the player exactly what they're doing.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-12",
+   "fact": "The Shambler is a new infected type in Part II. It gives off a cloud of gaseous acid that burns the things around it and burns your skin.",
+   "source": "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+   "sources": [
+    "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+    "https://screenrant.com/every-zombie-last-us-2-kill-guide/",
+    "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/"
+   ],
+   "wow": 4,
+   "pairs_with": "shambler, infected, acid",
+   "fit": [
+    "shambler",
+    "acid cloud",
+    "gas cloud"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"Shamblers provide this area of attack, where they have this cloud of gaseous acid that burns materials around it. It burns your skin.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-13",
+   "fact": "Stalkers like to peek around corners and spot you before they attack.",
+   "source": "https://screenrant.com/every-zombie-last-us-2-kill-guide/",
+   "sources": [
+    "https://screenrant.com/every-zombie-last-us-2-kill-guide/",
+    "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/"
+   ],
+   "wow": 3,
+   "pairs_with": "stalker, infected",
+   "fit": [
+    "stalker",
+    "peeking stalker",
+    "peeks around corner"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"Stalkers like to peek around and spot players before they attack.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-14",
+   "fact": "Setting a Clicker on fire with a Molotov makes it scream, which can draw other enemies in and set them all on fire at once.",
+   "source": "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/",
+   "sources": [
+    "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/"
+   ],
+   "wow": 4,
+   "pairs_with": "clicker, molotov, fire",
+   "fit": [
+    "burning clicker",
+    "clicker molotov",
+    "clicker fire",
+    "screaming clicker"
+   ],
+   "flag": "Single source (TheGamer).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"throwing a Molotov cocktail at the Clicker will set it on fire causing it to scream. This will then draw in the other enemies setting them all on fire at once.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-15",
+   "fact": "Burning a Bloater can strip the armour-like layer covering its skin, leaving it more open to rifles and shotguns.",
+   "source": "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/",
+   "sources": [
+    "https://www.thegamer.com/tlou2-last-of-us-part-2-infected-enemy-ranking/",
+    "https://screenrant.com/every-zombie-last-us-2-kill-guide/"
+   ],
+   "wow": 3,
+   "pairs_with": "bloater, fire, molotov",
+   "fit": [
+    "burning bloater",
+    "bloater molotov",
+    "bloater fire",
+    "bloater armor"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"Burning it should remove the layer of armor that's covering its skin and make the disgusting blob more vulnerable to weapons like rifles and shotguns.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-16",
+   "fact": "Ellie can crawl through small gaps that the developers call squeeze-throughs, which gives her new ways to sneak around.",
+   "source": "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/",
+   "sources": [
+    "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/",
+    "https://blog.playstation.com/2020/06/09/the-last-of-us-part-ii-accessibility-features-detailed/"
+   ],
+   "wow": 3,
+   "pairs_with": "traversal, stealth, squeeze-through",
+   "fit": [
+    "squeeze through",
+    "narrow gap",
+    "crawl through gap"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Ellie can squeeze through \"squeeze-throughs\" as they're called by Margenau.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-17",
+   "fact": "In close fights you can evade, trade combos and slam enemies into objects.",
+   "source": "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/",
+   "sources": [
+    "https://www.gamesradar.com/all-that-we-learned-about-the-last-of-us-2s-gameplay-and-story-from-inside-the-demo/"
+   ],
+   "wow": 3,
+   "pairs_with": "melee, dodge, combat",
+   "fit": [
+    "slam enemy",
+    "slams into wall",
+    "slams into table"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"You'll be able to evade, exchange combos, and slam each other into objects.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-18",
+   "fact": "A rising whooshing sound means an enemy is noticing you but has not seen you yet. The faster and louder it rises, the more exposed you are.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-tips/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-tips/"
+   ],
+   "wow": 4,
+   "pairs_with": "stealth, detection, audio",
+   "fit": [
+    "whoosh",
+    "whooshing",
+    "detection sound",
+    "detection meter"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"An ominous whooshing noise building up means someone is noticing you but hasn't 'seen' you yet.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-19",
+   "fact": "There are eight training manuals to find, and each one unlocks a new upgrade branch, or skill tree.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-training-manuals-upgrades-skills-location/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-training-manuals-upgrades-skills-location/"
+   ],
+   "wow": 3,
+   "pairs_with": "training manuals, skills, upgrades",
+   "fit": [
+    "training manual",
+    "skill tree",
+    "upgrade menu"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"There are a total of eight to track down across the game, and locating these books and magazines is the route to unlocking new Upgrade Branches in The Last of Us 2.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-20",
+   "fact": "Ellie's four training manuals unlock skill branches for crafting, stealth, precision and explosives. The Stealth branch lets her craft silencers for her gun.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-training-manuals-upgrades-skills-location/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-training-manuals-upgrades-skills-location/",
+    "https://www.gamesradar.com/the-last-of-us-2-tips/"
+   ],
+   "wow": 3,
+   "pairs_with": "skills, crafting, stealth, silencer",
+   "fit": [
+    "silencer",
+    "stealth branch",
+    "crafting branch",
+    "skill tree"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"These focus on four core proficiencies for the character: crafting, stealth, precision, and explosives.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-21",
+   "fact": "When Ellie upgrades a weapon, the camera zooms right in on her hands working on it, to make you feel her connection to her weapons.",
+   "source": "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+   "sources": [
+    "https://blog.playstation.com/2019/10/09/neil-druckmann-discusses-new-the-last-of-us-part-ii-details/",
+    "https://www.gamesradar.com/the-last-of-us-2-tips/"
+   ],
+   "wow": 4,
+   "pairs_with": "workbench, weapon upgrades, animation",
+   "fit": [
+    "workbench",
+    "weapon upgrade",
+    "upgrading weapon"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"we really zoom the camera in and show you the weapon and how she works them to improve them\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-22",
+   "fact": "There are 14 safes in the game, and opening them all earns the Safecracker trophy.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-safe-combination-code/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-safe-combination-code/"
+   ],
+   "wow": 3,
+   "pairs_with": "safes, collectibles, trophy",
+   "fit": [
+    "safe code",
+    "combination lock",
+    "opens safe",
+    "safecracker",
+    "wall safe"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"Opening any safe will help you, but getting them all will earn you the Safecracker Trophy as well. I've got all 14 The Last of Us 2 safe codes laid out below\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-23",
+   "fact": "One safe in downtown Seattle uses the code 0451, a famous door code from Deus Ex that has become a common Easter egg.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-safe-combination-code/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-safe-combination-code/",
+    "https://www.gamesradar.com/the-last-of-us-2-easter-eggs/",
+    "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/"
+   ],
+   "wow": 5,
+   "pairs_with": "safe, Easter egg, Deus Ex",
+   "fit": [
+    "0451",
+    "safe code",
+    "opens safe"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"It's 0451, a Deus Ex reference.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-24",
+   "fact": "There are 32 coins to collect, tied to American states, and there is a trophy for finding them all.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-coins/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-coins/",
+    "https://gamerant.com/the-last-of-us-2-trading-card-locations/"
+   ],
+   "wow": 3,
+   "pairs_with": "coins, collectibles, trophy",
+   "fit": [
+    "coin",
+    "state coin"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"There are 32 Last of Us 2 coins to collect and I have them all listed here. These collectibles are tied to American states and hidden in different areas as you explore.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-25",
+   "fact": "Ellie's collectible trading cards show superheroes mostly based on the developers, from a set called the Society of Champions.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-trading-card-locations/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-trading-card-locations/",
+    "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/"
+   ],
+   "wow": 4,
+   "pairs_with": "trading cards, collectibles, developers",
+   "fit": [
+    "trading card",
+    "society of champions",
+    "superhero card"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The Last of Us 2 trading cards feature superheroes mainly based on developers\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-26",
+   "fact": "One trading card, Dr. Uckmann, is a nod to Naughty Dog's Neil Druckmann and shows him as a kind of mad scientist.",
+   "source": "https://www.pushsquare.com/guides/the-last-of-us-2-all-easter-eggs",
+   "sources": [
+    "https://www.pushsquare.com/guides/the-last-of-us-2-all-easter-eggs",
+    "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/",
+    "https://www.gamesradar.com/the-last-of-us-2-map-seattle-downtown-all-locations/"
+   ],
+   "wow": 5,
+   "pairs_with": "trading cards, Easter egg, Neil Druckmann",
+   "fit": [
+    "dr uckmann",
+    "uckmann",
+    "mad scientist card"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"this Dr. Uckmann collectible carries special significance, seeing as it's a reference to Naughty Dog vice president Neil Druckmann.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-27",
+   "fact": "In the game's world the outbreak hit in 2013, so there is no PS4. You can still find PS3 consoles in homes, some next to Uncharted 2 and Jak and Daxter.",
+   "source": "https://www.pushsquare.com/guides/the-last-of-us-2-all-easter-eggs",
+   "sources": [
+    "https://www.pushsquare.com/guides/the-last-of-us-2-all-easter-eggs",
+    "https://www.gamesradar.com/the-last-of-us-2-easter-eggs/",
+    "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/",
+    "https://gamerant.com/last-of-us-2-jak-and-daxter-easter-eggs-precursor-orb/"
+   ],
+   "wow": 4,
+   "pairs_with": "PS3, Easter egg, Uncharted, Jak and Daxter",
+   "fit": [
+    "ps3",
+    "playstation 3",
+    "uncharted 2",
+    "jak and daxter"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Explore some households and you'll still find PlayStation 3 consoles lying around\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-28",
+   "fact": "A bank in Seattle hides an engraved ring reading Sic Parvis Magna, the motto of Uncharted's Nathan Drake.",
+   "source": "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/",
+   "sources": [
+    "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/",
+    "https://www.pushsquare.com/guides/the-last-of-us-2-all-easter-eggs",
+    "https://www.gamesradar.com/the-last-of-us-2-weapons-gear-items/"
+   ],
+   "wow": 5,
+   "pairs_with": "Easter egg, Uncharted, bank",
+   "fit": [
+    "engraved ring",
+    "sic parvis magna",
+    "bank vault",
+    "safety deposit"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Screen Rant: \"There's another reference to Naughty Dog's Uncharted franchise when Ellie stumbles upon an engraved ring in Westlake Bank that says \"Sic Parvis Magna.\"\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-29",
+   "fact": "A music shop in downtown Seattle has a poster for Pearl Jam's 2013 album Lightning Bolt, marked as coming soon because the outbreak hit before its release.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-easter-eggs/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-easter-eggs/",
+    "https://screenrant.com/last-us-2-secrets-easter-egg-reference-hidden/"
+   ],
+   "wow": 4,
+   "pairs_with": "music shop, Easter egg, Pearl Jam",
+   "fit": [
+    "music shop",
+    "pearl jam",
+    "album poster",
+    "lightning bolt"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"In the music shop you can visit in downtown Seattle you'll see a poster for the 2013 Pearl Jam album Lightning Bolt.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-30",
+   "fact": "Downtown Seattle is a semi-open world area that Ellie can explore freely, something new for the series.",
+   "source": "https://www.gamesradar.com/the-last-of-us-2-map-seattle-downtown-all-locations/",
+   "sources": [
+    "https://www.gamesradar.com/the-last-of-us-2-map-seattle-downtown-all-locations/"
+   ],
+   "wow": 3,
+   "pairs_with": "Seattle, exploration, map",
+   "fit": [
+    "downtown seattle",
+    "seattle map",
+    "paper map"
+   ],
+   "flag": "Single source (GamesRadar).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The Last of Us 2 Downtown Seattle map represents something new for the series. It's a semi-open world which you can explore freely as Ellie\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-31",
+   "fact": "In No Return, death is permanent: fail a run and you lose all weapons, items and upgrades from that run.",
+   "source": "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+   "sources": [
+    "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+    "https://www.playstation.com/en-ca/games/the-last-of-us-part-ii-remastered/no-return/"
+   ],
+   "wow": 3,
+   "pairs_with": "No Return, roguelike, permadeath",
+   "fit": [
+    "no return",
+    "roguelike",
+    "permadeath",
+    "run failed"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"death is permanent in No Return, so if you fail a run midway, you'll lose all weapons, items, and upgrades accumulated for that run\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-32",
+   "fact": "Between fights in No Return you go back to a Hideout and pick your next fight from a path laid out on a corkboard.",
+   "source": "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+   "sources": [
+    "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+    "https://www.playstation.com/en-ca/games/the-last-of-us-part-ii-remastered/no-return/"
+   ],
+   "wow": 3,
+   "pairs_with": "No Return, hideout, corkboard",
+   "fit": [
+    "hideout",
+    "corkboard",
+    "no return hideout"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"in between each combat scenario, you'll return to a Hideout, where you can prep and choose your next fight via a path laid out on a corkboard\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-33",
+   "fact": "No Return has four types of encounter: Assault (waves of enemies), Capture (break into a guarded safe), Holdout (defend with an AI buddy against Infected) and Hunted (survive until the timer runs out).",
+   "source": "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+   "sources": [
+    "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+    "https://www.playstation.com/en-ca/games/the-last-of-us-part-ii-remastered/no-return/",
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html"
+   ],
+   "wow": 3,
+   "pairs_with": "No Return, encounters",
+   "fit": [
+    "no return",
+    "holdout",
+    "capture encounter",
+    "hunted encounter",
+    "assault encounter"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"No Return's challenges fall into four different types\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-34",
+   "fact": "A full No Return run ends with one of six boss encounters, which unlock one after another.",
+   "source": "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+   "sources": [
+    "https://blog.playstation.com/2023/12/05/the-last-of-us-part-ii-remastered-exploring-the-roguelike-survival-mode-no-return/",
+    "https://www.playstation.com/en-ca/games/the-last-of-us-part-ii-remastered/no-return/",
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html"
+   ],
+   "wow": 3,
+   "pairs_with": "No Return, bosses",
+   "fit": [
+    "no return boss",
+    "no return final"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"you'll come up against one of six successively unlocked boss encounters\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-35",
+   "fact": "One No Return mod can make Infected invisible, showing them only as shadows in your flashlight.",
+   "source": "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+   "sources": [
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html"
+   ],
+   "wow": 5,
+   "pairs_with": "No Return, mods, infected, flashlight",
+   "fit": [
+    "invisible infected",
+    "infected shadow",
+    "invisible mod"
+   ],
+   "flag": "Single source (Engadget).",
+   "checked": "2026-11-26",
+   "quote": "Engadget: \"you might end up with one where Infected enemies are invisible, just shadows in your flashlight.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-36",
+   "fact": "The Remastered version adds Lost Levels: playable sequences cut from the original game, in an early, unfinished state, with developer commentary.",
+   "source": "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/",
+   "sources": [
+    "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/",
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+    "https://www.gamesradar.com/the-last-of-us-2-offers-a-smorgasbord-of-new-additions-in-its-attempt-to-bring-players-back/"
+   ],
+   "wow": 4,
+   "pairs_with": "Remastered, Lost Levels, development",
+   "fit": [
+    "lost level",
+    "developer commentary",
+    "unfinished level"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"A new set of Lost Levels in Part II Remastered allow players a unique chance to check out some playable sequences previously cut from the game.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-37",
+   "fact": "Remastered adds a Guitar Free Play mode, where you can play unlockable instruments, use audio FX pedals, and play as different characters in several locations.",
+   "source": "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/",
+   "sources": [
+    "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/",
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+    "https://www.gamespot.com/articles/the-last-of-us-part-2-remastered-trailer-shows-off-roguelike-no-return-mode/1100-6519693/"
+   ],
+   "wow": 3,
+   "pairs_with": "guitar, Remastered, free play",
+   "fit": [
+    "guitar free play",
+    "fx pedal",
+    "pedal",
+    "instrument select"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"So we've introduced a new Guitar Free Play mode, which will let you strum the strings across a host of unlockable instruments, use audio FX pedals to modulate your performance, and play as different characters in several in-game locations\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-38",
+   "fact": "Remastered adds new accessibility features, including Descriptive Audio and Speech to Vibrations, which uses the DualSense to show character speech and cadence.",
+   "source": "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/",
+   "sources": [
+    "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/"
+   ],
+   "wow": 4,
+   "pairs_with": "accessibility, Remastered, DualSense",
+   "fit": [
+    "descriptive audio",
+    "speech to vibration",
+    "accessibility menu"
+   ],
+   "flag": "Single source (PlayStation Blog).",
+   "checked": "2026-11-26",
+   "quote": "PlayStation Blog: \"new additions like the inclusion of Descriptive Audio and Speech to Vibrations, which uses the DualSense controller to indicate character speech and cadence.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-39",
+   "fact": "Remastered's unlockable skins include one of Ellie in an astronaut suit, complete with a helmet.",
+   "source": "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+   "sources": [
+    "https://www.engadget.com/the-last-of-us-part-2-remastered-review-the-roguelike-no-return-mode-steals-the-show-150006382.html",
+    "https://blog.playstation.com/2023/11/17/the-last-of-us-part-ii-remastered-coming-to-ps5-on-january-19-2024/"
+   ],
+   "wow": 4,
+   "pairs_with": "skins, Remastered, astronaut",
+   "fit": [
+    "astronaut suit",
+    "astronaut helmet",
+    "ellie astronaut"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Engadget: \"including an adorable one of Ellie in an astronaut suit, complete with a helmet.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "thelastofus2-40",
+   "fact": "The Last of Us Part II won seven awards at The Game Awards 2020, including Game of the Year and the first-ever Innovation in Accessibility award.",
+   "source": "https://www.videogameschronicle.com/news/the-last-of-us-part-2-takes-top-prizes-at-the-game-awards/",
+   "sources": [
+    "https://www.videogameschronicle.com/news/the-last-of-us-part-2-takes-top-prizes-at-the-game-awards/",
+    "https://www.gameinformer.com/the-game-awards-2020/2020/12/10/all-the-winners-at-the-game-awards-2020"
+   ],
+   "wow": 3,
+   "pairs_with": "awards, Game of the Year, accessibility",
+   "fit": [],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"The Last of Us Part 2 was the big winner at The Game Awards 2020, taking home seven of the 10 prizes it was nominated for.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  }
+ ]
+}
