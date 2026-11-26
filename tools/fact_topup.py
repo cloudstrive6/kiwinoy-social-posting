@@ -260,7 +260,8 @@ def topup(game: str, st: dict, force: bool = False, dry: bool = False, batch: in
     today = dt.date.today().isoformat()
     ids = next_ids(game, facts, len(ok), used)
     new = [{"id": fid, "fact": f["fact"], "source": f["sources"][0], "sources": f["sources"],
-            "wow": f["wow"], "pairs_with": f["pairs_with"], "flag": "", "checked": today}
+            "wow": f["wow"], "pairs_with": f["pairs_with"], "flag": "", "checked": today,
+            "fit": []}   # matched to no moment until a reviewed fit list is written (2026-11-26)
            for fid, f in zip(ids, ok)]
     passed = sum(1 for f in ok if f["verdict"] == "PASS")
     summary = (f"{len(cands)} researched, {len(results)} checked: {passed} PASS, "

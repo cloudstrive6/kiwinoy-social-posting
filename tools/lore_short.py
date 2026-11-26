@@ -71,6 +71,11 @@ class CardRefused(RuntimeError):
     run, so one unsupported sentence cost the slot on every platform (bench 2026-10-08)."""
 
 
+class NoFactFit(CardRefused):
+    """No sourced fact is about this moment: skipped in seconds, and the slot's search does not count
+    it as a costly try (orchestrator LORE loop)."""
+
+
 def log(m: str) -> None:
     print(f"[lore-short] {m}", flush=True)
 
@@ -140,7 +145,168 @@ def _words(s: str) -> set:
     return {w for w in re.findall(r"[a-z]{4,}", (s or "").lower()) if w not in _STOP}
 
 
-def pick_facts(game: str, context: str = "") -> list[dict]:
+# Words that say nothing about WHAT a scene is about: a fact tagged 'Jason and Lucia' fits every clip.
+_FIT_STOP = set("jason lucia both close ups scene clip cutscene moment story mission player character "
+                "characters game vice city leonida playable controlled people person someone".split())
+# Function words: never a topic, in any phrase.
+_FIT_FUNC = set("and the for but not are was his her him she you its off out get got has had can any one two "
+                "into onto from with this that".split())
+# Everyday words: true of most clips, so a tag made only of these says nothing about the scene.
+_FIT_WEAK = set("driving drive driven car view walking walk around town street life montage epic gameplay "
+                "scenic cruising any crowd busy night day sunset cinematic skyline downtown with the radio on "
+                "high speed highway road bridge".split())
+
+
+def _tag_words(s: str, keep_names: bool = False) -> set:
+    """Topic words for the fit check, singular ('cars' and 'car' match). keep_names keeps names and
+    scene words ('switch Lucia' needs both), used for a fact's own fit phrases and for the scene."""
+    out = set()
+    for w in re.findall(r"[a-z]{3,}", (s or "").lower()):
+        if len(w) > 5 and w.endswith(("sses", "shes", "ches", "xes")):
+            w = w[:-2]                       # presses -> press, benches -> bench
+        elif len(w) > 4 and w.endswith("s") and not w.endswith("ss"):
+            w = w[:-1]
+        if w in _FIT_FUNC or (w in _STOP and w not in ("player", "game")):
+            continue
+        if keep_names or w not in _FIT_STOP:
+            out.add(w)
+    return out
+
+
+def _stem(w: str) -> str:
+    if len(w) > 5 and w.endswith(("sses", "shes", "ches", "xes")):
+        return w[:-2]                        # presses -> press, benches -> bench
+    if len(w) > 3 and w.endswith("s") and not w.endswith("ss"):
+        return w[:-1]                        # tops -> top, stars -> star
+    return w
+
+
+def _fit_tokens(s: str) -> set:
+    """Every word and number, singular, nothing dropped: a fit phrase matches only when ALL its tokens
+    are in the scene ('two heads' needs 'two', 'open 24 hours' needs '24'). Review 2026-11-26: dropping
+    short words and digits turned 'two heads' into 'head' and matched any clip with a head in it."""
+    return {_stem(w) for w in re.findall(r"[a-z0-9]+", (s or "").lower().replace("'", ""))}
+
+
+def _event_text(e: dict) -> str:
+    """One footage-log event as plain text, from its own fields only (no 'money:' or 'quote:' labels,
+    which matched 'money bag' on every moment in review)."""
+    return " ".join(str(e.get(k, "") or "") for k in
+                    ("what", "player_does", "others_do", "on_screen_text", "money", "quote"))
+
+
+_USED_CACHE: dict = {}
+
+
+def _used_facts() -> set:
+    """Used fact ids, read once per 10 minutes (the picker checks many moments in a row)."""
+    import time as _t
+    if _USED_CACHE.get("at", 0) > _t.time() - 600:
+        return _USED_CACHE["ids"]
+    try:
+        from core import gh_release
+        ids = gh_release.used_story_quotes()
+    except Exception:
+        ids = set()
+    _USED_CACHE.update(at=_t.time(), ids=ids)
+    return ids
+
+
+def fit_ranges(log_key: str, game: str) -> list[tuple[float, float]] | None:
+    """The stretches (start, end seconds) of one recording whose footage log describes something a
+    sourced fact is about. None when the clip has no log. Lets the picker skip a whole recording
+    before downloading it, and pick windows that overlap a fitting stretch (2026-11-26)."""
+    from core import b2_store
+    if not fact_bank(game):
+        return None                          # no fact bank for this game: no fit check (review 2026-11-26)
+    memo = (log_key, game)
+    if memo in _FIT_MEMO:
+        return _FIT_MEMO[memo]
+    key = f"footage-log/{log_key}.json"
+    if key not in _LOG_CACHE:
+        data = b2_store.get_bytes(key)
+        _LOG_CACHE[key] = json.loads(data) if data else None
+    log_ = _LOG_CACHE[key]
+    if not log_:
+        return None
+    out = []
+    for e in log_.get("events", []):
+        if fact_fit(game, _event_text(e)):
+            out.append((float(e.get("start", 0)), float(e.get("end", 0))))
+    _FIT_MEMO[memo] = out
+    return out
+
+
+_FIT_MEMO: dict = {}
+
+
+def fit_for_moment(name: str, game: str, start: float, dur: float) -> list[dict] | None:
+    """The facts that fit the footage-log events inside the Short's own seconds, matched event by event
+    (words from two events never combine). None when this game has no fact bank or the clip no log."""
+    if not fact_bank(game):
+        return None
+    for key in (f"footage-log/cutscenes/{game}/{name}.json", f"footage-log/footage/{game}/{name}.json"):
+        log_ = _LOG_CACHE.get(key)
+        if not log_:
+            continue
+        best: dict = {}
+        for e in log_.get("events", []):
+            if float(e.get("end", 0)) > start + 0.5 and float(e.get("start", 0)) < start + dur - 0.5:
+                for rank, x in enumerate(fact_fit(game, _event_text(e))):
+                    k = str(x.get("id"))
+                    if k not in best or rank < best[k][0]:
+                        best[k] = (rank, x)
+        return [x for _, x in sorted(best.values(), key=lambda t: (t[0], -float(t[1].get("wow", 3))))]
+    return None
+
+
+def fact_fit(game: str, scene: str, min_hits: int = 1) -> list[dict]:
+    """The unused facts whose 'pairs with' tags name something in this scene (the footage log's
+    account of the Short's own seconds), best fit first. No AI, a few milliseconds. On 2026-11-26
+    the writer was offered police facts for 23 workout, wardrobe and garage moments in a row, stretched
+    them onto the clip, and every card was refused; a moment no fact fits is now skipped in seconds."""
+    sw = _tag_words(scene, keep_names=True)
+    st = _fit_tokens(scene)
+    if not st:
+        return []
+    bank = fact_bank(game)
+    used = _used_facts()
+    fresh = [x for x in bank if f"fact:{game}:{x.get('id')}" not in used] or bank
+    scored = []
+    for x in fresh:
+        # A tag fits when EVERY topic word of that tag phrase is in the scene ('wanted level' needs
+        # both words), and tags made only of everyday words ('driving', 'city view') never count:
+        # they fit every clip, which is how a radio fact got offered for every drive.
+        # A fact's own "fit" list (what must be visible for the fact to be about the moment, written
+        # per fact on 2026-11-26) wins over the looser 'pairs with' tags. An empty list means the
+        # fact is never about a moment on screen (sales, trailer views).
+        hits = 0
+        fit = x.get("fit")
+        tags = [str(t) for t in fit] if isinstance(fit, list) else str(x.get("pairs_with", "") or "").split(",")
+        for tag in tags:
+            if isinstance(fit, list):
+                tw = _fit_tokens(tag)
+                ok = bool(tw) and tw <= st
+            else:
+                tw = _tag_words(tag) - _FIT_WEAK
+                ok = bool(tw) and tw <= sw
+            if ok:
+                hits += len(tw)
+        if hits >= min_hits:
+            scored.append((hits, float(x.get("wow", 3)), x))
+    scored.sort(key=lambda t: (-t[0], -t[1]))
+    return [x for _, _, x in scored]
+
+
+def pick_facts(game: str, context: str = "", fitted: list[dict] | None = None) -> list[dict]:
+    if fitted:
+        # The fit check already chose the facts this scene is about; offer only those, so the writer
+        # cannot reach for an unrelated high-wow fact and stretch the clip to fit it.
+        return fitted[:FACTS_SHOWN]
+    return _pick_facts(game, context)
+
+
+def _pick_facts(game: str, context: str = "") -> list[dict]:
     """Up to FACTS_SHOWN unused facts. With a clip context (what is on screen plus the subtitles),
     the first slots go to the facts whose text and 'pairs with' tag share the most words with it,
     the rest to the highest wow (2026-11-24: the writer was offered trailer view counts for a robbery
@@ -220,6 +386,8 @@ def mark_fact(game: str, fact_id: str) -> None:
     try:
         from core import gh_release
         gh_release.mark_story_quote(f"fact:{game}:{fact_id}")
+        if "ids" in _USED_CACHE:             # so a second card in the same run cannot reuse it
+            _USED_CACHE["ids"] = set(_USED_CACHE["ids"]) | {f"fact:{game}:{fact_id}"}
     except Exception as e:
         log(f"could not record used fact {fact_id} ({e!r})")
 
@@ -372,7 +540,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         f"  1. CONTEXT: straight into the situation in a few words. NEVER open with 'In {gname}' "
         "or 'In GTA 6' or any 'In <game>' phrase: the headline already did the job.\n"
         "  2. THE DETAIL: the specific thing worth knowing, with its number, name or rule, and "
-        "what it MEANS. This is the heart of the card.\n"
+        "what it MEANS as a listed fact, the subtitles or on-screen text says it (never a meaning "
+        "you worked out yourself, 2026-11-26). This is the heart of the card.\n"
         "  3. WHAT TO DO WITH IT (OPTIONAL, 2026-11-26): a consequence or tip for a player (what "
         "it costs, what to do first, what to avoid) ONLY when a listed fact, the subtitles or "
         "on-screen text states it; for a story moment, what the line reveals ONLY when the "
@@ -395,7 +564,8 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "THE CARD EXPLAINS, IT NEVER NARRATES THE PICTURE. The viewer is watching the same "
         "footage, so telling them what is on screen is worthless — a card that reads like a "
         "scene description is a FAILED card. Give them what they CANNOT see: what the line "
-        "means, what it sets up, what it costs someone later. NEVER make clothing, hair, "
+        "means as the subtitles or a listed fact give it, what a listed fact says about it. "
+        "NEVER make clothing, hair, "
         "lighting, colour, the camera, the UI, an on-screen caption or a character's face the "
         "POINT of the card. Never write 'the scene opens on', 'watch his face', 'a teen in a "
         "grey t-shirt', 'a man in a lab coat', 'in a green-lit lab'. If the only thing you can "
@@ -483,7 +653,7 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "Nothing else is a source: not research, not 'guides', not "
         "your own knowledge of the game, not a website. Build the card on ONE verified game fact "
         "whenever the clip has fewer than two strong on-screen or spoken facts. A thing the viewer "
-        "can plainly see is NOT a fact for this list unless you add what it means or what it costs. "
+        "can plainly see is NOT a fact for this list unless a listed fact says what it means or costs. "
         "Then write the body so that EVERY sentence carries a different item from that list or a "
         "concrete use of one. The first sentence states a fact, never a description of the shot. "
         "No sentence may repeat the previous one in other words. If you run out of facts, STOP: "
@@ -1193,12 +1363,19 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
     outdir.mkdir(parents=True, exist_ok=True)
     # FOOTAGE LOG FIRST (Bryce, 2026-11-24): a card is only written about footage whose log says who
     # did what. A clip with no log yet is refused here, before any AI work, and the slot tries another.
-    truth = None
+    truth, fitted = None, None
     if not text and not card:
         truth = footage_log_events(log_name or Path(clip).name, game, start + log_offset, dur)
         lcfg0 = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
         if truth is None and bool(lcfg0.get("require_footage_log", True)):
             raise CardRefused(f"no footage log for {log_name or Path(clip).name} yet")
+        # FACT FIT FIRST (Bryce, 2026-11-26, after 23 refused moments in one slot): a fact card needs a
+        # sourced fact about what this moment shows. Checked from the log's account of the Short's own
+        # seconds before any AI work, so a moment no fact fits costs seconds, not four minutes.
+        if truth and bool(lcfg0.get("facts", True)) and bool(lcfg0.get("require_fact_fit", True)):
+            fitted = fit_for_moment(log_name or Path(clip).name, game, start + log_offset, dur)
+            if fitted is not None and not fitted:
+                raise NoFactFit("no listed fact is about what this moment shows")
     seg = outdir / "segment.mp4"
     ff = ffmpeg.ffmpeg_bin() or "ffmpeg"
     # Never run past the footage: the final render LOOPS the segment to fill `dur`, so a
@@ -1227,6 +1404,18 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             cands = frames.extract_candidates(seg, Path(tmp), n=max(6, observe_frame_count(dur)))
             observation = _observe_clip(cands, gname, dur)
             seen_text = observation + "\n" + (truth or "").split(LOG_OUTSIDE)[0]
+            # The WRITER sees only the log's account of the Short's own seconds (2026-11-26: cards used
+            # lines, menus and prices from after the Short ended, and were refused). The checker and fan
+            # critic still see the whole log, to catch who-did-what mistakes.
+            writer_obs = observation
+            if truth:
+                _wo = truth.split("\nWatch outs:\n", 1)[1] if "\nWatch outs:\n" in truth else ""
+                writer_obs += ("\n\nWHAT REALLY HAPPENS IN THE SHORT (the footage log, written from the timed "
+                               "dialogue and frames of the whole recording; it OUTRANKS any reading of these few "
+                               "frames, above all on who does what to whom; nothing outside these seconds may go "
+                               "on the card):\n" + re.sub(r"^Clip summary:[^\n]*\n", "",
+                                                           truth.split(LOG_OUTSIDE)[0]).rstrip()
+                               + (f"\nWatch outs:\n{_wo}" if _wo else ""))
             if truth:
                 observation += ("\n\nWHAT REALLY HAPPENS AROUND THIS MOMENT (the footage log, written from the "
                                 "timed dialogue and frames of the whole recording; it OUTRANKS any reading of "
@@ -1251,7 +1440,8 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         lcfg = (CONFIG.reels.get("gameplay", {}) or {}).get("lore", {}) or {}
         research = (research_scene(observation, subs, gname)
                     if bool(lcfg.get("research", True)) else "")
-        _facts = pick_facts(game, f"{observation} {subs}") if bool(lcfg.get("facts", True)) else []
+        _facts = (pick_facts(game, f"{observation} {subs}", fitted=fitted)
+                  if bool(lcfg.get("facts", True)) else [])
         facts = facts_text(_facts)
         if _facts:
             log(f"fact bank: {len(_facts)} sourced facts offered "
@@ -1285,8 +1475,9 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                                "stop; never add a 'so' or 'which is why' conclusion that no listed fact states")
             shape_ok, shape_why = card_shape_ok(c.get("body", ""))
             if not shape_ok:
-                return False, (f"{shape_why} — the viewer can already see that. Explain what "
-                               "the moment MEANS instead.")
+                return False, (f"{shape_why}: the viewer can already see that. Lead with the listed "
+                               "fact instead and use the screen only to place it; never add a meaning "
+                               "that no listed fact, subtitle or on-screen text states")
             head = c.get("headline", "")
             nh = len(head.split())
             if not (5 <= nh <= 9):
@@ -1348,7 +1539,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
         # Humanize BEFORE the judges (user, 2026-11-09), so the fact-check runs on the exact
         # words that go on screen.
         from core import humanize
-        card = humanize.card(_write_card(observation, subs, game, gname, research=research,
+        card = humanize.card(_write_card(writer_obs, subs, game, gname, research=research,
                                          facts=facts),
                              gname, WORDS_MIN, WORDS_MAX)
         if card.get("body"):
@@ -1358,7 +1549,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                 # Two rewrites, each told exactly why the last one failed (2026-11-24: the fan critic's
                 # notes say what a real fan wants, so a second rewrite usually lands).
                 for attempt in (2, 3):
-                    card2 = humanize.card(_write_card(observation, subs, game, gname, avoid=why,
+                    card2 = humanize.card(_write_card(writer_obs, subs, game, gname, avoid=why,
                                                       research=research, facts=facts),
                                           gname, WORDS_MIN, WORDS_MAX)
                     ok2, why2 = _judge(card2) if card2.get("body") else (False, "no card text")
@@ -1404,7 +1595,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             # (Bryce, 2026-11-23: a slot must always be filled, so do not waste a good moment).
             log("the headline's subject is not on screen; rewriting once about what the clip shows")
             c2 = humanize.card(_write_card(
-                observation, subs, game, gname, research=research, facts=facts,
+                writer_obs, subs, game, gname, research=research, facts=facts,
                 avoid="the HEADLINE's subject never appears in this clip; headline something the "
                       "clip clearly shows"), gname, WORDS_MIN, WORDS_MAX)
             if c2.get("body") and _judge(c2)[0]:

@@ -1,6 +1,6 @@
 {
  "game": "gta6",
- "updated": "2026-11-20",
+ "updated": "2026-11-26",
  "facts": [
   {
    "id": "gta6-01",
@@ -12,7 +12,13 @@
    "wow": 5,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "twerking",
+    "twerk",
+    "alligator pool",
+    "gator pool"
+   ]
   },
   {
    "id": "gta6-03",
@@ -25,7 +31,8 @@
    "wow": 5,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-05",
@@ -38,7 +45,8 @@
    "wow": 5,
    "pairs_with": "city view",
    "flag": "Rockstar's own figure, not independently audited.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-06",
@@ -50,7 +58,13 @@
    "wow": 5,
    "pairs_with": "city view",
    "flag": "One interview (to YouTuber TGG), relayed by Kotaku.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "full map",
+    "world map",
+    "pause map",
+    "map zoomed out"
+   ]
   },
   {
    "id": "gta6-07",
@@ -63,7 +77,8 @@
    "wow": 4,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-08",
@@ -76,7 +91,8 @@
    "wow": 4,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-09",
@@ -88,7 +104,8 @@
    "wow": 4,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-10",
@@ -100,7 +117,11 @@
    "wow": 4,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Tom Petty",
+    "Love Is a Long Road"
+   ]
   },
   {
    "id": "gta6-11",
@@ -113,7 +134,11 @@
    "wow": 4,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Pointer Sisters",
+    "Hot Together"
+   ]
   },
   {
    "id": "gta6-12",
@@ -125,7 +150,8 @@
    "wow": 4,
    "pairs_with": "driving",
    "flag": "One outlet's own test.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-13",
@@ -138,7 +164,8 @@
    "wow": 4,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-14",
@@ -151,7 +178,12 @@
    "wow": 4,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Liberty City",
+    "Lucia mother",
+    "Lucia mom"
+   ]
   },
   {
    "id": "gta6-15",
@@ -163,7 +195,8 @@
    "wow": 4,
    "pairs_with": "a character",
    "flag": "Reported in Kotaku's round-up of launch-window interviews.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-16",
@@ -175,7 +208,15 @@
    "wow": 4,
    "pairs_with": "a character",
    "flag": "Kotaku round-up of previews.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "gym",
+    "bench press",
+    "workout",
+    "working out",
+    "eating",
+    "muscle"
+   ]
   },
   {
    "id": "gta6-17",
@@ -187,7 +228,8 @@
    "wow": 4,
    "pairs_with": "city view",
    "flag": "Rockstar comment to IGN, relayed by Kotaku.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-18",
@@ -199,7 +241,11 @@
    "wow": 4,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "banner plane",
+    "Nine1Nine"
+   ]
   },
   {
    "id": "gta6-19",
@@ -212,7 +258,8 @@
    "wow": 4,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-20",
@@ -225,7 +272,8 @@
    "wow": 4,
    "pairs_with": "city view",
    "flag": "Take-Two figures as reported by secondary outlets; later reports put GTA V past 230 million.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-21",
@@ -238,7 +286,8 @@
    "wow": 4,
    "pairs_with": "a cutscene",
    "flag": "Runtime differs by outlet: about 26 minutes (Kotaku) or just over 30 (VGC).",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-22",
@@ -251,7 +300,8 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-23",
@@ -264,7 +314,11 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "Older-game facts from Wikipedia.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Tommy Vercetti",
+    "Vercetti"
+   ]
   },
   {
    "id": "gta6-24",
@@ -278,7 +332,8 @@
    "wow": 3,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-25",
@@ -290,7 +345,8 @@
    "wow": 3,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-26",
@@ -303,7 +359,8 @@
    "wow": 3,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-27",
@@ -316,7 +373,12 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Cal Hampton",
+    "Cal",
+    "Coast Guard"
+   ]
   },
   {
    "id": "gta6-28",
@@ -329,7 +391,13 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Brian Heder",
+    "Heder",
+    "boat yard",
+    "Lori"
+   ]
   },
   {
    "id": "gta6-29",
@@ -341,7 +409,14 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Real Dimez",
+    "Bae-Luxe",
+    "Roxy",
+    "DWNPLY",
+    "Only Raw"
+   ]
   },
   {
    "id": "gta6-30",
@@ -354,7 +429,14 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Boobie Ike",
+    "Boobie",
+    "strip club",
+    "recording studio",
+    "Only Raw"
+   ]
   },
   {
    "id": "gta6-31",
@@ -366,7 +448,13 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Ambrosia",
+    "sugar refinery",
+    "Allied Crystal",
+    "biker gang"
+   ]
   },
   {
    "id": "gta6-32",
@@ -378,7 +466,14 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Mount Kalaga",
+    "Kalaga",
+    "hunting",
+    "fishing",
+    "off-road trail"
+   ]
   },
   {
    "id": "gta6-33",
@@ -390,7 +485,14 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Ocean Drive",
+    "Breakwater",
+    "Beacon hotel",
+    "Avalon",
+    "art deco hotel"
+   ]
   },
   {
    "id": "gta6-34",
@@ -403,7 +505,13 @@
    "wow": 3,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "wanted star",
+    "wanted level",
+    "six star",
+    "stars lit"
+   ]
   },
   {
    "id": "gta6-35",
@@ -416,7 +524,14 @@
    "wow": 3,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "wanted level",
+    "mask",
+    "wardrobe",
+    "outfit change",
+    "changes clothes"
+   ]
   },
   {
    "id": "gta6-36",
@@ -429,7 +544,13 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "pet dog",
+    "petting",
+    "dog treat",
+    "dog"
+   ]
   },
   {
    "id": "gta6-37",
@@ -442,7 +563,13 @@
    "wow": 3,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Waink",
+    "scans car",
+    "car scan",
+    "car value"
+   ]
   },
   {
    "id": "gta6-38",
@@ -455,7 +582,12 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "Confirmed to one Brazilian YouTuber, relayed by Kotaku.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "first person",
+    "sniper scope",
+    "scope"
+   ]
   },
   {
    "id": "gta6-39",
@@ -468,7 +600,13 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "Rockstar to IGN, relayed by Kotaku.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "kiss",
+    "kissing",
+    "romance",
+    "hug"
+   ]
   },
   {
    "id": "gta6-40",
@@ -481,7 +619,8 @@
    "wow": 3,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-41",
@@ -494,7 +633,8 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-42",
@@ -507,7 +647,8 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "Each claim covers one store only; no combined count was published.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-43",
@@ -520,7 +661,8 @@
    "wow": 3,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-44",
@@ -532,7 +674,8 @@
    "wow": 3,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-45",
@@ -545,7 +688,8 @@
    "wow": 3,
    "pairs_with": "a character",
    "flag": "Covers the story mode only; plans for any online mode were not discussed.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-46",
@@ -559,7 +703,8 @@
    "wow": 2,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-47",
@@ -572,7 +717,8 @@
    "wow": 2,
    "pairs_with": "a cutscene",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-48",
@@ -584,7 +730,8 @@
    "wow": 2,
    "pairs_with": "a cutscene",
    "flag": "Single outlet's count.",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-49",
@@ -597,7 +744,14 @@
    "wow": 2,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "penitentiary",
+    "prison",
+    "jail",
+    "Lucia punch",
+    "Lucia fight"
+   ]
   },
   {
    "id": "gta6-50",
@@ -610,7 +764,13 @@
    "wow": 2,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Army",
+    "military",
+    "drug runner",
+    "Leonida Keys"
+   ]
   },
   {
    "id": "gta6-51",
@@ -623,7 +783,12 @@
    "wow": 2,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Raul",
+    "Bautista",
+    "bank robber"
+   ]
   },
   {
    "id": "gta6-52",
@@ -636,7 +801,15 @@
    "wow": 2,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "Grassrivers",
+    "swamp",
+    "fan boat",
+    "airboat",
+    "gator",
+    "alligator"
+   ]
   },
   {
    "id": "gta6-53",
@@ -648,7 +821,15 @@
    "wow": 2,
    "pairs_with": "city view",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "art deco",
+    "Little Cuba",
+    "panaderia",
+    "flea market",
+    "cruise ship",
+    "Tisha-Wocka"
+   ]
   },
   {
    "id": "gta6-54",
@@ -660,7 +841,13 @@
    "wow": 2,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "getaway",
+    "store robbery",
+    "robs store",
+    "robbery"
+   ]
   },
   {
    "id": "gta6-55",
@@ -672,7 +859,13 @@
    "wow": 2,
    "pairs_with": "driving",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": [
+    "search circle",
+    "search area",
+    "minimap circle",
+    "search zone"
+   ]
   },
   {
    "id": "gta6-56",
@@ -686,7 +879,8 @@
    "wow": 2,
    "pairs_with": "a character",
    "flag": "",
-   "checked": "2026-11-19"
+   "checked": "2026-11-19",
+   "fit": []
   },
   {
    "id": "gta6-57",
@@ -698,7 +892,12 @@
    "wow": 5,
    "pairs_with": "cruising Vice City with the radio on",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Yankovic",
+    "Vice City radio",
+    "radio station"
+   ]
   },
   {
    "id": "gta6-58",
@@ -710,7 +909,15 @@
    "wow": 5,
    "pairs_with": "driving with the radio on, highways",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Bad Bunny",
+    "Martillo",
+    "Cocoteo",
+    "Back Country Radio",
+    "Lana Del Rey",
+    "radio station"
+   ]
   },
   {
    "id": "gta6-59",
@@ -722,7 +929,15 @@
    "wow": 4,
    "pairs_with": "high-speed chases, wanted level",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Slayer",
+    "Raining Blood",
+    "Chamber",
+    "Kerry King",
+    "metal radio",
+    "radio station"
+   ]
   },
   {
    "id": "gta6-60",
@@ -734,7 +949,15 @@
    "wow": 3,
    "pairs_with": "neon Vice City night driving",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Robyn",
+    "Dirty South",
+    "Trick Daddy",
+    "Trina",
+    "Flash radio",
+    "radio station"
+   ]
   },
   {
    "id": "gta6-61",
@@ -746,7 +969,13 @@
    "wow": 3,
    "pairs_with": "walking or jogging on the beach",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "podcast",
+    "headphone",
+    "earbud",
+    "phone radio"
+   ]
   },
   {
    "id": "gta6-62",
@@ -758,7 +987,15 @@
    "wow": 4,
    "pairs_with": "cinematic city skyline at sunset",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Justice",
+    "Tame Impala",
+    "SZA",
+    "King Gizzard",
+    "Flower in a Hurricane",
+    "soundtrack"
+   ]
   },
   {
    "id": "gta6-63",
@@ -770,7 +1007,15 @@
    "wow": 5,
    "pairs_with": "swamps and wildlife",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "iguana",
+    "cane toad",
+    "feral cat",
+    "monkey",
+    "macaque",
+    "wildlife"
+   ]
   },
   {
    "id": "gta6-64",
@@ -782,7 +1027,14 @@
    "wow": 4,
    "pairs_with": "hunting in Mount Kalaga, wildlife",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "legendary animal",
+    "rare animal",
+    "Discoverable",
+    "hunting",
+    "wildlife"
+   ]
   },
   {
    "id": "gta6-65",
@@ -794,7 +1046,15 @@
    "wow": 4,
    "pairs_with": "scuba diving, boats, ocean",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "shark",
+    "whale",
+    "stingray",
+    "turtle",
+    "jellyfish",
+    "underwater"
+   ]
   },
   {
    "id": "gta6-66",
@@ -807,7 +1067,15 @@
    "wow": 4,
    "pairs_with": "storms, rain, driving on the coast",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "storm",
+    "hurricane",
+    "rain",
+    "thunder",
+    "lightning",
+    "tropical storm"
+   ]
   },
   {
    "id": "gta6-67",
@@ -819,7 +1087,13 @@
    "wow": 3,
    "pairs_with": "wet streets after rain",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "puddle",
+    "rainbow",
+    "wet ground",
+    "after rain"
+   ]
   },
   {
    "id": "gta6-68",
@@ -831,7 +1105,14 @@
    "wow": 5,
    "pairs_with": "crowded streets and pedestrians",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "pedestrian",
+    "NPC",
+    "bystander",
+    "passerby",
+    "crowd"
+   ]
   },
   {
    "id": "gta6-69",
@@ -843,7 +1124,14 @@
    "wow": 4,
    "pairs_with": "walking past graffiti and murals",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "mural",
+    "graffiti",
+    "Stockyard",
+    "street art",
+    "Wynwood"
+   ]
   },
   {
    "id": "gta6-70",
@@ -856,7 +1144,12 @@
    "wow": 3,
    "pairs_with": "downtown Vice City, waterfront",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Sahara Arena",
+    "arena",
+    "Kaseya"
+   ]
   },
   {
    "id": "gta6-71",
@@ -869,7 +1162,8 @@
    "wow": 5,
    "pairs_with": "any epic gameplay montage",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": []
   },
   {
    "id": "gta6-72",
@@ -881,7 +1175,8 @@
    "wow": 3,
    "pairs_with": "scenic cruising montage",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": []
   },
   {
    "id": "gta6-73",
@@ -893,7 +1188,13 @@
    "wow": 5,
    "pairs_with": "city streets, shops, robberies",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "ATM",
+    "Ammu-Nation",
+    "gas station",
+    "bus stop"
+   ]
   },
   {
    "id": "gta6-74",
@@ -905,7 +1206,15 @@
    "wow": 4,
    "pairs_with": "stunt jumps, off-road trucks",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "stunt jump",
+    "golf",
+    "drone",
+    "time trial",
+    "Thrillbilly",
+    "mud"
+   ]
   },
   {
    "id": "gta6-75",
@@ -917,7 +1226,15 @@
    "wow": 4,
    "pairs_with": "shootouts, Ammu-Nation",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "weapon wheel",
+    "sidearm",
+    "firearm",
+    "Ammu-Nation",
+    "loadout",
+    "weapon slot"
+   ]
   },
   {
    "id": "gta6-76",
@@ -929,7 +1246,15 @@
    "wow": 4,
    "pairs_with": "stealing cars",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Slim Jim",
+    "key cloner",
+    "lockpick",
+    "break into",
+    "steals car",
+    "stealing car"
+   ]
   },
   {
    "id": "gta6-77",
@@ -942,7 +1267,15 @@
    "wow": 4,
    "pairs_with": "walking around town, animals",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Criminal Profile",
+    "rubbish",
+    "trash bin",
+    "litter",
+    "feeds animal",
+    "feeding"
+   ]
   },
   {
    "id": "gta6-78",
@@ -954,7 +1287,12 @@
    "wow": 4,
    "pairs_with": "rampages, wanted level",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Criminal Profile",
+    "Irredeemable",
+    "rampage"
+   ]
   },
   {
    "id": "gta6-79",
@@ -966,7 +1304,14 @@
    "wow": 4,
    "pairs_with": "police traffic stops, bridges",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "drag queen",
+    "traffic stop",
+    "streamer",
+    "bridge jump",
+    "jumps off bridge"
+   ]
   },
   {
    "id": "gta6-80",
@@ -978,7 +1323,15 @@
    "wow": 3,
    "pairs_with": "phone use, driving, taxis",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "RydeMe",
+    "ride app",
+    "scooter",
+    "taxi",
+    "car delivery",
+    "rideshare"
+   ]
   },
   {
    "id": "gta6-81",
@@ -990,7 +1343,8 @@
    "wow": 4,
    "pairs_with": "cutscenes, Jason and Lucia",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": []
   },
   {
    "id": "gta6-82",
@@ -1003,7 +1357,8 @@
    "wow": 3,
    "pairs_with": "busy crowds, city life",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": []
   },
   {
    "id": "gta6-83",
@@ -1015,7 +1370,13 @@
    "wow": 3,
    "pairs_with": "close-ups of Jason or Lucia",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "tired",
+    "sleep",
+    "exhausted",
+    "bags under eyes"
+   ]
   },
   {
    "id": "gta6-84",
@@ -1027,7 +1388,14 @@
    "wow": 2,
    "pairs_with": "rooftops, bars, nightlife",
    "flag": "",
-   "checked": "2026-11-20"
+   "checked": "2026-11-20",
+   "fit": [
+    "Effluvia",
+    "rooftop bar",
+    "Pisswasser",
+    "Pißwasser",
+    "lager"
+   ]
   },
   {
    "id": "gta6-85",
@@ -1042,7 +1410,15 @@
    "flag": "Nelson's words to IGN, relayed by Engadget and Vice (IGN itself could not be fetched).",
    "checked": "2026-11-26",
    "quote": "Engadget: \"requires that someone witness the crime, or an alarm needs to be set off for it to be reported to the law\" (Rob Nelson, quoted by IGN). \"Just committing a robbery doesn't necessarily mean your Wanted level will rise, either.\" Vice: \"A crime can go unreported if nobody sees it.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "witness",
+    "alarm",
+    "robbery",
+    "calls police",
+    "police called",
+    "wanted star"
+   ]
   },
   {
    "id": "gta6-86",
@@ -1058,7 +1434,14 @@
    "flag": "",
    "checked": "2026-11-26",
    "quote": "Screen Rant: \"White outlined stars: The cops are responding to a report, but don't know you committed the crime.\" \"White stars: The cops can see you and are in active pursuit.\" Game Rant (hollowed-out stars): \"Police have received a report about a crime but don't know who committed it.\" Engadget (citing GameSpot): \"When police have direct line of sight with you, your stars are solid white\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "wanted star",
+    "hollow star",
+    "outlined star",
+    "white star",
+    "solid star"
+   ]
   },
   {
    "id": "gta6-87",
@@ -1073,7 +1456,14 @@
    "flag": "Close to the bank's clothes-swap fact (gta6-35); the new part is the grey-star timing.",
    "checked": "2026-11-26",
    "quote": "Game Rant (Gray): \"Police have lost visual contact but are still searching for you.\" \"This is a good opportunity to change your clothes, vehicle, or appearance before they spot you again.\" Screen Rant: \"Gray stars: The cops can't see you.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "grey star",
+    "gray star",
+    "wanted star",
+    "lost sight",
+    "police searching"
+   ]
   },
   {
    "id": "gta6-88",
@@ -1088,7 +1478,14 @@
    "flag": "The Focus part is from Push Square only; Engadget (citing GameSpot) confirms police are off the minimap.",
    "checked": "2026-11-26",
    "quote": "Push Square: \"Rockstar has done away with showing cops on the minimap; now, you have to use the Focus mechanic to see them.\" Engadget (citing GameSpot): \"you won't be able to see the police on your minimap, which makes it harder to plan escape routes in advance\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "minimap",
+    "focus mode",
+    "police focus",
+    "police",
+    "cop"
+   ]
   },
   {
    "id": "gta6-89",
@@ -1104,7 +1501,15 @@
    "flag": "Builds on the bank's search-circle fact (gta6-55); the new part is staying out and the restart rule.",
    "checked": "2026-11-26",
    "quote": "Screen Rant: \"To end the pursuit, you'll need to get out of this circle and stay out of it until it disappears\" Dexerto: \"Even if you've escaped, your Wanted Level will stay the same in this area\" \"if the cops recognize you, the pursuit will restart.\" Vice: \"Leaving that area is one way to end the immediate pursuit.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "search circle",
+    "search area",
+    "evade",
+    "escape police",
+    "lost the cops",
+    "wanted star"
+   ]
   },
   {
    "id": "gta6-90",
@@ -1121,7 +1526,14 @@
    "flag": "Button prompt is the PlayStation layout given by Push Square.",
    "checked": "2026-11-26",
    "quote": "Game Rant (Accomplice): \"Police know that two people were involved in the crime and are searching for both characters.\" \"You should look to split up.\" Push Square: \"(This can be particularly important when you're Wanted and police know you're operating as a pair.)\" \"The easiest way to do this is to hold Right and press Triangle to Split Up\" Screen Rant: \"Two heads: Partner recognized.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "heat icon",
+    "two heads",
+    "split up",
+    "wanted star",
+    "police"
+   ]
   },
   {
    "id": "gta6-91",
@@ -1136,7 +1548,15 @@
    "flag": "Smash-to-clear is from Game Rant; the cloud icon is from Screen Rant. Game Rant's bank guide also says cloud-saved CCTV means police are under a minute away.",
    "checked": "2026-11-26",
    "quote": "Game Rant: \"Look for the security recorder in the area where you committed the crime.\" \"Smashing or destroying the recorder removes the footage and clears the icon.\" Screen Rant: \"Camera with cloud: You've been caught on camera, and the footage has been uploaded online.\" \"Unfortunately, there's no way to get rid of this icon.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "camera icon",
+    "CCTV",
+    "security camera",
+    "security recorder",
+    "heat icon",
+    "cloud icon"
+   ]
   },
   {
    "id": "gta6-92",
@@ -1152,7 +1572,15 @@
    "flag": "",
    "checked": "2026-11-26",
    "quote": "Game Rant: \"Police have identified your getaway vehicle, including its appearance and other identifying details.\" \"Abandon the vehicle and steal another one.\" \"Visit a Pay 'N Spray to respray your car after losing the immediate police chase.\" Screen Rant: \"Car: Vehicle recognized. Switch to a different car, or take your current one to a Mod Shop to repaint it.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "car icon",
+    "pay n spray",
+    "respray",
+    "Mod Shop",
+    "heat icon",
+    "switch cars"
+   ]
   },
   {
    "id": "gta6-93",
@@ -1166,7 +1594,14 @@
    "flag": "Single source (Kotaku launch tips).",
    "checked": "2026-11-26",
    "quote": "\"a one-star wanted level can be erased if you just talk to the cop and defuse the situation\" \"Hold the left trigger to focus on the cop\" \"you'll see the option to defuse or provoke the cop.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "one star",
+    "talk down",
+    "defuse",
+    "officer",
+    "police stop"
+   ]
   },
   {
    "id": "gta6-94",
@@ -1180,7 +1615,15 @@
    "flag": "Single source for the per-star breakdown; Screen Rant only says more squad cars, SWAT teams and helicopters come as stars rise.",
    "checked": "2026-11-26",
    "quote": "\"At one star, you might only have a patrol car with two officers looking for you.\" \"Two stars bring even more police vehicles, while three stars can bring in a whole helicopter.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "police helicopter",
+    "helicopter",
+    "two star",
+    "three star",
+    "patrol car",
+    "wanted star"
+   ]
   },
   {
    "id": "gta6-95",
@@ -1195,7 +1638,14 @@
    "flag": "Vice (citing Famitsu) confirms carried cash can be lost on Busted or Wasted; the bank and stash part is Game Rant only.",
    "checked": "2026-11-26",
    "quote": "Game Rant: \"Any money you have in your pocket at the time of arrest will be taken by the cops.\" \"You cannot get it back.\" \"Money in the bank or in your hidden stash remains safe.\" Vice: \"cash you're carrying can be lost if you get Busted or Wasted.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "busted",
+    "arrest",
+    "arrested",
+    "handcuff",
+    "hidden stash"
+   ]
   },
   {
    "id": "gta6-96",
@@ -1210,7 +1660,14 @@
    "flag": "Both pages are Game Rant.",
    "checked": "2026-11-26",
    "quote": "\"Starting from Chapter 2, if you get arrested, you're charged a small bailout fee directly to your BuckMe account\" \"when you're released.\" \"There is no such thing in Chapter 1.\" Second Game Rant page: \"they can (and will) deduct a bail fee from the cash in your Current Account.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "busted",
+    "BuckMe",
+    "bail",
+    "bailout",
+    "bank app"
+   ]
   },
   {
    "id": "gta6-97",
@@ -1224,7 +1681,14 @@
    "flag": "Single source (Game Rant).",
    "checked": "2026-11-26",
    "quote": "\"If you surrender, your wanted star level will not go up, and you'll immediately be arrested and sent to jail.\" \"Your criminal profile will remain the same.\" \"If you resist arrest (and succeed), your wanted level will go up by 1 star, and the police chase will begin anew.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "surrender",
+    "hands up",
+    "arrest",
+    "resist arrest",
+    "busted"
+   ]
   },
   {
    "id": "gta6-98",
@@ -1239,7 +1703,14 @@
    "flag": "",
    "checked": "2026-11-26",
    "quote": "Shacknews: \"Each of them can carry up to two bags, but this will limit weapon use\" \"since one of their hands will be used to carry the second bag\" \"you can hand one of your two bags over to your partner by holding the right d-pad\" Game Rant: \"Grab all the Marked Bills, and if your bags ever get full, pass them to your partner.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "stash bag",
+    "duffel bag",
+    "loot bag",
+    "money bag",
+    "hands bag"
+   ]
   },
   {
    "id": "gta6-99",
@@ -1254,7 +1725,14 @@
    "flag": "Shacknews is softer: if captured or wasted 'you'll probably lose it'.",
    "checked": "2026-11-26",
    "quote": "Game Rant: \"If you have any stolen merchandise on your person or in your car, it will be confiscated by the police.\" \"This includes Stash Bags that need to be delivered to fences.\" Shacknews: \"if you're captured or wasted, you'll probably lose it.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "busted",
+    "stash bag",
+    "confiscate",
+    "stolen goods",
+    "loot bag"
+   ]
   },
   {
    "id": "gta6-100",
@@ -1270,7 +1748,12 @@
    "flag": "",
    "checked": "2026-11-26",
    "quote": "Shacknews: \"These trackers do transmit your location, but only if you're moving slowly.\" \"Driving fast will prevent the tracker from transmitting your location.\" \"If you must slow down, which is common, the tracker will tell police where you are, and they will swarm the area.\" Kotaku: \"If you steal a car and you spot a red tracking icon in the bottom left\" \"police will be able to find you on the map if you drive slowly for too long.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "tracker",
+    "Advanced tracker",
+    "tracker icon"
+   ]
   },
   {
    "id": "gta6-101",
@@ -1285,7 +1768,15 @@
    "flag": "",
    "checked": "2026-11-26",
    "quote": "VGC: \"There are basic cash drawers which you can get by threatening the tellers, there are safe which hide large numbers of marked bills\" \"there are the bank vaults which house the largest amounts of money and in the game.\" \"The police response is huge as soon as they are called\" Game Rant: \"Large Banks in GTA 6 have three points of interest: The Safe, Vault, and Cash Drawers.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "bank robbery",
+    "vault",
+    "cash drawer",
+    "bank heist",
+    "robs bank",
+    "bank safe"
+   ]
   },
   {
    "id": "gta6-102",
@@ -1299,7 +1790,14 @@
    "flag": "Single source (Game Rant). The same guide says full bank looting unlocks partway through the story; that detail is left out to avoid naming missions.",
    "checked": "2026-11-26",
    "quote": "\"If you've tailed an Armored Truck to a bank, then the vault will be open.\" \"As soon as you enter the vault, alarms will go off, so stealth is out the window.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "armoured truck",
+    "armored truck",
+    "vault",
+    "bank alarm",
+    "bank robbery"
+   ]
   },
   {
    "id": "gta6-103",
@@ -1313,7 +1811,15 @@
    "flag": "Single source (Kotaku launch tips).",
    "checked": "2026-11-26",
    "quote": "\"When sneaking into a place to rob it, use focus to spot which doors are connected to the alarm system quickly.\" \"These doors will glow red.\"",
-   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "red door",
+    "glowing door",
+    "alarm door",
+    "focus door",
+    "sneaks in",
+    "stealth"
+   ]
   },
   {
    "id": "gta6-104",
@@ -1328,6 +1834,652 @@
    "flag": "Free switching in the open world only unlocks after Chapter 1 (Kotaku, VGC guide).",
    "checked": "2026-11-26",
    "quote": "Push Square: \"While Jason and Lucia are together, you're able to switch control between them instantaneously.\" VGC review: \"You can swap between them mid-mission, or play the entire thing as one of the other.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)",
+   "fit": [
+    "switch character",
+    "switch Lucia",
+    "switch Jason",
+    "switches Lucia",
+    "switches Jason",
+    "swap control"
+   ]
+  },
+  {
+   "id": "gta6-105",
+   "fact": "Jason's house in Key Lento has a home gym on the back deck: kettle bells, a bench press, deadlifts, pull-ups and squats, which all count towards your strength workout.",
+   "source": "https://www.shacknews.com/article/151398/working-out-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151398/working-out-gta6",
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/"
+   ],
+   "wow": 3,
+   "pairs_with": "workout, gym, home gym, pull-ups, bench press, squats, deadlift, kettlebell, weights, strength, back deck, Jason's house",
+   "fit": [
+    "bench press",
+    "squat",
+    "kettlebell",
+    "deadlift",
+    "back deck",
+    "pull-up bar",
+    "pull-up workout",
+    "pull-up rep"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Just head out onto the back deck and you’ll find kettle bells, bench press, deadlifts, pull-ups, and squats. These will all contribute to your strength workout.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-106",
+   "fact": "Most gyms in Leonida need a membership, but Jason and Lucia share one, so you only buy it once, at the front desk the first time you walk into a gym.",
+   "source": "https://www.shacknews.com/article/151398/working-out-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151398/working-out-gta6"
+   ],
+   "wow": 2,
+   "pairs_with": "gym, workout, membership, front desk, Jason and Lucia, treadmill",
+   "fit": [
+    "gym membership",
+    "front desk",
+    "gym"
+   ],
+   "flag": "Only Shacknews says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Thankfully, Jason and Lucia share a membership, so you only have to buy it once. The first time you head into a gym, talk to the front desk to purchase your membership.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-107",
+   "fact": "Strength and Cardio run on Workout Windows: train inside the window and the stat grows, miss it and the stat slips back. Focus is different, it can only go up and never drops.",
+   "source": "https://www.pushsquare.com/guides/gta-6-workouts-explained-and-why-to-do-them",
+   "sources": [
+    "https://www.pushsquare.com/guides/gta-6-workouts-explained-and-why-to-do-them",
+    "https://insider-gaming.com/how-fitness-works-gta-6-strength-cardio-focus/"
+   ],
+   "wow": 3,
+   "pairs_with": "workout, gym, strength, cardio, stamina, focus, stats, strength workout, progress bar",
+   "fit": [
+    "workout window",
+    "strength workout",
+    "cardio",
+    "focus level"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Push Square: \"Exercising in this period would contribute towards increasing my Strength and Cardio levels; failing to do so within the Workout Window would cause them to regress.\" and \"It's worth noting that your Focus Level can only increase and won't ever regress.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-108",
+   "fact": "You can't lift all day: you soon hit a point where no more gains come until you rest and recover, and an on-screen prompt tells you when. Having some protein afterwards halves the wait before you can train again.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/",
+    "https://www.pushsquare.com/guides/gta-6-workouts-explained-and-why-to-do-them"
+   ],
+   "wow": 3,
+   "pairs_with": "workout, gym, strength workout, you need time to recover, rest, recover, protein, protein shake, notification, stats",
+   "fit": [
+    "need time to recover",
+    "recover",
+    "protein",
+    "strength workout"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"you'll soon hit a wall where no further gains can be made until you rest and recover\" and \"consuming some protein after will halve the time you need to wait before you can go again. On screen prompts will inform you when you reach that point\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-109",
+   "fact": "During strength exercises, watch the stamina gauge in the top-left corner: if it runs out, the workout ends. You may also need to tap a button quickly to push out the last few hard reps.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/"
+   ],
+   "wow": 2,
+   "pairs_with": "workout, reps, +1 rep, bench press, pull-ups, squats, weights, stamina, gym",
+   "fit": [
+    "rep",
+    "bench press",
+    "squat",
+    "stamina gauge",
+    "pull-up bar",
+    "pull-up workout",
+    "pull-up rep"
+   ],
+   "flag": "Only GamesRadar+ says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"keep an eye on your stamina gauge in the top-left corner as if that fully depletes then your workout will end. You may also need to quickly press X/A to push out the last few difficult reps, so watch out for that prompt too.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-110",
+   "fact": "The heavy bag from the shed can be hung under Jason's house for cardio, and Shacknews says it is by far the fastest of the cardio options there. In a proper gym, the treadmill or stationary bike is your best bet.",
+   "source": "https://www.shacknews.com/article/151398/working-out-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151398/working-out-gta6",
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-workout/",
+    "https://insider-gaming.com/top-10-things-safehouse-gta-6/"
+   ],
+   "wow": 2,
+   "pairs_with": "workout, punching bag, heavy bag, boxing, cardio, stamina, treadmill, exercise bike, gym, Jason's house",
+   "fit": [
+    "heavy bag",
+    "punching bag",
+    "treadmill",
+    "stationary bike",
+    "cardio"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"You can also run, cycle, swim, and kayak if you want to train your cardio, but the heavy bag is by far the fastest of those options. If you’re in a proper gym, running on the treadmill or riding the stationary bike is your best bet.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-111",
+   "fact": "Your personal car's trunk holds up to five outfits, so you can change on the road. You pick them at a wardrobe with the Add to Trunk option, and a dirt bike will not work because it has no trunk.",
+   "source": "https://gamerant.com/gta-6-how-to-store-outfits-in-car-vehicle/",
+   "sources": [
+    "https://gamerant.com/gta-6-how-to-store-outfits-in-car-vehicle/",
+    "https://screenrant.com/gta-6-how-to-change-your-clothes-save-outfits/",
+    "https://www.pcgamer.com/games/grand-theft-auto/your-gta-6-car-is-your-red-dead-2-horse-and-its-perfect/"
+   ],
+   "wow": 3,
+   "pairs_with": "wardrobe, outfit, outfits in trunk, trunk, car, change clothes, saved outfits, clothes",
+   "fit": [
+    "outfits in trunk",
+    "trunk outfit",
+    "add to trunk",
+    "wardrobe"
+   ],
+   "flag": "PC Gamer says five 'by default'.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"You can select 5 outfits to store at a time.\" and \"Only vehicles with trunks can be used to access stored outfits. A dirt bike, for instance, won’t work.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-112",
+   "fact": "Everything you buy or earn to wear is kept at your safehouse. But a hat or other item you take off a passer-by or an enemy is not saved until you go back to the safehouse.",
+   "source": "https://www.videogameschronicle.com/guide/how-to-change-clothes-in-gta-6/",
+   "sources": [
+    "https://www.videogameschronicle.com/guide/how-to-change-clothes-in-gta-6/"
+   ],
+   "wow": 2,
+   "pairs_with": "wardrobe, clothes, outfit, hat, safehouse, clothing",
+   "fit": [
+    "wardrobe",
+    "safehouse wardrobe",
+    "hat",
+    "saved outfit"
+   ],
+   "flag": "Only VGC says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "VGC: \"If you pick up a piece of clothing off a member of the public, or an enemy, like a hat, then that piece of clothing won’t be saved until you go back to your safe house.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-113",
+   "fact": "Take Jason and Lucia clothes shopping together and you can buy for both of them, and buying clothing for your partner earns extra romance points.",
+   "source": "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+   "sources": [
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+    "https://www.pcgamer.com/games/grand-theft-auto/gta-6-romance-jason-lucia/"
+   ],
+   "wow": 3,
+   "pairs_with": "clothing store, buying clothes, shopping, tops, swimwear, outfit, changing room, Jason and Lucia, relationship",
+   "fit": [
+    "clothing store",
+    "buying clothes",
+    "changing room",
+    "swimwear",
+    "tops"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"This will let you buy clothing for both of them, try on new items as either character, and modify their current attire. And bonus: Buying clothing for your partner gets you some extra romance points.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-114",
+   "fact": "Every store in GTA 6 is open 24 hours a day, seven days a week. Rockstar's Katie Pica told Kotaku that with over 700 stores, the team chose player convenience over realism.",
+   "source": "https://kotaku.com/heres-why-you-can-get-a-haircut-at-3-am-in-gta-6-2000757815",
+   "sources": [
+    "https://kotaku.com/heres-why-you-can-get-a-haircut-at-3-am-in-gta-6-2000757815"
+   ],
+   "wow": 4,
+   "pairs_with": "shop, store, clothing store, buying clothes, barber, haircut, coffee, night",
+   "fit": [
+    "barber",
+    "haircut",
+    "clothing store",
+    "open 24",
+    "night shopping"
+   ],
+   "flag": "Only Kotaku says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"every store, no matter what it sells or what service it offers, is open 24 hours a day, seven days a week.\" and \"With over 700 stores we opted for player convenience over realism\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-115",
+   "fact": "To keep a stolen car you register it. Your first registration with Moses is free, and after that the cost reflects the car's value, with high-end cars costing more than $20,000 to register.",
+   "source": "https://www.shacknews.com/article/151420/register-vehicles-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151420/register-vehicles-gta6"
+   ],
+   "wow": 3,
+   "pairs_with": "garage, register, registration, registration cost, car, Moses, Pay 'n' Spray, personal vehicle",
+   "fit": [
+    "register",
+    "registration",
+    "Moses"
+   ],
+   "flag": "Only Shacknews gives the $20,000 figure (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Once you start stealing cars for Moses, he’ll offer to register a vehicle for you, and the first one is free.\" and \"The cost of registering a car is reflective of the value of the car, with high-end vehicles costing more than $20,000 to register.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-116",
+   "fact": "Drive a car you own to a Pay 'n' Spray and you can sell it from the menu, with the money paid straight into your BuckMe bank account. Pay 'n' Sprays only take a certain number of sales per day.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-sell-cars-bikes-how-to/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-sell-cars-bikes-how-to/"
+   ],
+   "wow": 3,
+   "pairs_with": "garage, Pay 'n' Spray, sell, selling a car, sell vehicle, bank, BuckMe, money",
+   "fit": [
+    "Pay 'n' Spray",
+    "sell vehicle",
+    "sell car",
+    "BuckMe"
+   ],
+   "flag": "GamesRadar+ adds this works only if you haven't hit your bank balance limit.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"you'll have the option to sell it within the menu there and the money will be deposited directly into your BuckMe account\" and \"Pay 'n' Sprays will only take a certain amount of sales per day\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-117",
+   "fact": "Gas stations can fix your car as well as fuel it: pick Repair from the Services menu at the pump. Kotaku says it costs a small fee and is often cheaper than the Scooter Bros app.",
+   "source": "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+   "sources": [
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+    "https://www.pcgamer.com/games/grand-theft-auto/gta-6-refuel-repair-cars/",
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-repair-car-bike-how-to/"
+   ],
+   "wow": 2,
+   "pairs_with": "repair, gas station, gas pump, garage, car, vehicle services, Scooter Bros, phone",
+   "fit": [
+    "gas pump",
+    "gas station",
+    "repair",
+    "Scooter Bros"
+   ],
+   "flag": "GamesRadar+ says gas stations won't repair a car up to 100% and won't fix critical failures.",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"you can also repair your car or motorcycle for a small fee at any gas pump, too. This is often cheaper than using the Scooter Bros app.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-118",
+   "fact": "You can't drive into a Pay 'n' Spray while the cops can see you, shown by fully filled Wanted stars on the HUD.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-respray-cars-how-to/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-respray-cars-how-to/"
+   ],
+   "wow": 2,
+   "pairs_with": "Pay 'n' Spray, respray, garage, repair, police, wanted stars",
+   "fit": [
+    "Pay 'n' Spray",
+    "respray",
+    "wanted stars"
+   ],
+   "flag": "Only GamesRadar+ says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"It's worth noting that you can't enter a Pay 'n' Spray shop while the cops have a visual on you (indicated by fully-filled Wanted Stars on the HUD).\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-119",
+   "fact": "Any Mod Shop can fit Nitrous Boost for $5,000, under the Performance tab. To fire it you hold the left stick in at full throttle; press it at anything less and you just honk the horn.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-nos-nitrous-boost",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-nos-nitrous-boost"
+   ],
+   "wow": 3,
+   "pairs_with": "mod shop, customisation, car parts, upgrade, nitrous, garage, car",
+   "fit": [
+    "mod shop",
+    "nitrous",
+    "performance tab",
+    "splitter",
+    "car parts"
+   ],
+   "flag": "Only GamesRadar+ says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"Any Mod Shop can install this component for you for $5,000, and it's found under the Performance tab, then the Boost section\" and \"If you press in the left stick while at anything other than full throttle, you'll just honk your horn instead.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-120",
+   "fact": "Jason and Lucia can each carry up to $20,000 in cash. GamesRadar+ says pocket cash can only be spent on purchases up to $1000, so bigger buys go through the BuckMe bank account.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-atm/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-atm/",
+    "https://www.pcgamer.com/games/grand-theft-auto/gta-6-bank-cash/"
+   ],
+   "wow": 3,
+   "pairs_with": "cash, money, wallet, bank, ATM, BuckMe, purchase, paying",
+   "fit": [
+    "pocket cash",
+    "cash limit",
+    "carry cash",
+    "cash in pocket"
+   ],
+   "flag": "The $1000 purchase cap comes from GamesRadar+ only; PC Gamer confirms the $20k carry limit.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"both Jason and Lucia can individually carry up to $20,000 in physical money on their person at any one time.\" and \"Given that Personal Cash in GTA 6 can only be used on purchases up to $1000\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-121",
+   "fact": "Some shops and services in GTA 6 won't sell to you unless you have a bank account, though some items can still be bought with physical cash.",
+   "source": "https://www.thegamer.com/grand-theft-auto-6-bank-account-atm-guide/",
+   "sources": [
+    "https://www.thegamer.com/grand-theft-auto-6-bank-account-atm-guide/",
+    "https://gamerant.com/gta-6-bank-account-guide/"
+   ],
+   "wow": 2,
+   "pairs_with": "shop, store, buy, cash, bank, BuckMe, clothes, money",
+   "fit": [
+    "bank account",
+    "BuckMe",
+    "bank app"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"some stores won't let you shop without a bank account.\" and \"Some items can still be purchased with physical cash, so you don't need to deposit everything you earn.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-122",
+   "fact": "How many stash bags fit depends on the vehicle: Shacknews found some hold two and some six, the most it had seen so far. Motorcycles can't hold them.",
+   "source": "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6"
+   ],
+   "wow": 3,
+   "pairs_with": "stash bag, loot, trunk, vehicle stash, capacity, car, Narcotics, Jewelry, Marked Bills",
+   "fit": [
+    "stash bag",
+    "trunk stash",
+    "capacity",
+    "vehicle stash"
+   ],
+   "flag": "Only Shacknews says this (among pages read); it says the number could go higher.",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Once you’re free of the police you can place the stash bag in the trunk or back of your vehicle, excluding motorcycles and whatnot.\" and \"Some vehicles can handle two stash bags, and some six. That number could go higher, but six is the maximum I’ve noticed so far.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-123",
+   "fact": "Open your loadout and you can see exactly what is in your stash bag, and you can put the bag down. Shacknews's writer set one on the gym floor, did some reps, then picked it back up.",
+   "source": "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151417/how-stash-bags-work-gta6"
+   ],
+   "wow": 3,
+   "pairs_with": "stash bag, loot, loadout, Narcotics, Jewelry, Marked Bills, drop, gym, workout",
+   "fit": [
+    "stash bag",
+    "loadout",
+    "Narcotics",
+    "Jewelry",
+    "Marked Bills"
+   ],
+   "flag": "Only Shacknews says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"Open your loadout and you can see what exactly is in your stash bag, and you can also drop it. I went to the gym after a crime of opportunity where I ended up with a stash bag, and simply set it on the floor while I got some reps in.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-124",
+   "fact": "In selfie mode on the phone camera, Jason has up to six poses and up to seven expressions, there are up to 17 filters, and you can change your partner's pose in the shot too.",
+   "source": "https://gamerant.com/gta-6-photo-mode-selfie-camera/",
+   "sources": [
+    "https://gamerant.com/gta-6-photo-mode-selfie-camera/"
+   ],
+   "wow": 3,
+   "pairs_with": "selfie, phone, camera, poses, expressions, filter, photo, Jason and Lucia",
+   "fit": [
+    "selfie",
+    "pose",
+    "expression",
+    "phone camera",
+    "filter"
+   ],
+   "flag": "Only Game Rant gives these counts (among pages read); they are given for Jason.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Change Jason pose in the selfie (up to six).\" and \"Change Jason's expressions in the selfie (up to seven).\" and \"Select up to 17 cosmetic filters.\" and \"Switch up the pose of your partner in the selfie.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-125",
+   "fact": "Snapmatic, the social media app on the phone, lets you scroll posts, like them and mark where a photo was taken on your map, but you can't post to it yourself.",
+   "source": "https://insider-gaming.com/does-gta-6-have-photomode-photo-studio-how-to/",
+   "sources": [
+    "https://insider-gaming.com/does-gta-6-have-photomode-photo-studio-how-to/",
+    "https://www.shacknews.com/article/151432/gta6-snapomatic-feature"
+   ],
+   "wow": 3,
+   "pairs_with": "phone, social media, Snapmatic, scrolling, photo, selfie, likes, map",
+   "fit": [
+    "Snapmatic",
+    "social media",
+    "Snapmatic post",
+    "like post"
+   ],
+   "flag": "Shacknews spells the app Snapomatic.",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"You can ‘like’ these posts or mark the destination from which they were taken and uploaded on your map.\" and \"You can’t post on Snapmatic, though.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-126",
+   "fact": "On the in-game social feed, several posts joke about the endless delays of a fictional game called Race and Chase 7, a dig at the long wait for GTA 6.",
+   "source": "https://www.shacknews.com/article/151432/gta6-snapomatic-feature",
+   "sources": [
+    "https://www.shacknews.com/article/151432/gta6-snapomatic-feature"
+   ],
+   "wow": 5,
+   "pairs_with": "phone, social media, Snapmatic, scrolling, posts, memes",
+   "fit": [
+    "Snapmatic",
+    "social media",
+    "social feed",
+    "meme"
+   ],
+   "flag": "Only Shacknews says this (among pages read); it calls the app Snapomatic, others call it Snapmatic.",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"There are multiple posts that reference the endless delays of a fictional game titled “Race and Chase 7,” a direct reference to the long wait for GTA 6 and the social posts born from it.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-127",
+   "fact": "Jason and Lucia text far more than the missions show. Open the text app and scroll back through old threads and you find extra story the missions never mention.",
+   "source": "https://www.pcgamer.com/games/grand-theft-auto/some-of-gta-6s-best-story-details-are-hidden-inside-old-text-messages/",
+   "sources": [
+    "https://www.pcgamer.com/games/grand-theft-auto/some-of-gta-6s-best-story-details-are-hidden-inside-old-text-messages/"
+   ],
+   "wow": 4,
+   "pairs_with": "phone, texts, threads, messages, contacts, Jason and Lucia",
+   "fit": [
+    "text message",
+    "threads",
+    "messages",
+    "contacts"
+   ],
+   "flag": "Only PC Gamer says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "PC Gamer: \"But what Rockstar doesn't tell you outright is that Jason and Lucia are doing a lot more texting than we're shown. If you open the in-game text app and manually backread through their conversation histories, you'll find that the GTA 6 cast is doing a lot of interacting even when the camera's pointed elsewhere.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-128",
+   "fact": "Food and drink buff your health, stamina and focus, and you don't have to stand still to have them: you can move, shoot, run, hold hands and even drive while eating.",
+   "source": "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+   "sources": [
+    "https://kotaku.com/32-spoiler-free-tips-as-you-hop-into-grand-theft-auto-6-2000758016",
+    "https://insider-gaming.com/top-10-things-safehouse-gta-6/"
+   ],
+   "wow": 3,
+   "pairs_with": "drink, food, eating, buff, Focus buffed, Stamina buffed, soda, hot dog, driving",
+   "fit": [
+    "eating",
+    "drink",
+    "food",
+    "buffed",
+    "hot dog",
+    "soda"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"These items will buff your health, stamina, and focus meter, letting you take more damage, run longer, and slow down time more during combat.\" and \"In GTA 6, you can move, shoot, run, hold hands, and even drive while holding and eating food.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-129",
+   "fact": "Focus refills on its own over time, but coffee or tea can make it come back faster. Protein bars and soda, or a sleep at your safehouse, recover stamina.",
+   "source": "https://insider-gaming.com/how-fitness-works-gta-6-strength-cardio-focus/",
+   "sources": [
+    "https://insider-gaming.com/how-fitness-works-gta-6-strength-cardio-focus/",
+    "https://insider-gaming.com/top-10-things-safehouse-gta-6/"
+   ],
+   "wow": 2,
+   "pairs_with": "drink, coffee, tea, soda, protein bar, buff, Focus buffed, Stamina buffed, sleep",
+   "fit": [
+    "coffee",
+    "tea",
+    "soda",
+    "protein bar",
+    "Focus buffed",
+    "Stamina buffed"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Insider Gaming: \"Focus recovers over time when not used, but you can regenerate it faster by consuming certain beverages, like coffee or tea.\" and \"Simple: eat certain foods and drinks, like protein bars and soda, or sleep at your safehouse.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-130",
+   "fact": "Your loadout has two tabs. Weapons has slots for two sidearms, two longarms, one melee weapon and one explosive, and Items has single slots for masks, headgear, outfits, bags, gear, eyewear and smokes.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-manage-loadout/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-manage-loadout/"
+   ],
+   "wow": 2,
+   "pairs_with": "weapon, loadout, weapon wheel, items, smokes, mask, sidearm, longarm",
+   "fit": [
+    "loadout",
+    "weapon wheel",
+    "sidearm",
+    "longarm",
+    "smokes",
+    "mask"
+   ],
+   "flag": "Only GamesRadar+ lists the slots (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"On the Weapons tab of your loadout, you'll find slots for two sidearms, one for your hands, one for equipment, slots for two longarms, one for a melee weapon, and one for explosives. On the Items tab of your loadout there are single slots for: Masks, Headgear, Headwear, Outfits, Bags, Gear, Eyewear, and Smokes.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-131",
+   "fact": "PC Gamer compares your car to Red Dead 2's horse: your spare guns live in the trunk, so to get your shotgun you walk to the back, open it up and take it out of a box. The game also warns that police pay closer attention when you openly carry guns.",
+   "source": "https://www.pcgamer.com/games/grand-theft-auto/your-gta-6-car-is-your-red-dead-2-horse-and-its-perfect/",
+   "sources": [
+    "https://www.pcgamer.com/games/grand-theft-auto/your-gta-6-car-is-your-red-dead-2-horse-and-its-perfect/",
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-manage-loadout/"
+   ],
+   "wow": 3,
+   "pairs_with": "weapon, trunk, truck, loadout, shotgun, rifle, car, guns in trunk",
+   "fit": [
+    "open trunk",
+    "shotgun",
+    "weapons in trunk",
+    "rifle",
+    "loadout"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "PC Gamer: \"If you want to fetch your shotgun, you have to walk to the back of the car, open it up, and fish it out of a box.\" and \"The game tells you early on that police pay closer attention to you when openly carrying firearms\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-132",
+   "fact": "Sleeping in a bed is the main way to skip time: you choose whether to wake in the morning, at noon, in the evening or at night. VGC says you also get a sleep buff that helps health and focus.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-skip-time-pass/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-skip-time-pass/",
+    "https://www.videogameschronicle.com/guide/how-to-change-the-time-of-day-in-gta-6/"
+   ],
+   "wow": 2,
+   "pairs_with": "bed, sleep, safehouse, time passing, alarm, night, morning, buff",
+   "fit": [
+    "bed",
+    "sleep",
+    "wake",
+    "alarm",
+    "time skip"
+   ],
+   "flag": "GamesRadar+ warns you can sleep through time-sensitive activities marked with an hourglass.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar+: \"When you lie down and choose to sleep, you also get to pick what time your character wakes up, setting your alarm for morning, noon, evening or night accordingly.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-133",
+   "fact": "Wealthy homeowners in the housing area just above Bellville keep planes in their driveways that are easy to steal, and TheGamer says coming at night is a reliable way to get one.",
+   "source": "https://www.thegamer.com/gta-6-planes-helicopters-easy-locations-early-game/",
+   "sources": [
+    "https://www.thegamer.com/gta-6-planes-helicopters-easy-locations-early-game/"
+   ],
+   "wow": 4,
+   "pairs_with": "plane, flying, pilot, airplane, driveway, night",
+   "fit": [
+    "plane",
+    "airplane",
+    "altimeter",
+    "pilot",
+    "cockpit",
+    "driveway"
+   ],
+   "flag": "Only TheGamer says this (among pages read).",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"many of the wealthy owners have easily stealable planes waiting in their driveway. Coming here at night is a reliable way of getting a plane without going through too much trouble.\"",
+   "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-134",
+   "fact": "Jason and Lucia's relationship has four levels, from Running on Empty up to Hot Together. Holding hands, showing affection, answering texts and going to bed together at night all help, and both characters have to put in the effort.",
+   "source": "https://www.shacknews.com/article/151424/jason-lucia-relationship-exlained-gta6",
+   "sources": [
+    "https://www.shacknews.com/article/151424/jason-lucia-relationship-exlained-gta6",
+    "https://www.pcgamer.com/games/grand-theft-auto/gta-6-romance-jason-lucia/"
+   ],
+   "wow": 3,
+   "pairs_with": "Jason and Lucia, relationship, bed, holding hands, texts, couple, romance",
+   "fit": [
+    "holding hands",
+    "relationship",
+    "affection",
+    "bed together",
+    "couple"
+   ],
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Shacknews: \"You’re coming home at night and going to bed together.\" and \"Just be sure to play as both characters, since both must contribute to reach and maintain the Hot Together level.\"",
    "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
   }
  ],

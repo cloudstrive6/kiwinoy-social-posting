@@ -986,6 +986,7 @@ def run_gameplay_reel(
         # abort the whole run, so one unsupported sentence meant no post on any platform
         # that slot. Try other moments first; only then drop the format (bench 2026-10-08).
         lore_out, _ldir, _tried = None, run_dir / "lore", set()
+        from tools.lore_short import NoFactFit as _NoFactFit
         # KEEP TRYING (Bryce, 2026-11-23: "a slot should always be filled out. If it fails, then
         # do another try, we have lots of footage"). Every fact-card slot, YouTube and Facebook,
         # walks on to other moments and footage until a card passes, bounded by TIME rather
@@ -994,10 +995,13 @@ def run_gameplay_reel(
         import time as _time
         _max_tries = int(lcfg.get("strict_tries", 60))
         _deadline = _time.monotonic() + 60 * float(lcfg.get("try_minutes", 85))
-        for _try in range(_max_tries):
+        # A moment no sourced fact fits is skipped in seconds (tools/lore_short.NoFactFit, 2026-11-26)
+        # and does not count as a try; only moments that reach the writer do.
+        _try, _skips, _max_skips = 0, 0, int(lcfg.get("fit_skips", 400))
+        while _try < _max_tries:
             if _try and _time.monotonic() > _deadline:
-                log(f"LORE: {_try} moments tried in {lcfg.get('try_minutes', 85)} minutes; "
-                    "stopping the search for this run.")
+                log(f"LORE: {_try} moments tried ({_skips} skipped with no fitting fact) in "
+                    f"{lcfg.get('try_minutes', 85)} minutes; stopping the search for this run.")
                 break
             _ldir = run_dir / ("lore" if _try == 0 else f"lore_retry{_try}")
             try:
@@ -1005,7 +1009,14 @@ def run_gameplay_reel(
                                        None, _ldir)
                 break
             except Exception as e:
-                log(f"LORE card refused for {clip_id} ({e}) — trying another moment.")
+                if isinstance(e, _NoFactFit):
+                    _skips += 1
+                    if _skips >= _max_skips or _time.monotonic() > _deadline:
+                        log(f"LORE: {_skips} moments skipped with no fitting fact; stopping.")
+                        break
+                else:
+                    _try += 1
+                    log(f"LORE card refused for {clip_id} ({e}) — trying another moment.")
                 # EXCLUDE what just failed: without it the picker handed back the SAME
                 # window three times and the slot fell through to triptych while claiming
                 # it was trying other moments (user, 2026-10-09).
@@ -1017,8 +1028,8 @@ def run_gameplay_reel(
                     break
                 clip_path, clip_id, _start = _np, _nid, float(_ns)
         if lore_out is None and lore_strict:
-            log(f"No lore card survived the fact-check after {_max_tries} moments across the "
-                "footage pools.")
+            log(f"No lore card survived the fact-check after {_try} moments tried and {_skips} "
+                "skipped (no fitting fact) across the footage pools.")
             # GAP FILL (Bryce, 2026-11-25: "Yes, fill gaps" ... "it posts a random voiceover short/reel -
             # so that it's not all from the same 1 long form video"): a YouTube slot whose fact card is
             # refused posts one random voiceover Short instead (agents/analysis_feed.gap_fill_pick).
@@ -1477,10 +1488,29 @@ def run_gameplay_reel(
                                 log(f"FB lore: no {brief['game']} cutscenes — using {_alt}.")
                                 break
                     if fb_clip:
-                        from tools.lore_short import build as _build_lore_fb
-                        log(f"FB lore: building its own card from {fb_cid}")
-                        fb_src = Path(_build_lore_fb(Path(fb_clip), fb_lore_game,
-                                                     _s, _d, None, run_dir / "lore_fb"))
+                        from tools.lore_short import build as _build_lore_fb, NoFactFit as _NoFitFb
+                        # Walk past moments no sourced fact fits (seconds each, no AI) to one that
+                        # does, then build that card once (2026-11-26).
+                        _fb_ex: set = set()
+                        import time as _tfb
+                        _fb_end = _tfb.monotonic() + 600       # 10 minutes of cheap skips at most
+                        for _k in range(60):
+                            if _k and _tfb.monotonic() > _fb_end:
+                                raise RuntimeError("FB lore: no moment with a fitting fact in 10 minutes")
+                            try:
+                                log(f"FB lore: building its own card from {fb_cid}")
+                                fb_src = Path(_build_lore_fb(Path(fb_clip), fb_lore_game,
+                                                             _s, _d, None, run_dir / "lore_fb"))
+                                break
+                            except _NoFitFb:
+                                _fb_ex.add(str(fb_cid))
+                                _nc = reel_composer.pick_unused_cutscene(
+                                    fb_lore_game, ["facebook"], _d, exclude=_fb_ex)
+                                if not _nc[0]:
+                                    raise
+                                fb_clip, fb_cid, _s = _nc
+                        else:
+                            raise RuntimeError("FB lore: no moment with a fitting fact")
                         fb_src = Path(_swear_beep(fb_src, fb_lore_game,
                                                   run_dir / "lore_fb_bleeped.mp4", log))
                         _fc = json.loads(

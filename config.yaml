@@ -1027,6 +1027,8 @@ reels:
     lore:
       strict_tries: 60    # moments tried before giving up (was 12; Bryce 2026-11-23: a slot must always be filled)
       try_minutes: 85     # time budget for those tries; the reels and Shorts-release jobs allow 120 minutes
+      require_fact_fit: true  # 2026-11-26: only moments whose footage log shows something a sourced fact is about
+      fit_skips: 400      # unfit moments skipped (seconds each, no AI) before the search gives up
       seconds: 8          # old flat length; used only if seconds_min/max are removed
       seconds_min: 15     # each lore clip is a random 15-20s (user, 2026-11-09);
       seconds_max: 20     # a cutscene shorter than 15s is used whole

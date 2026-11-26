@@ -365,13 +365,29 @@ def pick_unused_cutscene(game: str, platforms, seconds: float,
         return None, None, 0.0
     cache = cache or (ROOT / "reels" / "assets" / "cutscenes" / ".cache")
     cache.mkdir(parents=True, exist_ok=True)
+    # FACT FIT (2026-11-26): a fact card needs a sourced fact about what the moment shows. Recordings
+    # whose footage log describes nothing a fact is about are skipped before any download, and only
+    # windows overlapping a fitting stretch are offered (23 unfit moments were refused in one slot).
+    _fit_on = bool(lcfg.get("facts", True)) and bool(lcfg.get("require_fact_fit", True))
+    _fit_game = key[:-len("-cutscene")] if key.endswith("-cutscene") else key
     for kind, item in pool:
         base_id = _clip_id(kind, item, key)
+        ranges = None
+        if _fit_on and kind == "b2" and isinstance(item, dict):
+            try:
+                from tools.lore_short import fit_ranges
+                ranges = fit_ranges(str(item.get("key", "")), _fit_game)
+            except Exception as e:
+                print(f"[reel] fact-fit check failed ({e!r}); not filtering {base_id}.", flush=True)
+            if ranges is not None and not ranges:
+                continue                     # nothing in this recording fits a fact
         path = Path(item) if kind == "local" else _download_item(kind, item, cache)
         if not path or not Path(path).exists():
             continue
         wins = list(cutscene_windows(Path(path), seconds))
         random.shuffle(wins)                 # RANDOM scene inside that clip
+        if ranges:
+            wins = [t for t in wins if any(t < b - 1.0 and t + seconds > a + 1.0 for a, b in ranges)]
         for start in wins:
             # Fact cards may reuse a moment already posted as classic/triptych/fill (Bryce,
             # 2026-11-20), so only an exact lore id counts as used here.
