@@ -73,9 +73,12 @@
    ],
    "facebook_at": "2026-12-05T04:00:00Z",
    "facebook": {
-    "id": "sp_WyVbxlFbYvOTOxaKuEpt",
+    "id": "sp_9B8v18Hx1dM7lnG8C1",
     "scheduled_at": "2026-12-05T04:00:00Z",
-    "created_at": "2026-11-25T20:56:16Z"
+    "created_at": "2026-11-26T05:04:42Z",
+    "logo_rebooked": true,
+    "replaced": "sp_WyVbxlFbYvOTOxaKuEpt",
+    "old_delete_status": 200
    }
   },
   {
@@ -122,9 +125,12 @@
    ],
    "facebook_at": "2026-12-06T04:00:00Z",
    "facebook": {
-    "id": "sp_Uuzf93dNtdnpaNf7ompS",
+    "id": "sp_mnFa65XYMXt26Ojc54Fxo",
     "scheduled_at": "2026-12-06T04:00:00Z",
-    "created_at": "2026-11-25T20:56:22Z"
+    "created_at": "2026-11-26T05:04:50Z",
+    "logo_rebooked": true,
+    "replaced": "sp_Uuzf93dNtdnpaNf7ompS",
+    "old_delete_status": 200
    }
   },
   {
@@ -173,9 +179,12 @@
    ],
    "facebook_at": "2026-12-07T04:00:00Z",
    "facebook": {
-    "id": "sp_iJgv9bRpU2yD7QyplQam",
+    "id": "sp_Ye5GeQvls2ZXpgfaH7CP",
     "scheduled_at": "2026-12-07T04:00:00Z",
-    "created_at": "2026-11-25T20:56:29Z"
+    "created_at": "2026-11-26T05:04:58Z",
+    "logo_rebooked": true,
+    "replaced": "sp_iJgv9bRpU2yD7QyplQam",
+    "old_delete_status": 200
    }
   },
   {
@@ -224,9 +233,12 @@
    ],
    "facebook_at": "2026-12-08T04:00:00Z",
    "facebook": {
-    "id": "sp_lnHhF5kPXkz0LasLRSav",
+    "id": "sp_nErWkypmGoMPzMScmDXIg",
     "scheduled_at": "2026-12-08T04:00:00Z",
-    "created_at": "2026-11-25T20:56:34Z"
+    "created_at": "2026-11-26T05:05:07Z",
+    "logo_rebooked": true,
+    "replaced": "sp_lnHhF5kPXkz0LasLRSav",
+    "old_delete_status": 200
    }
   },
   {
@@ -273,9 +285,12 @@
    ],
    "facebook_at": "2026-12-09T04:00:00Z",
    "facebook": {
-    "id": "sp_4evJHPdUpGJuwXMnLP",
+    "id": "sp_FXN5TnVrdrJ3pKwElaE",
     "scheduled_at": "2026-12-09T04:00:00Z",
-    "created_at": "2026-11-25T20:56:40Z"
+    "created_at": "2026-11-26T05:05:15Z",
+    "logo_rebooked": true,
+    "replaced": "sp_4evJHPdUpGJuwXMnLP",
+    "old_delete_status": 200
    }
   },
   {
@@ -324,9 +339,12 @@
    ],
    "facebook_at": "2026-12-10T04:00:00Z",
    "facebook": {
-    "id": "sp_oc9jkx4pZocMdzeAvrOda",
+    "id": "sp_cdaaC0Ui0PYy5QWBjdp",
     "scheduled_at": "2026-12-10T04:00:00Z",
-    "created_at": "2026-11-25T20:56:48Z"
+    "created_at": "2026-11-26T05:05:23Z",
+    "logo_rebooked": true,
+    "replaced": "sp_oc9jkx4pZocMdzeAvrOda",
+    "old_delete_status": 200
    }
   },
   {
@@ -374,9 +392,12 @@
    ],
    "facebook_at": "2026-12-11T04:00:00Z",
    "facebook": {
-    "id": "sp_hd5aaPNPmiEleafhz",
+    "id": "sp_ewJCHKFzhuBhYb9Nu59",
     "scheduled_at": "2026-12-11T04:00:00Z",
-    "created_at": "2026-11-25T20:56:53Z"
+    "created_at": "2026-11-26T05:05:31Z",
+    "logo_rebooked": true,
+    "replaced": "sp_hd5aaPNPmiEleafhz",
+    "old_delete_status": 200
    }
   },
   {
@@ -423,9 +444,12 @@
    ],
    "facebook_at": "2026-12-12T04:00:00Z",
    "facebook": {
-    "id": "sp_uKD6Td458Oug3KoJAdZe",
+    "id": "sp_FyQOENg4bNMqhbPJ7",
     "scheduled_at": "2026-12-12T04:00:00Z",
-    "created_at": "2026-11-25T20:56:58Z"
+    "created_at": "2026-11-26T05:05:40Z",
+    "logo_rebooked": true,
+    "replaced": "sp_uKD6Td458Oug3KoJAdZe",
+    "old_delete_status": 200
    }
   },
   {
@@ -472,9 +496,12 @@
    ],
    "facebook_at": "2026-12-13T04:00:00Z",
    "facebook": {
-    "id": "sp_ULyEtGUzcOKwvpWAoLiKg",
+    "id": "sp_wKipdSHBhIW9MChal4CTY",
     "scheduled_at": "2026-12-13T04:00:00Z",
-    "created_at": "2026-11-25T20:57:03Z"
+    "created_at": "2026-11-26T05:05:49Z",
+    "logo_rebooked": true,
+    "replaced": "sp_ULyEtGUzcOKwvpWAoLiKg",
+    "old_delete_status": 200
    }
   },
   {
@@ -532,9 +559,12 @@
    ],
    "facebook_at": "2026-12-14T04:00:00Z",
    "facebook": {
-    "id": "sp_KcA0SsROe7vLGv17uTGvR",
+    "id": "sp_PqhNgtaNwglN9R2nvV0t",
     "scheduled_at": "2026-12-14T04:00:00Z",
-    "created_at": "2026-11-25T20:57:09Z"
+    "created_at": "2026-11-26T05:05:57Z",
+    "logo_rebooked": true,
+    "replaced": "sp_KcA0SsROe7vLGv17uTGvR",
+    "old_delete_status": 200
    }
   }
  ]

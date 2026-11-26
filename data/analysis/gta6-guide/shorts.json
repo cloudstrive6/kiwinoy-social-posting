@@ -209,9 +209,12 @@
    ],
    "facebook_at": "2026-11-27T04:00:00Z",
    "facebook": {
-    "id": "sp_ixmi4cMxep4rY64qn6",
+    "id": "sp_YUQgA3WI8PKfip7sk28uN",
     "scheduled_at": "2026-11-27T04:00:00Z",
-    "created_at": "2026-11-24T23:27:23Z"
+    "created_at": "2026-11-26T05:03:24Z",
+    "logo_rebooked": true,
+    "replaced": "sp_ixmi4cMxep4rY64qn6",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s03.mp4"
   },
@@ -259,9 +262,12 @@
    ],
    "facebook_at": "2026-11-28T04:00:00Z",
    "facebook": {
-    "id": "sp_YZQ22L2zE1vwU8W0Y7dBf",
+    "id": "sp_IPjWylwDcguKAXGLl",
     "scheduled_at": "2026-11-28T04:00:00Z",
-    "created_at": "2026-11-24T23:27:30Z"
+    "created_at": "2026-11-26T05:03:44Z",
+    "logo_rebooked": true,
+    "replaced": "sp_YZQ22L2zE1vwU8W0Y7dBf",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s04.mp4"
   },
@@ -311,9 +317,12 @@
    ],
    "facebook_at": "2026-11-29T04:00:00Z",
    "facebook": {
-    "id": "sp_FAbPiyJ2OhYxrBFq4Qq",
+    "id": "sp_RbeDFxE1aRxP7yfARCCn",
     "scheduled_at": "2026-11-29T04:00:00Z",
-    "created_at": "2026-11-24T23:27:36Z"
+    "created_at": "2026-11-26T05:03:52Z",
+    "logo_rebooked": true,
+    "replaced": "sp_FAbPiyJ2OhYxrBFq4Qq",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s05.mp4"
   },
@@ -372,9 +381,12 @@
    ],
    "facebook_at": "2026-11-30T04:00:00Z",
    "facebook": {
-    "id": "sp_HdIihI4WzoAATllBRAlQV",
+    "id": "sp_f6RLQWdBhXEC6i62tHTSK",
     "scheduled_at": "2026-11-30T04:00:00Z",
-    "created_at": "2026-11-24T23:27:43Z"
+    "created_at": "2026-11-26T05:04:02Z",
+    "logo_rebooked": true,
+    "replaced": "sp_HdIihI4WzoAATllBRAlQV",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s06.mp4"
   },
@@ -422,9 +434,12 @@
    ],
    "facebook_at": "2026-12-01T04:00:00Z",
    "facebook": {
-    "id": "sp_gwsgST15fGeOJ3jP5TMN9",
+    "id": "sp_ndxXaW0HWHcT0q2vI5B",
     "scheduled_at": "2026-12-01T04:00:00Z",
-    "created_at": "2026-11-24T23:27:50Z"
+    "created_at": "2026-11-26T05:04:09Z",
+    "logo_rebooked": true,
+    "replaced": "sp_gwsgST15fGeOJ3jP5TMN9",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s07.mp4"
   },
@@ -474,9 +489,12 @@
    ],
    "facebook_at": "2026-12-02T04:00:00Z",
    "facebook": {
-    "id": "sp_lU1Acm9uJX6Q1EhicfVxA",
+    "id": "sp_SWWsaJKbynXLii2P9eyS",
     "scheduled_at": "2026-12-02T04:00:00Z",
-    "created_at": "2026-11-24T23:27:58Z"
+    "created_at": "2026-11-26T05:04:17Z",
+    "logo_rebooked": true,
+    "replaced": "sp_lU1Acm9uJX6Q1EhicfVxA",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s08.mp4"
   },
@@ -536,9 +554,12 @@
    ],
    "facebook_at": "2026-12-03T04:00:00Z",
    "facebook": {
-    "id": "sp_HJC8xG9WDTmMiQFZkNjYG",
+    "id": "sp_BMgQ0GyUFHdDxEU15vlnR",
     "scheduled_at": "2026-12-03T04:00:00Z",
-    "created_at": "2026-11-24T23:28:06Z"
+    "created_at": "2026-11-26T05:04:25Z",
+    "logo_rebooked": true,
+    "replaced": "sp_HJC8xG9WDTmMiQFZkNjYG",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s09.mp4"
   },
@@ -599,9 +620,12 @@
    ],
    "facebook_at": "2026-12-04T04:00:00Z",
    "facebook": {
-    "id": "sp_YftvK5nIB2ZysR3ybXvPG",
+    "id": "sp_vPu8T22HNhVGS3xJMoxy1",
     "scheduled_at": "2026-12-04T04:00:00Z",
-    "created_at": "2026-11-24T23:28:15Z"
+    "created_at": "2026-11-26T05:04:33Z",
+    "logo_rebooked": true,
+    "replaced": "sp_YftvK5nIB2ZysR3ybXvPG",
+    "old_delete_status": 200
    },
    "b2_key": "shorts/analysis/gta6-guide/s10.mp4"
   }
