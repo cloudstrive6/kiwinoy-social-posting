@@ -139,8 +139,21 @@ def main() -> int:
     have = {f.get("fileName", "") for f in b2_store._list_names("footage-log/")}
     failed = json.loads(b2_store.get_bytes("footage-log/_failed.json") or b"{}")
     todo = [k.strip() for k in a.keys.split("|") if k.strip()]
-    for g in ([] if todo else a.games):
-        for c in b2_store.list_cutscenes(g) + b2_store.list_footage(g):
+    games = list(a.games)
+    if not games and not todo:
+        # UNLOCKED GAMES ONLY (Bryce, 2026-11-26: "log them when I unlock the game or when I tell you that
+        # we will be publishing/scheduling posts about that game"): with no games named, log the games in
+        # reels.games_only; an empty lock means every game is unlocked, so every pool. A locked game uses
+        # no subscription time; a session can still name a game to log it ahead of an unlock.
+        from core.config import CONFIG
+        games = CONFIG.games_lock()
+        if not games:
+            from fact_topup import pool_games
+            games = pool_games(1)
+        print(f"games to log (unlocked): {', '.join(games)}", flush=True)
+    for g in ([] if todo else games):
+        # the game's own pools: cutscenes/<g>, footage/<g> and its vertical footage/<g>-vertical
+        for c in b2_store.list_cutscenes(g) + b2_store.list_footage(g) + b2_store.list_footage(f"{g}-vertical"):
             if (a.redo or log_key(c["key"]) not in have) and failed.get(c["key"], 0) < 2:
                 todo.append(c["key"])
     skipped = [k for k, n in failed.items() if n >= 2]
