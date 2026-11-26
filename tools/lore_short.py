@@ -423,6 +423,19 @@ def slop_problems(text: str) -> list[str]:
     return [why for pat, why in SLOP if re.search(pat, text or "", re.I)]
 
 
+_NOT_WRONG = re.compile(r"\s*(nothing (here |in it |in the card )?is (flatly |actually )?(false|wrong)\b"
+                        r"|none of (it|this) is (false|wrong)\b)", re.I)
+_BUT = re.compile(r"\b(but|however|except|though|although|yet|apart from|other than|aside from)\b|\d", re.I)
+
+
+def _not_wrong(note: str) -> bool:
+    """A critic 'wrong' note that itself says nothing is false, with no 'but ...' and no number after,
+    is a style note, not a false claim (2026-11-26: card 3 was refused on "Nothing is flatly false,
+    since the VGC claims are attributed"). Any contrast word or digit keeps the note (review)."""
+    m = _NOT_WRONG.match(note)
+    return bool(m) and not _BUT.search(note[m.end():])
+
+
 def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tuple[int, str, list]:
     """A real-fan read of the card (subscription only). (score 1 to 10, notes). 10 = a player learns
     something real and would share it; 1 = AI slop that misreads the game."""
@@ -444,7 +457,12 @@ def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tupl
         "does not show and no named source backs is WRONG even if it sounds plausible; so is anything "
         "the clip summary says happens outside the Short. A card that ends on a true, sourced fact "
         "with no tip is fine: never mark it down for lacking advice, and in 'better' never ask for a "
-        "tip, rule, cause or number that neither the clip nor a source named in the card states. Name every "
+        "tip, rule, cause or number that neither the clip nor a source named in the card states. A fact "
+        "the card attributes to a named outlet ('VGC reports') is plainly from outside the clip: never "
+        "ask the card to say so. Naming a character the clip summary or footage log identifies is "
+        "correct, even when the on-screen subtitles do not say the name. 'wrong' is ONLY for a claim "
+        "that is false, or a game claim no source backs: if you would begin a note with 'nothing is "
+        "false' or 'it is sourced', it is not wrong, so put it under filler or in 'better'. Name every "
         "sentence that is filler or wrong, and say what a real fan would want this card to say "
         "instead. Reply with JSON only: "
         '{"score": <1-10>, "filler": ["..."], "wrong": ["..."], "better": "..."}')
@@ -453,7 +471,9 @@ def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tupl
         notes = "; ".join([f"filler: {x}" for x in d.get("filler", [])] + [f"wrong: {x}" for x in d.get("wrong", [])])
         if d.get("better"):
             notes += f"; a fan wants: {d['better']}"
-        wrong = [str(x) for x in d.get("wrong", []) if str(x).strip()]
+        # A 'wrong' note that says nothing is false is a style note, not a false claim (2026-11-26:
+        # card 3 was refused on "Nothing is flatly false, since the VGC claims are attributed").
+        wrong = [str(x) for x in d.get("wrong", []) if str(x).strip() and not _not_wrong(str(x))]
         return int(d.get("score") or 0), notes[:600], wrong
     except Exception as e:
         return 0, f"the fan critic could not run ({e!r})"[:200], []
@@ -654,8 +674,11 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "sentences that restate the one before, and soft metaphors): before writing, list in "
         "\"facts\" the 2 to 4 specific, checkable things you have for this card. Each ends with its "
         "source tag in brackets, and ONLY these tags exist: (screen) for an on-screen number, notice, "
-        "menu or tooltip, (subtitles) for a spoken line, (fact gta6-NN) for a VERIFIED GAME FACT by its "
-        "id, (bible) for the lore bible. The bible is for YOUR checking only: the card itself never "
+        "menu or tooltip, (subtitles) for a spoken line, (log) for WHO is on screen and what they do or say "
+        "inside the Short as the footage log above names it (use it to name a character, never for a number, "
+        "price or rule), (fact gta6-NN) for a VERIFIED GAME FACT by its "
+        "id, (bible) for the lore bible. Name the character the footage log names: never say a clip or its "
+        "subtitles leave someone unnamed when the log names them (2026-11-26). The bible is for YOUR checking only: the card itself never "
         "says 'the lore', 'the lore bible' or 'the bible' (a viewer cannot look it up, and fans call it "
         "out, 2026-11-24); a bible fact on the card must name where it comes from in the game or from "
         "Rockstar (a trailer, a mission, an in-game notice) as the bible entry says, or stay off the card. "
@@ -693,7 +716,7 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         return {}
 
 
-_SOURCE_TAG = re.compile(r"\((screen|subtitles?|bible|fact\s+([a-z0-9]+-\d+))\)\s*$", re.I)
+_SOURCE_TAG = re.compile(r"\((screen|subtitles?|log|footage log|bible|fact\s+([a-z0-9]+-\d+))\)\s*$", re.I)
 
 
 def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
@@ -706,9 +729,12 @@ def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
     for f in facts:
         m = _SOURCE_TAG.search(f.strip())
         if not m:
-            bad.append(f"'{f[:70]}' has no allowed source (screen, subtitles, fact id, bible)")
+            bad.append(f"'{f[:70]}' has no allowed source (screen, subtitles, log, fact id, bible)")
         elif m.group(2) and m.group(2).lower() not in fact_ids:
             bad.append(f"'{f[:70]}' cites a fact id that is not in the bank")
+        elif m.group(1).lower() in ("log", "footage log") and re.search(r"[\d$%]", f[:m.start()]):
+            bad.append(f"'{f[:70]}' puts a number or price on the footage log, which only says who is on "
+                       "screen and what they do; take numbers from the screen or a listed fact")
     return bad
 
 
@@ -1466,7 +1492,8 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             src_bad = fact_source_problems(c, {str(x.get("id", "")).lower() for x in _facts})
             if src_bad:
                 return False, ("unsourced facts: " + "; ".join(src_bad[:3]) + ". Use only on-screen "
-                               "text, the subtitles, a listed verified fact by its id, or the lore bible")
+                               "text, the subtitles, the footage log (log) for who is on screen, a listed verified fact by its id, "
+                               "or the lore bible")
             q_bad = quote_problems(" ".join((c.get("headline", ""), c.get("body", ""))), f"{subs}\n{seen_text}")
             if q_bad:
                 return False, ("a quote is not word for word what is said or shown in the Short: "

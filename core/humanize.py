@@ -95,8 +95,11 @@ def card(c: dict, gname: str, words_min: int = 45, words_max: int = 65) -> dict:
         return c
     task = (
         "Rewrite this on-screen card. Rules for the result:\n"
-        f"- body: ONE paragraph, {words_min}-{words_max} words, same four beats in the same "
-        "order (context, the detail, a short verdict, a comparison). Never open with "
+        f"- body: ONE paragraph, {words_min}-{words_max} words, the SAME sentences in the same "
+        "order, each saying what it said. Add nothing: no sentence describing what is on screen, no "
+        "verdict, no comparison, no reaction the original lacks (2026-11-26: a four-beat rule here "
+        "padded fact cards with screen description and comparisons, and the fan critic refused them). "
+        "Never open with "
         f"'In {gname}' or any 'In <game>' phrase (Bryce, 2026-11-22: the headline leads), keep "
         "'you' wording if the original speaks to the viewer and character names if it names "
         "characters.\n"
