@@ -419,6 +419,455 @@
    "checked": "2026-11-26",
    "quote": "Engadget: \"ByteDance has agreed to sell its games unit Moonton to Savvy Games Group for $6 billion.\"",
    "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "mlbb-25",
+   "fact": "Game Rant notes that Yi Sun-shin is based on the real Korean hero of the same name. In the game's lore he is a dedicated fleet leader of the City of the Dragon who fights off pirates.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/"
+   ],
+   "wow": 4,
+   "pairs_with": "Yi Sun-shin ship ultimate gameplay",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Inspired by the real-life Korean hero, Yi Sun-Shin in Mobile Legends lore was also a dedicated fleet leader\"",
+   "fit": [
+    "Yi Sun-shin"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-26",
+   "fact": "Lesley and Harley are siblings. Game Rant's lore summary says Lesley, the sniper, protects her adventurous younger brother Harley from a distance.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/"
+   ],
+   "wow": 4,
+   "pairs_with": "Lesley sniping or Harley combos",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Lesley is the faraway protector of her adventurous younger brother Harley.\"",
+   "fit": [
+    "Lesley",
+    "Harley"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-27",
+   "fact": "Aamon and Gusion are brothers from the noble House Paxley. Game Rant explains that the family had little room for the mischievous Gusion, who cared more about blades than the family's magecraft.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/"
+   ],
+   "wow": 4,
+   "pairs_with": "Gusion dagger combos or Aamon shards",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Compared to his brother Gusion, Aamon of House Paxley doesn’t have the luxury of youth.\"",
+   "fit": [
+    "Gusion",
+    "Aamon"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-28",
+   "fact": "Karina and Selena are sisters. Game Rant's lore summary says Karina failed to stop her sister Selena from falling to the Abyss.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/"
+   ],
+   "wow": 4,
+   "pairs_with": "Karina or Selena gameplay",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"After failing to keep her sister Selena from succumbing to the Abyss\"",
+   "fit": [
+    "Karina",
+    "Selena"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-29",
+   "fact": "Hanabi's giant shuriken has a name: Higanbana. Game Rant says it is so big that players might mistake her for an Assassin instead of a Marksman.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/"
+   ],
+   "wow": 3,
+   "pairs_with": "Hanabi throwing her shuriken",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"When players see Hanabi brandishing the large shuriken Higanbana, they might think\"",
+   "fit": [
+    "Hanabi",
+    "shuriken"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-30",
+   "fact": "Granger fights with a violin. Game Rant describes his ultimate turning the violin into a super cannon that fires two Super Bullets at a time, and those bullets only hit heroes and creeps.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-marksman-heroes/"
+   ],
+   "wow": 4,
+   "pairs_with": "Granger ultimate shots",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Violin becomes a super cannon that shoots 2 Super Bullets at a time that only hits heroes and Creeps.\"",
+   "fit": [
+    "Granger",
+    "violin",
+    "cannon"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-31",
+   "fact": "Hanzo absorbs units that die near him as Demon Blood. Game Rant lists the amounts: 2 for each minion or other non-hero unit, and 20 for each hero.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/"
+   ],
+   "wow": 3,
+   "pairs_with": "Hanzo farming jungle or demon form",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Units dying near Hanzo will be absorbed as Demon Blood, 2 per non-hero units and 20 per hero\"",
+   "fit": [
+    "Hanzo",
+    "demon blood"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-32",
+   "fact": "Game Rant explains a Gusion trick: cast Skill 2 before his ultimate, and casting it again during the ultimate throws and recalls 10 daggers.",
+   "source": "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/",
+   "sources": [
+    "https://gamerant.com/mobile-legends-bang-bang-best-assassin-heroes/"
+   ],
+   "wow": 3,
+   "pairs_with": "Gusion dagger combo",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Casting Skill 2 before Ultimate means casting Skill 2 during Ultimate now throws and recalls 10 Daggers\"",
+   "fit": [
+    "Gusion",
+    "daggers"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-33",
+   "fact": "Mobile Legends once had a real Star Wars crossover. Pocket Gamer reported that Argus got a Darth Vader skin and Cyclops became Master Yoda, both exclusive to the event.",
+   "source": "https://pocketgamer.com/articles/087368/mobile-legends-bang-bang-collaborates-with-star-wars-and-lets-you-play-as-darth-vader-or-yoda",
+   "sources": [
+    "https://pocketgamer.com/articles/087368/mobile-legends-bang-bang-collaborates-with-star-wars-and-lets-you-play-as-darth-vader-or-yoda"
+   ],
+   "wow": 5,
+   "pairs_with": "Argus or Cyclops skin gameplay",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Gamer: \"The playable skins add Argus “Darth Vader” and Cyclops “Master Yoda”\"",
+   "fit": [
+    "Argus",
+    "Cyclops",
+    "Darth Vader",
+    "Yoda"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-34",
+   "fact": "In the Transformers collab, Optimus Prime was a skin for Johnson. Pocket Gamer pointed out the fit: Johnson is the tank that can turn into a car.",
+   "source": "https://www.pocketgamer.com/mobile-legends-bang-bang/fan-favourite-transformers-will-be-available-as-skins-in-the-latest-mobile-legen/",
+   "sources": [
+    "https://www.pocketgamer.com/mobile-legends-bang-bang/fan-favourite-transformers-will-be-available-as-skins-in-the-latest-mobile-legen/"
+   ],
+   "wow": 5,
+   "pairs_with": "Johnson driving as a car",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Gamer: \"The biggest and baddest, Optimus Prime, will be a skin for Johnson, the tank that can morph into a car.\"",
+   "fit": [
+    "Johnson",
+    "Optimus Prime"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-35",
+   "fact": "Pocket Gamer reported that the same Transformers event made Bumblebee a skin for the fighter X.Borg and Megatron a skin for the marksman Granger.",
+   "source": "https://www.pocketgamer.com/mobile-legends-bang-bang/fan-favourite-transformers-will-be-available-as-skins-in-the-latest-mobile-legen/",
+   "sources": [
+    "https://www.pocketgamer.com/mobile-legends-bang-bang/fan-favourite-transformers-will-be-available-as-skins-in-the-latest-mobile-legen/"
+   ],
+   "wow": 4,
+   "pairs_with": "X.Borg or Granger Transformers skins",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Gamer: \"Bumblebee, everyone's favourite Transformer will be a skin for X.Borg, the fighter.\"",
+   "fit": [
+    "Bumblebee",
+    "X.Borg",
+    "Megatron",
+    "Granger"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-36",
+   "fact": "TheGamer reports that Yin's Jujutsu Kaisen skin is Yuji Itadori. It lets him use Yuji's Domain Expansion and turn into Sukuna after getting a kill.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/"
+   ],
+   "wow": 5,
+   "pairs_with": "Yin Itadori skin ultimate",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"The skin can be equipped on Yin, who can use Yuji's Domain Expansion and transform into Sukuna after getting a kill!\"",
+   "fit": [
+    "Yin",
+    "Yuji",
+    "Sukuna"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-37",
+   "fact": "TheGamer reports that Lukas's Naruto skin starts with the Rasengan, can switch to Six Paths Sage Mode, and turns into a full Kurama with his ultimate.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/"
+   ],
+   "wow": 5,
+   "pairs_with": "Lukas Naruto skin transforming",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"This skin lets you use base Naruto and his Rasengan, but then also lets you transform into his Six Paths Sage Mode\"",
+   "fit": [
+    "Lukas",
+    "Naruto",
+    "Kurama",
+    "Rasengan"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-38",
+   "fact": "In Moonton's April 2025 announcement of the Naruto collab, the limited-time map replaced the Elemental Lord with Madara Uchiha and put Ichiraku Ramen, Naruto's favourite restaurant, in the side lane.",
+   "source": "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676",
+   "sources": [
+    "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676"
+   ],
+   "wow": 5,
+   "pairs_with": "Naruto event map, Lord fight",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Anime News Network (MOONTON press release): \"the Elemental Lord being replaced by NARUTO antagonist, Madara Uchiha\"",
+   "fit": [
+    "Madara",
+    "Ichiraku Ramen"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-39",
+   "fact": "Moonton's Naruto collab announcement says the game's first-ever Common Sacred Statue was Gamakichi, Naruto's talking toad summon. Unlike normal statues, any hero can deploy a Common Sacred Statue.",
+   "source": "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676",
+   "sources": [
+    "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676"
+   ],
+   "wow": 4,
+   "pairs_with": "sacred statue on map",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Anime News Network (MOONTON press release): \"MLBB's first Common Sacred Statue will be for Gamakichi, Naruto's sentient toad summon,\"",
+   "fit": [
+    "Gamakichi",
+    "sacred statue"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-40",
+   "fact": "In the Naruto crossover, which Moonton called the game's biggest content drop ever, players could get Vale's Gaara skin for free just by taking part in the event.",
+   "source": "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676",
+   "sources": [
+    "https://www.animenewsnetwork.com/press-release/2025-04-18/mobile-legends-bang-bang-x-naruto-is-the-ultimate-collaboration-with-the-game-largest-ever-content-/.223676"
+   ],
+   "wow": 4,
+   "pairs_with": "Vale Gaara skin sand attacks",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Anime News Network (MOONTON press release): \"Players will be able to claim the Vale \"Gaara\" skin for free by participating in the event;\"",
+   "fit": [
+    "Vale",
+    "Gaara"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-41",
+   "fact": "TheGamer describes Julian's Jujutsu Kaisen skin, Megumi Fushiguro, as summoning creatures: the Twin Dogs on his first skill and Max Elephant on his third.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-anime-skins/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-anime-skins/"
+   ],
+   "wow": 4,
+   "pairs_with": "Julian Megumi skin skills",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"From the Twin Dogs on his first skill to the Max Elephant on the third.\"",
+   "fit": [
+    "Julian",
+    "Megumi"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-42",
+   "fact": "TheGamer reports that Hayabusa's Kakashi skin uses Naruto jutsu through his normal skills, including Shadow Clone Jutsu, Substitution Jutsu and Kakashi's signature Lightning Blade.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-collab-skins/"
+   ],
+   "wow": 4,
+   "pairs_with": "Hayabusa Kakashi skin shadow clones",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"who utilizes Hayabusa's skillset to use Jutsu we've seen in the Naruto anime, including Shadow Clone Jutsu, Substitution Jutsu, and his signature Lightning Blade\"",
+   "fit": [
+    "Hayabusa",
+    "Kakashi"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-43",
+   "fact": "Phoveus punishes escapes. Pocket Gamer explains that in his ultimate, his weapon Astaros marks any enemy hero who uses Blink or a dash for 3 seconds, and Phoveus can instantly blink to them.",
+   "source": "https://www.pocketgamer.com/mobile-legends-bang-bang/everything-you-need-to-know-about-phoveus-the-new-hero-in-mobile-legends/",
+   "sources": [
+    "https://www.pocketgamer.com/mobile-legends-bang-bang/everything-you-need-to-know-about-phoveus-the-new-hero-in-mobile-legends/"
+   ],
+   "wow": 4,
+   "pairs_with": "Phoveus ultimate leaps",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Gamer: \"If it sees an enemy hero using Blink or Charge, it activates to cast a Mark upon them for 3 seconds.\"",
+   "fit": [
+    "Phoveus"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-44",
+   "fact": "The tank Gloo can literally fall apart on purpose. Pocket Tactics describes him splitting into 12 smaller pieces, each dealing magic damage to the targeted enemy.",
+   "source": "https://www.pockettactics.com/mobile-legends/new-hero",
+   "sources": [
+    "https://www.pockettactics.com/mobile-legends/new-hero"
+   ],
+   "wow": 4,
+   "pairs_with": "Gloo splitting ultimate",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Tactics: \"Gloo splits into 12 smaller pieces, each causing 100 magic damage every 0.6 seconds to the targeted enemy\"",
+   "fit": [
+    "Gloo"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-45",
+   "fact": "TheGamer points out that Floryn's ultimate heals every living ally anywhere on the map and cleanses anti-healing effects, so it can swing fights she isn't even in.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-supports/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-supports/"
+   ],
+   "wow": 4,
+   "pairs_with": "Floryn ultimate, team fights",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"and heals every ally currently alive on the map.\"",
+   "fit": [
+    "Floryn"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-46",
+   "fact": "TheGamer highlights that Chip's ultimate can teleport your entire team on top of an enemy to burst them down.",
+   "source": "https://www.thegamer.com/mobile-legends-best-tanks/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-best-tanks/"
+   ],
+   "wow": 4,
+   "pairs_with": "Chip team teleport gank",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"it can teleport your entire team ontop of an enemy to burst them down.\"",
+   "fit": [
+    "Chip",
+    "teleport"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-47",
+   "fact": "TheGamer calls Kalea Mobile Legends' first and only support fighter, a hero who hits like a fighter while also healing and crowd-controlling.",
+   "source": "https://www.thegamer.com/mobile-legends-bang-bang-best-fighters/",
+   "sources": [
+    "https://www.thegamer.com/mobile-legends-bang-bang-best-fighters/"
+   ],
+   "wow": 3,
+   "pairs_with": "Kalea gameplay",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TheGamer: \"Kalea is Mobile Legends: Bang Bang's first and only support fighter\"",
+   "fit": [
+    "Kalea"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-48",
+   "fact": "TechNode reported in January 2025 that the Chinese server would add Wu Zetian, a Tang Dynasty empress and the only woman in Chinese history to hold the title of emperor.",
+   "source": "https://technode.com/2025/01/10/moonton-to-launch-mobile-legends-bang-bang-in-china-on-january-23/",
+   "sources": [
+    "https://technode.com/2025/01/10/moonton-to-launch-mobile-legends-bang-bang-in-china-on-january-23/"
+   ],
+   "wow": 4,
+   "pairs_with": "Zetian mage gameplay",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "TechNode: \"a powerful empress from the Tang Dynasty\"",
+   "fit": [
+    "Zetian"
+   ],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
+  },
+  {
+   "id": "mlbb-49",
+   "fact": "During the TikTok ban in early 2025, Mobile Legends was yanked from the app store along with Marvel Snap. Pocket Gamer reported in March 2025 that US-based Skystone Games was taking over ByteDance's US publishing.",
+   "source": "https://www.pocketgamer.com/mobile-legends-bang-bang/bytedance-transferring-publishing-rights/",
+   "sources": [
+    "https://www.pocketgamer.com/mobile-legends-bang-bang/bytedance-transferring-publishing-rights/"
+   ],
+   "wow": 4,
+   "pairs_with": "any gameplay, main menu",
+   "flag": "",
+   "checked": "2026-11-26",
+   "quote": "Pocket Gamer: \"Marvel Snap, Mobile Legends: Bang Bang and more all saw themselves yanked from the app store,\"",
+   "fit": [],
+   "added_by": "fact-bot 2026-11-26, researched and independently checked"
   }
  ]
 }
