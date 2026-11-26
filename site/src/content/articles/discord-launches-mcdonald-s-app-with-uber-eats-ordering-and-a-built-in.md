@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "IGN"
 sourceUrl: "https://www.ign.com/articles/you-can-now-order-mcdonalds-through-discord"
+rejected: true
 ---
 
 **Discord** has launched a **McDonald's app**, letting users order food through one of the most popular communication platforms around. Powered by **Uber Eats**, the integration comes with its own lofi-inspired interface unique to Discord, and it lands just as gamers are getting their hands on **GTA 6**.

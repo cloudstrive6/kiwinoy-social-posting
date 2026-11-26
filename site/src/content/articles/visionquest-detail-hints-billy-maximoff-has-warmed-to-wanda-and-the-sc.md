@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "ComicBook"
 sourceUrl: "https://comicbook.com/tv-shows/news/visionquests-blink-and-you-miss-it-scarlet-witch-detail-fixes-a-major-fan-complaint/"
+rejected: true
 ---
 
 A small costume detail in **VisionQuest** may say a lot about where **Billy Maximoff** stands with his mother. Eagle-eyed fans have spotted that Billy's jacket features **the Scarlet Witch's crown**, and because Billy drew the symbol onto the jacket himself, it suggests he has come around on **Wanda Maximoff**.
