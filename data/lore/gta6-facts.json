@@ -2481,6 +2481,150 @@
    "checked": "2026-11-26",
    "quote": "Shacknews: \"You’re coming home at night and going to bed together.\" and \"Just be sure to play as both characters, since both must contribute to reach and maintain the Hot Together level.\"",
    "added_by": "claude 2026-11-26, web research (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-135",
+   "fact": "You can carry a knocked-out person's body. Game Rant's guide to a hidden demon encounter in Capri has you knock out a nearby NPC, carry their body into a building and place it on a pentagram on the floor.",
+   "source": "https://gamerant.com/gta-6-demon-location-pentagram-sacrifice-exorcist/",
+   "sources": [
+    "https://gamerant.com/gta-6-demon-location-pentagram-sacrifice-exorcist/"
+   ],
+   "wow": 5,
+   "pairs_with": "bodies, carry, knock out, demon, pentagram, Capri, secrets, supernatural",
+   "fit": [
+    "carries body",
+    "pentagram",
+    "body over shoulder",
+    "carry body"
+   ],
+   "flag": "Single source (Game Rant guide, 2026-11-20). No reputable source found for dragging, over-the-shoulder carrying or hiding bodies, which MobyGames also lists; leak-era claims about bodies in trunks came only from non-listed sites.",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Then, you need to carry their body to the building and place it on the pentagram.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-136",
+   "fact": "Filling up at a gas station plays a short refuelling sequence that previewer TGG estimated at around 10 seconds. Rockstar North co-studio head Rob Nelson's verdict: \"Hey, that's pretty fast for a fill-up.\"",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/rockstar-boss-says-well-see-what-people-say-about-gta-6s-controversial-refueling-system-but-thinks-its-so-fast-that-you-cant-complain/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/rockstar-boss-says-well-see-what-people-say-about-gta-6s-controversial-refueling-system-but-thinks-its-so-fast-that-you-cant-complain/",
+    "https://www.pcgamer.com/games/grand-theft-auto/grand-theft-auto-6s-controversial-refuelling-action-reportedly-takes-about-10-seconds-to-perform-which-rockstars-co-studio-head-says-is-pretty-fast-for-a-fill-up/",
+    "https://www.dexerto.com/gta/rockstar-says-gta-6s-controversial-gas-stops-take-just-10-seconds-you-cant-complain-3406246/"
+   ],
+   "wow": 3,
+   "pairs_with": "fuel, gas station, refuel, cars, Rob Nelson, Rockstar",
+   "fit": [
+    "gas pump",
+    "refuel",
+    "refuels car"
+   ],
+   "flag": "Pre-release preview (Dexerto dated 2026-09-06); 10 seconds is TGG's estimate. Outlets differ on what it is: GamesRadar says a short quick-time event, PC Gamer a cutscene, Dexerto a brief animation.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"The latter triggers a short quick-time event, which he estimates lasts around 10 seconds, with an animation showing the refueling itself.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-137",
+   "fact": "Kotaku timed how long a full tank lasts on the same highway loop: 29 minutes 8 seconds in an older pickup truck and 18 minutes 31 seconds in a Banshee sports car. A Tesla-style electric car lasted 20 minutes 23 seconds on a full charge.",
+   "source": "https://kotaku.com/we-tested-how-long-it-takes-to-run-out-of-gas-in-gta-6-2000755601",
+   "sources": [
+    "https://kotaku.com/we-tested-how-long-it-takes-to-run-out-of-gas-in-gta-6-2000755601"
+   ],
+   "wow": 4,
+   "pairs_with": "fuel, gas tank, run out of gas, Banshee, pickup, electric car, driving",
+   "fit": [
+    "fuel gauge",
+    "out of gas",
+    "gas tank",
+    "banshee"
+   ],
+   "flag": "Single source (Kotaku's own test); times depend on the car and how it is driven.",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"It took 29 minutes and 8 seconds for the pickup to run out of gas completely.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-138",
+   "fact": "The game warns you when your tank hits half and again when it's nearly empty, and marks the nearest gas station on your compass, Kotaku says.",
+   "source": "https://kotaku.com/we-tested-how-long-it-takes-to-run-out-of-gas-in-gta-6-2000755601",
+   "sources": [
+    "https://kotaku.com/we-tested-how-long-it-takes-to-run-out-of-gas-in-gta-6-2000755601"
+   ],
+   "wow": 2,
+   "pairs_with": "fuel, gas station, compass, HUD, driving",
+   "fit": [
+    "fuel gauge",
+    "low fuel",
+    "fuel warning"
+   ],
+   "flag": "Single source (Kotaku).",
+   "checked": "2026-11-26",
+   "quote": "Kotaku: \"the game does a good job of letting you know when you hit halfway and when you’re nearing empty, even marking the nearest station on the compass to help you get fueled up ASAP.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-139",
+   "fact": "You can pet cats as well as dogs, and GamesRadar says there's even one gator you can pet, at a yard sale just round the corner from Jason's house.",
+   "source": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-pet-animals/",
+   "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-pet-animals/",
+    "https://gamerant.com/gta-6-pet-animals-cats-dogs/",
+    "https://kotaku.com/grand-theft-auto-6-gta6-cats-dogs-snake-pet-alligator-2000758120"
+   ],
+   "wow": 4,
+   "pairs_with": "animals, pets, cats, dogs, alligator, gator, Jason's house",
+   "fit": [
+    "pets cat",
+    "pets gator",
+    "pets alligator",
+    "yard sale"
+   ],
+   "flag": "Existing gta6-36 covers petting dogs and treats; this adds cats and the pettable gator. The gator is single source (GamesRadar); Game Rant separately says some NPCs keep crocodiles, lizards and snakes you can pet if domesticated.",
+   "checked": "2026-11-26",
+   "quote": "GamesRadar: \"There's even one 'gator you can pet if you head to the yard sale just round the corner from Jason's house\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-140",
+   "fact": "Animals have to warm up to you first: praise one a few times and the option to pet it appears, though GamesRadar says this doesn't always work. Game Rant says petting raises your focus, but only once per animal per day.",
+   "source": "https://gamerant.com/gta-6-pet-animals-cats-dogs/",
+   "sources": [
+    "https://gamerant.com/gta-6-pet-animals-cats-dogs/",
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-pet-animals/"
+   ],
+   "wow": 3,
+   "pairs_with": "animals, pets, praise, focus, dogs, cats",
+   "fit": [
+    "pets dog",
+    "pets cat",
+    "praises dog",
+    "petting"
+   ],
+   "flag": "Focus boost is single source (Game Rant).",
+   "checked": "2026-11-26",
+   "quote": "Game Rant: \"Petting animals also has the benefit of increasing your focus. However, this only works once per animal per day.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
+  },
+  {
+   "id": "gta6-141",
+   "fact": "Photo Studio, the photo mode in the pause menu, lets you add your own lights and move them around, adjusting their size, intensity and beam angle. You can't change the time of day or the weather, Insider Gaming notes.",
+   "source": "https://www.techradar.com/gaming/gta-6-players-hail-the-games-photo-mode-as-a-cinematography-simulator-pro-lighting-tools-help-capture-its-graphically-beautiful-world",
+   "sources": [
+    "https://www.techradar.com/gaming/gta-6-players-hail-the-games-photo-mode-as-a-cinematography-simulator-pro-lighting-tools-help-capture-its-graphically-beautiful-world",
+    "https://insider-gaming.com/does-gta-6-have-photomode-photo-studio-how-to/",
+    "https://gamerant.com/gta-6-photo-mode-selfie-camera/"
+   ],
+   "wow": 3,
+   "pairs_with": "photo mode, Photo Studio, camera, lighting, screenshots, filters",
+   "fit": [
+    "photo mode",
+    "photo studio",
+    "photo lighting"
+   ],
+   "flag": "No outlet read uses the words 'free camera'; Game Rant lists a camera Speed setting that 'Controls the movement speed of the camera.' TechRadar is not on the preferred list but is a major outlet.",
+   "checked": "2026-11-26",
+   "quote": "TechRadar: \"The 'Lighting' section lets you add layers (or slots) for sculpting the light in your scene, moving the lights around and letting you adjust their size, intensity, and beam angles.\"",
+   "added_by": "claude 2026-11-26, web research from MobyGames leads (agent-verified quotes)"
   }
  ],
  "note": "Sourced GTA 6 facts for the card writer (tools/lore_short.py fact bank). Only facts an independent check confirmed against their sources go here (2026-11-19). Facts awaiting a check sit in gta6-facts-unchecked.json; move each one over only after checking its source. Removed on purpose: a real private person's money demand and the 2022 hacker's medical detention."
