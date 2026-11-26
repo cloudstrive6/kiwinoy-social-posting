@@ -383,8 +383,7 @@ def outlet_say(x: dict) -> str:
 
 
 def facts_text(facts: list[dict]) -> str:
-    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}"
-                     + (f"; credit it as: {outlet_say(x)}" if outlet_say(x) else "")
+    return "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}, for your facts list only"
                      + f"; pairs with: {x.get('pairs_with', 'any clip')})" for x in facts)
 
 
@@ -436,7 +435,8 @@ def _not_wrong(note: str) -> bool:
     return bool(m) and not _BUT.search(note[m.end():])
 
 
-def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tuple[int, str, list]:
+def fan_critic(card: dict, observation: str, subtitles: str, gname: str,
+               backing: str = "") -> tuple[int, str, list]:
     """A real-fan read of the card (subscription only). (score 1 to 10, notes). 10 = a player learns
     something real and would share it; 1 = AI slop that misreads the game."""
     from core import claude_code
@@ -446,20 +446,21 @@ def fan_critic(card: dict, observation: str, subtitles: str, gname: str) -> tupl
         f"What the clip shows:\n{observation}\n\n" + (f"{subtitles}\n\n" if subtitles else "")
         + f"HEADLINE: {card.get('headline', '')}\nBODY: {card.get('body', '')}\n"
         f"COMMENT: {card.get('comment', '')}\n\n"
-        "Score it 1 to 10. 10: you learned a real, specific thing about the game (a mechanic with "
+        + (f"BACKING (verified facts behind the card, not shown to viewers):\n{backing}\n\n" if backing else "")
+        + "Score it 1 to 10. 10: you learned a real, specific thing about the game (a mechanic with "
         "its number, a cost, a hidden rule, a trick, a line that means more than it sounds) and "
         "would send it to a friend. 1: AI slop, meaning filler reactions, stock comparisons, "
         "metaphors that restate the obvious, describing what is already on screen, or getting the "
-        "game wrong. House rules you must NOT mark down: a number that is not on screen has to "
-        "name its source ('guides list', 'Kotaku reports'), so sourced attribution is correct, not "
-        "hedging; the comment line may be a dry joke as long as it states nothing untrue. A claim about how "
+        "game wrong. House rules you must NOT mark down: the channel states facts in its own voice "
+        "and never names its sources on the card (Bryce, 2026-11-27), so a plainly stated fact that "
+        "a BACKING fact supports is sourced; never ask the card to name a source or say where a fact "
+        "comes from; the comment line may be a dry joke as long as it states nothing untrue. A claim about how "
         "the game works (what causes, clears, raises or lowers something, what you must do) that the clip "
-        "does not show and no named source backs is WRONG even if it sounds plausible; so is anything "
+        "does not show and no BACKING fact backs is WRONG even if it sounds plausible; so is anything "
         "the clip summary says happens outside the Short. A card that ends on a true, sourced fact "
         "with no tip is fine: never mark it down for lacking advice, and in 'better' never ask for a "
-        "tip, rule, cause or number that neither the clip nor a source named in the card states. A fact "
-        "the card attributes to a named outlet ('VGC reports') is plainly from outside the clip: never "
-        "ask the card to say so. Naming a character the clip summary or footage log identifies is "
+        "tip, rule, cause or number that neither the clip nor a BACKING fact states. A BACKING fact "
+        "is plainly from outside the clip: never ask the card to say so or to credit anyone. Naming a character the clip summary or footage log identifies is "
         "correct, even when the on-screen subtitles do not say the name. 'wrong' is ONLY for a claim "
         "that is false, or a game claim no source backs: if you would begin a note with 'nothing is "
         "false' or 'it is sourced', it is not wrong, so put it under filler or in 'better'. Name every "
@@ -522,16 +523,16 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
            "('Rockstar studied', 'documented', 'visited', 'on purpose'). The listed fact(s) you cite are the "
            "only true things you have; beats 1 and 2 must contain nothing else except what is visibly "
            "on screen (a test card invented 'Rockstar's most sourced region', 2026-11-19). "
-           "WHO SAID IT: credit a fact only to its listed source ('Kotaku reports', 'previews "
-           "say') or to nobody. Never write 'Rockstar confirmed', 'Rockstar revealed' or 'the "
-           "developers said' unless the source is Rockstar or the fact itself says Rockstar "
-           "said it. NO NEW NAMES OR LABELS: no place, district, building or 'his safehouse' "
+           "OWN IT (Bryce, 2026-11-27): state every fact plainly, in the channel's own voice, as a "
+           "fact about the game. NEVER name a source in the headline, body or comment: no outlet or "
+           "site ('Game Rant reports', 'according to IGN', 'Screen Rant notes'), no 'guides list', "
+           "'previews say', 'reportedly', and no 'Rockstar confirmed' or 'the developers said'. "
+           "Write 'Your trunk holds up to five outfits', never 'Game Rant reports your trunk holds five'. "
+           "The source goes ONLY in the facts list tag; every listed fact is already verified. "
+           "NO NEW NAMES OR LABELS: no place, district, building or 'his safehouse' "
            "unless the fact names it or it is readable on screen, and no label for the feature "
            "the fact does not use ('RPG-lite', 'physique system', 'connects to'). A card added "
            "'Rockstar confirmed' and 'his Key Lento safehouse' to a Kotaku fact (2026-11-20). "
-           "Credit a fact with the outlet names its 'credit it as' note gives, and keep the credit in "
-           "every sentence that states part of that fact ('Dexerto reports the level holds there, and "
-           "that a cop who spots you restarts the chase'), never one credit followed by bare claims. "
            "Put the main fact's id in fact_id; a second listed fact must also be in your facts list by its id. If no fact fits, write a scene card and leave "
            "fact_id empty.\n\n"
            if facts else "")
@@ -642,7 +643,7 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "states that link\n"
         "- saying the clip shows the fact happening when it does not (the fact is about "
         "swapping clothes and nobody swaps clothes): tell the fact as a fact about the game "
-        "('Kotaku reports that ...'), not as what happens in this clip\n"
+        "('your trunk holds five outfits'), not as what happens in this clip\n"
         "MATCH THE PICTURE (Bryce, 2026-11-22, after a card gave Danny's line to Lucia and "
         "described a shrug nobody could see):\n"
         "- give a spoken line ONLY to the speaker whose label shows with it in the subtitles; "
@@ -662,9 +663,9 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "that is not on screen, when the clip shows the kind of moment the fact is about "
         "(a police fact on a wanted-level clip)\n"
         "- one consistent story: never say two things that contradict each other\n"
-        "- a number or stat the clip does not show on screen must say where it comes from in "
-        "the same sentence ('guides list pull-ups at +5% Strength'); never state an off-screen "
-        "number as if the viewer can see it (test card, 2026-11-22)\n"
+        "- a number or stat the clip does not show on screen must come from a listed fact (its id in "
+        "your facts list), stated plainly with no source named (Bryce, 2026-11-27: own it); never "
+        "describe an off-screen number as something the viewer can see (test card, 2026-11-22)\n"
         "PAYOFF TIMING: the frames above carry times ('frame 4 at ~0:09'). Give \"payoff_at\": "
         "the seconds into the clip where the thing the headline is about is FIRST clearly on "
         "screen (0 if it is there from the start). Give \"text_evidence\": true only when that "
@@ -680,8 +681,9 @@ def _write_card(observation: str, subtitles: str, game: str, gname: str, avoid: 
         "id, (bible) for the lore bible. Name the character the footage log names: never say a clip or its "
         "subtitles leave someone unnamed when the log names them (2026-11-26). The bible is for YOUR checking only: the card itself never "
         "says 'the lore', 'the lore bible' or 'the bible' (a viewer cannot look it up, and fans call it "
-        "out, 2026-11-24); a bible fact on the card must name where it comes from in the game or from "
-        "Rockstar (a trailer, a mission, an in-game notice) as the bible entry says, or stay off the card. "
+        "out, 2026-11-24); a bible fact on the card must be one the game itself shows or says (a "
+        "trailer, a mission, an in-game notice) as the bible entry says, stated plainly without naming "
+        "where it comes from, or stay off the card. "
         "Nothing else is a source: not research, not 'guides', not "
         "your own knowledge of the game, not a website. Build the card on ONE verified game fact "
         "whenever the clip has fewer than two strong on-screen or spoken facts. A thing the viewer "
@@ -721,6 +723,37 @@ _ONE_TAG = re.compile(r"(screen|subtitles?|log|footage log|bible|fact\s+([a-z0-9
 # (2026-11-26 16:00 UTC: a Facebook card was refused for '(subtitles, log)', a fair double source).
 _TAG_BRACKET = re.compile(r"\(([^()]*)\)\s*\.?\s*$")
 _TAG_SPLIT = re.compile(r"\s*(?:,|;|/|\+|&|\band\b)\s*", re.I)
+
+
+# The card owns what it says (Bryce, 2026-11-27: "no need to quote the sources e.g. Gamerant / Screen
+# rant on the onscreen hook. We have to own what we say and not just say 'They said/they say'").
+# Press outlets only: developer and platform names (Rockstar, PlayStation, Mobile Legends) can be the
+# subject of a fact; a developer is caught only with a credit verb ('Rockstar confirmed').
+_OUTLET_ON_CARD = re.compile(
+    r"\b(VGC|Video\s?Games\s?Chronicle|Kotaku|IGN|GameSpot|PC[\s-]?Gamer|(?-i:Polygon)|Eurogamer|GamesRadar\+?|"
+    r"The\s?Gamer|Game[\s-]?Rant|Dexerto|Insider\s+Gaming|(?-i:The\s+Verge)|Screen[\s-]?Rant|Shacknews|"
+    r"Push[\s-]?Square|Engadget|(?-i:Vice)(?!\s+City)|Game\s?Informer|TechRadar|PlayStation\s+Blog|Xbox\s+Wire|"
+    r"Halo\s+Waypoint|Newswire|Wikipedia|Fandom|Reddit|Bloomberg|Forbes|Rock\s+Paper\s+Shotgun|Gamepressure|"
+    r"Digital\s+Foundry|Windows\s+Central|GamesIndustry(?:\.biz)?|Gematsu|VG247|Destructoid|VentureBeat)\b", re.I)
+_CREDIT_VERB = (r"(?:says?|said|lists?|listed|reports?|reported|suggests?|suggested|claims?|claimed|notes?|noted|"
+                r"confirms?|confirmed|reveals?|revealed|states?|stated|describes?|described|mentions?|mentioned|"
+                r"writes?|wrote|explains?|explained|announces?|announced|teases?|teased|told|tells?)")
+_SOURCE_NOUN = (r"(?:guides?|reports?|sources?|previews?|developers?|devs?|studio|insiders?|leaks?|leakers?|"
+                r"wikis?|articles?|outlets?|press|interviews?)")
+_CREDIT_ON_CARD = re.compile(
+    r"\b(according\s+to\s+(?:the\s+|a\s+|an\s+|some\s+|many\s+)?" + _SOURCE_NOUN + r"|reportedly|as\s+reported|"
+    r"per\s+(?:the\s+|a\s+)?" + _SOURCE_NOUN + r"|"
+    r"(?:the\s+|a\s+|one\s+|some\s+|many\s+)?(?:hands-on\s+)?" + _SOURCE_NOUN + r"\s+" + _CREDIT_VERB + r"|"
+    r"(?:Rockstar(?:\s+Games)?|Insomniac(?:\s+Games)?|Naughty\s+Dog|Moonton|Tarsier(?:\s+Studios)?|Bandai\s+Namco|"
+    r"Halo\s+Studios|the\s+developers?|the\s+devs?|the\s+studio)(?:'s\s+(?:own\s+)?(?:team|devs?|developers?|"
+    r"guide|site|blog|staff|writers?|director|boss))?\s+(?:has\s+|have\s+|had\s+)?" + _CREDIT_VERB + r")\b", re.I)
+
+
+def source_credits(text: str) -> list[str]:
+    """Outlet names and source credits in viewer-facing text; the card must own its facts."""
+    found = [m.group(0) for m in _OUTLET_ON_CARD.finditer(text or "")]
+    found += [m.group(0) for m in _CREDIT_ON_CARD.finditer(text or "")]
+    return list(dict.fromkeys(found))
 
 
 def fact_source_problems(card: dict, fact_ids: set) -> list[str]:
@@ -820,7 +853,7 @@ def attribution_overreach(text: str, support: str) -> str:
         m = rx.search(text or "")
         if m:
             return (f"'{m.group(0)}' credits the developer, but the source never says the "
-                    "developer said it; credit the listed source or nobody")
+                    "developer said it; state the fact plainly and credit nobody")
     return ""
 
 
@@ -939,6 +972,8 @@ def _caption_ok(caption: str, card: dict) -> tuple[bool, str]:
             return False, "copies a phrase straight out of the card"
     if caption.strip().lower() == (card.get("comment", "") or "").strip().lower():
         return False, "same as the comment line"
+    if source_credits(caption):
+        return False, "names a source ('X reports', an outlet); own it and state it plainly"
     return True, ""
 
 
@@ -956,7 +991,7 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
     for _ in range(2):
         d = _write_caption(card, gname, avoid=why)
         cap, title = d.get("caption", ""), d.get("title", "")
-        if title and _title_ok(title) and not unsafe_terms(title) and not title_out:
+        if title and _title_ok(title) and not unsafe_terms(title) and not source_credits(title) and not title_out:
             title_out = title
         if cap and not cap_out:
             ok, why = _caption_ok(cap, card)
@@ -982,7 +1017,7 @@ def lore_post_text(card: dict, gname: str) -> tuple[str, str]:
     h_cap, h_title = humanize.post_text(cap_out, title_out)
     if h_cap != cap_out and (not _caption_ok(h_cap, card)[0] or unsafe_terms(h_cap)):
         h_cap = cap_out
-    if h_title != title_out and unsafe_terms(h_title):
+    if h_title != title_out and (unsafe_terms(h_title) or source_credits(h_title)):
         h_title = title_out
     return h_cap, h_title
 
@@ -1069,7 +1104,8 @@ def _check_card(card: dict, observation: str, subtitles: str, gname: str,
           "whose subject the on-screen evidence never shows (except a fact card's headline that "
           "states its listed fact, adds nothing, keeps its hedges and has no off-screen number, on a clip of the kind of moment the fact is "
           "about); and a number or stat that is not "
-          "on screen and is stated without saying where it comes from.\n\n"
+          "on screen and that no listed fact states. Never flag a card for not naming its source: "
+          "the channel states verified facts in its own voice (Bryce, 2026-11-27).\n\n"
         "CHECK THE DIRECTION OF THE ACTION FIRST. Who is doing what, TO WHOM, and who is "
         "awake, standing, holding or reaching — compare that against the on-screen evidence "
         "line by line. A card that swaps the two people round ('Dina holding her' when the "
@@ -1498,6 +1534,12 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
             if slop:
                 return False, ("AI filler: " + ", ".join(slop) + ". Replace each with a real fact, "
                                "number or rule from the screen, the subtitles or a listed fact; never a reaction or a comparison")
+            credits = source_credits(" ".join((c.get("headline", ""), c.get("body", ""), c.get("comment", ""))))
+            if credits:
+                return False, ("the card names its sources: " + ", ".join(f"'{x}'" for x in credits[:4])
+                               + ". Own it: state each fact plainly in the channel's own voice ('Your trunk "
+                               "holds up to five outfits'), never 'X reports', 'according to', 'guides list' or "
+                               "'Rockstar confirmed'; keep the source only in the facts list tag")
             src_bad = fact_source_problems(c, {str(x.get("id", "")).lower() for x in _facts})
             if src_bad:
                 return False, ("unsourced facts: " + "; ".join(src_bad[:3]) + ". Use only on-screen "
@@ -1551,9 +1593,9 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                 cited = set(re.findall(r"[a-z0-9]+-\d+", " ".join(map(str, c.get("facts") or [])).lower()))
                 both = [used] + [x for x in _facts if str(x.get("id")).lower() in cited and x is not used][:1]
                 fact_sup = " ".join(f"{x.get('fact', '')} {fact_source(x)}" for x in both)
-                used_fact = "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}"
-                                      + (f"; the card may credit it as: {outlet_say(x)}" if outlet_say(x) else "")
-                                      + ")" for x in both)
+                used_fact = "\n".join(f"[{x.get('id')}] {x.get('fact')} (source: {fact_source(x)}; "
+                                      "verified, and the card states it in its own voice without naming the source)"
+                                      for x in both)
             else:
                 fact_sup, used_fact = confirmed_research(research), ""
             over = attribution_overreach(text, f"{fact_sup} {subs}")
@@ -1569,7 +1611,7 @@ def build(clip: Path, game: str, start: float, dur: float, text: str | None, out
                                   used_fact=used_fact, suspects=suspects)
             if not ok:
                 return ok, why
-            score, notes, wrong = fan_critic(c, observation, subs, gname)
+            score, notes, wrong = fan_critic(c, observation, subs, gname, backing=used_fact or fact_sup)
             log(f"fan critic: {score}/10 {notes}")
             if wrong:
                 # 2026-11-24: a card scored 8/10 went through with a line the critic called wrong
