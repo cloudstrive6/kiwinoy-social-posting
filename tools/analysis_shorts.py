@@ -122,6 +122,14 @@ def game_logo(game: str) -> "Image.Image | None":
     base = game[: -len("-reels")] if game.endswith("-reels") else game
     if not base:
         return None
+    # A pack folder named for its video ('gta6-guide', 'gta6-cops', 'spider-man2-bosses') is not a game
+    # key: use the longest game key it starts with (2026-11-26: every GTA 6 voiceover Short shipped
+    # without its logo because 'gta6guide' matched no logo file, and the bosses pack got the generic
+    # Spider-Man logo instead of Spider-Man 2's).
+    from core.config import CONFIG
+    names = CONFIG.reels.get("game_names", {}) or {}
+    if base not in names:
+        base = next((k for k in sorted(names, key=len, reverse=True) if base.startswith(f"{k}-")), base)
     try:
         from orchestrator import _game_logo
         path = _game_logo(base)
@@ -1287,6 +1295,11 @@ def render_short(s: dict, p: Paths, src: Path) -> Path:
     frame = s.get("frame", "band")
     use_frame(frame)
     GAME = p.game
+    # Every voiceover Short carries its game logo (Bryce, 2026-11-15; reminded 2026-11-26 after GTA 6
+    # Shorts shipped without it): no logo, no render, so it can never be dropped silently again.
+    if game_logo(GAME) is None:
+        raise SystemExit(f"no game logo found for '{GAME}': add a PNG to reels/assets/game-logo/ or map it "
+                         "in config reels.game_logo.map, then render again")
     work = p.work
     hook = work / f"{s['id']}-hook.png"
     hook_layer(s, frame).save(hook)
