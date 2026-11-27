@@ -8,6 +8,7 @@ game: "mcu"
 cover: "/covers/avengers-doomsday-reportedly-runs-2-hours-17-minutes-without-credits-1.jpg"
 date: 2026-11-27
 author: "BOSS KG"
+featured: true
 draft: false
 sourceName: "TheDirect"
 sourceUrl: "https://thedirect.com/article/avengers-doomsday-credits-runtime-marvel-studios-disney"
