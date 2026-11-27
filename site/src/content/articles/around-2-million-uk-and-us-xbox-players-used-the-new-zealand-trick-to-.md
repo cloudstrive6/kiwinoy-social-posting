@@ -11,6 +11,7 @@ author: "BOSS KG"
 draft: true
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/gta-6-new-zealand-trick-2m-players-early"
+rejected: true
 ---
 
 Grand Theft Auto 6 has launched, and plenty of players didn't wait for their own timezone. According to data from Ampere Analysis, around **2 million UK and US players** used Xbox's so-called 'New Zealand trick' to start playing early, a figure that equals **more than a third of New Zealand's actual population**.
