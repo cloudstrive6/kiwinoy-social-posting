@@ -8,7 +8,7 @@ game: "gta6"
 cover: "/covers/gta-6-smashes-livestreaming-record-with-over-420-million-hours-watched.jpg"
 date: 2026-11-27
 author: "BOSS KG"
-draft: true
+draft: false
 sourceName: "Eurogamer"
 sourceUrl: "https://www.eurogamer.net/grand-theft-auto-6-first-week-hours-watched-record"
 telegramMessageId: 1857
